@@ -10,40 +10,40 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_snat_translation
-short_description:  Manage SNAT Translations on a BIG-IP
+short_description:  Manage SNAT translations on a BIG-IP
 description:
-  - Manage SNAT Translations on a BIG-IP.
+  - Manage SNAT translations on a BIG-IP system.
 version_added: "1.0.0"
 options:
   address:
     description:
-      - Specifies the IP address of the SNAT translation. When a C(state) of present, enabled, or disabled is
-        provided, this parameter is required.
+      - Specifies the IP address of the SNAT translation. When C(state) is C(present), C(enabled),
+        or C(disabled), this parameter is required.
       - This parameter cannot be updated after it is set.
     type: str
     aliases:
       - ip
   arp:
     description:
-      - If C(yes), specifies that the NAT sends ARP requests.
+      - If C(yes), specifies the NAT sends ARP requests.
     type: bool
   connection_limit:
     description:
       - Specifies a limit on the number of connections a translation address must reach before it no longer
-        initiates a connection. The default value of 0 indicates that the setting is disabled.
+        initiates a connection. The default value of C(0) indicates the setting is disabled.
       - The accepted value range is C(0 - 65535).
     type: int
   description:
     description:
-      - Description of snat-translation. C(none or '') will set to default description of null.
+      - Description of snat-translation. C(none or '') sets a default description of null.
     type: str
   ip_idle_timeout:
     description:
-      - Specifies the amount of time that connections to an IP address initiated using a SNAT address are
+      - Specifies the amount of time connections to an IP address initiated using a SNAT address are
         allowed to remain idle before being automatically disconnected. C(indefinite) prevents the connection
         from timing out.
-      - The accepted value range is C(0 - 4294967295) seconds, specifying C(indefinite) will
-        set it to the maximum value.
+      - The accepted value range is C(0 - 4294967295) seconds. Specifying C(indefinite)
+        sets it to the maximum value.
     type: str
   name:
     description:
@@ -53,14 +53,14 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-      - Required with state C(absent) when partition other than Common used.
+      - Required with state C(absent) when a partition other than Common is used.
     type: str
   state:
     description:
-      - The SNAT translation state. If C(absent), delete the SNAT translation
-        if it exists. C(present) creates the SNAT translation and enable it.
-        If C(enabled), enable the SNAT translation if it exists. If C(disabled),
-        create the SNAT translation if needed, and set state to C(disabled).
+      - The SNAT translation state. If C(absent), deletes the SNAT translation
+        if it exists. C(present) creates the SNAT translation and enables it.
+        If C(enabled), enables the SNAT translation if it exists. If C(disabled),
+        creates the SNAT translation if needed, and sets the state to C(disabled).
     type: str
     choices:
       - present
@@ -71,24 +71,23 @@ options:
   tcp_idle_timeout:
     description:
       - Specifies the amount of time that TCP connections initiated using a SNAT address are allowed
-        to remain idle before being automatically disconnected. C(indefinite) Prevents the
+        to remain idle before being automatically disconnected. C(indefinite) prevents the
         connection from timing out.
-      - The accepted value range is C(0 - 4294967295) seconds, specifying C(indefinite) will
-        set it to the maximum value.
+      - The accepted value range is C(0 - 4294967295) seconds. Specifying C(indefinite)
+        sets it to the maximum value.
     type: str
   traffic_group:
     description:
       - The traffic group for the snat-translation address. When creating a new address,
-        if this value is not specified, the default of C(/Common/traffic-group-1)
-        will be used.
+        if this value is not specified, the default is C(/Common/traffic-group-1).
     type: str
   udp_idle_timeout:
     description:
-      - Specifies the amount of time that UDP connections initiated using a SNAT address are allowed
-        to remain idle before being automatically disconnected. C(indefinite) Prevents the connection
+      - Specifies the amount of time UDP connections initiated using a SNAT address are allowed
+        to remain idle before being automatically disconnected. C(indefinite) prevents the connection
         from timing out.
-      - The accepted value range is C(0 - 4294967295) seconds, specifying C(indefinite) will
-        set it to the maximum value.
+      - The accepted value range is C(0 - 4294967295) seconds. Specifying C(indefinite)
+        sets it to the maximum value.
     type: str
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
@@ -196,12 +195,12 @@ EXAMPLES = r'''
 RETURN = r'''
 address:
   description:
-    - ip address used for SNAT translation.
+    - IP address used for SNAT translation.
   returned: changed and success
   type: str
   sample: "10.10.10.10"
 arp:
-  description: Whether snat-translation send arp requests.
+  description: Whether snat-translation sends arp requests.
   returned: changed
   type: bool
   sample: yes
@@ -211,12 +210,12 @@ connection_limit:
   type: int
   sample: 1000
 description:
-  description: Description of the snat-translaiton.
+  description: Description of the snat-translation.
   returned: changed
   type: str
   sample: My snat-translation
 ip_idle_timeout:
-  description: IP idle timeout value for snat-translation.
+  description: IP idle timeout value for the snat-translation.
   returned: changed
   type: str
   sample: 300
@@ -226,7 +225,7 @@ state:
   type: str
   sample: disabled
 tcp_idle_timeout:
-  description: TCP idle timeout value for snat-translation.
+  description: TCP idle timeout value for the snat-translation.
   returned: changed
   type: str
   sample: 1800
@@ -236,10 +235,10 @@ traffic_group:
   type: str
   sample: /Common/traffic-group-1
 udp_idle_timeout:
-  description: UDP idle timeout value for snat-translation.
+  description: UDP idle timeout value for the snat-translation.
   returned: changed
   type: str
-  sample: indifinite
+  sample: indefinite
 '''
 
 
