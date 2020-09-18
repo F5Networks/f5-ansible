@@ -76,7 +76,7 @@ options:
       - selective
   state:
     description:
-      - The virtual address state. If C(absent), the system makes an attempt 
+      - The virtual address state. If C(absent), the system makes an attempt
         to delete the virtual address. This will only succeed if this
         virtual address is not in use by a virtual server. C(present) creates
         the virtual address and enables it. If C(enabled), enables the virtual
