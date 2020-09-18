@@ -78,7 +78,7 @@ options:
     default: present
 notes:
    - Only the most basic checks are performed by this module. Other checks and
-     considerations need to be taken into account. See:
+     considerations need to be taken into account. See
      https://support.f5.com/kb/en-us/solutions/public/11000/300/sol11318.html
    - This module does not handle devices with the FIPS 140 HSM.
    - This module does not handle BIG-IPs systems on the 6400, 6800, 8400, or
