@@ -10,46 +10,49 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_ucs
-short_description: Manage upload, installation and removal of UCS files
+short_description: Manage upload, installation, and removal of UCS files
 description:
-   - Manage upload, installation and removal of UCS files.
+   - Manage upload, installation, and removal of UCS files on a BIG-IP system.
+     A user configuration set (UCS) is a backup file that contains BIG-IP configuration
+     data that can be used to fully restore a BIG-IP system in the event of a
+     failure or RMA replacement.
 version_added: "1.0.0"
 options:
   include_chassis_level_config:
     description:
-      - During restore of the UCS file, include chassis level configuration
-        that is shared among boot volume sets. For example, cluster default
+      - During restoration of the UCS file, includes chassis level configuration
+        that is shared among boot volume sets. For example, the cluster default
         configuration.
     type: bool
   ucs:
     description:
       - The path to the UCS file to install. The parameter must be
         provided if the C(state) is either C(installed) or C(activated).
-        When C(state) is C(absent), the full path for this parameter will be
-        ignored and only the filename will be used to select a UCS for removal.
-        Therefore you could specify C(/mickey/mouse/test.ucs) and this module
+        When C(state) is C(absent), the full path for this parameter is
+        ignored and only the filename is used to select a UCS for removal.
+        Therefore you could specify C(/foo/bar/test.ucs) and this module
         would only look for C(test.ucs).
     type: str
     required: True
   force:
     description:
-      - If C(yes) will upload the file every time and replace the file on the
-        device. If C(no), the file will only be uploaded if it does not already
-        exist. Generally should be C(yes) only in cases where you have reason
-        to believe that the image was corrupted during upload.
+      - If C(yes), the system uploads the file every time and replaces the file on the
+        device. If C(no), the file is only uploaded if it does not already
+        exist. Generally should only be C(yes) in cases where you believe
+        the image was corrupted during upload.
     type: bool
     default: no
   no_license:
     description:
       - Performs a full restore of the UCS file and all the files it contains,
         with the exception of the license file. The option must be used to
-        restore a UCS on RMA devices (Returned Materials Authorization).
+        restore a UCS on RMA (Returned Materials Authorization) devices.
     type: bool
   no_platform_check:
     description:
-      - Bypasses the platform check and allows a UCS that was created using a
-        different platform to be installed. By default (without this option),
-        a UCS created from a different platform is not allowed to be installed.
+      - Bypasses the platform check and allows installation of a UCS that was
+        created using a different platform. By default (without this option),
+        installation of a UCS created from a different platform is not allowed.
     type: bool
   passphrase:
     description:
@@ -58,13 +61,13 @@ options:
   reset_trust:
     description:
       - When specified, the device and trust domain certs and keys are not
-        loaded from the UCS. Instead, a new set is regenerated.
+        loaded from the UCS. Instead, a new set is generated.
     type: bool
   state:
     description:
-      - When C(installed), ensures that the UCS is uploaded and installed,
-        on the system. When C(present), ensures that the UCS is uploaded.
-        When C(absent), the UCS will be removed from the system. When
+      - When C(installed), ensures the UCS is uploaded and installed
+        on the system. When C(present), ensures the UCS is uploaded.
+        When C(absent), the UCS is removed from the system. When
         C(installed), the uploading of the UCS is idempotent, however the
         installation of that configuration is not idempotent.
     type: str
@@ -75,23 +78,23 @@ options:
     default: present
 notes:
    - Only the most basic checks are performed by this module. Other checks and
-     considerations need to be taken into account. See the following URL.
+     considerations need to be taken into account. See:
      https://support.f5.com/kb/en-us/solutions/public/11000/300/sol11318.html
-   - This module does not handle devices with the FIPS 140 HSM
+   - This module does not handle devices with the FIPS 140 HSM.
    - This module does not handle BIG-IPs systems on the 6400, 6800, 8400, or
-     8800 hardware platform.
-   - This module does not verify that the new or replaced SSH keys from the
-     UCS file are synchronized between the BIG-IP system and the SCCP
-   - This module does not support the 'rma' option
+     8800 hardware platforms.
+   - This module does not verify the new or replaced SSH keys from the
+     UCS file are synchronized between the BIG-IP system and the SCCP.
+   - This module does not support the 'rma' option.
    - This module does not support restoring a UCS archive on a BIG-IP 1500,
-     3400, 4100, 6400, 6800, or 8400 hardware platform other than the system
-     from which the backup was created
+     3400, 4100, 6400, 6800, or 8400 hardware platforms other than the system
+     from which the backup was created.
    - The UCS restore operation restores the full configuration only if the
      hostname of the target system matches the hostname on which the UCS
      archive was created. If the hostname does not match, only the shared
      configuration is restored. You can ensure hostnames match by using
      the C(bigip_hostname) Ansible module in a task before using this module.
-   - This module does not support re-licensing a BIG-IP restored from a UCS
+   - This module does not support re-licensing a BIG-IP restored from a UCS.
    - This module does not support restoring encrypted archives on replacement
      RMA unit.
 extends_documentation_fragment: f5networks.f5_modules.f5
