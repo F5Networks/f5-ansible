@@ -328,10 +328,11 @@ EXAMPLES = r'''
 
 RETURN = r'''
 monitor_type:
-  description: The contact that was set on the datacenter.
+  description:
+    - Changed value for the monitor_type of the pool.
   returned: changed
   type: str
-  sample: admin@root.local
+  sample: m_of_n
 quorum:
   description: The quorum that was set on the pool.
   returned: changed

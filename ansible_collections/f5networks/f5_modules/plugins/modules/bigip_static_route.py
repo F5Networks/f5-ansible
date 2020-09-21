@@ -107,22 +107,22 @@ EXAMPLES = r'''
 
 RETURN = r'''
 vlan:
-  description: Whether the banner is enabled or not.
+  description: The VLAN or Tunnel through which the system forwards packets to the destination.
   returned: changed
   type: str
-  sample: true
+  sample: /Common/vlan1
 gateway_address:
-  description: Whether the banner is enabled or not.
+  description: The router for the system to use when forwarding packets to the destination host or network.
   returned: changed
   type: str
-  sample: true
+  sample: 10.2.2.3
 destination:
-  description: Whether the banner is enabled or not.
+  description: An IP address for the static entry in the routing table.
   returned: changed
   type: str
-  sample: true
+  sample: 0.0.0.0/0
 route_domain:
-  description: Route domain of the static route.
+  description: The route domain ID of the system.
   returned: changed
   type: int
   sample: 1
@@ -135,21 +135,21 @@ pool:
   description: Whether the banner is enabled or not.
   returned: changed
   type: str
-  sample: true
+  sample: yes
 partition:
   description: The partition that the static route was created on.
   returned: changed
   type: str
   sample: Common
 description:
-  description: Whether the banner is enabled or not.
+  description: Descriptive text that identifies the route.
   returned: changed
   type: str
-  sample: true
+  sample: "Route tho DMZ"
 reject:
-  description: Whether the banner is enabled or not.
+  description: Specifies the system drops packets sent to the destination.
   returned: changed
-  type: str
+  type: bool
   sample: true
 '''
 
