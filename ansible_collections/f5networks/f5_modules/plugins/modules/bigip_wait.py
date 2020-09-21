@@ -34,7 +34,7 @@ options:
     description:
       - Maximum number of seconds to wait.
       - When used without other conditions, it is equivalent of just sleeping.
-      - The default timeout is deliberately set to 2 hours because no individual
+      - The default timeout is deliberately set to 2 hours because there is no individual
         REST API.
     type: int
     default: 7200
