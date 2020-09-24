@@ -264,9 +264,22 @@ asm_policy_stats:
       returned: queried
       type: int
       sample: 3
+    parent_policies:
+      description:
+        - The total number of ASM parent policies on the device.
+      returned: queried
+      type: int
+      sample: 2
+    policies_pending_changes:
+      description:
+        - The total number of ASM policies with pending changes on the device.
+      returned: queried
+      type: int
+      sample: 2
     policies_active:
       description:
-        - The number of ASM policies that are marked as active.
+        - The number of ASM policies that are marked as active. From TMOS 13.x and above this setting equals
+          to C(policies_attached).
       returned: queried
       type: int
       sample: 3
@@ -278,7 +291,8 @@ asm_policy_stats:
       sample: 1
     policies_inactive:
       description:
-        - The number of ASM policies that are marked as inactive.
+        - The number of ASM policies that are marked as inactive. From TMOS 13.x and above this setting equals
+          to C(policies_unattached).
       returned: queried
       type: int
       sample: 0
@@ -314,7 +328,14 @@ asm_policies:
       sample: l0Ckxe-7yHsXp8U5tTgbFQ
     active:
       description:
-        - Indicates if an ASM policy is active.
+        - Indicates if an ASM policy is active. In TMOS 13.x and above,
+          this setting indicates if the policy is bound to any Virtual Server.
+      returned: queried
+      type: bool
+      sample: yes
+    apply:
+      description:
+        - In TMOS 13.x and above, this setting indicates if an ASM policy has pending changes that need to be applied.
       returned: queried
       type: bool
       sample: yes
@@ -7611,6 +7632,8 @@ class AsmPolicyStatsParameters(BaseParameters):
 
     returnables = [
         'policies',
+        'parent_policies',
+        'policies_pending_changes',
         'policies_active',
         'policies_attached',
         'policies_inactive',
@@ -7623,6 +7646,42 @@ class AsmPolicyStatsParameters(BaseParameters):
             return None
         return len(self._values['policies'])
 
+    @property
+    def parent_policies(self):
+        if self._values['policies'] is None or len(self._values['policies']) == 0:
+            return None
+        return len([x for x in self._values['policies'] if 'type' in x and x['type'] == "parent"])
+
+    @property
+    def policies_pending_changes(self):
+        if self._values['policies'] is None or len(self._values['policies']) == 0:
+            return None
+        return len([x for x in self._values['policies'] if x['isModified'] is True])
+
+
+class AsmPolicyStatsParametersv13(AsmPolicyStatsParameters):
+    @property
+    def policies_active(self):
+        if self._values['policies'] is None or len(self._values['policies']) == 0:
+            return None
+        return len([x for x in self._values['policies'] if 'active' in x and x['active']])
+
+    @property
+    def policies_inactive(self):
+        if self._values['policies'] is None or len(self._values['policies']) == 0:
+            return None
+        return len([x for x in self._values['policies'] if 'active' in x and x['active'] is not True])
+
+    @property
+    def policies_attached(self):
+        return self.policies_active
+
+    @property
+    def policies_unattached(self):
+        return self.policies_inactive
+
+
+class AsmPolicyStatsParametersv12(AsmPolicyStatsParameters):
     @property
     def policies_active(self):
         if self._values['policies'] is None or len(self._values['policies']) == 0:
@@ -7639,13 +7698,15 @@ class AsmPolicyStatsParameters(BaseParameters):
     def policies_attached(self):
         if self._values['policies'] is None or len(self._values['policies']) == 0:
             return None
-        return len([x for x in self._values['policies'] if x['active'] is True and len(x['virtualServers']) > 0])
+        return len([x for x in self._values['policies']
+                    if x['active'] is True and len(x['virtualServers']) > 0])
 
     @property
     def policies_unattached(self):
         if self._values['policies'] is None or len(self._values['policies']) == 0:
             return None
-        return len([x for x in self._values['policies'] if x['active'] is True and len(x['virtualServers']) == 0])
+        return len([x for x in self._values['policies']
+                    if x['active'] is False and len(x['virtualServers']) == 0])
 
 
 class AsmPolicyStatsFactManager(BaseManager):
@@ -7667,9 +7728,19 @@ class AsmPolicyStatsFactManager(BaseManager):
         results = facts.to_return()
         return results
 
+    def version_is_less_than_13(self):
+        version = tmos_version(self.client)
+        if LooseVersion(version) < LooseVersion('13.0.0'):
+            return True
+        else:
+            return False
+
     def read_facts(self):
         collection = self.read_collection_from_device()
-        params = AsmPolicyStatsParameters(params=collection)
+        if self.version_is_less_than_13():
+            params = AsmPolicyStatsParametersv12(params=collection)
+        else:
+            params = AsmPolicyStatsParametersv13(params=collection)
         return params
 
     def read_collection_from_device(self):
@@ -7713,6 +7784,7 @@ class AsmPolicyFactParameters(BaseParameters):
         'whitelist-ips': 'whitelist_ips',
         'fullPath': 'full_path',
         'csrf-protection': 'csrf_protection',
+        'isModified': 'apply',
     }
 
     returnables = [
@@ -7747,6 +7819,7 @@ class AsmPolicyFactParameters(BaseParameters):
         'csrf_protection_enabled',
         'csrf_protection_ssl_only',
         'csrf_protection_expiration_time_in_seconds',
+        'apply',
     ]
 
     def _morph_keys(self, key_map, item):
@@ -7758,6 +7831,10 @@ class AsmPolicyFactParameters(BaseParameters):
     @property
     def active(self):
         return flatten_boolean(self._values['active'])
+
+    @property
+    def apply(self):
+        return flatten_boolean(self._values['apply'])
 
     @property
     def case_insensitive(self):
@@ -8023,7 +8100,6 @@ class AsmPolicyFactParameters(BaseParameters):
     @property
     def protocol_independent(self):
         return flatten_boolean(self._values['protocol_independent'])
-
 
 # TODO include: web-scraping,ip-intelligence,session-tracking,
 # TODO login-enforcement,data-guard,redirection-protection,vulnerability-assessment, parentPolicyReference
