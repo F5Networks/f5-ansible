@@ -317,7 +317,7 @@ class TestManager(unittest.TestCase):
                 user='admin'
             )
         ))
-        with patch('ansible.module_utils.f5_utils.AnsibleModule.fail_json') as mo:
+        with patch('ansible.module_utils.basic.AnsibleModule.fail_json') as mo:
             mo.return_value = True
             AnsibleModule(
                 argument_spec=self.spec.argument_spec,
