@@ -22,11 +22,12 @@ options:
     required: True
   type:
     description:
-      - Specifies the type of item to export from device.
+      - Specifies the type of item to export from the device.
     type: str
     choices:
       - profile_access
       - access_policy
+      - profile_api_protection
     default: profile_access
   source:
     description:
@@ -35,7 +36,7 @@ options:
   force:
     description:
       - When set to C(yes) any existing policy with the same name will be overwritten by the new import.
-      - If policy does not exist this setting is ignored.
+      - If a policy does not exist, this setting is ignored.
     default: no
     type: bool
   partition:
@@ -52,7 +53,7 @@ options:
     default: yes
     type: bool
 notes:
-  - Due to ID685681 it is not possible to execute ng_* tools via REST api on v12.x and 13.x, once this is fixed
+  - Due to ID685681 it is not possible to execute ng_* tools via REST API on v12.x and 13.x, once this is fixed
     this restriction will be removed.
   - Requires BIG-IP >= 14.0.0
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -333,8 +334,8 @@ class ModuleManager(object):
         else:
             reuse_objects = ""
 
-        cmd = 'ng_import {0} /var/config/rest/downloads/{1} {2} -p {3}'.format(
-            reuse_objects, name, self.want.name, self.want.partition
+        cmd = 'ng_import {0} /var/config/rest/downloads/{1} {2} -p {3} -t {4}'.format(
+            reuse_objects, name, self.want.name, self.want.partition, self.want.type
         )
 
         uri = "https://{0}:{1}/mgmt/tm/util/bash/".format(
@@ -394,7 +395,7 @@ class ArgumentSpec(object):
             ),
             type=dict(
                 default='profile_access',
-                choices=['profile_access', 'access_policy']
+                choices=['profile_access', 'access_policy', 'profile_api_protection']
             ),
             reuse_objects=dict(
                 type='bool',

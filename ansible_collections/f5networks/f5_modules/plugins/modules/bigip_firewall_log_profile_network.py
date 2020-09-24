@@ -17,15 +17,15 @@ version_added: "1.0.0"
 options:
   profile_name:
     description:
-      - Specifies the name of the AFM log profile to be updated.
+      - Specifies the name of the AFM (Advanced Firewall Manager) log profile to be updated.
     type: str
     required: True
   log_publisher:
     description:
       - Specifies the name of the log publisher used for Network events.
       - To specify the log_publisher on a different partition from the AFM log profile, specify the name in fullpath
-        format, e.g. C(/Foobar/log-publisher), otherwise the partition for log publisher is inferred from C(partition)
-        module parameter.
+        format, e.g. C(/Foobar/log-publisher), otherwise the partition for the log publisher is inferred from the
+        C(partition) module parameter.
     type: str
   rate_limit:
     description:
@@ -36,98 +36,98 @@ options:
     type: str
   log_matches_accept_rule:
     description:
-      - Modify log settings for ACL rules configured with an "accept" or "accept decisively" action.
+      - Modifies log settings for ACL rules configured with an "accept" or "accept decisively" action.
     type: dict
     suboptions:
       enabled:
         description:
-          - This option is used to enable or disable the logging of packets that match ACL rules configured with
+          - This option enables or disables the logging of packets that match ACL rules configured with
             an "accept" or "accept decisively" action.
         type: bool
       rate_limit:
         description:
-          - This option is used to set rate limits for the logging of packets that match ACL rules
+          - This option sets rate limits for the logging of packets that match ACL rules
             configured with an "accept" or "accept decisively" action.
           - This option is effective only if logging of this message type is enabled.
         type: int
   log_matches_drop_rule:
     description:
-      - Modify log settings for ACL rules configured with a drop action.
+      - Modifies log settings for ACL rules configured with a drop action.
     type: dict
     suboptions:
       enabled:
         description:
-          - This option is used to enable or disable the logging of packets that match ACL rules
+          - This option enables or disables the logging of packets that match ACL rules
             configured with a drop action.
         type: bool
       rate_limit:
         description:
-          - This option is used to set rate limits for the logging of packets that match ACL rules
+          - This option sets rate limits for the logging of packets that match ACL rules
             configured with a drop action.
           - This option is effective only if logging of this message type is enabled.
         type: int
   log_matches_reject_rule:
     description:
-      - Modify log settings for ACL rules configured with a reject action.
+      - Modifies log settings for ACL rules configured with a reject action.
     type: dict
     suboptions:
       enabled:
         description:
-          - This option is used to enable or disable the logging of packets that match ACL rules
+          - This option enables or disables the logging of packets that match ACL rules
             configured with a reject action.
         type: bool
       rate_limit:
         description:
-          - This option is used to set rate limits for the logging of packets that match ACL rules
+          - This option sets rate limits for the logging of packets that match ACL rules
             configured with a reject action.
           - This option is effective only if logging of this message type is enabled.
         type: int
   log_ip_errors:
     description:
-      - Modify log settings for logging of IP error packets.
+      - Modifies log settings for logging of IP error packets.
     type: dict
     suboptions:
       enabled:
         description:
-          - This option is used to enable or disable the logging of IP error packets.
+          - This option enables or disables the logging of IP error packets.
         type: bool
       rate_limit:
         description:
-          - This option is used to set rate limits for the logging of IP error packets.
+          - This option sets rate limits for the logging of IP error packets.
           - This option is effective only if logging of this message type is enabled.
         type: int
   log_tcp_errors:
     description:
-      - Modify log settings for logging of TCP error packets.
+      - Modifies log settings for the logging of TCP error packets.
     type: dict
     suboptions:
       enabled:
         description:
-          - This option is used to enable or disable the logging of TCP error packets.
+          - This option enables or disables the logging of TCP error packets.
         type: bool
       rate_limit:
         description:
-          - This option is used to set rate limits for the logging of TCP error packets.
+          - This option sets rate limits for the logging of TCP error packets.
           - This option is effective only if logging of this message type is enabled.
         type: int
   log_tcp_events:
     description:
-      - Modify log settings for logging of TCP events on the client side.
+      - Modifies the log settings for logging of TCP events on the client side.
     type: dict
     suboptions:
       enabled:
         description:
-          - This option is used to enable or disable the logging of TCP events on the client side.
-          - Only 'Established' and 'Closed' states of a TCP session are logged if this option is enabled.
+          - This option enables or disables the logging of TCP events on the client side.
+          - Only B(Established) and B(Closed) states of a TCP session are logged if this option is enabled.
         type: bool
       rate_limit:
         description:
-          - This option is used to set rate limits for the logging of TCP events on the client side.
+          - This option sets rate limits for the logging of TCP events on the client side.
           - This option is effective only if logging of this message type is enabled.
         type: int
   log_translation_fields:
     description:
-      - This option is used to enable or disable the logging of translated (i.e server side) fields in ACL
+      - This option enables or disables the logging of translated (i.e server side) fields in ACL
         match and TCP events.
       - Translated fields include (but are not limited to) source address/port, destination address/port,
         IP protocol, route domain, and VLAN.
@@ -136,7 +136,7 @@ options:
     description:
       - Specifies the type of the storage format.
       - When creating a new log profile, if this parameter is not specified, the default is C(none).
-      - When C(field-list), specifies that the log displays only the items you specify in the C(log_message_fields) list
+      - When C(field-list), specifies the log displays only the items you specify in the C(log_message_fields) list
         with C(log_format_delimiter) as the delimiter between the items.
       - When C(none), the messages will be logged in the default format, which is C("management_ip_address",
         "bigip_hostname","context_type", "context_name","src_geo","src_ip", "dest_geo","dest_ip","src_port",
@@ -153,19 +153,19 @@ options:
     description:
       - Specifies the delimiter string when using a C(log_storage_format) of C(field-list).
       - When creating a new profile, if this parameter is not specified, the default value of C(,)
-        (the comma character) will be used.
-      - This option is valid when the C(log_storage_format) is set to C(field-list). It will be ignored otherwise.
+        (the comma character) is used.
+      - This option is valid when the C(log_storage_format) is set to C(field-list). It is ignored otherwise.
       - Depending on the delimiter used, it may be necessary to wrap the delimiter
         in quotes to prevent YAML errors from occurring.
-      - The special character C($) should not be used, and will raise an error if used,
-        as it is reserved for internal use.
+      - The special character C($) is reserved for internal use,
+        and will raise an error if used.
       - The maximum length allowed for this parameter is C(31) characters.
     type: str
   log_message_fields:
     description:
       - Specifies a set of fields to be logged.
-      - This option is valid when the C(log_storage_format) is set to C(field-list). It will be ignored otherwise.
-      - The order of the list is important as the server displays the selected traffic items in the log
+      - This option is valid when the C(log_storage_format) is set to C(field-list). It is ignored otherwise.
+      - The order of the list is important, as the server displays the selected traffic items in the log
         sequentially according to it.
     type: list
     elements: str
@@ -204,15 +204,15 @@ options:
   partition:
     description:
       - Device partition to create log profile on.
-      - Parameter also used when specifying names for log publishers, unless log publisher names are in fullpath format.
+      - This parameter is also used when specifying names for log publishers, unless log publisher names are in fullpath format.
     type: str
     default: Common
   state:
     description:
       - When C(state) is C(present), ensures the resource exists.
-      - Only built-in profile that allows updating network log settings is global-network, attempts to do so on other
+      - The only built-in profile that allows updating network log settings is global-network, attempts to do so on other
         built-in profiles will be ignored.
-      - When C(state) is C(absent), ensures that resource is removed.
+      - When C(state) is C(absent), ensures that the resource is removed.
       - The C(absent) state is ignored for global-network log profile.
     type: str
     choices:

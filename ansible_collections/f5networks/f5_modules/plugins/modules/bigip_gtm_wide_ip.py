@@ -10,16 +10,16 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_gtm_wide_ip
-short_description: Manages F5 BIG-IP GTM wide ip
+short_description: Manages F5 BIG-IP GTM Wide IP
 description:
-  - Manages F5 BIG-IP GTM wide ip.
+  - Manages the F5 BIG-IP GTM (now BIG-IP DNS) Wide IP.
 version_added: "1.0.0"
 options:
   pool_lb_method:
     description:
       - Specifies the load balancing method used to select a pool in this wide
         IP. This setting is relevant only when multiple pools are configured
-        for a wide IP.
+        for a Wide IP.
     type: str
     aliases: ['lb_method']
     choices:
@@ -38,8 +38,8 @@ options:
       - wide_ip
   type:
     description:
-      - Specifies the type of wide IP. GTM wide IPs need to be keyed by query
-        type in addition to name, since pool members need different attributes
+      - Specifies the type of Wide IP. GTM Wide IPs need to be keyed by query
+        type in addition to name, because pool members need different attributes
         depending on the response RDATA they are meant to supply. This value
         is required if you are using BIG-IP versions >= 12.0.0.
     type: str
@@ -52,10 +52,10 @@ options:
       - srv
   state:
     description:
-      - When C(present) or C(enabled), ensures that the Wide IP exists and
+      - When C(present) or C(enabled), ensures the Wide IP exists and
         is enabled.
-      - When C(absent), ensures that the Wide IP has been removed.
-      - When C(disabled), ensures that the Wide IP exists and is disabled.
+      - When C(absent), ensures the Wide IP has been removed.
+      - When C(disabled), ensures the Wide IP exists and is disabled.
     type: str
     choices:
       - present
@@ -70,7 +70,7 @@ options:
     default: Common
   pools:
     description:
-      - The pools that you want associated with the Wide IP.
+      - The pools you want associated with the Wide IP.
       - If C(ratio) is not provided when creating a new Wide IP, it will default
         to 1.
     type: list
@@ -85,13 +85,13 @@ options:
         description:
           - Ratio for the pool.
           - The system uses this number with the Ratio load balancing method.
-          - When C(ratio) is not provided the module assigns it value of C(0)
+          - When C(ratio) is not provided, the module assigns it value of C(0).
         type: int
       order:
         description:
           - Order of the pool in relation to other pools attached to this Wide IP.
-          - Pool order is significant when the Global Availability load balancing method is utilized.
-          - When C(order) is not provided the module assigns it value of C(0)
+          - Pool order is significant when the Global Availability load balancing method is used.
+          - When C(order) is not provided, the module assigns it value of C(0).
         type: int
   irules:
     description:
@@ -105,13 +105,13 @@ options:
       - Specifies alternate domain names for the web site content you are load
         balancing.
       - You can use the same wildcard characters for aliases as you can for actual
-        wide IP names.
+        Wide IP names.
     type: list
     elements: str
   last_resort_pool:
     description:
-      - Specifies which GTM pool, for the system to use as the last resort pool for
-        the wide IP.
+      - Specifies which GTM pool for the system to use as the last resort pool for
+        the Wide IP.
       - The valid pools for this parameter are those with the C(type) specified in this
         module.
     type: str
@@ -231,12 +231,12 @@ EXAMPLES = r'''
 
 RETURN = r'''
 lb_method:
-  description: The new load balancing method used by the wide IP.
+  description: The new load balancing method used by the Wide IP.
   returned: changed
   type: str
   sample: topology
 state:
-  description: The new state of the wide IP.
+  description: The new state of the Wide IP.
   returned: changed
   type: str
   sample: disabled
@@ -251,7 +251,7 @@ aliases:
   type: list
   sample: ['alias1.foo.com', '*.wildcard.domain']
 persistence:
-  description: Whether the pool connections will be persisted.
+  description: Whether pool connections will be persisted.
   returned: changed
   type: bool
   sample: False

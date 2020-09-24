@@ -12,15 +12,15 @@ DOCUMENTATION = r'''
 module: bigip_asm_policy_manage
 short_description: Manage BIG-IP ASM policies
 description:
-   - Manage BIG-IP ASM policies, create from templates and manage global policy settings.
+   - Manage BIG-IP ASM policies, create from templates, and manage global policy settings.
 version_added: "1.0.0"
 options:
   active:
     description:
-      - If C(yes) will apply and activate existing inactive policy. If C(no), it will
-        deactivate existing active policy. Generally should be C(yes) only in cases where
+      - If C(yes), will apply and activate the existing inactive policy. If C(no), it will
+        deactivate the existing active policy. Generally should be C(yes) only in cases where
         you want to activate new or existing policy.
-      - In TMOS v14 and above deactivating policy will cause it to be detached from any other associated objects,
+      - In TMOS v14 and later, deactivating the policy will cause it to be detached from any other associated objects,
         hence the default option of C(no) has been removed in order to prevent accidental disassociation.
     type: bool
   apply:
@@ -36,11 +36,11 @@ options:
     required: True
   state:
     description:
-      - When C(state) is C(present), and C(template) parameter is provided,
-        new ASM policy is created from template with the given policy C(name).
-      - When C(state) is present and no C(template) parameter is provided
+      - When C(state) is C(present), and the C(template) parameter is provided,
+        a new ASM policy is created from the template with the given policy C(name).
+      - When C(state) is C(present) and no C(template) parameter is provided, a
         new blank ASM policy is created with the given policy C(name).
-      - When C(state) is C(absent), ensures that the policy is removed, even if it is
+      - When C(state) is C(absent), ensures the policy is removed, even if it is
         currently active.
     type: str
     choices:
@@ -49,7 +49,7 @@ options:
     default: present
   template:
     description:
-      - An ASM policy built-in template. If the template does not exist we will raise an error.
+      - An ASM policy built-in template. If the template does not exist, an error is raised.
       - Once the policy has been created, this value cannot change.
       - The C(Comprehensive), C(Drupal), C(Fundamental), C(Joomla),
         C(Vulnerability Assessment Baseline), and C(Wordpress) templates are only available
@@ -158,12 +158,12 @@ EXAMPLES = r'''
 
 RETURN = r'''
 active:
-  description: Set when activating/deactivating ASM policy
+  description: Set when activating/deactivating an ASM policy
   returned: changed
   type: bool
   sample: yes
 apply:
-  description: Set when applying pending changes to ASM policy
+  description: Set when applying pending changes to an ASM policy
   returned: changed when target policy has changes pending
   type: bool
   sample: yes
@@ -173,12 +173,12 @@ state:
   type: str
   sample: absent
 template:
-  description: Name of the built-in ASM policy template
+  description: Name of the built-in ASM policy template.
   returned: changed
   type: str
   sample: OWA Exchange 2007 (https)
 name:
-  description: Name of the ASM policy to be managed/created
+  description: Name of the ASM policy to be managed/created.
   returned: changed
   type: str
   sample: Asm_APP1_Transparent

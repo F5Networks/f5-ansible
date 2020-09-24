@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_gtm_pool_member
 short_description: Manage GTM pool member settings
 description:
-  - Manages a variety of settings on GTM pool members. The settings that can be
+  - Manages a variety of settings on GTM (now BIG-IP DNS) pool members. The settings that can be
     adjusted with this module are much more broad that what can be done in the
     C(bigip_gtm_pool) module. The pool module is intended to allow you to adjust
     the member order in the pool, not the various settings of the members. The
@@ -67,7 +67,7 @@ options:
       - Pool members only support a single monitor.
       - If the C(port) of the C(gtm_virtual_server) is C(*), the accepted values of this
         parameter will be affected.
-      - When creating a new pool member, if this parameter is not specified, the default
+      - If this parameter is not specified when creating a new pool member, the default
         of C(default) will be used.
       - To remove the monitor from the pool member, use the value C(none).
       - For pool members created on different partitions, you can also specify the full
@@ -83,20 +83,20 @@ options:
     type: str
   aggregate:
     description:
-      - List of GTM pool member definitions to be created, modified or removed.
-      - When using C(aggregates) if one of the aggregate definitions is invalid, the aggregate run will fail,
+      - List of GTM pool member definitions to be created, modified, or removed.
+      - When using C(aggregates), if one of the aggregate definitions is invalid, the aggregate run will fail,
         indicating the error it last encountered.
       - The module will C(NOT) rollback any changes it has made prior to encountering the error.
-      - The module also will not indicate what changes were made prior to failure, therefore it is strongly advised
-        to run the module in check mode to make basic validation, prior to module execution.
+      - The module also will not indicate what changes were made prior to failure, therefore we strongly advise
+        you run the module in check mode to make basic validation, prior to module execution.
     type: list
     elements: dict
     aliases:
       - members
   replace_all_with:
     description:
-      - Remove members not defined in the C(aggregate) parameter.
-      - This operation is all or none, meaning that it will stop if there are some pool members
+      - Removes members not defined in the C(aggregate) parameter.
+      - This operation is all or none, meaning it will stop if there are some pool members
         that cannot be removed.
     default: no
     type: bool
@@ -109,55 +109,55 @@ options:
         members in and out of service.
       - You can define limits for any or all of the limit settings. However, when a
         member does not meet the resource threshold limit requirement, the system marks
-        the member as unavailable and directs load-balancing traffic to another resource.
+        the member as unavailable and directs load balancing traffic to another resource.
     suboptions:
       bits_enabled:
         description:
-          - Whether the bits limit it enabled or not.
+          - Whether the bits limit is enabled or not.
           - This parameter allows you to switch on or off the effect of the limit.
         type: bool
       packets_enabled:
         description:
-          - Whether the packets limit it enabled or not.
+          - Whether the packets limit is enabled or not.
           - This parameter allows you to switch on or off the effect of the limit.
         type: bool
       connections_enabled:
         description:
-          - Whether the current connections limit it enabled or not.
+          - Whether the current connections limit is enabled or not.
           - This parameter allows you to switch on or off the effect of the limit.
         type: bool
       bits_limit:
         description:
-          - Specifies the maximum allowable data throughput rate, in bits per second,
-            for the member.
+          - Specifies the maximum allowable data throughput rate
+            for the member, in bits per second.
           - If the network traffic volume exceeds this limit, the system marks the
             member as unavailable.
         type: int
       packets_limit:
         description:
-          - Specifies the maximum allowable data transfer rate, in packets per second,
-            for the member.
+          - Specifies the maximum allowable data transfer rate for the member,
+            in packets per second.
           - If the network traffic volume exceeds this limit, the system marks the
             member as unavailable.
         type: int
       connections_limit:
         description:
           - Specifies the maximum number of concurrent connections, combined, for all of
-            the member.
+            the members.
           - If the connections exceed this limit, the system marks the server as
             unavailable.
         type: int
     type: dict
   state:
     description:
-      - Pool member state. When C(present), ensures that the pool member is
-        created and enabled. When C(absent), ensures that the pool member is
+      - Pool member state. When C(present), ensures the pool member is
+        created and enabled. When C(absent), ensures the pool member is
         removed from the system. When C(enabled) or C(disabled), ensures
-        that the pool member is enabled or disabled (respectively) on the remote
+        the pool member is enabled or disabled (respectively) on the remote
         device.
-      - It is recommended that you use the C(members) parameter of the C(bigip_gtm_pool)
-        module when adding and removing members and it provides an easier way of
-        specifying order. If this is not possible, then the C(state) parameter here
+      - We recommend you use the C(members) parameter of the C(bigip_gtm_pool)
+        module when adding and removing members, as it provides an easier way of
+        specifying order. If this is not possible, the C(state) parameter here
         should be used.
       - Remember that the order of the members will be affected if you add or remove them
         using this method. To some extent, this can be controlled using the C(member_order)

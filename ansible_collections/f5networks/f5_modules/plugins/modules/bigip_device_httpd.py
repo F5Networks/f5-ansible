@@ -10,18 +10,18 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_device_httpd
-short_description: Manage HTTPD related settings on BIG-IP
+short_description: Manage HTTPD related settings on a BIG-IP system
 description:
-  - Manages HTTPD related settings on the BIG-IP. These settings are interesting
-    to change when you want to set GUI timeouts and other TMUI related settings.
+  - Manages HTTPD related settings on the BIG-IP. These settings are useful
+    when you want to set GUI timeouts and other TMUI related settings.
 version_added: "1.0.0"
 options:
   allow:
     description:
-      - Specifies, if you have enabled HTTPD access, the IP address or address
+      - If you have enabled HTTPD access, specifies the IP address or address
         range for other systems that can communicate with this system.
       - To specify all addresses, use the value C(all).
-      - IP address can be specified, such as 172.27.1.10.
+      - An IP address can be specified, such as 172.27.1.10.
       - IP ranges can be specified, such as 172.27.*.* or 172.27.0.0/255.255.0.0.
     type: list
     elements: str
@@ -51,7 +51,7 @@ options:
     type: bool
   log_level:
     description:
-      - Sets the minimum httpd log level.
+      - Sets the minimum HTTPD log level.
     type: str
     choices:
       - alert
@@ -68,15 +68,15 @@ options:
     type: int
   redirect_http_to_https:
     description:
-      - Whether or not to redirect http requests to the GUI to https.
+      - Whether or not to redirect HTTP requests to the GUI to HTTPS.
     type: bool
   ssl_port:
     description:
-      - The HTTPS port to listen on.
+      - The HTTPS port on which the system should listen.
     type: int
   ssl_cipher_suite:
     description:
-      - Specifies the ciphers that the system uses.
+      - Specifies the ciphers the system uses.
       - The values in the suite are separated by colons (:).
       - Can be specified in either a string or list form. The list form is the
         recommended way to provide the cipher suite. See examples for usage.
@@ -100,8 +100,8 @@ options:
         This value is equivalent to specifying a list of C(all,-SSLv2,-SSLv3).
     type: raw
 notes:
-  - Requires the requests Python package on the host. This is as easy as
-    C(pip install requests).
+  - Requires the B(requests) Python package on the host. This is as easy as
+    running C(pip install requests).
 requirements:
   - requests
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -214,7 +214,7 @@ hostname_lookup:
   type: bool
   sample: on
 log_level:
-  description: The new minimum httpd log level.
+  description: The new minimum HTTPD log level.
   returned: changed
   type: str
   sample: crit
@@ -224,7 +224,7 @@ max_clients:
   type: int
   sample: 20
 redirect_http_to_https:
-  description: Whether or not to redirect http requests to the GUI to https.
+  description: Whether or not to redirect HTTP requests to the GUI to HTTPS.
   returned: changed
   type: bool
   sample: on
@@ -234,12 +234,12 @@ ssl_port:
   type: int
   sample: 10443
 ssl_cipher_suite:
-  description: The new ciphers that the system uses.
+  description: The new ciphers the system uses.
   returned: changed
   type: str
   sample: ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA
 ssl_cipher_suite_list:
-  description: List of the new ciphers that the system uses.
+  description: List of the new ciphers the system uses.
   returned: changed
   type: str
   sample: ['ECDHE-RSA-AES256-GCM-SHA384', 'ECDHE-RSA-AES128-SHA']

@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_device_ntp
 short_description: Manage NTP servers on a BIG-IP
 description:
-  - Manage NTP servers on a BIG-IP.
+  - Manage NTP (Network Time Protocol) servers on a BIG-IP.
 version_added: "1.0.0"
 options:
   ntp_servers:
@@ -24,7 +24,7 @@ options:
   state:
     description:
       - The state of the NTP servers on the system. When C(present), guarantees
-        that the NTP servers are set on the system. When C(absent), removes the
+        the NTP servers are set on the system. When C(absent), removes the
         specified NTP servers from the device configuration.
     type: str
     choices:
@@ -65,12 +65,12 @@ EXAMPLES = r'''
 
 RETURN = r'''
 ntp_servers:
-  description: The NTP servers that were set on the device
+  description: The NTP servers that were set on the device.
   returned: changed
   type: list
   sample: ["192.0.2.23", "192.0.2.42"]
 timezone:
-  description: The timezone that was set on the device
+  description: The timezone that was set on the device.
   returned: changed
   type: str
   sample: true

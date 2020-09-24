@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_firewall_port_list
 short_description: Manage port lists on BIG-IP AFM
 description:
-  - Manages the AFM port lists on a BIG-IP. This module can be used to add
+  - Manages the AFM (Advanced Firewall Manager) port lists on a BIG-IP. This module can be used to add
     and remove port list entries.
 version_added: "1.0.0"
 options:
@@ -28,19 +28,19 @@ options:
     default: Common
   description:
     description:
-      - Description of the port list
+      - Description of the port list.
     type: str
   ports:
     description:
-      - Simple list of port values to add to the list
+      - Simple list of port values to add to the list.
     type: list
     elements: str
   port_ranges:
     description:
       - A list of port ranges where the range starts with a port number, is followed
-        by a dash (-) and then a second number.
+        by a dash (-), and then a second number.
       - If the first number is greater than the second number, the numbers will be
-        reversed so-as to be properly formatted. ie, 90-78 would become 78-90.
+        reversed to be properly formatted, for example 90-78 would become 78-90.
     type: list
     elements: str
   port_lists:
@@ -53,7 +53,7 @@ options:
     elements: str
   state:
     description:
-      - When C(present), ensures that the address list and entries exists.
+      - When C(present), ensures the address list and entries exists.
       - When C(absent), ensures the address list is removed.
     type: str
     choices:

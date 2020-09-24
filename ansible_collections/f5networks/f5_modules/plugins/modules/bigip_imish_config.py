@@ -18,16 +18,16 @@ version_added: "1.0.0"
 options:
   route_domain:
     description:
-      - Route domain to manage BGP configuration on.
+      - Route domain on which to manage the BGP configuration.
     type: str
     default: 0
   lines:
     description:
       - The ordered set of commands that should be configured in the
         section.
-      - The commands must be the exact same commands as found in the device
+      - The commands must be the exact same as those found in the device
         running-config.
-      - Be sure to note the configuration command syntax as some commands
+      - Be sure to note the configuration command syntax, as some commands
         are automatically modified by the device config parser.
     type: list
     elements: str
@@ -45,17 +45,17 @@ options:
       - The I(src) argument provides a path to the configuration file
         to load into the remote system.
       - The path can either be a full system path to the configuration
-        file if the value starts with / or relative to the root of the
+        file if the value starts with /, or relative to the root of the
         implemented role or playbook.
       - This argument is mutually exclusive with the I(lines) and
         I(parents) arguments.
     type: path
   before:
     description:
-      - The ordered set of commands to push on to the command stack if
+      - The ordered set of commands to push onto the command stack if
         a change needs to be made.
       - This allows the playbook designer the opportunity to perform
-        configuration commands prior to pushing any changes without
+        configuration commands prior to pushing any changes, without
         affecting how the set of commands are matched against the system.
     type: list
     elements: str
@@ -63,7 +63,7 @@ options:
     description:
       - The ordered set of commands to append to the end of the command
         stack if a change needs to be made.
-      - Just like with I(before) this allows the playbook designer to
+      - Just like with I(before), this allows the playbook designer to
         append a set of commands to be executed after the command set.
     type: list
     elements: str
@@ -89,9 +89,9 @@ options:
     description:
       - Instructs the module on the way to perform the configuration
         on the device.
-      - If the replace argument is set to I(line) then the modified lines
+      - If the replace argument is set to I(line), the modified lines
         are pushed to the device in configuration mode.
-      - If the replace argument is set to I(block) then the entire
+      - If the replace argument is set to I(block), the entire
         command block is pushed to the device in configuration mode if any
         line is not correct.
     type: str
@@ -106,15 +106,15 @@ options:
         changes are made.
       - The backup file is written to the C(backup) folder in the playbook
         root directory or role root directory, if playbook is part of an
-        ansible role. If the directory does not exist, it is created.
+        Ansible role. If the directory does not exist, it is created.
     type: bool
     default: 'no'
   running_config:
     description:
-      - The module, by default, will connect to the remote device and
+      - By default, the module will connect to the remote device and
         retrieve the current running-config to use as a base for comparing
         against the contents of source.
-      - There are times when it is not desirable to have the task get the
+      - There are times when you do not want to have the task get the
         current running-config for every task in a playbook.
       - The I(running_config) argument allows the implementer to pass in
         the configuration to use as the base config for comparison.
@@ -124,15 +124,15 @@ options:
     description:
       - When changes are made to the device running-configuration, the
         changes are not copied to non-volatile storage by default.
-      - If the argument is set to I(always), then the running-config will
+      - If the argument is set to I(always), the running-config will
         always be copied to the startup-config and the I(modified) flag will
         always be set to C(True).
-      - If the argument is set to I(modified), then the running-config
+      - If the argument is set to I(modified), the running-config
         will only be copied to the startup-config if it has changed since
         the last save to startup-config.
       - If the argument is set to I(never), the running-config will never be
         copied to the startup-config.
-      - If the argument is set to I(changed), then the running-config
+      - If the argument is set to I(changed), the running-config
         will only be copied to the startup-config if the task has made a change.
     type: str
     choices:
@@ -143,9 +143,9 @@ options:
     default: never
   diff_against:
     description:
-      - When using the C(ansible-playbook --diff) command line argument
+      - When using the C(ansible-playbook --diff) command line argument,
         the module can generate diffs against different sources.
-      - When this option is configure as I(startup), the module will return
+      - When this option is configured as I(startup), the module will return
         the diff of the running-config against the startup-config.
       - When this option is configured as I(intended), the module will
         return the diff of the running-config against the configuration
@@ -170,7 +170,7 @@ options:
     elements: str
   intended_config:
     description:
-      - The C(intended_config) provides the master configuration that
+      - The C(intended_config) provides the master configuration
         the node should conform to and is used to check the final
         running-config against.
       - This argument will not modify any settings on the remote device and
@@ -182,30 +182,30 @@ options:
   backup_options:
     description:
       - This is a dict object containing configurable options related to backup file path.
-        The value of this option is read only when C(backup) is set to I(yes), if C(backup) is set
-        to I(no) this option will be silently ignored.
+        The value of this option is read-only when C(backup) is set to I(yes). If C(backup) is set
+        to I(no), this option will be silently ignored.
     suboptions:
       filename:
         description:
-          - The filename to be used to store the backup configuration. If the the filename
-            is not given it will be generated based on the hostname, current time and date
-            in format defined by <hostname>_config.<current-date>@<current-time>
+          - The filename to be used to store the backup configuration. If the filename
+            is not given, it will be generated based on the hostname, current time and date
+            in the format defined by <hostname>_config.<current-date>@<current-time>
         type: str
       dir_path:
         description:
           - This option provides the path ending with directory name in which the backup
-            configuration file will be stored. If the directory does not exist it will be first
+            configuration file will be stored. If the directory does not exist, it will be first
             created and the filename is either the value of C(filename) or default filename
-            as described in C(filename) options description. If the path value is not given
-            in that case a I(backup) directory will be created in the current working directory
-            and backup configuration will be copied in C(filename) within I(backup) directory.
+            as described in C(filename) options description. If the path value is not given,
+            a I(backup) directory will be created in the current working directory
+            and backup configuration will be copied in C(filename) within the I(backup) directory.
         type: path
     type: dict
   allow_duplicates:
     description:
-      - Allows duplicate commands to be sent to the device, this is to accommodate scenarios where
+      - Allows duplicate commands to be sent to the device. This is to accommodate scenarios where
         address families are configured.
-      - Only used with C(lines) parameter.
+      - Only used with the C(lines) parameter.
     type: bool
     default: 'no'
     version_added: "1.2.0"
@@ -299,17 +299,17 @@ EXAMPLES = r'''
 
 RETURN = r'''
 commands:
-  description: The set of commands that will be pushed to the remote device
+  description: The set of commands that will be pushed to the remote device.
   returned: always
   type: list
   sample: ['interface ANYCAST-P2P-2', 'neighbor 20.20.20.21 remote-as 65000', 'neighbor 20.20.20.21 fall-over bfd']
 updates:
-  description: The set of commands that will be pushed to the remote device
+  description: The set of commands that will be pushed to the remote device.
   returned: always
   type: list
   sample: ['interface ANYCAST-P2P-2', 'neighbor 20.20.20.21 remote-as 65000', 'neighbor 20.20.20.21 fall-over bfd']
 backup_path:
-  description: The full path to the backup file
+  description: The full path to the backup file.
   returned: when backup is yes
   type: str
   sample: /playbooks/ansible/backup/bigip_imish_config.2016-07-16@22:28:34

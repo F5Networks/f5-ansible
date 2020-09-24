@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_firewall_schedule
 short_description: Manage BIG-IP AFM schedule configurations
 description:
-  - Manage BIG-IP AFM schedule configurations.
+  - Manage BIG-IP AFM (Avanced Firewall Manager) schedule configurations.
 version_added: "1.0.0"
 options:
   name:
@@ -43,21 +43,21 @@ options:
     description:
       - Specifies the end date/time this schedule will apply to the rule.
       - The date must be after C(date_valid_start)
-      - When not defined the default of C(indefinite) is used when creating a new schedule.
+      - When not defined, the default of C(indefinite) is used when creating a new schedule.
       - The time zone is always assumed to be UTC.
-      - The datetime format should always be the following C(YYYY-MM-DD:HH:MM:SS) format.
+      - The datetime format should always be in C(YYYY-MM-DD:HH:MM:SS) format.
     type: str
   date_valid_start:
     description:
       - Specifies the start date/time this schedule will apply to the rule.
       - When not defined the default of C(epoch) is used when creating a new schedule.
       - The time zone is always assumed to be UTC.
-      - The datetime format should always be the following C(YYYY-MM-DD:HH:MM:SS) format.
+      - The datetime format should always be in C(YYYY-MM-DD:HH:MM:SS) format.
     type: str
   days_of_week:
     description:
       - Specifies which days of the week the rule will be applied.
-      - When not defined the default value of C(all) is used when creating a new schedule.
+      - When not defined, the default value of C(all) is used when creating a new schedule.
       - The C(all) value is mutually exclusive with other choices.
     type: list
     elements: str
@@ -72,7 +72,7 @@ options:
       - all
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:

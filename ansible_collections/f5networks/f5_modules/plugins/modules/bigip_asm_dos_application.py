@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_asm_dos_application
-short_description: Manage application settings for DOS profile
+short_description: Manage application settings for a DOS profile
 description:
-  - Manages Application settings for ASM/AFM DOS profile.
+  - Manages Application settings for an ASM/AFM DOS profile.
 version_added: "1.0.0"
 options:
   profile:
@@ -23,7 +23,7 @@ options:
   rtbh_duration:
     description:
       - Specifies the duration of the RTBH BGP route advertisement, in seconds.
-      - The accepted range is between 0 and 4294967295 inclusive.
+      - The acceptable range is between 0 and 4294967295 inclusive.
     type: int
   rtbh_enable:
     description:
@@ -32,7 +32,7 @@ options:
   scrubbing_duration:
     description:
       - Specifies the duration of the Traffic Scrubbing BGP route advertisement, in seconds.
-      - The accepted range is between 0 and 4294967295 inclusive.
+      - The acceptable range is between 0 and 4294967295 inclusive.
     type: int
   scrubbing_enable:
     description:
@@ -53,12 +53,12 @@ options:
     suboptions:
       whitelist:
         description:
-          - A list of countries to be put on whitelist, must not have overlapping elements with C(blacklist).
+          - A list of countries to be put on the whitelist, must not have overlapping elements with C(blacklist).
         type: list
         elements: str
       blacklist:
         description:
-          - A list of countries to be put on blacklist, must not have overlapping elements with C(whitelist).
+          - A list of countries to be put on the blacklist, must not have overlapping elements with C(whitelist).
         type: list
         elements: str
   heavy_urls:
@@ -74,7 +74,7 @@ options:
       latency_threshold:
         description:
           - Specifies the latency threshold for automatic heavy URL detection.
-          - The accepted range is between 0 and 4294967295 miliseconds inclusive.
+          - The acceptable range is between 0 and 4294967295 miliseconds inclusive.
         type: int
       exclude:
         description:
@@ -83,19 +83,19 @@ options:
         elements: str
       include:
         description:
-          - Configures additional URLs to include in the heavy URLs that were auto detected.
+          - Configures additional URLs to include in the heavy URLs that were auto-detected.
         type: list
         elements: dict
         suboptions:
           url:
             description:
-              - Specifies the URL to be added to the list of heavy URLs, in addition to the automatically detected ones.
+              - Specifies the URL to be added to the list of heavy URLs, in addition to those automatically detected.
             type: str
             required: True
           threshold:
             description:
               - Specifies the threshold of requests per second, where the URL in question is considered under attack.
-              - The accepted range is between 1 and 4294967295 inclusive, or C(auto).
+              - The acceptable range is between 1 and 4294967295 inclusive, or C(auto).
             type: str
   mobile_detection:
     description:
@@ -112,7 +112,7 @@ options:
         type: bool
       allow_android_rooted_device:
         description:
-          - When C(yes) device will allow traffic from rooted Android devices.
+          - When C(yes) the device will allow traffic from rooted Android devices.
         type: bool
       allow_any_android_package:
         description:
@@ -157,7 +157,7 @@ options:
           - Specifies the allowed publisher certificates for android applications.
           - The publisher certificate needs to be installed on the BIG-IP beforehand.
           - "The certificate name located on a different partition than the one specified
-            in C(partition) parameter needs to be provided in C(full_path) format C(/Foo/cert.crt)."
+            in the C(partition) parameter needs to be provided in C(full_path) format, e.g. C(/Foo/cert.crt)."
         type: list
         elements: str
   partition:
@@ -249,7 +249,7 @@ scrubbing_duration:
   type: int
   sample: 3600
 single_page_application:
-  description: Enables support of a Single Page Applications.
+  description: Enables support of Single Page Applications.
   returned: changed
   type: bool
   sample: no
@@ -264,12 +264,12 @@ geolocations:
   returned: changed
   contains:
     whitelist:
-      description: A list of countries to be put on whitelist.
+      description: A list of countries to be put on the whitelist.
       returned: changed
       type: list
       sample: ['United States, United Kingdom']
     blacklist:
-      description: A list of countries to be put on blacklist.
+      description: A list of countries to be put on the blacklist.
       returned: changed
       type: list
       sample: ['Russia', 'Germany']
@@ -305,7 +305,7 @@ heavy_urls:
           type: str
           sample: /include.html
         threshold:
-          description: The threshold of requests per second
+          description: The threshold of requests per second.
           returned: changed
           type: str
           sample: auto

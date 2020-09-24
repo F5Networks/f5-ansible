@@ -29,12 +29,12 @@ options:
     required: True
   device_group:
     description:
-      - The device group that you want to add the member to.
+      - The device group to which you want to add the member.
     type: str
     required: True
   state:
     description:
-      - When C(present), ensures that the device group member exists.
+      - When C(present), ensures the device group member exists.
       - When C(absent), ensures the device group member is removed.
     type: str
     choices:

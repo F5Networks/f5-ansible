@@ -10,20 +10,20 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_device_auth_radius_server
-short_description: Manages device's radius server configuration
+short_description: Manages the RADIUS server configuration of the device
 description:
-  - Manages device's radius server configuration.
-  - Used in tandem with C(bigip_device_auth_radius) module.
+  - Manages a device's RADIUS server configuration.
+  - Used in tandem with the C(bigip_device_auth_radius) module.
 version_added: "1.3.0"
 options:
   name:
     description:
-      - Specifies the name of the radius server to manage.
+      - Specifies the name of the RADIUS server to manage.
     type: str
     required: True
   description:
     description:
-      - The description of the radius server.
+      - The description of the RADIUS server.
     type: str
   ip:
     description:
@@ -37,7 +37,7 @@ options:
     type: int
   secret:
     description:
-      - Specifies secret used for accessing RADIUS server.
+      - Specifies the secret used for accessing RADIUS server.
       - This parameter is mandatory when creating a new resource.
     type: str
   timeout:
@@ -52,8 +52,8 @@ options:
     default: Common
   state:
     description:
-      - When C(state) is C(present), ensures that the RADIUS server exists.
-      - When C(state) is C(absent), ensures that the RADIUS server is removed.
+      - When C(state) is C(present), ensures the RADIUS server exists.
+      - When C(state) is C(absent), ensures the RADIUS server is removed.
     type: str
     choices:
       - present
@@ -116,7 +116,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 ip:
-  description: IP address of RADIUS Server.
+  description: IP address of the RADIUS Server.
   returned: changed
   type: str
   sample: 1.1.1.1
@@ -131,7 +131,7 @@ timeout:
   type: int
   sample: 3
 description:
-  description: User defined description of Radius server.
+  description: User defined description of the RADIUS server.
   returned: changed
   type: str
   sample: "this is my server"
