@@ -4256,7 +4256,7 @@ remote_syslog:
           returned: queried
           type: str
           sample: 192.168.1.1
-    sample: hash/dictionary of values
+      sample: hash/dictionary of values
   sample: hash/dictionary of values
 route_domains:
   description: Route domain related information.
@@ -17166,6 +17166,7 @@ class ArgumentSpec(object):
                     # Non-meta choices
                     'apm-access-profiles',
                     'apm-access-policies',
+                    'as3',
                     'asm-policies',
                     'asm-policy-stats',
                     'asm-server-technologies',
