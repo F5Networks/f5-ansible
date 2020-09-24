@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_profile_ftp
 short_description: Manages FTP profiles
 description:
-  - Manages FTP profiles.
+  - Manages FTP profiles on the BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -22,7 +22,7 @@ options:
     required: True
   allow_ftps:
     description:
-      - Allow explicit FTPS negotiation.
+      - Allows explicit FTPS negotiation.
     type: bool
   description:
     description:
@@ -51,7 +51,7 @@ options:
     description:
       - Translates RFC 2428 extended requests C(EPSV) and C(EPRT) to C(PASV) and C(PORT)
         when communicating with IPv4 servers.
-      - This option can only be used if the system is licensed for the BIG-IP Application Security Manager.
+      - This option can only be used if the system is licensed for the BIG-IP Application Security Manager (ASM).
     type: bool
   port:
     description:
@@ -61,12 +61,12 @@ options:
   security:
     description:
       - Enables secure FTP traffic for the BIG-IP Application Security Manager.
-      - This option can only be used if the system is licensed for the BIG-IP Application Security Manager.
+      - This option can only be used if the system is licensed for the BIG-IP ASM.
     type: bool
   state:
     description:
-      - When C(state) is C(present), ensures that the ftp profile exists.
-      - When C(state) is C(absent), ensures that the ftp profile is removed.
+      - When C(state) is C(present), ensures the ftp profile exists.
+      - When C(state) is C(absent), ensures the ftp profile is removed.
     type: str
     choices:
       - present

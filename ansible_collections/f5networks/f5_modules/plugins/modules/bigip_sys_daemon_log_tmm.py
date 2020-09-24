@@ -130,7 +130,7 @@ options:
   state:
     description:
       - The state of the log level on the system. When C(present), guarantees
-        that an existing log level is set to C(value).
+        an existing log level is set to C(value).
     type: str
     choices:
       - present

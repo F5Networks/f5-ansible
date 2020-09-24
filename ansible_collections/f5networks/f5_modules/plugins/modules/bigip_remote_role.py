@@ -12,9 +12,9 @@ DOCUMENTATION = r'''
 module: bigip_remote_role
 short_description: Manage remote roles on a BIG-IP
 description:
-  - Manages remote roles on a BIG-IP. Remote roles are used in situations where
+  - Manages remote roles on a BIG-IP system. Remote roles are used in situations where
     user authentication is handled off-box. Local access control to the BIG-IP
-    is controlled by the defined remote role. Where-as authentication (and by
+    is controlled by the defined remote role, and authentication (and by
     extension, assignment to the role) is handled off-box.
 version_added: "1.0.0"
 options:
@@ -27,9 +27,9 @@ options:
     description:
       - Specifies the order of the line in the file C(/config/bigip/auth/remoterole).
       - The LDAP and Active Directory servers read this file line by line.
-      - The order of the information is important; therefore, F5 recommends that
-        you set the first line at 1000. This allows you, in the future, to insert
-        lines before the first line.
+      - The order of the information is important; therefore, F5 recommends
+        you set the first line at 1000. This allows you to insert
+        lines before the first line in the future.
       - When creating a new remote role, this parameter is required.
     type: int
   attribute_string:
@@ -52,13 +52,13 @@ options:
         default is C(none).
       - The C(partition_access) parameter controls which partitions the account can
         access.
-      - The chosen role may affect the partitions that one is allowed to specify.
+      - The role you choose may affect the partitions that one is allowed to specify.
         Specifically, roles such as C(administrator), C(auditor) and C(resource-administrator)
-        required a C(partition_access) of C(all).
+        require a C(partition_access) of C(all).
       - A set of pre-existing roles ship with the system. They are C(none), C(guest),
         C(operator), C(application-editor), C(manager), C(certificate-manager),
         C(irule-manager), C(user-manager), C(resource-administrator), C(auditor),
-        C(administrator), C(firewall-manager).
+        C(administrator), and C(firewall-manager).
     type: str
   partition_access:
     description:
@@ -74,14 +74,14 @@ options:
     description:
       - Specifies terminal-based accessibility for remote accounts not already
         explicitly assigned a user role.
-      - Common values for this include C(tmsh) and C(none), however custom values
-        may also be specified.
+      - Common values for this include C(tmsh) and C(none), but you can also
+        specify custom values.
       - When creating a new remote role, if this parameter is not specified, the default
         is C(none).
     type: str
   state:
     description:
-      - When C(present), guarantees that the remote role exists.
+      - When C(present), guarantees the remote role exists.
       - When C(absent), removes the remote role from the system.
     type: str
     choices:
@@ -129,12 +129,12 @@ line_order:
   type: int
   sample: 1000
 assigned_role:
-  description: System role that this remote role is associated with.
+  description: System role this remote role is associated with.
   returned: changed
   type: str
   sample: administrator
 partition_access:
-  description: Partition that the role has access to.
+  description: Partition the role has access to.
   returned: changed
   type: str
   sample: all

@@ -18,9 +18,9 @@ version_added: "1.0.0"
 options:
   gather_subset:
     description:
-      - When supplied, this argument will restrict the information returned to a given subset.
-      - Can specify a list of values to include a larger subset.
-      - Values can also be used with an initial C(!) to specify that a specific subset
+      - When supplied, this argument restricts the information returned to a given subset.
+      - You can specify a list of values to include a larger subset.
+      - Values can also be used with an initial C(!) to specify a specific subset
         should not be collected.
     type: list
     elements: str
@@ -42,8 +42,8 @@ options:
       - "!vlans"
 extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
-  - This module is supported with all BIGIQ versions
-  - With BIGIQ 7.0 and later, a few metadata fields not included/supported (i.e. uptime, product_changelist, product_jobid)
+  - This module is supported with all BIG-IQ versions
+  - With BIGIQ 7.0 and later, a few metadata fields not included/supported (for example, uptime, product_changelist, product_jobid)
 author:
   - Tim Rupp (@caphrim007)
 '''

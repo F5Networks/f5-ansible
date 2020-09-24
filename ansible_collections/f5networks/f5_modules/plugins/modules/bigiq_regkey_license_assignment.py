@@ -12,9 +12,9 @@ DOCUMENTATION = r'''
 module: bigiq_regkey_license_assignment
 short_description: Manage regkey license assignment on BIG-IPs from a BIG-IQ
 description:
-  - Manages the assignment of regkey licenses on a BIG-IQ. Assignment means that
-    the license is assigned to a BIG-IP, or, it needs to be assigned to a BIG-IP.
-    Additionally, this module supported revoking the assignments from BIG-IP devices.
+  - Manages the assignment of regkey licenses on a BIG-IQ. Assignment means
+    the license is assigned to a BIG-IP, or it needs to be assigned to a BIG-IP.
+    Additionally, this module supports revoking the assignments from BIG-IP devices.
 version_added: "1.0.0"
 options:
   pool:
@@ -24,7 +24,7 @@ options:
     required: True
   key:
     description:
-      - The registration key that you want to assign from the pool.
+      - The registration key you want to assign from the pool.
     type: str
     required: True
   device:
@@ -33,10 +33,10 @@ options:
         can reach the remote device to register.
       - When C(managed) is C(yes), specifies the managed device, or device UUID, that
         you want to register.
-      - If C(managed) is C(yes), it is very important that you do not have more than
+      - If C(managed) is C(yes), it is very important you do not have more than
         one device with the same name. BIG-IQ internally recognizes devices by their ID,
-        and therefore, this module's cannot guarantee that the correct device will be
-        registered. The device returned is the device that will be used.
+        and therefore, this module cannot guarantee the correct device will be
+        registered. The device returned is the device that is used.
     type: str
     required: True
   managed:
@@ -47,7 +47,7 @@ options:
   device_port:
     description:
       - Specifies the port of the remote device to connect to.
-      - If this parameter is not specified, the default of C(443) will be used.
+      - If this parameter is not specified, the default is C(443).
     type: int
     default: 443
   device_username:
@@ -64,8 +64,8 @@ options:
     type: str
   state:
     description:
-      - When C(present), ensures that the device is assigned the specified license.
-      - When C(absent), ensures the license is revokes from the remote device and freed
+      - When C(present), ensures the device is assigned the specified license.
+      - When C(absent), ensures the license is revoked from the remote device and freed
         on the BIG-IQ.
     type: str
     choices:

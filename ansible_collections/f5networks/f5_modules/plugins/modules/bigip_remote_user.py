@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_remote_user
 short_description: Manages default settings for remote user accounts on a BIG-IP
 description:
-  - Manages default settings for remote user accounts on a BIG-IP.
+  - Manages the default settings for remote user accounts on a BIG-IP system.
 version_added: "1.0.0"
 options:
   default_role:
@@ -49,7 +49,7 @@ options:
     type: bool
   description:
     description:
-      - User defined description.
+      - User-defined description.
     type: str
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
@@ -104,12 +104,12 @@ default_partition:
   type: str
   sample: Common
 console_access:
-  description: The default console access for all remote user accounts
+  description: The default console access for all remote user accounts.
   returned: changed
   type: bool
   sample: no
 description:
-  description: The user defined description.
+  description: The user-defined description.
   returned: changed
   type: str
   sample: Foo is bar

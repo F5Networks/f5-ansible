@@ -12,8 +12,8 @@ DOCUMENTATION = r'''
 module: bigip_service_policy
 short_description: Manages service policies on a BIG-IP.
 description:
-  - Service policies allow you to configure timers and port misuse rules,
-    if enabled, on a per rule or per context basis.
+  - Service policies allow you to configure timers and port misuse rules
+    (if enabled) on a per rule or per context basis.
 version_added: "1.0.0"
 options:
   name:
@@ -32,8 +32,8 @@ options:
   port_misuse_policy:
     description:
       - The port misuse policy to attach to the service policy.
-      - Requires that C(afm) be provisioned to use. If C(afm) is not provisioned, this parameter
-        will be ignored.
+      - Requires C(afm) (Advanced Firewall Manager) be provisioned to use. If C(afm) is not provisioned, this parameter
+        is ignored.
     type: str
   state:
     description:

@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_snmp_trap
 short_description: Manipulate SNMP trap information on a BIG-IP
 description:
-  - Manipulate SNMP trap information on a BIG-IP.
+  - Manipulate SNMP trap information on a BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -44,11 +44,10 @@ options:
   network:
     description:
       - Specifies the name of the trap network. This option is not supported in
-        versions of BIG-IP < 12.1.0. If used on versions < 12.1.0, it will simply
-        be ignored.
+        versions of BIG-IP prior to 12.1.0, and is simply ignored on those versions.
       - The value C(default) was removed in BIG-IP version 13.1.0. Specifying this
-        value when configuring a BIG-IP will cause the module to stop and report
-        an error. The usual remedy is to choose one of the other options, such as
+        value when configuring a BIG-IP causes the module to stop and report
+        an error. In this case, choose one of the other options, such as
         C(management).
     type: str
     choices:
@@ -57,8 +56,8 @@ options:
       - default
   state:
     description:
-      - When C(present), ensures that the resource exists.
-      - When C(absent), ensures that the resource does not exist.
+      - When C(present), ensures the resource exists.
+      - When C(absent), ensures the resource does not exist.
     type: str
     choices:
       - present
@@ -71,9 +70,9 @@ options:
     default: Common
 notes:
   - This module only supports version v1 and v2c of SNMP.
-  - The C(network) option is not supported on versions of BIG-IP < 12.1.0 because
+  - The C(network) option is not supported on versions of BIG-IP prior to 12.1.0 because
     the platform did not support that option until 12.1.0. If used on versions
-    < 12.1.0, it will simply be ignored.
+    prior to 12.1.0, it is simply be ignored.
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

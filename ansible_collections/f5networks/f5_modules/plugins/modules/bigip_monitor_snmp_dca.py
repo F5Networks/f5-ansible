@@ -35,7 +35,7 @@ options:
     default: "/Common/snmp_dca"
   interval:
     description:
-      - Specifies, in seconds, the frequency at which the system issues the
+      - Specifies the frequency, in seconds, at which the system issues the
         monitor check when either the resource is down or the status of the
         resource is unknown. When creating a new monitor, the default is C(10).
     type: int
@@ -61,14 +61,14 @@ options:
     type: int
   community:
     description:
-      - Specifies the community name that the system must use to authenticate
+      - Specifies the community name the system must use to authenticate
         with the host server through SNMP. When creating a new monitor, the
-        default value is C(public). Note that this value is case sensitive.
+        default value is C(public). This value is case sensitive.
     type: str
   version:
     description:
-      - Specifies the version of SNMP that the host server uses. When creating
-        a new monitor, the default is C(v1). When C(v1), specifies that the
+      - Specifies the version of SNMP the host server uses. When creating
+        a new monitor, the default is C(v1). When C(v1), specifies the
         host server uses SNMP version 1. When C(v2c), specifies that the host
         server uses SNMP version 2c.
     type: str
@@ -86,7 +86,7 @@ options:
       - GENERIC
   cpu_coefficient:
     description:
-      - Specifies the coefficient that the system uses to calculate the weight
+      - Specifies the coefficient the system uses to calculate the weight
         of the CPU threshold in the dynamic ratio load balancing algorithm.
         When creating a new monitor, the default is C(1.5).
     type: str
@@ -97,7 +97,7 @@ options:
     type: int
   memory_coefficient:
     description:
-      - Specifies the coefficient that the system uses to calculate the weight
+      - Specifies the coefficient the system uses to calculate the weight
         of the memory threshold in the dynamic ratio load balancing algorithm.
         When creating a new monitor, the default is C(1.0).
     type: str
@@ -108,7 +108,7 @@ options:
     type: int
   disk_coefficient:
     description:
-      - Specifies the coefficient that the system uses to calculate the weight
+      - Specifies the coefficient the system uses to calculate the weight
         of the disk threshold in the dynamic ratio load balancing algorithm.
         When creating a new monitor, the default is C(2.0).
     type: str
@@ -124,7 +124,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the monitor exists.
+      - When C(present), ensures the monitor exists.
       - When C(absent), ensures the monitor is removed.
     type: str
     choices:
@@ -133,7 +133,7 @@ options:
     default: present
 notes:
   - Requires BIG-IP software version >= 12
-  - This module does not support the C(variables) option because this option
+  - This module does not support the C(variables) option because it
     is broken in the REST API and does not function correctly in C(tmsh); for
     example you cannot remove user-defined params. Therefore, there is no way
     to automatically configure it.
@@ -177,7 +177,7 @@ description:
   type: str
   sample: Important Monitor
 interval:
-  description: The new interval in which to run the monitor check.
+  description: The new interval at which to run the monitor check.
   returned: changed
   type: int
   sample: 2

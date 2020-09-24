@@ -12,7 +12,9 @@ DOCUMENTATION = r'''
 module: bigip_routedomain
 short_description: Manage route domains on a BIG-IP
 description:
-  - Manage route domains on a BIG-IP.
+  - Manage route domains on a BIG-IP system. A route domain is a BIG-IP
+    configuration object that isolates network traffic for a particular
+    application on the network.
 version_added: "1.0.0"
 options:
   name:
@@ -54,7 +56,7 @@ options:
     type: str
   partition:
     description:
-      - Partition to create the route domain on. Partitions cannot be updated
+      - Partition on which you want to create the route domain. Partitions cannot be updated
         once they are created.
     type: str
     default: Common
@@ -96,7 +98,7 @@ options:
     elements: str
   fw_enforced_policy:
     description:
-      - Specifies AFM policy to be attached to route domain.
+      - Specifies an AFM policy to be attached to route domain.
     type: str
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
@@ -152,7 +154,7 @@ parent:
   type: int
   sample: 0
 vlans:
-  description: List of new VLANs the route domain is applied to.
+  description: List of new VLANs to which the route domain is applied.
   returned: changed
   type: list
   sample: ['/Common/http-tunnel', '/Common/socks-tunnel']
@@ -182,7 +184,7 @@ service_policy:
   type: str
   sample: /Common-my-service-policy
 fw_enforced_policy:
-  description: Specfies AFM policy to be attached to route domain.
+  description: Specifies the AFM policy to be attached to route domain.
   returned: changed
   type: str
   sample: /Common/afm-blocking-policy

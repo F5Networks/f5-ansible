@@ -12,39 +12,39 @@ DOCUMENTATION = r'''
 module: bigip_remote_syslog
 short_description: Manipulate remote syslog settings on a BIG-IP
 description:
-  - Manipulate remote syslog settings on a BIG-IP.
+  - Manipulate remote syslog settings on a BIG-IP system.
 version_added: "1.0.0"
 options:
   remote_host:
     description:
-      - Specifies the IP address, or hostname, for the remote system to
+      - Specifies the IP address or hostname for the remote system, to
         which the system sends log messages.
     type: str
     required: True
   name:
     description:
       - Specifies the name of the syslog object.
-      - This option is required when multiple C(remote_host) with the same IP
+      - This option is required when multiple C(remote_host)s with the same IP
         or hostname are present on the device.
-      - If C(name) is not provided C(remote_host) is used by default.
+      - If C(name) is not provided, C(remote_host) is used by default.
     type: str
   remote_port:
     description:
-      - Specifies the port that the system uses to send messages to the
+      - Specifies the port the system uses to send messages to the
         remote logging server.
       - When creating a remote syslog, if this parameter is not specified, the
-        default value C(514) is used.
+        default value is C(514).
     type: str
   local_ip:
     description:
       - Specifies the local IP address of the system that is logging. To
         provide no local IP, specify the value C(none).
       - When creating a remote syslog, if this parameter is not specified, the
-        default value C(none) is used.
+        default value is C(none).
     type: str
   state:
     description:
-      - When C(present), guarantees that the remote syslog exists with the provided
+      - When C(present), guarantees the remote syslog exists with the provided
         attributes.
       - When C(absent), removes the remote syslog from the system.
     type: str
@@ -86,7 +86,7 @@ remote_port:
   type: int
   sample: 514
 local_ip:
-  description: The new local IP of the remote syslog server
+  description: The new local IP of the remote syslog server.
   returned: changed
   type: str
   sample: 10.10.10.10

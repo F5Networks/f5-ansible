@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_profile_sip
 short_description: Manage SIP profiles on a BIG-IP
 description:
-  - Manage SIP profiles on a BIG-IP.
+  - Manage SIP profiles on a BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -34,27 +34,27 @@ options:
   description:
     description:
       - Description of the profile.
-      - To remove the entry completely a value of C('') should be set.
+      - To remove the entry completely, set a value of C('').
     type: str
   dialog_aware:
     description:
-      - When C(yes) the system gathers SIP dialog information, and automatically forwards SIP messages belonging to
+      - When C(yes), the system gathers SIP dialog information and automatically forwards SIP messages belonging to
         the known SIP dialog.
     type: bool
   enable_sip_firewall:
     description:
-      - Specifies whether the Advanced Firewall Manager policy is enabled.
-      - When C(yes) the SIP Security settings configured in the DoS Profile in AFM apply to the virtual servers that
+      - Specifies whether the Advanced Firewall Manager (AFM) policy is enabled.
+      - When C(yes), the SIP Security settings configured in the DoS Profile in AFM apply to the virtual servers that
         use this profile.
     type: bool
   insert_record_route_header:
     description:
-      - When C(yes) inserts a Record-Route SIP header, which indicates the next hop for the following SIP request
+      - When C(yes), inserts a Record-Route SIP header, which indicates the next hop for the following SIP request
         messages.
     type: bool
   insert_via_header:
     description:
-      - When C(yes) inserts a Via header in the forwarded SIP request.
+      - When C(yes), inserts a Via header in the forwarded SIP request.
       - Via headers indicate the path taken through proxy devices and transports used. The response message uses this
         routing information.
     type: bool
@@ -63,14 +63,14 @@ options:
       - When C(insert_via_header) is C(yes), specifies the Via value the system inserts as the top Via header in a
         SIP REQUEST message.
       - "The valid value must include SIP protocol and sent_by settings, for example: C(SIP/2.0/UDP 10.10.10.10:5060)."
-      - To remove the entry completely a value of C('') should be set.
+      - To remove the entry completely, set a value of C('').
     type: str
   log_profile:
     description:
       - Specifies the logging settings the publisher uses to send log messages.
-      - Format of the name can be either be prepended by partition (C(/Common/foo)), or specified
+      - The format of the name can be either be prepended by partition (C(/Common/foo)), or specified
         just as an object name (C(foo)).
-      - To remove the entry a value of C('') can be set, however the profile C(log_publisher)
+      - To remove the entry. set a value of C(''), however the profile C(log_publisher)
         must also be set as C('').
     type: str
   log_publisher:
@@ -78,29 +78,29 @@ options:
       - Specifies the publisher defined to log messages.
       - Format of the name can be either be prepended by partition (C(/Common/foo)), or specified
         just as an object name (C(foo)).
-      - To remove the entry a value of C('') can be set, however the profile C(log_profile)
+      - To remove the entry. set a value of C(''), however the profile C(log_profile)
         must also be set as C('').
     type: str
   secure_via_header:
     description:
-      - When checked (enabled) inserts a secure Via header in the forwarded SIP request.
+      - When checked (enabled), inserts a secure Via header in the forwarded SIP request.
       - A secure Via header indicates where the message originated.
       - This parameter causes the inserted Via header to specify Transport Layer Security. For this option to take
         effect, C(insert_via_header) must be set to (yes).
     type: bool
   security:
     description:
-      - "When C(yes) enables the use of enhanced Horizontal Security Layer (HSL) security checking."
+      - "When C(yes). enables the use of enhanced Horizontal Security Layer (HSL) security checking."
     type: bool
   terminate_on_bye:
     description:
-      - When C(yes) closes a connection when a BYE transaction finishes.
-      - A BYE transaction is a message that an application sends to another application when it is ready to close the
+      - When C(yes), closes a connection when a BYE transaction finishes.
+      - A BYE transaction is a message an application sends to another application when it is ready to close the
         connection between the two.
     type: bool
   max_size:
     description:
-      - Specifies the maximum SIP message size that the BIG-IP system accepts..
+      - Specifies the maximum SIP message size that the BIG-IP system accepts.
       - The accepted value range is C(0 - 4294967295) bytes.
     type: int
   partition:
@@ -110,7 +110,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:
@@ -178,7 +178,7 @@ parent:
   type: str
   sample: /Common/sip
 dialog_aware:
-  description: Specifies if system gathers SIP dialog information.
+  description: Specifies if the system gathers SIP dialog information.
   returned: changed
   type: bool
   sample: no
@@ -188,12 +188,12 @@ enable_sip_firewall:
   type: bool
   sample: yes
 insert_record_route_header:
-  description: Specifies is system will insert a Record-Route SIP header.
+  description: Specifies if the system will insert a Record-Route SIP header.
   returned: changed
   type: bool
   sample: yes
 insert_via_header:
-  description: Specifies is system will insert a Via header in the forwarded SIP request.
+  description: Specifies if the system will insert a Via header in the forwarded SIP request.
   returned: changed
   type: bool
   sample: yes
@@ -213,7 +213,7 @@ log_publisher:
   type: str
   sample: "/Common/foo_publisher"
 secure_via_header:
-  description: Specifies is system will insert a secure Via header in the forwarded SIP request.
+  description: Specifies if the system will insert a secure Via header in the forwarded SIP request.
   returned: changed
   type: bool
   sample: no

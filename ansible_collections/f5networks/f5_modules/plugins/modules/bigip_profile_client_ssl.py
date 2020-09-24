@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_profile_client_ssl
 short_description: Manages client SSL profiles on a BIG-IP
 description:
-  - Manages client SSL profiles on a BIG-IP.
+  - Manages client SSL profiles on a BIG-IP device.
 version_added: "1.0.0"
 options:
   name:
@@ -28,16 +28,16 @@ options:
     type: str
   ciphers:
     description:
-      - Specifies the list of ciphers that the system supports.
-      - When C(cipher_group) parameter is in use the C(ciphers) parameter needs to be set to either C(none) or C('').
+      - Specifies the list of ciphers the system supports.
+      - When the C(cipher_group) parameter is in use, the C(ciphers) parameter needs to be set to either C(none) or C('').
     type: str
   cipher_group:
     description:
       - Specifies the cipher group to assign to this profile.
-      - When C(ciphers) parameter is in use the C(cipher_group) must be set to either C(none) or C('').
-      - When creating a new profile with C(cipher_group) if the parent profile has C(ciphers) set by default then
+      - When the C(ciphers) parameter is in use, the C(cipher_group) must be set to either C(none) or C('').
+      - When creating a new profile with C(cipher_group), if the parent profile has C(ciphers) set by default,
         the C(cipher) parameter must be set to C(none) or C('') during creation.
-      - The parameter only works on TMOS version 13.x and above.
+      - The parameter only works on TMOS version 13.x and later.
     type: str
     version_added: "1.2.0"
   cert_key_chain:
@@ -45,16 +45,16 @@ options:
       - One or more certificates and keys to associate with the SSL profile. This
         option is always a list. The keys in the list dictate the details of the
         client/key/chain combination. Note that BIG-IPs can only have one of each
-        type of each certificate/key type. This means that you can only have one
+        type of each certificate/key type. This means you can only have one
         RSA, one DSA, and one ECDSA per profile. If you attempt to assign two
-        RSA, DSA, or ECDSA certificate/key combo, the device will reject this.
+        RSA, DSA, or ECDSA certificate/key combo, the device rejects it.
       - This list is a complex list that specifies a number of keys.
     type: list
     elements: dict
     suboptions:
       cert:
         description:
-          - Specifies a cert name for use.
+          - Specifies a certificate name for use.
         type: str
         required: True
       key:
@@ -64,21 +64,21 @@ options:
         required: True
       chain:
         description:
-          - Contains a certificate chain that is relevant to the certificate and key
-            mentioned earlier.
+          - Contains a certificate chain relevant to the certificate and key
+            mentioned previously.
           - This key is optional.
         type: str
       passphrase:
         description:
-          - Contains the passphrase of the key file, should it require one.
+          - Contains the passphrase of the key file, if required.
           - Passphrases are encrypted on the remote BIG-IP device. Therefore, there is no way
             to compare them when updating a client SSL profile. Due to this, if you specify a
             passphrase, this module will always register a C(changed) event.
         type: str
       true_names:
         description:
-          - When C(yes) the module will not append C(.crt) and C(.key) extension to the given certificate and key names.
-          - When C(no) the module will append C(.crt) and C(.key) extension to the given certificate and key names.
+          - When C(yes), the module will not append C(.crt) and C(.key) extensions to the given certificate and key names.
+          - When C(no), the module will append C(.crt) and C(.key) extensions to the given certificate and key names.
         type: bool
         default: no
         version_added: "1.1.0"
@@ -89,9 +89,9 @@ options:
     default: Common
   options:
     description:
-      - Options that the system uses for SSL processing in the form of a list. When
+      - Options the system uses for SSL processing in the form of a list. When
         creating a new profile, the list is provided by the parent profile.
-      - When a C('') or C(none) value is provided all options for SSL processing are disabled.
+      - When C('') or C(none), all options for SSL processing are disabled.
     type: list
     elements: str
     choices:
@@ -125,12 +125,12 @@ options:
     description:
       - Specifies the method of secure renegotiations for SSL connections. When
         creating a new profile, the setting is provided by the parent profile.
-      - When C(request) is set the system request secure renegotation of SSL
+      - When C(request), the system requests secure renegotiation of SSL
         connections.
-      - C(require) is a default setting and when set the system permits initial SSL
-        handshakes from clients but terminates renegotiations from unpatched clients.
-      - The C(require-strict) setting the system requires strict renegotiation of SSL
-        connections. In this mode the system refuses connections to insecure servers,
+      - C(require) is a default setting and when set, the system permits initial SSL
+        handshakes from clients, but terminates renegotiations from unpatched clients.
+      - With the C(require-strict) setting, the system requires strict renegotiation of SSL
+        connections. In this mode, the system refuses connections to insecure servers,
         and terminates existing SSL connections to insecure servers.
     type: str
     choices:
@@ -150,14 +150,14 @@ options:
     type: str
   sni_default:
     description:
-      - Indicates that the system uses this profile as the default SSL profile when there is no match to the
+      - Indicates the system uses this profile as the default SSL profile when there is no match to the
         server name, or when the client provides no SNI extension support.
       - When creating a new profile, the setting is provided by the parent profile.
       - There can be only one SSL profile with this setting enabled.
     type: bool
   sni_require:
     description:
-      - Requires that the network peers also provide SNI support, this setting only takes effect when C(sni_default) is
+      - Requires the network peers also provide SNI support. This setting only takes effect when C(sni_default) is
         set to C(true).
       - When creating a new profile, the setting is provided by the parent profile.
     type: bool
@@ -169,11 +169,11 @@ options:
   client_certificate:
     description:
       - Specifies the way the system handles client certificates.
-      - When C(ignore), specifies that the system ignores certificates from client
+      - When C(ignore), specifies the system ignores certificates from client
         systems.
-      - When C(require), specifies that the system requires a client to present a
+      - When C(require), specifies the system requires a client to present a
         valid certificate.
-      - When C(request), specifies that the system requests a valid certificate from a
+      - When C(request), specifies the system requests a valid certificate from a
         client but always authenticate the client.
     type: str
     choices:
@@ -183,9 +183,9 @@ options:
   client_auth_frequency:
     description:
       - Specifies the frequency of client authentication for an SSL session.
-      - When C(once), specifies that the system authenticates the client once for an
+      - When C(once), specifies the system authenticates the client once for an
         SSL session.
-      - When C(always), specifies that the system authenticates the client once for an
+      - When C(always), specifies the system authenticates the client once for an
         SSL session and also upon reuse of that session.
     type: str
     choices:
@@ -198,7 +198,7 @@ options:
     type: bool
   retain_certificate:
     description:
-      - When C(yes), client certificate is retained in SSL session.
+      - When C(yes), the client certificate is retained in SSL session.
     type: bool
   cert_auth_depth:
     description:
@@ -207,11 +207,11 @@ options:
     type: int
   trusted_cert_authority:
     description:
-      - Specifies a client CA that the system trusts.
+      - Specifies a client CA the system trusts.
     type: str
   advertised_cert_authority:
     description:
-      - Specifies that the CAs that the system advertises to clients is being trusted
+      - Specifies the CAs the system advertises to clients is being trusted
         by the profile.
     type: str
   client_auth_crl:
@@ -240,7 +240,7 @@ options:
     version_added: "1.0.0"
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:

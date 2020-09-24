@@ -13,7 +13,7 @@ module: bigiq_application_https_waf
 short_description: Manages BIG-IQ HTTPS WAF applications
 description:
   - Manages BIG-IQ applications used for load balancing an HTTPS application on port 443
-    with a Web Application Firewall (WAF) using an ASM Rapid Deployment policy.
+    with a Web Application Firewall (WAF) using an ASM (Application Security Manager) Rapid Deployment policy.
 version_added: "1.0.0"
 options:
   name:
@@ -27,8 +27,8 @@ options:
     type: str
   servers:
     description:
-      - A list of servers that the application is hosted on.
-      - If you are familiar with other BIG-IP setting, you might also refer to this
+      - A list of servers on which the application is hosted.
+      - If you are familiar with other BIG-IP settings, you might also refer to this
         list as the list of pool members.
       - When creating a new application, at least one server is required.
     type: list
@@ -46,10 +46,10 @@ options:
         default: 80
   inbound_virtual:
     description:
-      - Settings to configure the virtual which will receive the inbound connection.
-      - This virtual will be used to host the HTTPS endpoint of the application.
-      - Traffic destined to the C(redirect_virtual) will be offloaded to this
-        parameter to ensure that proper redirection from insecure, to secure, occurs.
+      - Settings to configure the virtual which receives the inbound connection.
+      - This virtual is used to host the HTTPS endpoint of the application.
+      - Traffic destined to the C(redirect_virtual) is offloaded to this
+        parameter to ensure proper redirection from insecure to secure occurs.
     type: dict
     suboptions:
       address:
@@ -67,19 +67,19 @@ options:
         required: True
       port:
         description:
-          - The port that the virtual listens for connections on.
+          - The port on which the virtual listens for connections.
           - When creating a new application, if this parameter is not specified, the
-            default value of C(443) will be used.
+            default value is C(443).
         type: str
         default: 443
   redirect_virtual:
     description:
-      - Settings to configure the virtual which will receive the connection to be
+      - Settings to configure the virtual which receives the connection to be
         redirected.
-      - This virtual will be used to host the HTTP endpoint of the application.
-      - Traffic destined to this parameter will be offloaded to the
-        C(inbound_virtual) parameter to ensure that proper redirection from insecure,
-        to secure, occurs.
+      - This virtual is used to host the HTTP endpoint of the application.
+      - Traffic destined to this parameter is offloaded to the
+        C(inbound_virtual) parameter to ensure proper redirection from insecure
+        to secure occurs.
     type: dict
     suboptions:
       address:
@@ -97,7 +97,7 @@ options:
         required: True
       port:
         description:
-          - The port that the virtual listens for connections on.
+          - The port on which the virtual listens for connections.
           - When creating a new application, if this parameter is not specified, the
             default value of C(80) will be used.
         type: str
@@ -119,14 +119,14 @@ options:
           - One or more certificates and keys to associate with the SSL profile.
           - This option is always a list. The keys in the list dictate the details
             of the client/key/chain/passphrase combination.
-          - Note that BIG-IPs can only have one of each type of each certificate/key
-            type. This means that you can only have one RSA, one DSA, and one ECDSA
+          - BIG-IPs can only have one of each type of each certificate/key
+            type. This means you can only have one RSA, one DSA, and one ECDSA
             per profile.
           - If you attempt to assign two RSA, DSA, or ECDSA certificate/key combo,
-            the device will reject this.
+            the device rejects it.
           - This list is a complex list that specifies a number of keys.
           - When creating a new profile, if this parameter is not specified, the
-            default value of C(inherit) will be used.
+            default value is C(inherit).
         type: raw
         suboptions:
           cert:
@@ -140,7 +140,7 @@ options:
           chain:
             description:
               - Specifies a certificate chain that is relevant to the certificate and
-                key mentioned earlier.
+                key.
               - This key is optional.
             type: str
           passphrase:
@@ -150,7 +150,7 @@ options:
             type: str
   service_environment:
     description:
-      - Specifies the name of service environment that the application will be
+      - Specifies the name of service environment the application will be
         deployed to.
       - When creating a new application, this parameter is required.
     type: str
@@ -171,7 +171,7 @@ options:
   state:
     description:
       - The state of the resource on the system.
-      - When C(present), guarantees that the resource exists with the provided attributes.
+      - When C(present), guarantees the resource exists with the provided attributes.
       - When C(absent), removes the resource from the system.
     type: str
     choices:
@@ -180,12 +180,12 @@ options:
     default: present
   wait:
     description:
-      - If the module should wait for the application to be created, deleted or updated.
+      - If the module should wait for the application to be created, deleted, or updated.
     type: bool
     default: yes
 extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
-  - This module will not work on BIGIQ version 6.1.x or greater.
+  - This module does not work on BIG-IQ version 6.1.x or greater.
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -224,7 +224,7 @@ description:
   type: str
   sample: My application
 service_environment:
-  description: The environment which the service was deployed to.
+  description: The environment to which the service was deployed.
   returned: changed
   type: str
   sample: my-ssg1
@@ -239,7 +239,7 @@ inbound_virtual_netmask:
   type: str
   sample: 255.255.255.0
 inbound_virtual_port:
-  description: The port the inbound virtual address listens on.
+  description: The port on which the inbound virtual address listens.
   returned: changed
   type: int
   sample: 80
@@ -254,7 +254,7 @@ servers:
       type: str
       sample: 2.3.4.5
     port:
-      description: The port that the server listens on.
+      description: The port on which the server listens.
       returned: changed
       type: int
       sample: 8080

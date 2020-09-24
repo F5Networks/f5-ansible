@@ -12,12 +12,12 @@ DOCUMENTATION = r'''
 module: bigip_user
 short_description: Manage user accounts and user attributes on a BIG-IP
 description:
-  - Manage user accounts and user attributes on a BIG-IP. Typically this
-    module operates only on the REST API users and not the CLI users.
+  - Manage user accounts and user attributes on a BIG-IP system. Typically this
+    module operates only on REST API users and not CLI users.
     When specifying C(root), you may only change the password.
-    Your other parameters will be ignored in this case. Changing the C(root)
-    password is not an idempotent operation. Therefore, it will change it
-    every time this module attempts to change it.
+    Your other parameters are ignored in this case. Changing the C(root)
+    password is not an idempotent operation. Therefore, it changes the
+    password every time this module attempts to change it.
 version_added: "1.0.0"
 options:
   full_name:
@@ -26,7 +26,7 @@ options:
     type: str
   username_credential:
     description:
-      - Name of the user to create, remove or modify.
+      - Name of the user to create, remove, or modify.
       - The C(root) user may not be removed.
     type: str
     required: True
@@ -48,13 +48,13 @@ options:
   partition_access:
     description:
       - Specifies the administrative partition to which the user has access.
-        C(partition_access) is required when creating a new account.
-        Should be in the form "partition:role".
+        C(partition_access) is required when creating a new account, and
+        should be in the form "partition:role".
       - Valid roles include C(acceleration-policy-editor), C(admin), C(application-editor),
         C(auditor), C(certificate-manager), C(guest), C(irule-manager), C(manager), C(no-access),
         C(operator), C(resource-admin), C(user-manager), C(web-application-security-administrator),
         and C(web-application-security-editor).
-      - Partition portion of tuple should be an existing partition or the value 'all'.
+      - The partition portion the of tuple should be an existing partition or the value 'all'.
     type: list
     elements: str
   state:
@@ -68,9 +68,9 @@ options:
     default: present
   update_password:
     description:
-      - C(always) will allow to update passwords if the user chooses to do so.
-        C(on_create) will only set the password for newly created users.
-      - When C(username_credential) is C(root), this value will be forced to C(always).
+      - C(always) allows the user to update passwords.
+        C(on_create) only sets the password for newly created users.
+      - When C(username_credential) is C(root), this value is forced to C(always).
     type: str
     choices:
       - always
@@ -184,7 +184,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 full_name:
-  description: Full name of the user
+  description: Full name of the user.
   returned: changed and success
   type: str
   sample: John Doe
@@ -196,7 +196,7 @@ partition_access:
   type: list
   sample: ['all:admin']
 shell:
-  description: The shell assigned to the user account
+  description: The shell assigned to the user account.
   returned: changed and success
   type: str
   sample: tmsh

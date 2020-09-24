@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_ssl_key_cert
 short_description: Import/Delete SSL keys and certs from BIG-IP
 description:
-  - This module will import/delete SSL keys and certs on a BIG-IP.
+  - This module imports/deletes SSL keys and certificates on a BIG-IP.
     Keys can be imported from key files on the local disk, in PEM format.
     Certificates can be imported from certificate and key files on the local
     disk, in PEM format.
@@ -21,13 +21,13 @@ options:
   key_content:
     description:
       - Sets the contents of a key directly to the specified value. This is
-        used with lookup plugins or for anything with formatting or templating.
+        used with lookup plugins, or for anything with formatting or templating.
         This must be provided when C(state) is C(present).
     type: str
   state:
     description:
-      - When C(present), ensures that the key and/or cert is uploaded to the
-        device. When C(absent), ensures that the key and/or cert is removed
+      - When C(present), ensures the key and/or cert is uploaded to the
+        device. When C(absent), ensures the key and/or cert is removed
         from the device. If the key and/or cert is currently in use, the module
         will not be able to remove the key.
     type: str
@@ -52,7 +52,7 @@ options:
   cert_name:
     description:
       - SSL Certificate Name. This is the cert name used when importing a certificate
-        into the F5. It also determines the filenames of the objects on the LTM.
+        into the BIG-IP. It also determines the filenames of the objects on the LTM.
     type: str
   issuer_cert:
     description:

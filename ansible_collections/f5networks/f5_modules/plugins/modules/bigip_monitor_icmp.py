@@ -39,17 +39,17 @@ options:
   ip:
     description:
       - Specifies the IP address of the resource that is the destination of this monitor.
-      - When set to B(*) the device performs a health check on the IP address of the node
+      - When set to B(*), the device performs a health check on the IP address of the node.
       - "When set to an B(<IP>) the device performs a health check on that IP address and marks the associated node up
-        or down as a result of the response. This option is set by device by default when not defined during monitor
+        or down as a result of the response. This option is set by the device by default when not defined during monitor
         creation."
-      - "When set to an B(<IP>) and the C(transparent) is C(yes) the device performs a health check on that IP address,
-        and route the check through the associated node IP address, and mark the associated node IP address up or down
+      - "When set to an B(<IP>) and C(transparent) is C(yes), the device performs a health check on that IP address,
+        routes the check through the associated node IP address, and marks the associated node IP address up or down
         accordingly."
     type: str
   interval:
     description:
-      - Specifies, in seconds, the frequency at which the system issues the
+      - Specifies the frequency, in seconds, at which the system issues the
         monitor check when either the resource is down or the status of the
         resource is unknown.
     type: int
@@ -70,16 +70,16 @@ options:
         correctly to the monitor before setting the resource to 'up'.
       - During the interval, all responses from the resource must be correct.
       - When the interval expires, the resource is marked 'up'.
-      - A value of 0, means that the resource is marked up immediately upon
+      - A value of 0 means the resource is marked up immediately upon
         receipt of the first correct response.
     type: int
   up_interval:
     description:
       - Specifies the interval for the system to use to perform the health check
         when a resource is up.
-      - When C(0), specifies that the system uses the interval specified in
+      - When C(0), specifies the system uses the interval specified in
         C(interval) to check the health of the resource.
-      - When any other number, enables specification of a different interval to
+      - When any other number, enables you to specify a different interval to
         use when checking the health of a resource that is up.
     type: int
   manual_resume:
@@ -88,9 +88,9 @@ options:
         to B(enabled) at the next successful monitor check.
       - If you set this option to C(yes), you must manually re-enable the resource
         before the system can use it for load balancing connections.
-      - When C(yes), specifies that you must manually re-enable the resource after an
+      - When C(yes), specifies you must manually re-enable the resource after an
         unsuccessful monitor check.
-      - When C(no), specifies that the system automatically changes the status of a
+      - When C(no), specifies the system automatically changes the status of a
         resource to B(enabled) at the next successful monitor check.
     type: bool
   adaptive:
@@ -106,7 +106,7 @@ options:
   allowed_divergence_type:
     description:
       - When specifying a new monitor, if C(adaptive) is C(yes), the default is
-        C(relative)
+        C(relative).
       - When C(absolute), the number of milliseconds the latency of a monitor probe
         can exceed the mean latency of a monitor probe for the service being probed.
         In typical cases, if the monitor detects three probes in a row that miss the
@@ -133,7 +133,7 @@ options:
     type: int
   sampling_timespan:
     description:
-      - Specifies the length, in seconds, of the probe history window that the system
+      - Specifies the length, in seconds, of the probe history window the system
         uses to calculate the mean latency and standard deviation of a monitor probe.
       - While this value can be configured when C(adaptive) is C(no), it will not take
         effect on the system until C(adaptive) is C(yes).
@@ -146,7 +146,7 @@ options:
         probes the C(ip)-C(port) combination specified in the monitor).
       - If the monitor cannot successfully reach the aliased destination, the pool member
         or node through which the monitor traffic was sent is marked down.
-      - When creating a new monitor, if this parameter is not provided, then the default
+      - When creating a new monitor, if this parameter is not provided, the default
         value will be whatever is provided by the C(parent).
     type: bool
   partition:

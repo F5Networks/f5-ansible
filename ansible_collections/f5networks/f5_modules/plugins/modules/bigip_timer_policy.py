@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_timer_policy
 short_description: Manage timer policies on a BIG-IP
 description:
-  - Manage timer policies on a BIG-IP.
+  - Manage timer policies on a BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -26,7 +26,7 @@ options:
     type: str
   rules:
     description:
-      - Rules that you want assigned to the timer policy.
+      - Rules you want assigned to the timer policy.
     type: list
     elements: dict
     suboptions:
@@ -43,8 +43,8 @@ options:
           - Only flows matching the configured protocol will make use of this rule.
           - When C(all-other) is specified, if there are no specific ip-protocol rules
             that match the flow, the flow matches all the other ip-protocol rules.
-          - When specifying rules, if this parameter is not specified, the default of
-            C(all-other) will be used.
+          - When specifying rules, if this parameter is not specified, the default is
+            C(all-other).
         type: str
         default: all-other
         choices:
@@ -69,7 +69,7 @@ options:
           - udplite
       destination_ports:
         description:
-          - The list of destination ports to match the rule on.
+          - The list of destination ports on which to match the rule.
           - Specify a port range by specifying start and end ports separated by a
             dash (-).
           - This field is only available if you have selected the C(sctp), C(tcp), or
@@ -80,10 +80,10 @@ options:
         description:
           - Specifies an idle timeout, in seconds, for protocol and port pairs that
             match the timer policy rule.
-          - When C(infinite), specifies that the protocol and port pairs that match
+          - When C(infinite), specifies the protocol and port pairs that match
             the timer policy rule have no idle timeout.
-          - When specifying rules, if this parameter is not specified, the default of
-            C(unspecified) will be used.
+          - When specifying rules, if this parameter is not specified, the default is
+            C(unspecified).
         type: str
         default: unspecified
   partition:
@@ -93,7 +93,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the resource exists.
+      - When C(present), ensures the resource exists.
       - When C(absent), ensures the resource is removed.
     type: str
     choices:

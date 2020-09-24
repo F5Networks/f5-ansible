@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_static_route
 short_description: Manipulate static routes on a BIG-IP
 description:
-  - Manipulate static routes on a BIG-IP.
+  - Manipulate static routes on a BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -42,8 +42,8 @@ options:
       - Specifies the router for the system to use when forwarding packets
         to the destination host or network. Also known as the next-hop router
         address. This can be either an IPv4 or IPv6 address. When it is an
-        IPv6 address that starts with C(FE80:), the address will be treated
-        as a link-local address. This requires that the C(vlan) parameter
+        IPv6 address that starts with C(FE80:), the address is treated
+        as a link-local address. This requires the C(vlan) parameter
         also be supplied.
     type: str
   vlan:
@@ -59,7 +59,7 @@ options:
     type: str
   reject:
     description:
-      - Specifies that the system drops packets sent to the destination.
+      - Specifies the system drops packets sent to the destination.
     type: bool
   mtu:
     description:
@@ -67,8 +67,8 @@ options:
     type: str
   route_domain:
     description:
-      - The route domain id of the system. When creating a new static route, if
-        this value is not specified, a default value of C(0) will be used.
+      - The route domain ID of the system. When creating a new static route, if
+        this value is not specified, the default value is C(0).
       - This value cannot be changed once it is set.
     type: int
   partition:
@@ -78,8 +78,8 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the static route exists.
-      - When C(absent), ensures that the static does not exist.
+      - When C(present), ensures the static route exists.
+      - When C(absent), ensures the static does not exist.
     type: str
     choices:
       - present
@@ -107,22 +107,22 @@ EXAMPLES = r'''
 
 RETURN = r'''
 vlan:
-  description: Whether the banner is enabled or not.
+  description: The VLAN or Tunnel through which the system forwards packets to the destination.
   returned: changed
   type: str
-  sample: true
+  sample: /Common/vlan1
 gateway_address:
-  description: Whether the banner is enabled or not.
+  description: The router for the system to use when forwarding packets to the destination host or network.
   returned: changed
   type: str
-  sample: true
+  sample: 10.2.2.3
 destination:
-  description: Whether the banner is enabled or not.
+  description: An IP address for the static entry in the routing table.
   returned: changed
   type: str
-  sample: true
+  sample: 0.0.0.0/0
 route_domain:
-  description: Route domain of the static route.
+  description: The route domain ID of the system.
   returned: changed
   type: int
   sample: 1
@@ -135,21 +135,21 @@ pool:
   description: Whether the banner is enabled or not.
   returned: changed
   type: str
-  sample: true
+  sample: yes
 partition:
   description: The partition that the static route was created on.
   returned: changed
   type: str
   sample: Common
 description:
-  description: Whether the banner is enabled or not.
+  description: Descriptive text that identifies the route.
   returned: changed
   type: str
-  sample: true
+  sample: "Route tho DMZ"
 reject:
-  description: Whether the banner is enabled or not.
+  description: Specifies the system drops packets sent to the destination.
   returned: changed
-  type: str
+  type: bool
   sample: true
 '''
 
