@@ -78,6 +78,7 @@ options:
       - oneconnect-profiles
       - partitions
       - provision-info
+      - remote-syslog
       - route-domains
       - self-ips
       - server-ssl-profiles
@@ -149,6 +150,7 @@ options:
       - "!oneconnect-profiles"
       - "!partitions"
       - "!provision-info"
+      - "!remote-syslog"
       - "!route-domains"
       - "!self-ips"
       - "!server-ssl-profiles"
@@ -4223,6 +4225,38 @@ provision_info:
       returned: queried
       type: int
       sample: 0
+  sample: hash/dictionary of values
+remote_syslog:
+  description: Remote Syslog related information.
+  returned: When C(remote-syslog) is specified in C(gather_subset).
+  type: complex
+  contains:
+    servers:
+      description: Configured remote syslog servers.
+      returned: queried
+      type: complex
+      contains:
+        name:
+          description: Name of remote syslog server as configured on the system.
+          returned: queried
+          type: str
+          sample: /Common/foobar1
+        remote_port:
+          description: Remote port of the remote syslog server.
+          returned: queried
+          type: int
+          sample: 514
+        local_ip:
+          description: The local IP address of the remote syslog server.
+          returned: queried
+          type: str
+          sample: 10.10.10.10
+        remote_host:
+          description: The IP address or hostname of the remote syslog server.
+          returned: queried
+          type: str
+          sample: 192.168.1.1
+    sample: hash/dictionary of values
   sample: hash/dictionary of values
 route_domains:
   description: Route domain related information.
@@ -16842,6 +16876,75 @@ class ManagementRouteFactManager(BaseManager):
         return result
 
 
+class RemoteSyslogParameters(BaseParameters):
+    api_map = {
+        'remoteServers': 'servers',
+    }
+
+    returnables = [
+        'servers',
+    ]
+
+    def _morph_keys(self, key_map, item):
+        for k, v in iteritems(key_map):
+            item[v] = item.pop(k, None)
+        result = self._filter_params(item)
+        return result
+
+    def _format_servers(self, items):
+        result = list()
+        key_map = {
+            'name': 'name',
+            'remotePort': 'remote_port',
+            'localIp': 'local_ip',
+            'host': 'remote_host'
+        }
+        for item in items:
+            output = self._morph_keys(key_map, item)
+            result.append(output)
+        return result
+
+    @property
+    def servers(self):
+        if self._values['servers'] is None:
+            return None
+        return self._format_servers(self._values['servers'])
+
+
+class RemoteSyslogFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(RemoteSyslogFactManager, self).__init__(**kwargs)
+        self.want = RemoteSyslogParameters(params=self.module.params)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(remote_syslog=facts)
+        return result
+
+    def _exec_module(self):
+        facts = self.read_collection_from_device()
+        params = RemoteSyslogParameters(params=facts)
+        results = params.to_return()
+        return results
+
+    def read_collection_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/sys/syslog/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+        return response
+
+
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
@@ -16896,6 +16999,7 @@ class ModuleManager(object):
             'partitions': PartitionFactManager,
             'provision-info': ProvisionInfoFactManager,
             'route-domains': RouteDomainFactManager,
+            'remote-syslog': RemoteSyslogFactManager,
             'self-ips': SelfIpsFactManager,
             'server-ssl-profiles': ServerSslProfilesFactManager,
             'software-volumes': SoftwareVolumesFactManager,
@@ -17058,7 +17162,6 @@ class ArgumentSpec(object):
                     'profiles',
                     'gtm-pools',
                     'gtm-wide-ips',
-                    'as3',
 
                     # Non-meta choices
                     'apm-access-profiles',
@@ -17106,6 +17209,7 @@ class ArgumentSpec(object):
                     'oneconnect-profiles',
                     'partitions',
                     'provision-info',
+                    'remote-syslog',
                     'route-domains',
                     'self-ips',
                     'server-ssl-profiles',
@@ -17181,6 +17285,7 @@ class ArgumentSpec(object):
                     '!oneconnect-profiles',
                     '!partitions',
                     '!provision-info',
+                    '!remote-syslog',
                     '!route-domains',
                     '!self-ips',
                     '!server-ssl-profiles',

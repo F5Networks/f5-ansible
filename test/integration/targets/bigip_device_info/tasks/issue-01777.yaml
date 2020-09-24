@@ -1,0 +1,24 @@
+---
+- name: Issue 01777 - Create Syslog
+  bigip_remote_syslog:
+    remote_host: "foo.bar.com"
+    remote_port: "1516"
+    local_ip: "10.10.10.10"
+
+- name: Issue 01777 - Gather Syslog Info
+  bigip_device_info:
+    gather_subset:
+      - remote-syslog
+  register: result
+
+- name: Issue 01777 - Assert Gather Syslog Info
+  assert:
+    that:
+      - result is success
+      - result.remote_syslog.servers | json_query("[?name=='/Common/foo.bar.com'].remote_port") | first == 1516
+      - result.remote_syslog.servers | json_query("[?name=='/Common/foo.bar.com'].local_ip") | first == "10.10.10.10"
+
+- name: Issue 01777 - Remove Syslog
+  bigip_remote_syslog:
+    remote_host: "foo.bar.com"
+    state: absent
