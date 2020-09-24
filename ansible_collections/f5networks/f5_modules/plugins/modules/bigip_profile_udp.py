@@ -12,9 +12,9 @@ DOCUMENTATION = r'''
 module: bigip_profile_udp
 short_description: Manage UDP profiles on a BIG-IP
 description:
-  - Manage UDP profiles on a BIG-IP. Many of UDP profiles exist; each with their
+  - Manage UDP profiles on a BIG-IP system. There are many UDP profiles, each with their
     own adjustments to the standard C(udp) profile. Users of this module should be aware
-    that many of the adjustable knobs have no module default. Instead, the default is
+    that many of the available options have no module default. Instead, the default is
     assigned by the BIG-IP system itself which, in most cases, is acceptable.
 version_added: "1.0.0"
 options:
@@ -31,21 +31,21 @@ options:
     type: str
   idle_timeout:
     description:
-      - Specifies the length of time that a connection is idle (has no traffic) before
+      - Specifies the length of time a connection is idle (has no traffic) before
         the connection is eligible for deletion.
       - When creating a new profile, if this parameter is not specified, the remote
         device will choose a default value appropriate for the profile, based on its
         C(parent) profile.
-      - When a number is specified, indicates the number of seconds that the UDP
+      - When a number is specified, indicates the number of seconds the UDP
         connection can remain idle before the system deletes it.
-      - When C(indefinite), specifies that UDP connections can remain idle
+      - When C(indefinite), specifies UDP connections can remain idle
         indefinitely.
-      - When C(0) or C(immediate), specifies that you do not want the UDP connection to
-        remain idle, and that it is therefore immediately eligible for deletion.
+      - When C(0) or C(immediate), specifies you do not want the UDP connection to
+        remain idle, and it is therefore immediately eligible for deletion.
     type: str
   datagram_load_balancing:
     description:
-      - Specifies, when C(yes), that the system load balances UDP traffic
+      - When C(yes), specifies the system load balances UDP traffic
         packet-by-packet.
     type: bool
   partition:
@@ -55,7 +55,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:

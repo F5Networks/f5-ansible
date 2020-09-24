@@ -17,11 +17,11 @@ version_added: "1.0.0"
 options:
   description:
     description:
-      - The description to give to the VLAN.
+      - The description of the VLAN.
     type: str
   tagged_interfaces:
     description:
-      - Specifies a list of tagged interfaces and trunks that you want to
+      - Specifies a list of tagged interfaces and trunks you want to
         configure for the VLAN. Use tagged interfaces or trunks when
         you want to assign a single interface or trunk to multiple VLANs.
       - This parameter is mutually exclusive with the C(untagged_interfaces)
@@ -32,7 +32,7 @@ options:
       - tagged_interface
   untagged_interfaces:
     description:
-      - Specifies a list of untagged interfaces and trunks that you want to
+      - Specifies a list of untagged interfaces and trunks you want to
         configure for the VLAN.
       - This parameter is mutually exclusive with the C(tagged_interfaces)
         and C(interfaces) parameters.
@@ -43,13 +43,13 @@ options:
   name:
     description:
       - The VLAN to manage. If the special VLAN C(ALL) is specified with
-        the C(state) value of C(absent) then all VLANs will be removed.
+        the C(state) value of C(absent), all VLANs will be removed.
     type: str
     required: True
   state:
     description:
       - The state of the VLAN on the system. When C(present), guarantees
-        that the VLAN exists with the provided attributes. When C(absent),
+        the VLAN exists with the provided attributes. When C(absent),
         removes the VLAN from the system.
     type: str
     choices:
@@ -66,18 +66,18 @@ options:
     description:
       - Specifies the maximum transmission unit (MTU) for traffic on this VLAN.
         When creating a new VLAN, if this parameter is not specified, the default
-        value used will be C(1500).
+        value used is C(1500).
       - This number must be between 576 to 9198.
     type: int
   cmp_hash:
     description:
-      - Specifies how the traffic on the VLAN will be disaggregated. The value
-        selected determines the traffic disaggregation method. You can choose to
+      - Specifies how the traffic on the VLAN is disaggregated. The value
+        you select determines the traffic disaggregation method. You can choose to
         disaggregate traffic based on C(source-address) (the source IP address),
         C(destination-address) (destination IP address), or C(default), which
-        specifies that the default CMP hash uses L4 ports.
+        specifies the default CMP hash uses L4 ports.
       - When creating a new VLAN, if this parameter is not specified, the default
-        of C(default) is used.
+        is C(default).
     type: str
     choices:
       - default
@@ -97,8 +97,8 @@ options:
         in inner headers. Select C(outer) to distribute packets based on information in
         outer headers without inspecting inner headers.
       - When creating a new VLAN, if this parameter is not specified, the default
-        of C(outer) is used.
-      - This parameter is not supported on Virtual Editions of BIG-IP.
+        is C(outer).
+      - This parameter is not supported on Virtual Editions (VEs) of BIG-IP.
     type: str
     choices:
       - inner
@@ -110,7 +110,7 @@ options:
         stateless traffic includes non-IP L2 traffic, ICMP, some UDP protocols,
         and so on.
       - When creating a new VLAN, if this parameter is not specified, the default
-        of (no) is used.
+        is (no).
     type: bool
   partition:
     description:
@@ -119,23 +119,23 @@ options:
     default: Common
   source_check:
     description:
-      - When C(yes), specifies that the system verifies that the return route to an initial
+      - When C(yes), specifies the system verifies the return route to an initial
         packet is the same VLAN from which the packet originated.
       - The system performs this verification only if the C(auto_last_hop) option is C(no).
     type: bool
   fail_safe:
     description:
-      - When C(yes), specifies that the VLAN takes the specified C(fail_safe_action) if the
+      - When C(yes), specifies the VLAN takes the specified C(fail_safe_action) if the
         system detects a loss of traffic on this VLAN's interfaces.
     type: bool
   fail_safe_timeout:
     description:
-      - Specifies the number of seconds that a system can run without detecting network
+      - Specifies the number of seconds a system can run without detecting network
         traffic on this VLAN before it takes the C(fail_safe_action).
     type: int
   fail_safe_action:
     description:
-      - Specifies the action that the system takes when it does not detect any traffic on
+      - Specifies the action the system takes when it does not detect any traffic on
         this VLAN, and the C(fail_safe_timeout) has expired.
     type: str
     choices:
@@ -152,8 +152,8 @@ options:
     type: int
   interfaces:
     description:
-      - Interfaces that you want added to the VLAN. This can include both tagged
-        and untagged interfaces as the C(tagging) parameter specifies.
+      - Interfaces you want to add to the VLAN. This can include both tagged
+        and untagged interfaces, as the C(tagging) parameter specifies.
       - This parameter is mutually exclusive with the C(untagged_interfaces) and
         C(tagged_interfaces) parameters.
     type: list
@@ -173,7 +173,7 @@ options:
   hw_syn_cookie:
     description:
       - Enables hardware syncookie mode on a VLAN.
-      - When C(yes), the hardware per-VLAN SYN cookie protection will be triggered when the certain traffic threshold
+      - When C(yes), the hardware per-VLAN SYN cookie protection is triggered when the certain traffic threshold
         is reached on supported platforms.
     type: bool
     version_added: "1.3.0"
@@ -237,12 +237,12 @@ description:
   type: str
   sample: foo VLAN
 interfaces:
-  description: Interfaces that the VLAN is assigned to.
+  description: Interfaces the VLAN is assigned to.
   returned: changed
   type: list
   sample: ['1.1','1.2']
 partition:
-  description: The partition that the VLAN was created on.
+  description: The partition the VLAN was created on.
   returned: changed
   type: str
   sample: Common

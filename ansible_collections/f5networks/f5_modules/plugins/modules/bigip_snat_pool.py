@@ -12,22 +12,21 @@ DOCUMENTATION = r'''
 module: bigip_snat_pool
 short_description: Manage SNAT pools on a BIG-IP
 description:
-  - Manage SNAT pools on a BIG-IP.
+  - Manage SNAT pools on a BIG-IP system.
 version_added: "1.0.0"
 options:
   members:
     description:
-      - List of members to put in the SNAT pool. When a C(state) of present is
-        provided, this parameter is required. Otherwise, it is optional.
-      - The members can be either IP addresses, or names of the SNAT translation objects.
+      - List of members to put in the SNAT pool. When C(state) is C(present),
+        this parameter is required, otherwise it is optional.
+      - The members can be either IP addresses or names of the SNAT translation objects.
     type: list
     elements: str
     aliases:
       - member
   description:
     description:
-      - A general description of the SNAT pool, provided by the user for their
-        benefit. It is optional.
+      - An optional description of the SNAT pool.
     type: str
   name:
     description:
@@ -48,8 +47,8 @@ options:
     type: str
     default: Common
 notes:
-  - When C(bigip_snat_pool) object is removed it also removes any associated C(bigip_snat_translation) objects.
-  - This is a BIG-IP behavior not module behavior and it only occurs when the C(bigip_snat_translation) objects
+  - When the C(bigip_snat_pool) object is removed, it also removes any associated C(bigip_snat_translation) objects.
+  - This is a BIG-IP behavior not module behavior, and it only occurs when the C(bigip_snat_translation) objects
     are also not referenced by another C(bigip_snat_pool).
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:

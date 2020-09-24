@@ -26,29 +26,29 @@ options:
     type: int
   gui_setup:
     description:
-      - C(yes) or C(no) the Setup utility in the browser-based
+      - C(yes) or C(no), the Setup utility in the browser-based
         Configuration utility.
     type: bool
   lcd_display:
     description:
-      - Specifies, when C(yes), that the system menu displays on the
+      - When C(yes), specifies the system menu displays on the
         LCD screen on the front of the unit. This setting has no effect
         when used on the VE platform.
     type: bool
   mgmt_dhcp:
     description:
       - Specifies whether or not to enable DHCP client on the management
-        interface
+        interface.
     type: bool
   net_reboot:
     description:
-      - Specifies, when C(yes), that the next time you reboot the system,
+      - When C(yes), specifies the next time you reboot the system,
         the system boots to an ISO image on the network, rather than an
         internal media drive.
     type: bool
   quiet_boot:
     description:
-      - Specifies, when C(yes), that the system suppresses informational
+      - When C(yes), specifies the system suppresses informational
         text on the console during the boot cycle. When C(no), the
         system presents messages and informational text on the console during
         the boot cycle.
@@ -61,7 +61,7 @@ options:
   state:
     description:
       - The state of the variable on the system. When C(present), guarantees
-        that an existing variable is set to C(value).
+        an existing variable is set to C(value).
     type: str
     choices:
       - present
@@ -107,7 +107,7 @@ lcd_display:
   type: bool
   sample: yes
 mgmt_dhcp:
-  description: The new setting for whether the mgmt interface should DHCP or not.
+  description: The new setting for whether the mgmt interface should use DHCP or not.
   returned: changed
   type: bool
   sample: yes

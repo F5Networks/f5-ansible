@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_software_install
 short_description: Install software images on a BIG-IP
 description:
-  - Install new images on a BIG-IP.
+  - Install new software images on a BIG-IP system.
 version_added: "1.0.0"
 options:
   image:
@@ -22,18 +22,18 @@ options:
   block_device_image:
     description:
       - Image to install on the remote device. In the case of a VCMP guest,
-        please ensure that this image is present on the VCMP host and is
+        ensure this image is present on the VCMP host and is
         referenced from there, and not from the VCMP guest. An ISO image
         directly uploaded to the VCMP guest will not work.
     type: str
     version_added: "1.2.0"
   volume:
     description:
-      - The volume to install the software image to.
+      - The volume on which to install the software image.
     type: str
   state:
     description:
-      - When C(installed), ensures that the software is installed on the volume
+      - When C(installed), ensures the software is installed on the volume
         and the volume is set to be booted from. The device is B(not) rebooted
         into the new software.
       - When C(activated), performs the same operation as C(installed), but

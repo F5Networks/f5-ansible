@@ -10,8 +10,8 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_monitor_udp
-short_description: Manages F5 BIG-IP LTM udp monitors
-description: Manages F5 BIG-IP LTM udp monitors.
+short_description: Manages F5 BIG-IP LTM UDP monitors
+description: Manages F5 BIG-IP LTM UDP monitors.
 version_added: "1.0.0"
 options:
   name:
@@ -32,16 +32,16 @@ options:
     type: str
   send:
     description:
-      - The send string for the monitor call. When creating a new monitor, if
-        this value is not provided, the default C(default send string) will be used.
+      - The Send string for the monitor call. When creating a new monitor, if
+        this value is not provided, the default C(default send string) is used.
     type: str
   receive:
     description:
-      - The receive string for the monitor call.
+      - The Receive string for the monitor call.
     type: str
   receive_disable:
     description:
-      - This setting works like C(receive), except that the system marks the node
+      - This setting works like C(receive), except the system marks the node
         or pool member disabled when its response matches the C(receive_disable)
         string but not C(receive). To use this setting, you must specify both
         C(receive_disable) and C(receive).
@@ -49,40 +49,38 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'.
+        provided when creating a new monitor, the default value is '*'.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, then the default value will be
-        '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified.
+        provided when creating a new monitor, the default value is '*'.
+        If specifying an IP address, you must specify a value between 1 and 65535.
     type: str
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
         template will run. If this parameter is not provided when creating
-        a new monitor, then the default value will be 5. This value B(must)
+        a new monitor, the default value is 5. This value B(must)
         be less than the C(timeout) value.
     type: int
   timeout:
     description:
       - The number of seconds in which the node or service must respond to
         the monitor request. If the target responds within the set time
-        period, it is considered up. If the target does not respond within
-        the set time period, it is considered down. You can change this
-        number to any number you want, however, it should be 3 times the
+        period, it is considered 'up'. If the target does not respond within
+        the set time period, it is considered 'down'. You can change this
+        to any number, however it should be 3 times the
         interval number of seconds plus 1 second. If this parameter is not
-        provided when creating a new monitor, then the default value will be 16.
+        provided when creating a new monitor, the default value is 16.
     type: int
   time_until_up:
     description:
       - Specifies the amount of time in seconds after the first successful
-        response before a node will be marked up. A value of 0 will cause a
+        response before a node will be marked up. A value of C(0) causes a
         node to be marked up immediately after a valid response is received
         from the node. If this parameter is not provided when creating
-        a new monitor, then the default value will be 0.
+        a new monitor, the default value is C(0).
     type: int
   partition:
     description:
@@ -91,7 +89,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the monitor exists.
+      - When C(present), ensures the monitor exists.
       - When C(absent), ensures the monitor is removed.
     type: str
     choices:
@@ -146,7 +144,7 @@ ip:
   type: str
   sample: 10.12.13.14
 interval:
-  description: The new interval in which to run the monitor check.
+  description: The new interval at which to run the monitor check.
   returned: changed
   type: int
   sample: 2

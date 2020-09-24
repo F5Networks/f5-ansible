@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_snmp
 short_description: Manipulate general SNMP settings on a BIG-IP
 description:
-  - Manipulate general SNMP settings on a BIG-IP.
+  - Manipulate general SNMP settings on a BIG-IP system.
 version_added: "1.0.0"
 options:
   allowed_addresses:
@@ -21,7 +21,7 @@ options:
         daemon accepts requests.
       - This value can be hostnames, IP addresses, or IP networks.
       - You may specify a single list item of C(default) to set the value back
-        to the system's default of C(127.0.0.0/8).
+        to the system default of C(127.0.0.0/8).
       - You can remove all allowed addresses by either providing the word C(none), or
         by providing the empty string C("").
     type: raw
@@ -32,7 +32,7 @@ options:
     type: str
   agent_status_traps:
     description:
-      - When C(enabled), ensures that the system sends a trap whenever the
+      - When C(enabled), ensures the system sends a trap whenever the
         SNMP agent starts running or stops running. This is usually enabled
         by default on a BIG-IP.
     type: str
@@ -41,7 +41,7 @@ options:
       - disabled
   agent_authentication_traps:
     description:
-      - When C(enabled), ensures that the system sends authentication warning
+      - When C(enabled), ensures the system sends authentication warning
         traps to the trap destinations. This is usually disabled by default on
         a BIG-IP.
     type: str
@@ -50,7 +50,7 @@ options:
       - disabled
   device_warning_traps:
     description:
-      - When C(enabled), ensures that the system sends device warning traps
+      - When C(enabled), ensures the system sends device warning traps
         to the trap destinations. This is usually enabled by default on a
         BIG-IP.
     type: str
@@ -89,17 +89,17 @@ EXAMPLES = r'''
 
 RETURN = r'''
 agent_status_traps:
-  description: Value that the agent status traps was set to.
+  description: Value of the agent status traps.
   returned: changed
   type: str
   sample: enabled
 agent_authentication_traps:
-  description: Value that the authentication status traps was set to.
+  description: Value of the authentication status traps.
   returned: changed
   type: str
   sample: enabled
 device_warning_traps:
-  description: Value that the warning status traps was set to.
+  description: Value of the warning status traps.
   returned: changed
   type: str
   sample: enabled

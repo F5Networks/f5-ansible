@@ -18,18 +18,18 @@ version_added: "1.0.0"
 options:
   force:
     description:
-      - When C(yes), will upload the file every time and replace the file on the
+      - When C(yes), uploads the file every time and replaces the file on the
         device.
-      - When C(no), the file will only be uploaded if it does not already
+      - When C(no), the file is only uploaded if it does not already
         exist.
       - Generally should be C(yes) only in cases where you have reason
-        to believe that the image was corrupted during upload.
+        to believe the image was corrupted during upload.
     type: bool
     default: no
   state:
     description:
-      - When C(present), ensures that the image is uploaded.
-      - When C(absent), ensures that the image is removed.
+      - When C(present), ensures the image is uploaded.
+      - When C(absent), ensures the image is removed.
     type: str
     choices:
       - absent
@@ -78,7 +78,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 image_type:
-  description: Whether the image is a release or hotfix image
+  description: Whether the image is a release or hotfix image.
   returned: changed
   type: str
   sample: release

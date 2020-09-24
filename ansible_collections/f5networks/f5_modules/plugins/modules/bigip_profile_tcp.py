@@ -12,9 +12,9 @@ DOCUMENTATION = r'''
 module: bigip_profile_tcp
 short_description: Manage TCP profiles on a BIG-IP
 description:
-  - Manage TCP profiles on a BIG-IP. Many TCP profiles; each with their
+  - Manage TCP profiles on a BIG-IP system. There are many TCP profiles, each with their
     own adjustments to the standard C(tcp) profile. Users of this module should be aware
-    that many of the adjustable knobs have no module default. Instead, the default is
+    that many of the available options have no module default. Instead, the default is
     assigned by the BIG-IP system itself which, in most cases, is acceptable.
 version_added: "1.0.0"
 options:
@@ -31,20 +31,20 @@ options:
     type: str
   idle_timeout:
     description:
-      - Specifies the length of time that a connection is idle (has no traffic) before
+      - Specifies the length of time a connection is idle (has no traffic) before
         the connection is eligible for deletion.
       - When creating a new profile, if this parameter is not specified, the remote
         device will choose a default value appropriate for the profile, based on its
         C(parent) profile.
-      - When a number is specified, indicates the number of seconds that the TCP
+      - When a number is specified, indicates the number of seconds the TCP
         connection can remain idle before the system deletes it.
-      - When C(0), or C(indefinite), specifies that the system does not delete TCP connections
+      - When C(0), or C(indefinite), specifies the system does not delete TCP connections
         regardless of how long they remain idle.
     type: str
   time_wait_recycle:
     description:
-      - Specifies that connections in a TIME-WAIT state are reused, if a SYN packet,
-        indicating a request for a new connection, is received.
+      - Specifies connections in a TIME-WAIT state are reused if a SYN packet (indicating a request
+        for a new connection) is received.
       - When C(no), connections in a TIME-WAIT state remain unused for a specified length of time.
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
@@ -53,7 +53,7 @@ options:
     description:
       - When C(enabled) the system applies Nagle's algorithm to reduce the number of short segments on the network.
       - When C(auto), the use of Nagle's algorithm is decided based on network conditions.
-      - Note that for interactive protocols such as Telnet, rlogin, or SSH, F5 recommends disabling this setting on
+      - For interactive protocols such as Telnet, rlogin, or SSH, F5 recommends disabling this setting on
         high-latency networks, to improve application responsiveness.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: str
@@ -63,13 +63,13 @@ options:
       - disabled
   early_retransmit:
     description:
-      - When C(yes) the system uses early fast retransmits to reduce the recovery time for connections that are
+      - When C(yes), the system uses early fast retransmits to reduce the recovery time for connections that are
         receive-buffer or user-data limited.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
   proxy_options:
     description:
-      - When C(yes) the system advertises an option, such as a time-stamp to the server only if it was negotiated
+      - When C(yes), the system advertises an option, such as a time-stamp, to the server only if it was negotiated
         with the client.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
@@ -77,7 +77,7 @@ options:
     description:
       - Specifies the initial congestion window size for connections to this destination. The actual window size is
         this value multiplied by the MSS for the same connection.
-      - When set to C(0) the system uses the values specified in RFC2414.
+      - When set to C(0), the system uses the values specified in RFC2414.
       - The valid value range is 0 - 16 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: int
@@ -85,7 +85,7 @@ options:
     description:
       - Specifies the initial receive window size for connections to this destination. The actual window size is
         this value multiplied by the MSS for the same connection.
-      - When set to C(0) the system uses the Slow Start value.
+      - When set to C(0), the system uses the Slow Start value.
       - The valid value range is 0 - 16 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: int
@@ -98,24 +98,24 @@ options:
     type: int
   delayed_acks:
     description:
-      - When C(yes) the system sends fewer than one ACK segment per data segment received.
+      - When C(yes), the system sends fewer than one ACK segment per data segment received.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
   ip_tos_to_client:
     description:
-      - Specifies the L3 Type of Service level that the system inserts in TCP packets destined for clients.
-      - When C(pass-through) the IP ToS setting remains unchanged.
-      - When C(mimic) the system sets the ToS level of outgoing packets to the same ToS level of the most-recently
+      - Specifies the L3 Type of Service level the system inserts in TCP packets destined for clients.
+      - When C(pass-through), the IP ToS setting remains unchanged.
+      - When C(mimic), the system sets the ToS level of outgoing packets to the same ToS level of the most-recently
         received incoming packet.
-      - When set as a number, the number indicates the IP ToS setting that the system inserts in the IP packet header.
+      - When set as a number, the number indicates the IP ToS setting the system inserts in the IP packet header.
         Valid number range is 0 - 255 inclusive.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: str
   time_wait_timeout:
     description:
-      - Specifies the number of milliseconds that a connection is in the TIME-WAIT state before closing.
-      - When C(immediate) the system closes the connection immediately after the connection enters the TIME-WAIT state.
-      - When C(indefinite) or C(0) the system does not close TCP connections regardless of how long they remain in the
+      - Specifies the number of milliseconds a connection is in the TIME-WAIT state before closing.
+      - When C(immediate), the system closes the connection immediately after the connection enters the TIME-WAIT state.
+      - When C(indefinite) or C(0), the system does not close TCP connections regardless of how long they remain in the
         TIME-WAIT state.
       - The valid number range is from 0 to 600000 milliseconds.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
@@ -128,7 +128,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:
@@ -183,7 +183,7 @@ early_retransmit:
   type: bool
   sample: yes
 proxy_options:
-  description: Specifies if that the system advertises negotiated options to the server.
+  description: Specifies if the system advertises negotiated options to the server.
   returned: changed
   type: bool
   sample: no

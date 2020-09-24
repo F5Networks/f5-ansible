@@ -12,22 +12,22 @@ DOCUMENTATION = r'''
 module: bigip_partition
 short_description: Manage BIG-IP partitions
 description:
-  - Manage BIG-IP partitions.
+  - Manage partitions on the BIG-IP.
 version_added: "1.0.0"
 options:
   name:
     description:
-      - Name of the partition
+      - Name of the partition.
     type: str
     required: True
   description:
     description:
-      - The description to attach to the Partition.
+      - The description to attach to the partition.
     type: str
   route_domain:
     description:
-      - The default Route Domain to assign to the Partition. If no route domain
-        is specified, then the default route domain for the system (typically
+      - The default Route Domain to assign to the partition. If no route domain
+        is specified, the default route domain for the system (typically
         zero) will be used only when creating a new partition.
     type: int
   state:

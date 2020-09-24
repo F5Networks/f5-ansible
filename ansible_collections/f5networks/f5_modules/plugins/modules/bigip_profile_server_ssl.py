@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_profile_server_ssl
 short_description: Manages server SSL profiles on a BIG-IP
 description:
-  - Manages server SSL profiles on a BIG-IP.
+  - Manages server SSL profiles on a BIG-IP system.
 version_added: "1.0.0"
 options:
   name:
@@ -28,7 +28,7 @@ options:
     default: /Common/serverssl
   ciphers:
     description:
-      - Specifies the list of ciphers that the system supports. When creating a new
+      - Specifies the list of ciphers the system supports. When creating a new
         profile, the default cipher list is provided by the parent profile.
     type: str
   renegotiation:
@@ -40,11 +40,11 @@ options:
     description:
       - Specifies the method of secure renegotiations for SSL connections. When
         creating a new profile, the setting is provided by the parent profile.
-      - When C(request) is set the system request secure renegotation of SSL
+      - When C(request) is set, the system requests secure renegotation of SSL
         connections.
-      - C(require) is a default setting and when set the system permits initial SSL
+      - C(require) is a default setting and when set, the system permits initial SSL
         handshakes from clients but terminates renegotiations from unpatched clients.
-      - The C(require-strict) setting the system requires strict renegotiation of SSL
+      - With the C(require-strict) setting, the system requires strict renegotiation of SSL
         connections. In this mode the system refuses connections to insecure servers,
         and terminates existing SSL connections to insecure servers.
     type: str
@@ -60,22 +60,22 @@ options:
     type: str
   sni_default:
     description:
-      - Indicates that the system uses this profile as the default SSL profile when there
+      - Indicates the system uses this profile as the default SSL profile when there
         is no match to the server name, or when the client provides no SNI extension support.
       - When creating a new profile, the setting is provided by the parent profile.
       - There can be only one SSL profile with this setting enabled.
     type: bool
   sni_require:
     description:
-      - Requires that the network peers also provide SNI support, setting only takes
+      - Requires the network peers also provide SNI support. This setting only takes
         effect when C(sni_default) is C(yes).
       - When creating a new profile, the setting is provided by the parent profile.
     type: bool
   server_certificate:
     description:
       - Specifies the way the system handles server certificates.
-      - When C(ignore), specifies that the system ignores certificates from server systems.
-      - When C(require), specifies that the system requires a server to present a valid
+      - When C(ignore), specifies the system ignores certificates from server systems.
+      - When C(require), specifies the system requires a server to present a valid
         certificate.
     type: str
     choices:
@@ -83,7 +83,7 @@ options:
       - require
   certificate:
     description:
-      - Specifies the name of the certificate that the system uses for server-side SSL
+      - Specifies the name of the certificate the system uses for server-side SSL
         processing.
     type: str
   key:
@@ -100,7 +100,7 @@ options:
     type: str
   update_password:
     description:
-      - C(always) will allow to update passwords if the user chooses to do so.
+      - C(always) will allow users to update passwords if they choose to do so.
         C(on_create) will only set the password for newly created profiles.
     type: str
     choices:
@@ -119,7 +119,7 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures that the profile exists.
+      - When C(present), ensures the profile exists.
       - When C(absent), ensures the profile is removed.
     type: str
     choices:

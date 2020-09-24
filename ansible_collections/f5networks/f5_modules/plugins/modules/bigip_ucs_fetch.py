@@ -13,21 +13,21 @@ module: bigip_ucs_fetch
 short_description: Fetches a UCS file from remote nodes
 description:
    - This module is used for fetching UCS files from remote machines and
-     storing them locally in a file tree, organized by hostname. Note that
-     this module is written to transfer UCS files that might not be present,
-     so a missing remote UCS won't be an error unless fail_on_missing is
+     storing them locally in a file tree, organized by hostname. This module
+     is written to transfer UCS files that might not be present,
+     so a missing remote UCS is not an error unless C(fail_on_missing) is
      set to 'yes'.
 version_added: "1.0.0"
 options:
   backup:
     description:
       - Create a backup file including the timestamp information so you can
-        get the original file back if you somehow clobbered it incorrectly.
+        get the original file back if you somehow overwrote it incorrectly.
     type: bool
     default: no
   create_on_missing:
     description:
-      - Creates the UCS based on the value of C(src) if the file does not already
+      - Creates the UCS based on the value of C(src), if the file does not already
         exist on the remote system.
     type: bool
     default: yes
@@ -53,11 +53,11 @@ options:
     default: yes
   src:
     description:
-      - The name of the UCS file to create on the remote server for downloading
+      - The name of the UCS file to create on the remote server for downloading.
     type: str
 notes:
   - BIG-IP provides no way to get a checksum of the UCS files on the system
-    via any interface except, perhaps, logging in directly to the box (which
+    via any interface with the possible exception of logging in directly to the box (which
     would not support appliance mode). Therefore, the best this module can
     do is check for the existence of the file on disk; no check-summing.
   - If you are using this module with either Ansible Tower or Ansible AWX, you
@@ -84,59 +84,59 @@ EXAMPLES = r'''
 
 RETURN = r'''
 checksum:
-  description: The SHA1 checksum of the downloaded file
+  description: The SHA1 checksum of the downloaded file.
   returned: success or changed
   type: str
   sample: 7b46bbe4f8ebfee64761b5313855618f64c64109
 dest:
-  description: Location on the ansible host that the UCS was saved to
+  description: Location on the ansible host the UCS was saved to.
   returned: success
   type: str
   sample: /path/to/file.txt
 src:
   description:
     - Name of the UCS file on the remote BIG-IP to download. If not
-      specified, then this will be a randomly generated filename
+      specified, this will be a randomly generated filename.
   returned: changed
   type: str
   sample: cs_backup.ucs
 backup_file:
-  description: Name of backup file created
+  description: Name of backup file.
   returned: changed and if backup=yes
   type: str
   sample: /path/to/file.txt.2015-02-12@22:09~
 gid:
-  description: Group id of the UCS file, after execution
+  description: Group ID of the UCS file, after execution.
   returned: success
   type: int
   sample: 100
 group:
-  description: Group of the UCS file, after execution
+  description: Group of the UCS file, after execution.
   returned: success
   type: str
   sample: httpd
 owner:
-  description: Owner of the UCS file, after execution
+  description: Owner of the UCS file, after execution.
   returned: success
   type: str
   sample: httpd
 uid:
-  description: Owner id of the UCS file, after execution
+  description: Owner ID of the UCS file, after execution.
   returned: success
   type: int
   sample: 100
 md5sum:
-  description: The MD5 checksum of the downloaded file
+  description: The MD5 checksum of the downloaded file.
   returned: changed or success
   type: str
   sample: 96cacab4c259c4598727d7cf2ceb3b45
 mode:
-  description: Permissions of the target UCS, after execution
+  description: Permissions of the target UCS, after execution.
   returned: success
   type: str
   sample: 0644
 size:
-  description: Size of the target UCS, after execution
+  description: Size of the target UCS, after execution.
   returned: success
   type: int
   sample: 1220

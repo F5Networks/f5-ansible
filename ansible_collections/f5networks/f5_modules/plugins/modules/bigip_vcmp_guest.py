@@ -12,8 +12,8 @@ DOCUMENTATION = r'''
 module: bigip_vcmp_guest
 short_description: Manages vCMP guests on a BIG-IP
 description:
-  - Manages vCMP guests on a BIG-IP. This functionality only exists on
-    actual hardware and must be enabled by provisioning C(vcmp) with the
+  - Manages vCMP (Virtual Clustered Multiprocessing) guests on a BIG-IP. This functionality
+    only exists on actual hardware and must be enabled by provisioning C(vcmp) with the
     C(bigip_provision) module.
 version_added: "1.0.0"
 options:
@@ -24,42 +24,42 @@ options:
     required: True
   vlans:
     description:
-      - VLANs that the guest uses to communicate with other guests, the host, and with
+      - VLANs the guest uses to communicate with other guests, the host, and with
         the external network. The available VLANs in the list are those that are
         currently configured on the vCMP host.
-      - The order of these VLANs is not important; in fact, it's ignored. This module will
-        order the VLANs for you automatically. Therefore, if you deliberately re-order them
-        in subsequent tasks, you will find that this module will B(not) register a change.
+      - The order of these VLANs is not important and is ignored. This module
+        orders the VLANs automatically. Therefore, if you deliberately re-order them
+        in subsequent tasks, this module does B(not) register a change.
     type: list
     elements: str
   initial_image:
     description:
       - Specifies the base software release ISO image file for installing the TMOS
         hypervisor instance and any licensed BIG-IP modules onto the guest's virtual
-        disk. When creating a new guest, this parameter is required. Please ensure that
-        this image is present on the VCMP host and not just on the VCMP guest. Also, the
+        disk. When creating a new guest, this parameter is required. Ensure
+        this image is present on the VCMP host and not only on the VCMP guest. Also, the
         file reference for this image should be the one present on the host and not on the
         guest.
     type: str
   initial_hotfix:
     description:
-      - Specifies the hotfix ISO image file which will be applied on top of the base
+      - Specifies the hotfix ISO image file which is applied on top of the base
         image.
     type: str
   mgmt_network:
     description:
       - Specifies the method by which the management address is used in the vCMP guest.
-      - When C(bridged), specifies that the guest can communicate with the vCMP host's
+      - When C(bridged), specifies the guest can communicate with the vCMP host's
         management network.
-      - When C(isolated), specifies that the guest is isolated from the vCMP host's
-        management network. In this case, the only way that a guest can communicate
+      - When C(isolated), specifies the guest is isolated from the vCMP host's
+        management network. In this case, the only way a guest can communicate
         with the vCMP host is through the console port or through a self IP address
         on the guest that allows traffic through port 22.
       - When C(host only), prevents the guest from installing images and hotfixes other
         than those provided by the hypervisor.
       - If the guest setting is C(isolated) or C(host only), the C(mgmt_address) does
         not apply.
-      - Concerning mode changing, changing C(bridged) to C(isolated) causes the vCMP
+      - For mode changing, changing C(bridged) to C(isolated) causes the vCMP
         host to remove all of the guest's management interfaces from its bridged
         management network. This immediately disconnects the guest's VMs from the
         physical management network. Changing C(isolated) to C(bridged) causes the
@@ -74,17 +74,17 @@ options:
       - host only
   delete_virtual_disk:
     description:
-      - When C(state) is C(absent), will additionally delete the virtual disk associated
+      - When C(state) is C(absent), the system additionally deletes the virtual disk associated
         with the vCMP guest. By default, this value is C(no).
     type: bool
     default: no
   mgmt_address:
     description:
-      - Specifies the IP address, and subnet or subnet mask that you use to access
+      - Specifies the IP address and subnet or subnet mask you use to access
         the guest when you want to manage a module running within the guest. This
         parameter is required if the C(mgmt_network) parameter is C(bridged).
       - When creating a new guest, if you do not specify a network or network mask,
-        a default of C(/24) (C(255.255.255.0)) will be assumed.
+        a default of C(/24) (C(255.255.255.0)) is used.
     type: str
   mgmt_route:
     description:
@@ -96,14 +96,14 @@ options:
     description:
       - The state of the vCMP guest on the system. Each state implies the actions of
         all states before it.
-      - When C(configured), guarantees that the vCMP guest exists with the provided
-        attributes. Additionally, ensures that the vCMP guest is turned off.
-      - When C(disabled), behaves the same as C(configured) the name of this state
-        is just a convenience for the user that is more understandable.
-      - When C(provisioned), will ensure that the guest is created and installed.
-        This state will not start the guest; use C(deployed) for that. This state
-        is one step beyond C(present) as C(present) will not install the guest;
-        only setup the configuration for it to be installed.
+      - When C(configured), guarantees the vCMP guest exists with the provided
+        attributes. Additionally, ensures the vCMP guest is turned off.
+      - When C(disabled), behaves the same way as C(configured), it is just a more
+        user-friendly name.
+      - When C(provisioned), ensures the guest is created and installed.
+        This state does not start the guest; use C(deployed) for that purpose. This state
+        is one step beyond C(present), as C(present) does not install the guest;
+        only sets up the configuration for it to be installed.
       - When C(present), ensures the guest is properly provisioned and starts
         the guest so that it is in a running state.
       - When C(absent), removes the vCMP from the system.
@@ -117,7 +117,7 @@ options:
     default: present
   cores_per_slot:
     description:
-      - Specifies the number of cores that the system allocates to the guest.
+      - Specifies the number of cores the system allocates to the guest.
       - Each core represents a portion of CPU and memory. Therefore, the amount of
         memory allocated per core is directly tied to the amount of CPU. This amount
         of memory varies per hardware platform type.
@@ -132,40 +132,40 @@ options:
     default: Common
   number_of_slots:
     description:
-      - Specifies the number of slots for the system to use for creating the guest.
-      - This value dictates how many cores a guest is allocated from each slot that
-        it is assigned to.
+      - Specifies the number of slots for the system to use when creating the guest.
+      - This value dictates how many cores a guest is allocated from each slot to which
+        it is assigned.
       - Possible values are dependent on the type of blades being used in this cluster.
       - The default value depends on the type of blades being used in this cluster.
     type: int
   min_number_of_slots:
     description:
-      - Specifies the minimum number of slots that the guest must be assigned to in
+      - Specifies the minimum number of slots the guest must be assigned to in
         order to deploy.
-      - This field dictates the number of slots that the guest must be assigned to.
-      - If at the end of any allocation attempt the guest is not assigned to at least
+      - This field dictates the number of slots to which the guest must be assigned.
+      - At the end of any allocation attempt, if the guest is not assigned to at least
         this many slots, the attempt fails and the change that initiated it is reverted.
       - A guest's C(min_number_of_slots) value cannot be greater than its C(number_of_slots).
     type: int
   allowed_slots:
     description:
-      - Contains those slots that the guest is allowed to be assigned to.
-      - When the host determines which slots this guest should be assigned to, only slots
-        in this list will be considered.
+      - Contains those slots to which the guest is allowed to be assigned.
+      - When the host determines which slots this guest should be assigned, only slots
+        in this list are considered.
       - This is a good way to force guests to be assigned only to particular slots, or,
         by configuring disjoint C(allowed_slots) on two guests, that those guests are
         never assigned to the same slot.
-      - By default this list includes every available slot in the cluster. This means,
-        by default, the guest may be assigned to any slot.
+      - By default, this list includes every available slot in the cluster. This means
+        the guest may be assigned to any slot by default.
     type: list
     elements: str
 notes:
   - This module can take a lot of time to deploy vCMP guests. This is an intrinsic
-    limitation of the vCMP system because it is booting real VMs on the BIG-IP
+    limitation of the vCMP system, because it is booting real VMs on the BIG-IP
     device. This boot time is very similar in length to the time it takes to
     boot VMs on any other virtualization platform; public or private.
   - When BIG-IP starts, the VMs are booted sequentially; not in parallel. This
-    means that it is not unusual for a vCMP host with many guests to take a
+    means it is not unusual for a vCMP host with many guests to take a
     long time (60+ minutes) to reboot and bring all the guests online. The
     BIG-IP chassis will be available before all vCMP guests are online.
 extends_documentation_fragment: f5networks.f5_modules.f5

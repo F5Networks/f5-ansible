@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_ssl_certificate
 short_description: Import/Delete certificates from BIG-IP
 description:
-  - This module will import/delete SSL certificates on BIG-IP LTM.
+  - This module imports/deletes SSL certificates on BIG-IP LTM.
     Certificates can be imported from certificate and key files on the local
     disk, in PEM format.
 version_added: "1.0.0"
@@ -20,7 +20,7 @@ options:
   content:
     description:
       - Sets the contents of a certificate directly to the specified value.
-        This is used with lookup plugins or for anything with formatting or
+        This is used with lookup plugins or for anything with formatting, or
       - C(content) must be provided when C(state) is C(present).
     type: str
     aliases: ['cert_content']
@@ -36,7 +36,7 @@ options:
   name:
     description:
       - SSL Certificate Name. This is the cert name used when importing a certificate
-        into the F5. It also determines the filenames of the objects on the LTM.
+        into the BIG-IP. It also determines the filenames of the objects on the LTM.
     type: str
     required: True
   issuer_cert:
@@ -51,7 +51,7 @@ options:
     default: Common
 notes:
   - This module does not behave like other modules that you might include in
-    roles where referencing files or templates first looks in the role's
+    roles, where referencing files or templates first looks in the role's
     files or templates directory. To have it behave that way, use the Ansible
     file or template lookup (see Examples). The lookups behave as expected in
     a role context.
@@ -99,7 +99,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 cert_name:
-  description: The name of the certificate that the user provided
+  description: The name of the certificate.
   returned: created
   type: str
   sample: cert1
@@ -110,7 +110,7 @@ filename:
   type: str
   sample: cert1.crt
 checksum:
-  description: SHA1 checksum of the cert that was provided.
+  description: SHA1 checksum of the cert.
   returned: changed and created
   type: str
   sample: f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0

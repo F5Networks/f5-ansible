@@ -21,27 +21,27 @@ options:
     type: str
   actions:
     description:
-      - The actions that you want the policy rule to perform.
-      - The available attributes vary by the action, however, each action requires that
-        a C(type) be specified.
-      - These conditions can be specified in any order. Despite them being a list, the
-        BIG-IP does not treat their order as anything special.
+      - The actions you want the policy rule to perform.
+      - The available attributes vary by the action, however, each action requires
+        you specify a C(type).
+      - These conditions can be specified in any order. Despite the fact they are in a list,
+        the order in the list does not matter to the BIG-IP.
     type: list
     elements: dict
     suboptions:
       type:
         description:
-          - The action type. This value controls what below options are required.
-          - When C(type) is C(forward), will associate a given C(pool), or C(virtual),
+          - The action type. This value controls which of the following options are required.
+          - When C(type) is C(forward), the system associates a given C(pool), or C(virtual),
             or C(node) with this rule.
-          - When C(type) is C(enable), will associate a given C(asm_policy) with
+          - When C(type) is C(enable), the system associates a given C(asm_policy) with
             this rule.
-          - When C(type) is C(ignore), will remove all existing actions from this
+          - When C(type) is C(ignore), the system removes all existing actions from this
             rule.
-          - When C(type) is C(redirect), will redirect an HTTP request to a different URL.
-          - When C(type) is C(reset), will reset the connection upon C(event).
-          - When C(type) is C(persist), will associate C(cookie_insert) and C(cookie_expiry) with this rule.
-          - When C(type) is C(set_variable), will set variable based on evaluated Tcl C(expression) based on C(event).
+          - When C(type) is C(redirect), the system redirects an HTTP request to a different URL.
+          - When C(type) is C(reset), the system resets the connection upon C(event).
+          - When C(type) is C(persist), the system associates C(cookie_insert) and C(cookie_expiry) with this rule.
+          - When C(type) is C(set_variable), the system sets a variable based on the evaluated Tcl C(expression) based on C(event).
         type: str
         required: true
         choices:
@@ -54,17 +54,17 @@ options:
           - set_variable
       pool:
         description:
-          - Pool that you want to forward traffic to.
+          - Pool to which you want to forward traffic.
           - This parameter is only valid with the C(forward) type.
         type: str
       virtual:
         description:
-          - Virtual Server that you want to forward traffic to.
+          - Virtual Server to which you want to forward traffic.
           - This parameter is only valid with the C(forward) type.
         type: str
       node:
         description:
-          - Node that you want to forward traffic to.
+          - Node to which you want to forward traffic.
           - This parameter is only valid with the C(forward) type.
         type: str
         version_added: "1.2.0"
@@ -80,20 +80,21 @@ options:
         type: str
       event:
         description:
-          - Events on which actions such as reset can be triggered.
-          - With C(set_variable) action, it is used for specifying action event such as request or response.
+          - Events on which actions, such as reset, can be triggered.
+          - With the C(set_variable) action, it is used for specifying
+            an action event, such as request or response.
         type: str
       expression:
         description:
-          - A tcl expression used with C(set_variable) action.
+          - A tcl expression used with the C(set_variable) action.
         type: str
       variable_name:
         description:
-           - Variable name used with C(set_variable) action.
+           - Variable name used with the C(set_variable) action.
         type: str
       cookie_insert:
         description:
-          - Cookie name to persist on.
+          - Cookie name on which you want to persist.
           - This parameter is only valid with the C(persist) type.
         type: str
         version_added: "1.1.0"
@@ -105,7 +106,7 @@ options:
         version_added: "1.1.0"
   policy:
     description:
-      - The name of the policy that you want to associate this rule with.
+      - The name of the policy you want to associate this rule with.
     type: str
     required: True
   name:
@@ -121,18 +122,18 @@ options:
         kept when modifying the task.
       - The suboption options listed below are not required for all condition types,
         read the description for more details.
-      - These conditions can be specified in any order. Despite them being a list, the
-        BIG-IP does not treat their order as anything special.
+      - These conditions can be specified in any order. Despite the fact they are in a list,
+        the order in the list does not matter to the BIG-IP.
     type: list
     elements: dict
     suboptions:
       type:
         description:
-          - The condition type. This value controls what below options are required.
-          - When C(type) is C(http_uri), will associate a given C(path_begins_with_any)
-            list of strings with which the HTTP URI should begin with. Any item in the
+          - The condition type. This value controls which of the following options are required.
+          - When C(type) is C(http_uri), the system associates a given C(path_begins_with_any)
+            list of strings with which the HTTP URI should begin. Any item in the
             list will provide a match.
-          - When C(type) is C(all_traffic), will remove all existing conditions from
+          - When C(type) is C(all_traffic), the system removes all existing conditions from
             this rule.
         type: str
         required: True
@@ -143,27 +144,27 @@ options:
           - ssl_extension
       path_begins_with_any:
         description:
-          - A list of strings of characters that the HTTP URI should start with.
+          - A list of strings of characters the HTTP URI should start with.
           - This parameter is only valid with the C(http_uri) type.
         type: str
       host_is_any:
         description:
-          - A list of strings of characters that the HTTP Host should match.
+          - A list of strings of characters the HTTP Host should match.
           - This parameter is only valid with the C(http_host) type.
         type: str
       host_is_not_any:
         description:
-          - A list of strings of characters that the HTTP Host should not match.
+          - A list of strings of characters the HTTP Host should not match.
           - This parameter is only valid with the C(http_host) type.
         type: str
       host_begins_with_any:
         description:
-          - A list of strings of characters that the HTTP Host should start with.
+          - A list of strings of characters the HTTP Host should start with.
           - This parameter is only valid with the C(http_host) type.
         type: str
       server_name_is_any:
         description:
-          - A list of strings of characters that the SSL Extension should match.
+          - A list of strings of characters the SSL Extension should match.
           - This parameter is only valid with the C(ssl_extension) type.
         type: str
       event:
@@ -172,8 +173,8 @@ options:
         type: str
   state:
     description:
-      - When C(present), ensures that the key is uploaded to the device. When
-        C(absent), ensures that the key is removed from the device. If the key
+      - When C(present), ensures the key is uploaded to the device. When
+        C(absent), ensures the key is removed from the device. If the key
         is currently in use, the module will not be able to remove the key.
     type: str
     choices:
@@ -276,17 +277,17 @@ EXAMPLES = r'''
 
 RETURN = r'''
 actions:
-  description: The new list of actions applied to the rule
+  description: The new list of actions applied to the rule.
   returned: changed
   type: complex
   contains:
     type:
-      description: The action type
+      description: The action type.
       returned: changed
       type: str
       sample: forward
     pool:
-      description: Pool for forward to
+      description: Pool for forwarding to.
       returned: changed
       type: str
       sample: foo-pool
