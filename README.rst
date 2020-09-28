@@ -74,6 +74,7 @@ Documentation
 -------------
 
 All documentation is available on |ansiblehelp|.
+Changelog information available on |changelog|.
 
 Your ideas
 ----------
@@ -154,5 +155,7 @@ See `License`_.
 
    <a href="https://f5cloudsolutions.herokuapp.com/" target="_blank">Slack channel</a>
 
+.. |changelog| raw:: html
 
+   <a href="https://github.com/F5Networks/f5-ansible/blob/devel/ansible_collections/f5networks/f5_modules/CHANGELOG.rst" target="_blank">Changelogs</a>
 
