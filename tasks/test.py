@@ -58,7 +58,7 @@ def install_dependency(c):
 
 
 @task(name='ansible-test')
-def ansible_test(c, python_version='3.7', requirements=False):
+def ansible_test(c, python_version='3.8', requirements=False):
     """Runs ansible-test sanity tests against modules."""
     net_dir = '{0}/ansible_collections/ansible/netcommon/'.format(BASE_DIR)
     collection = '{0}/ansible_collections/f5networks/f5_modules'.format(BASE_DIR)
