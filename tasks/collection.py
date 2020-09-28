@@ -96,3 +96,26 @@ def publish(c, filename, api_key, ah=None):
         cmd = 'ansible-galaxy collection publish {0} --api-key={1}'.format(file, api_key)
 
     c.run(cmd)
+
+
+@task(help=dict(
+    version="What version of collection to set in the galaxy.yml file, the version must follow in SemVer format."
+))
+def changelog(c, version):
+    """Build changelog and update galaxy.yml file with next version number."""
+    collection = '{0}/ansible_collections/f5networks/f5_modules'.format(BASE_DIR)
+    validate_version(version)
+    with c.cd(collection):
+        print('Linting changelog fragments.')
+        cmd = "antsibull-changelog lint -v"
+        result = c.run(cmd, warn=True)
+        if result.failed:
+            sys.exit(1)
+        print('Generating changelog.')
+        cmd = 'antsibull-changelog release'
+        result = c.run(cmd, warn=True)
+        if result.failed:
+            sys.exit(1)
+    print('Updating galaxy.yaml file.')
+    update_galaxy_file(version, 'f5_modules')
+    print('Changelog release complete.')
