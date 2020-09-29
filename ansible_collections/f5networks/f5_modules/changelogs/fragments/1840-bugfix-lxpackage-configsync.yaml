@@ -1,4 +1,4 @@
 ---
 bugfixes:
-  - Fix invalid parameter name in bigip_config_sync action module
-  - Fix issue with retaining package files in bigip_lx_package module
+  - Fix invalid parameter name in the bigip_config_sync action module
+  - Fix issue with retaining package files in the bigip_lx_package module
