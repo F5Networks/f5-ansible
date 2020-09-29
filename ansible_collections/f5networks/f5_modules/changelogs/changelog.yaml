@@ -2,501 +2,501 @@ ancestor: null
 releases:
   1.0.0:
     modules:
-    - description: Manage user-defined APM ACLs
+    - description: Manages user-defined APM ACLs.
       name: bigip_apm_acl
       namespace: ''
-    - description: Manage APM Network Access resource
+    - description: Manages the APM Network Access resource.
       name: bigip_apm_network_access
       namespace: ''
     - description: Exports the APM policy or APM access profile from remote nodes.
       name: bigip_apm_policy_fetch
       namespace: ''
-    - description: Manage BIG-IP APM policy or APM access profile imports
+    - description: Manages BIG-IP APM policy or APM access profile imports.
       name: bigip_apm_policy_import
       namespace: ''
-    - description: Manage application settings for DOS profile
+    - description: Manages application settings for DOS profiles.
       name: bigip_asm_dos_application
       namespace: ''
-    - description: Exports the asm policy from remote nodes.
+    - description: Exports the ASM policy from remote nodes.
       name: bigip_asm_policy_fetch
       namespace: ''
-    - description: Manage BIG-IP ASM policy imports
+    - description: Manages BIG-IP ASM policy imports.
       name: bigip_asm_policy_import
       namespace: ''
-    - description: Manage BIG-IP ASM policies
+    - description: Manages BIG-IP ASM policies
       name: bigip_asm_policy_manage
       namespace: ''
-    - description: Manages Server Technology on ASM policy
+    - description: Manages the Server Technology on an ASM policy.
       name: bigip_asm_policy_server_technology
       namespace: ''
-    - description: Manages Signature Sets on ASM policy
+    - description: Manages Signature Sets on an ASM policy.
       name: bigip_asm_policy_signature_set
       namespace: ''
-    - description: Manage CGNAT LSN Pools
+    - description: Manages CGNAT LSN Pools.
       name: bigip_cgnat_lsn_pool
       namespace: ''
-    - description: Manage CLI aliases on a BIG-IP
+    - description: Manages CLI aliases on a BIG-IP.
       name: bigip_cli_alias
       namespace: ''
-    - description: Manage CLI scripts on a BIG-IP
+    - description: Manages CLI scripts on a BIG-IP.
       name: bigip_cli_script
       namespace: ''
-    - description: Run TMSH and BASH commands on F5 devices
+    - description: Runs TMSH and BASH commands on F5 devices.
       name: bigip_command
       namespace: ''
-    - description: Manage BIG-IP configuration sections
+    - description: Manages BIG-IP configuration sections.
       name: bigip_config
       namespace: ''
-    - description: Perform different actions related to config-sync
+    - description: Performs actions related to configuration synchronization (ConfigSync).
       name: bigip_configsync_action
       namespace: ''
-    - description: Manage data groups on a BIG-IP
+    - description: Manages data groups on a BIG-IP.
       name: bigip_data_group
       namespace: ''
-    - description: Manage system authentication on a BIG-IP
+    - description: Manages system authentication on a BIG-IP.
       name: bigip_device_auth
       namespace: ''
-    - description: Manage LDAP device authentication settings on BIG-IP
+    - description: Manages LDAP device authentication settings on BIG-IP.
       name: bigip_device_auth_ldap
       namespace: ''
-    - description: Manage self-signed device certificates
+    - description: Manages self-signed device certificates.
       name: bigip_device_certificate
       namespace: ''
-    - description: Manages device IP configuration settings for HA on a BIG-IP
+    - description: Manages device IP configuration settings for HA on a BIG-IP.
       name: bigip_device_connectivity
       namespace: ''
-    - description: Manage BIG-IP device DNS settings
+    - description: Manages BIG-IP device DNS settings.
       name: bigip_device_dns
       namespace: ''
-    - description: Manage device groups on a BIG-IP
+    - description: Manages device groups on a BIG-IP.
       name: bigip_device_group
       namespace: ''
-    - description: Manages members in a device group
+    - description: Manages members in a device group.
       name: bigip_device_group_member
       namespace: ''
-    - description: Manage HA group settings on a BIG-IP system
+    - description: Manages HA group settings on a BIG-IP system.
       name: bigip_device_ha_group
       namespace: ''
-    - description: Manage HTTPD related settings on BIG-IP
+    - description: Manages HTTPD related settings on BIG-IP.
       name: bigip_device_httpd
       namespace: ''
-    - description: Collect information from F5 BIG-IP devices
+    - description: Collects information from F5 BIG-IP devices.
       name: bigip_device_info
       namespace: ''
-    - description: Manage license installation and activation on BIG-IP devices
+    - description: Manages license installation and activation on BIG-IP devices.
       name: bigip_device_license
       namespace: ''
-    - description: Manage NTP servers on a BIG-IP
+    - description: Manages NTP servers on a BIG-IP.
       name: bigip_device_ntp
       namespace: ''
-    - description: Manage the SSHD settings of a BIG-IP
+    - description: Manages the SSHD settings of a BIG-IP.
       name: bigip_device_sshd
       namespace: ''
-    - description: Manage system-level syslog settings on BIG-IP
+    - description: Manages system-level syslog settings on BIG-IP.
       name: bigip_device_syslog
       namespace: ''
-    - description: Manages traffic groups on BIG-IP
+    - description: Manages traffic groups on BIG-IP.
       name: bigip_device_traffic_group
       namespace: ''
-    - description: Manage the trust relationships between BIG-IPs
+    - description: Manages the trust relationships between BIG-IPs.
       name: bigip_device_trust
       namespace: ''
-    - description: Manage DNS resolver cache configurations on BIG-IP
+    - description: Manages DNS resolver cache configurations on BIG-IP.
       name: bigip_dns_cache_resolver
       namespace: ''
-    - description: Manage LTM DNS nameservers on a BIG-IP
+    - description: Manages LTM DNS nameservers on a BIG-IP.
       name: bigip_dns_nameserver
       namespace: ''
-    - description: Manage DNS resolvers on a BIG-IP
+    - description: Manages DNS resolvers on a BIG-IP.
       name: bigip_dns_resolver
       namespace: ''
-    - description: Manage DNS zones on BIG-IP
+    - description: Manages DNS zones on BIG-IP.
       name: bigip_dns_zone
       namespace: ''
-    - description: Manage files in datastores on a BIG-IP
+    - description: Manages files in datastores on a BIG-IP.
       name: bigip_file_copy
       namespace: ''
-    - description: Manage address lists on BIG-IP AFM
+    - description: Manages address lists on BIG-IP AFM.
       name: bigip_firewall_address_list
       namespace: ''
-    - description: Manage AFM DoS profiles on a BIG-IP
+    - description: Manages AFM DoS profiles on a BIG-IP.
       name: bigip_firewall_dos_profile
       namespace: ''
-    - description: Manage attack vector configuration in an AFM DoS profile
+    - description: Manages the attack vector configuration in an AFM DoS profile.
       name: bigip_firewall_dos_vector
       namespace: ''
-    - description: Manage AFM global rule settings on BIG-IP
+    - description: Manages AFM global rule settings on a BIG-IP.
       name: bigip_firewall_global_rules
       namespace: ''
-    - description: Manages AFM logging profiles configured in the system
+    - description: Manages AFM logging profiles configured in the system.
       name: bigip_firewall_log_profile
       namespace: ''
-    - description: Configures Network Firewall related settings of the log profile
+    - description: Configures Network Firewall related settings of the log profile.
       name: bigip_firewall_log_profile_network
       namespace: ''
-    - description: Manage AFM security firewall policies on a BIG-IP
+    - description: Manages AFM security firewall policies on a BIG-IP.
       name: bigip_firewall_policy
       namespace: ''
-    - description: Manage port lists on BIG-IP AFM
+    - description: Manages port lists on BIG-IP AFM.
       name: bigip_firewall_port_list
       namespace: ''
-    - description: Manage AFM Firewall rules
+    - description: Manages AFM Firewall rules.
       name: bigip_firewall_rule
       namespace: ''
-    - description: Manage AFM security firewall policies on a BIG-IP
+    - description: Manages AFM security firewall policies on a BIG-IP.
       name: bigip_firewall_rule_list
       namespace: ''
-    - description: Manage BIG-IP AFM schedule configurations
+    - description: Manages BIG-IP AFM schedule configurations.
       name: bigip_firewall_schedule
       namespace: ''
-    - description: Manage Datacenter configuration in BIG-IP
+    - description: Manages the Datacenter configuration on a BIG-IP.
       name: bigip_gtm_datacenter
       namespace: ''
-    - description: Manages global GTM settings
+    - description: Manages global GTM settings.
       name: bigip_gtm_global
       namespace: ''
-    - description: Manages F5 BIG-IP GTM BIG-IP monitors
+    - description: Manages F5 BIG-IP GTM BIG-IP monitors.
       name: bigip_gtm_monitor_bigip
       namespace: ''
-    - description: Manages external GTM monitors on a BIG-IP
+    - description: Manages external GTM monitors on a BIG-IP.
       name: bigip_gtm_monitor_external
       namespace: ''
-    - description: Manages F5 BIG-IP GTM FirePass monitors
+    - description: Manages F5 BIG-IP GTM FirePass monitors.
       name: bigip_gtm_monitor_firepass
       namespace: ''
-    - description: Manages F5 BIG-IP GTM http monitors
+    - description: Manages F5 BIG-IP GTM HTTP monitors.
       name: bigip_gtm_monitor_http
       namespace: ''
-    - description: Manages F5 BIG-IP GTM https monitors
+    - description: Manages F5 BIG-IP GTM HTTPS monitors.
       name: bigip_gtm_monitor_https
       namespace: ''
-    - description: Manages F5 BIG-IP GTM tcp monitors
+    - description: Manages F5 BIG-IP GTM TCP monitors.
       name: bigip_gtm_monitor_tcp
       namespace: ''
-    - description: Manages F5 BIG-IP GTM tcp half-open monitors
+    - description: Manages F5 BIG-IP GTM TCP half-open monitors.
       name: bigip_gtm_monitor_tcp_half_open
       namespace: ''
-    - description: Manages F5 BIG-IP GTM pools
+    - description: Manages F5 BIG-IP GTM pools.
       name: bigip_gtm_pool
       namespace: ''
-    - description: Manage GTM pool member settings
+    - description: Manages GTM pool member settings.
       name: bigip_gtm_pool_member
       namespace: ''
-    - description: Manages F5 BIG-IP GTM servers
+    - description: Manages F5 BIG-IP GTM servers.
       name: bigip_gtm_server
       namespace: ''
-    - description: Manages GTM Topology Records
+    - description: Manages GTM Topology Records.
       name: bigip_gtm_topology_record
       namespace: ''
-    - description: Manages GTM Topology Regions
+    - description: Manages GTM Topology Regions.
       name: bigip_gtm_topology_region
       namespace: ''
-    - description: Manages F5 BIG-IP GTM virtual servers
+    - description: Manages F5 BIG-IP GTM virtual servers.
       name: bigip_gtm_virtual_server
       namespace: ''
-    - description: Manages F5 BIG-IP GTM wide ip
+    - description: Manages F5 BIG-IP GTM wide IPs.
       name: bigip_gtm_wide_ip
       namespace: ''
-    - description: Manage the hostname of a BIG-IP
+    - description: Manages the hostname of a BIG-IP.
       name: bigip_hostname
       namespace: ''
-    - description: Manages TCL iApp services on a BIG-IP
+    - description: Manages TCL iApp services on a BIG-IP.
       name: bigip_iapp_service
       namespace: ''
-    - description: Manages TCL iApp templates on a BIG-IP
+    - description: Manages TCL iApp templates on a BIG-IP.
       name: bigip_iapp_template
       namespace: ''
-    - description: Manage IPSec IKE Peer configuration on BIG-IP
+    - description: Manages IPSec IKE Peer configuration on a BIG-IP.
       name: bigip_ike_peer
       namespace: ''
-    - description: Manage BIG-IP advanced routing configuration sections
+    - description: Manages the BIG-IP advanced routing configuration sections.
       name: bigip_imish_config
       namespace: ''
-    - description: Module to manage BIG-IP physical interfaces.
+    - description: Manages BIG-IP physical interfaces.
       name: bigip_interface
       namespace: ''
-    - description: Manage IPSec policies on a BIG-IP
+    - description: Manages IPSec policies on a BIG-IP.
       name: bigip_ipsec_policy
       namespace: ''
-    - description: Manage iRules across different modules on a BIG-IP
+    - description: Manages iRules across different modules on a BIG-IP.
       name: bigip_irule
       namespace: ''
     - description: Manages log destinations on a BIG-IP.
       name: bigip_log_destination
       namespace: ''
-    - description: Manages log publishers on a BIG-IP
+    - description: Manages log publishers on a BIG-IP.
       name: bigip_log_publisher
       namespace: ''
-    - description: Manages Javascript LX packages on a BIG-IP
+    - description: Manages Javascript LX packages on a BIG-IP.
       name: bigip_lx_package
       namespace: ''
-    - description: Manage system management routes on a BIG-IP
+    - description: Manages system management routes on a BIG-IP.
       name: bigip_management_route
       namespace: ''
-    - description: Manage peers for routing generic message protocol messages
+    - description: Manages peers for routing generic message protocol messages.
       name: bigip_message_routing_peer
       namespace: ''
-    - description: Manage generic message parser profile.
+    - description: Manages generic message parser profiles.
       name: bigip_message_routing_protocol
       namespace: ''
-    - description: Manages static routes for routing message protocol messages
+    - description: Manages static routes for routing message protocol messages.
       name: bigip_message_routing_route
       namespace: ''
-    - description: Manages router profiles for message-routing protocols
+    - description: Manages router profiles for message-routing protocols.
       name: bigip_message_routing_router
       namespace: ''
-    - description: Manages configuration for an outgoing connection
+    - description: Manages the configuration for an outgoing connection.
       name: bigip_message_routing_transport_config
       namespace: ''
-    - description: Manage DNS monitors on a BIG-IP
+    - description: Manages DNS monitors on a BIG-IP.
       name: bigip_monitor_dns
       namespace: ''
-    - description: Manages external LTM monitors on a BIG-IP
+    - description: Manages external LTM monitors on a BIG-IP.
       name: bigip_monitor_external
       namespace: ''
-    - description: Manages F5 BIG-IP LTM gateway ICMP monitors
+    - description: Manages F5 BIG-IP LTM gateway ICMP monitors.
       name: bigip_monitor_gateway_icmp
       namespace: ''
-    - description: Manages F5 BIG-IP LTM http monitors
+    - description: Manages F5 BIG-IP LTM HTTP monitors
       name: bigip_monitor_http
       namespace: ''
-    - description: Manages F5 BIG-IP LTM https monitors
+    - description: Manages F5 BIG-IP LTM HTTPS monitors
       name: bigip_monitor_https
       namespace: ''
-    - description: Manages BIG-IP LDAP monitors
+    - description: Manages BIG-IP LDAP monitors.
       name: bigip_monitor_ldap
       namespace: ''
-    - description: Manages BIG-IP SNMP data collecting agent (DCA) monitors
+    - description: Manages BIG-IP SNMP data collecting agent (DCA) monitors.
       name: bigip_monitor_snmp_dca
       namespace: ''
-    - description: Manages F5 BIG-IP LTM tcp echo monitors
+    - description: Manages F5 BIG-IP LTM TCP echo monitors.
       name: bigip_monitor_tcp_echo
       namespace: ''
-    - description: Manages F5 BIG-IP LTM tcp half-open monitors
+    - description: Manages F5 BIG-IP LTM TCP half-open monitors.
       name: bigip_monitor_tcp_half_open
       namespace: ''
-    - description: Manages F5 BIG-IP LTM udp monitors
+    - description: Manages F5 BIG-IP LTM UDP monitors.
       name: bigip_monitor_udp
       namespace: ''
-    - description: Manage network global settings on BIG-IP
+    - description: Manages network global settings on a BIG-IP.
       name: bigip_network_globals
       namespace: ''
-    - description: Manages F5 BIG-IP LTM nodes
+    - description: Manages F5 BIG-IP LTM nodes.
       name: bigip_node
       namespace: ''
-    - description: Manage BIG-IP partitions
+    - description: Manages BIG-IP partitions.
       name: bigip_partition
       namespace: ''
-    - description: Manages the authentication password policy on a BIG-IP
+    - description: Manages the authentication password policy on a BIG-IP.
       name: bigip_password_policy
       namespace: ''
-    - description: Manage general policy configuration on a BIG-IP
+    - description: Manages the general policy configuration on a BIG-IP.
       name: bigip_policy
       namespace: ''
-    - description: Manage LTM policy rules on a BIG-IP
+    - description: Manages LTM policy rules on a BIG-IP.
       name: bigip_policy_rule
       namespace: ''
-    - description: Manages F5 BIG-IP LTM pool members
+    - description: Manages F5 BIG-IP LTM pool members.
       name: bigip_pool_member
       namespace: ''
-    - description: Manage HTTP analytics profiles on a BIG-IP
+    - description: Manages HTTP analytics profiles on a BIG-IP.
       name: bigip_profile_analytics
       namespace: ''
-    - description: Manages client SSL profiles on a BIG-IP
+    - description: Manages client SSL profiles on a BIG-IP.
       name: bigip_profile_client_ssl
       namespace: ''
-    - description: Manage DNS profiles on a BIG-IP
+    - description: Manages DNS profiles on a BIG-IP.
       name: bigip_profile_dns
       namespace: ''
-    - description: Manages Fast L4 profiles
+    - description: Manages Fast L4 profiles on a BIG-IP.
       name: bigip_profile_fastl4
       namespace: ''
-    - description: Manages FTP profiles
+    - description: Manages FTP profiles on a BIG-IP.
       name: bigip_profile_ftp
       namespace: ''
-    - description: Manage HTTP profiles on a BIG-IP
+    - description: Manages HTTP profiles on a BIG-IP.
       name: bigip_profile_http
       namespace: ''
-    - description: Manage HTTP2 profiles on a BIG-IP
+    - description: Manages HTTP2 profiles on a BIG-IP.
       name: bigip_profile_http2
       namespace: ''
-    - description: Manage HTTP compression profiles on a BIG-IP
+    - description: Manages HTTP compression profiles on a BIG-IP.
       name: bigip_profile_http_compression
       namespace: ''
-    - description: Manage OneConnect profiles on a BIG-IP
+    - description: Manages OneConnect profiles on a BIG-IP.
       name: bigip_profile_oneconnect
       namespace: ''
-    - description: Manage cookie persistence profiles on BIG-IP
+    - description: Manages cookie persistence profiles on BIG-IP.
       name: bigip_profile_persistence_cookie
       namespace: ''
-    - description: Manage source address persistence profiles
+    - description: Manages source address persistence profiles on a BIG-IP.
       name: bigip_profile_persistence_src_addr
       namespace: ''
-    - description: Manages server SSL profiles on a BIG-IP
+    - description: Manages server SSL profiles on a BIG-IP.
       name: bigip_profile_server_ssl
       namespace: ''
-    - description: Manage SIP profiles on a BIG-IP
+    - description: Manages SIP profiles on a BIG-IP.
       name: bigip_profile_sip
       namespace: ''
-    - description: Manage TCP profiles on a BIG-IP
+    - description: Manages TCP profiles on a BIG-IP.
       name: bigip_profile_tcp
       namespace: ''
-    - description: Manage UDP profiles on a BIG-IP
+    - description: Manages UDP profiles on a BIG-IP.
       name: bigip_profile_udp
       namespace: ''
-    - description: Manage BIG-IP module provisioning
+    - description: Manages BIG-IP module provisioning.
       name: bigip_provision
       namespace: ''
-    - description: Manage qkviews on the device
+    - description: Manages qkviews on the device.
       name: bigip_qkview
       namespace: ''
-    - description: Manage remote roles on a BIG-IP
+    - description: Manages remote roles on a BIG-IP.
       name: bigip_remote_role
       namespace: ''
-    - description: Manipulate remote syslog settings on a BIG-IP
+    - description: Manipulates remote syslog settings on a BIG-IP.
       name: bigip_remote_syslog
       namespace: ''
-    - description: Manages default settings for remote user accounts on a BIG-IP
+    - description: Manages the default settings for remote user accounts on a BIG-IP.
       name: bigip_remote_user
       namespace: ''
-    - description: Manage route domains on a BIG-IP
+    - description: Manages route domains on a BIG-IP.
       name: bigip_routedomain
       namespace: ''
-    - description: Manage Self-IPs on a BIG-IP system
+    - description: Manages Self IP addresses on a BIG-IP.
       name: bigip_selfip
       namespace: ''
     - description: Manages service policies on a BIG-IP.
       name: bigip_service_policy
       namespace: ''
-    - description: Manages SMTP settings on the BIG-IP
+    - description: Manages SMTP settings on the BIG-IP.
       name: bigip_smtp
       namespace: ''
-    - description: Manage SNAT pools on a BIG-IP
+    - description: Manages SNAT pools on a BIG-IP.
       name: bigip_snat_pool
       namespace: ''
-    - description: Manage SNAT Translations on a BIG-IP
+    - description: Manages SNAT Translations on a BIG-IP.
       name: bigip_snat_translation
       namespace: ''
-    - description: Manipulate general SNMP settings on a BIG-IP
+    - description: Manipulates general SNMP settings on a BIG-IP.
       name: bigip_snmp
       namespace: ''
     - description: Manages SNMP communities on a BIG-IP.
       name: bigip_snmp_community
       namespace: ''
-    - description: Manipulate SNMP trap information on a BIG-IP
+    - description: Manipulates SNMP trap information on a BIG-IP.
       name: bigip_snmp_trap
       namespace: ''
-    - description: Manage software images on a BIG-IP
+    - description: Manages software images on a BIG-IP.
       name: bigip_software_image
       namespace: ''
-    - description: Install software images on a BIG-IP
+    - description: Installs software images on a BIG-IP.
       name: bigip_software_install
       namespace: ''
-    - description: Manage the software update settings of a BIG-IP
+    - description: Manages the software update settings of a BIG-IP.
       name: bigip_software_update
       namespace: ''
-    - description: Import/Delete certificates from BIG-IP
+    - description: Imports/Deletes certificates from a BIG-IP.
       name: bigip_ssl_certificate
       namespace: ''
-    - description: Import/Delete SSL keys from BIG-IP
+    - description: Imports/Deletes SSL keys from a BIG-IP.
       name: bigip_ssl_key
       namespace: ''
-    - description: Manage OCSP configurations on BIG-IP
+    - description: Manages OCSP configurations on a BIG-IP.
       name: bigip_ssl_ocsp
       namespace: ''
-    - description: Manipulate static routes on a BIG-IP
+    - description: Manipulates static routes on a BIG-IP.
       name: bigip_static_route
       namespace: ''
-    - description: Manage BIG-IP tmm daemon log settings
+    - description: Manages BIG-IP tmm daemon log settings.
       name: bigip_sys_daemon_log_tmm
       namespace: ''
-    - description: Manage BIG-IP system database variables
+    - description: Manages BIG-IP system database variables.
       name: bigip_sys_db
       namespace: ''
-    - description: Manage BIG-IP global settings
+    - description: Manages BIG-IP global settings.
       name: bigip_sys_global
       namespace: ''
-    - description: Manage timer policies on a BIG-IP
+    - description: Manages timer policies on a BIG-IP.
       name: bigip_timer_policy
       namespace: ''
-    - description: Manage IPSec Traffic Selectors on BIG-IP
+    - description: Manages IPSec Traffic Selectors on a BIG-IP.
       name: bigip_traffic_selector
       namespace: ''
-    - description: Manage trunks on a BIG-IP
+    - description: Manages trunks on a BIG-IP.
       name: bigip_trunk
       namespace: ''
-    - description: Manage tunnels on a BIG-IP
+    - description: Manages tunnels on a BIG-IP.
       name: bigip_tunnel
       namespace: ''
-    - description: Manage upload, installation and removal of UCS files
+    - description: Manages upload, installation, and removal of UCS files.
       name: bigip_ucs
       namespace: ''
-    - description: Fetches a UCS file from remote nodes
+    - description: Fetches a UCS file from remote nodes.
       name: bigip_ucs_fetch
       namespace: ''
-    - description: Manage user accounts and user attributes on a BIG-IP
+    - description: Manages user accounts and user attributes on a BIG-IP.
       name: bigip_user
       namespace: ''
-    - description: Manages vCMP guests on a BIG-IP
+    - description: Manages vCMP guests on a BIG-IP.
       name: bigip_vcmp_guest
       namespace: ''
-    - description: Manage LTM virtual addresses on a BIG-IP
+    - description: Manages LTM virtual addresses on a BIG-IP.
       name: bigip_virtual_address
       namespace: ''
-    - description: Manage LTM virtual servers on a BIG-IP
+    - description: Manages LTM virtual servers on a BIG-IP.
       name: bigip_virtual_server
       namespace: ''
-    - description: Manage VLANs on a BIG-IP system
+    - description: Manages VLANs on a BIG-IP.
       name: bigip_vlan
       namespace: ''
-    - description: Wait for a BIG-IP condition before continuing
+    - description: Manages the wait time for a BIG-IP condition before continuing.
       name: bigip_wait
       namespace: ''
-    - description: Manages BIG-IQ FastHTTP applications
+    - description: Manages BIG-IQ FastHTTP applications.
       name: bigiq_application_fasthttp
       namespace: ''
-    - description: Manages BIG-IQ FastL4 TCP applications
+    - description: Manages BIG-IQ FastL4 TCP applications.
       name: bigiq_application_fastl4_tcp
       namespace: ''
-    - description: Manages BIG-IQ FastL4 UDP applications
+    - description: Manages BIG-IQ FastL4 UDP applications.
       name: bigiq_application_fastl4_udp
       namespace: ''
-    - description: Manages BIG-IQ HTTP applications
+    - description: Manages BIG-IQ HTTP applications.
       name: bigiq_application_http
       namespace: ''
-    - description: Manages BIG-IQ HTTPS offload applications
+    - description: Manages BIG-IQ HTTPS offload applications.
       name: bigiq_application_https_offload
       namespace: ''
-    - description: Manages BIG-IQ HTTPS WAF applications
+    - description: Manages BIG-IQ HTTPS WAF applications.
       name: bigiq_application_https_waf
       namespace: ''
-    - description: Manage BIG-IP devices through BIG-IQ
+    - description: Manages BIG-IP devices through BIG-IQ.
       name: bigiq_device_discovery
       namespace: ''
-    - description: Collect information from F5 BIG-IQ devices
+    - description: Collects information from F5 BIG-IQ devices.
       name: bigiq_device_info
       namespace: ''
-    - description: Manages licenses in a BIG-IQ registration key pool
+    - description: Manages licenses in a BIG-IQ registration key pool.
       name: bigiq_regkey_license
       namespace: ''
-    - description: Manage regkey license assignment on BIG-IPs from a BIG-IQ
+    - description: Manages regkey license assignment on BIG-IPs from a BIG-IQ.
       name: bigiq_regkey_license_assignment
       namespace: ''
-    - description: Manages registration key pools on BIG-IQ
+    - description: Manages registration key pools on BIG-IQ.
       name: bigiq_regkey_pool
       namespace: ''
-    - description: Manage utility licenses on a BIG-IQ
+    - description: Manages utility licenses on a BIG-IQ.
       name: bigiq_utility_license
       namespace: ''
-    - description: Manage utility license assignment on BIG-IPs from a BIG-IQ
+    - description: Manages utility license assignment on BIG-IPs from a BIG-IQ.
       name: bigiq_utility_license_assignment
       namespace: ''
     plugins:
       lookup:
-      - description: Return random license from list
+      - description: Returns a random license from the list.
         name: bigiq_license
         namespace: null
-      - description: Return random license from list
+      - description: Returns a random license from the list.
         name: license_hopper
         namespace: null
     release_date: '2019-11-14'
@@ -505,8 +505,8 @@ releases:
       bugfixes:
       - Fix allowing authenticated not authorized users using modules to modify a
         resource
-      - Fix ipv6 netmask for self-ips in bigip_device_info
-      - Fix save_when parameter not saving configuration as expected in bigip_imish_config
+      - Fix IPv6 netmask for self IPs in bigip_device_info
+      - Fix save_when parameter not saving the configuration as expected in bigip_imish_config
         module
       deprecated_features:
       - Deprecated bigip_appsvcs_extension module
@@ -520,9 +520,9 @@ releases:
       - Add self allow option to bigip_network_globals module
       - Add true_names support to bigip_profile_client_ssl modules allowing specifying
         true filenames of the certificates
-      - New ftp monitor module for configuring and managing ftp monitors
-      - New icmp monitor module for configuring and managing icmp monitors
-      - New smtp monitor module for configuring and managing smtp monitors
+      - New FTP monitor module for configuring and managing FTP monitors
+      - New ICMP monitor module for configuring and managing ICMP monitors
+      - New SMTP monitor module for configuring and managing SMTP monitors
       - New universal persistence profile module for configuring and managing universal
         persistence profiles
       removed_features:
@@ -547,16 +547,16 @@ releases:
     - 1580-new-smtp-monitor.yaml
     - 1601-remove-deprecations.yaml
     modules:
-    - description: Manage FTP monitors on a BIG-IP
+    - description: Manages FTP monitors on a BIG-IP.
       name: bigip_monitor_ftp
       namespace: ''
-    - description: Manages F5 BIG-IP LTM ICMP monitors
+    - description: Manages F5 BIG-IP LTM ICMP monitors.
       name: bigip_monitor_icmp
       namespace: ''
-    - description: Manage SMTP monitors on a BIG-IP
+    - description: Manages SMTP monitors on a BIG-IP.
       name: bigip_monitor_smtp
       namespace: ''
-    - description: Manage universal persistence profiles
+    - description: Manages universal persistence profiles.
       name: bigip_profile_persistence_universal
       namespace: ''
     release_date: '2020-01-07'
@@ -565,8 +565,8 @@ releases:
       bugfixes:
       - Change bigip_data_group module's records parameter type to 'raw'
       - Fix '?' character handling in value for bigip_data_group module
-      - Fix a bug with using true_name parameter in bigip_profile_client_ssl module
-      - Fix an issue with /32 IPV6 subnet being saved as host rather than a network
+      - Fix a bug with using the true_name parameter in the bigip_profile_client_ssl module
+      - Fix an issue with /32 IPV6 subnets being saved as host rather than a network
         in bigip_data_group module
       - Fix attribute error in bigip_software_install module
       - Fix check_profiles boolean parameter conversion in bigip_virtual_server
@@ -586,7 +586,7 @@ releases:
       - Add management routes information to bigip_device_info module
       - Add support for BIG-IQ 7.0 and above to bigiq_device_info module
       - Add virtual server policies information to bigip_device_info
-      - New bigip_device_auth_radius module to manage radius auth configuration
+      - New bigip_device_auth_radius module to manage RADIUS auth configuration
     fragments:
     - 1112-addon-keys.yaml
     - 1483-add-ciphergroup-param.yaml
@@ -614,9 +614,9 @@ releases:
         in bigip_device_auth_server module. Refer to module documentation for usage
         details
       bugfixes:
-      - Fix invalid data type of parition_access parameter in bigip_user module
+      - Fix invalid data type of partition_access parameter in the bigip_user module
       minor_changes:
-      - Add ability to install software images on vcmp guests with bigip_software_install
+      - Add ability to install software images on vCMP guests with the bigip_software_install
         module
       - Add cipher_list parameter to bigip_monitor_https
       - Add hw_syn_cookie parameter to bigip_vlan module
@@ -624,13 +624,13 @@ releases:
       - Add pool order option to bigip_gtm_wide_ip module
       - Add pva_acceleration parameter to bigip_profile_fastl4 module
       - Add set_variable type to bigip_policy_rule module
-      - Add ssl certificate subject_alternative_name information to bigip_device_info
+      - Add SSL certificate subject_alternative_name information to bigip_device_info
         module
       - Add time_wait_timeout parameter to bigip_profile_tcp module
       - Add use_for_auth parameter to bigip_device_auth_ldap module to allow setting
-        up ldap as authentication source
+        up LDAP as the authentication source
       - New bigip_device_auth_radius server module to manage radius server configuration
-      - New bigip_monitor_mysql module to manage mysql monitor configuration
+      - New bigip_monitor_mysql module to manage mySQL monitor configuration
       - New bigip_monitor_oracle module to manage oracle monitor configuration
       - New bigip_ssl_csr_module to create CSR files
       removed_features:
@@ -649,32 +649,32 @@ releases:
     - 1724-added-options.yaml
     - 1726-multiple-additions.yaml
     modules:
-    - description: Manages RADIUS auth configuration on BIGIP device
+    - description: Manages RADIUS auth configuration on a BIG-IP.
       name: bigip_device_auth_radius
       namespace: ''
-    - description: Manages device's radius server configuration
+    - description: Manages the RADIUS server configuration on a BIG-IP.
       name: bigip_device_auth_radius_server
       namespace: ''
-    - description: Manages BIG-IP MySQL monitors
+    - description: Manages BIG-IP MySQL monitors.
       name: bigip_monitor_mysql
       namespace: ''
-    - description: Manages BIG-IP Oracle monitors
+    - description: Manages BIG-IP Oracle monitors.
       name: bigip_monitor_oracle
       namespace: ''
-    - description: Create SSL CSR files on the BIG-IP
+    - description: Creates SSL CSR files on the BIG-IP.
       name: bigip_ssl_csr
       namespace: ''
     release_date: '2020-04-22'
   1.4.0:
     changes:
       bugfixes:
-      - Fix asm policy import issue by users with web-application-security-administrator
+      - Fix ASM policy import issue by users with web-application-security-administrator
         role
       - Fix idempotency when using true_names parameter in bigip_profile_client_ssl
         module
       major_changes:
       - Remove redundant parameters in f5_provider to fix disparity between documentation
-        and modules' parameters
+        and module parameters
       minor_changes:
       - Add SSH connection type capability to bigip_wait module
       - Add apply option to bigip_asm_policy_manage module
@@ -690,20 +690,20 @@ releases:
     - 1740-new-gtm-dns-listener-module.yaml
     - 1749-parameter-changes.yaml
     modules:
-    - description: Manage BIG-IP system ASM advanced settings
+    - description: Manages BIG-IP system ASM advanced settings.
       name: bigip_asm_advanced_settings
       namespace: ''
-    - description: configures BIG-IP DNS system to answer TCP or UDP DNS requests
+    - description: Configures the BIG-IP DNS system to answer TCP or UDP DNS requests.
       name: bigip_gtm_dns_listener
       namespace: ''
-    - description: Manages F5 BIG-IP LTM tcp monitors
+    - description: Manages F5 BIG-IP LTM TCP monitors.
       name: bigip_monitor_tcp
       namespace: ''
     release_date: '2020-06-09'
   1.5.0:
     changes:
       bugfixes:
-      - Fix download of apm policy in bigip_apm_policy_fetch module
+      - Fix the download of an APM policy in bigip_apm_policy_fetch module
       - Fix issue with control characters in pool_id in bigiq_regkey_license_assignment
         module
     fragments:
