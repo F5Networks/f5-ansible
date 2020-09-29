@@ -1,3 +1,3 @@
 ---
 minor_changes:
-  - Add AS3, TS, CFE, DO information to bigip_device_info
+  - Add AS3, TS, CFE, and DO information to the bigip_device_info module
