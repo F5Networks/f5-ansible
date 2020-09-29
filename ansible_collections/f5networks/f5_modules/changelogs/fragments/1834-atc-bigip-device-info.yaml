@@ -1,6 +1,6 @@
 ---
 minor_changes:
-  - Add AS3 declaration information to bigip_device_info
-  - Add DO declaration information to bigip_device_info
-  - Add TS declaration information to bigip_device_info
-  - Add CFE declaration information to bigip_device_info
+  - Add AS3 declaration information to the bigip_device_info module
+  - Add DO declaration information to the bigip_device_info module
+  - Add TS declaration information to the bigip_device_info module
+  - Add CFE declaration information to the bigip_device_info module

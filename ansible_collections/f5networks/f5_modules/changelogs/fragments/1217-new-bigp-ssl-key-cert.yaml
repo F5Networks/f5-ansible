@@ -1,3 +1,3 @@
 ---
 minor_changes:
-  - New bigip_ssl_key_cert module to manage ssl certificates and keys with transaction interface
+  - New bigip_ssl_key_cert module to manage SSL certificates and keys with the transaction interface

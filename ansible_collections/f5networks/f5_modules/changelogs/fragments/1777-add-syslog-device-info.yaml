@@ -1,3 +1,3 @@
 ---
 minor_changes:
-  - Add remote_syslog information to bigip_device_info module.
+  - Add remote_syslog information to the bigip_device_info module.

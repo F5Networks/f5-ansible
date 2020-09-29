@@ -1,3 +1,3 @@
 ---
 minor_changes:
-  - Add reuse_objects parameter to bigip_apm_policy_import module
+  - Add reuse_objects parameter to the bigip_apm_policy_import module

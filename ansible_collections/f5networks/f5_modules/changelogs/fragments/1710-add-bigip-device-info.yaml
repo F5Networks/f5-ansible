@@ -1,7 +1,7 @@
 ---
 bugfixes:
-  - Fix key error in list comprehension in AsmPolicyStatsParameters class
+  - Fix key error in list comprehension in the AsmPolicyStatsParameters class
 minor_changes:
-  - Add parent_policies and policies_pending_changes information parameters to obtain when grabbing asm-policy-stats
-  - Changed the meaning of policies_active, policies_inactive stat information due to changes in TMOS 13.x
+  - Add parent_policies and policies_pending_changes information parameters to obtain when gathering asm-policy-stats
+  - Changed the meaning of policies_active and policies_inactive stat information due to changes in TMOS 13.x
   - Added apply information parameter to indicate if an ASM policy has pending changes that need to be applied.
