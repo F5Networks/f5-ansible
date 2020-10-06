@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Changed unicast_failover element type to dictionary
