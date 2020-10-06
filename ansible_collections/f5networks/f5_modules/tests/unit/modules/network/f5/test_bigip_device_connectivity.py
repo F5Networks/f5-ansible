@@ -307,7 +307,7 @@ class TestManager(unittest.TestCase):
 
     def test_unset_unicast_failover(self, *args):
         set_module_args(dict(
-            unicast_failover="none",
+            unicast_failover=[],
             provider=dict(
                 server='localhost',
                 password='password',
