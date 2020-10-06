@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix force parameter set to yes causing list index out of range error

@@ -36,39 +36,40 @@ options:
     description:
       - Addresses to use for failover operations. Options C(address)
         and C(port) are supported with dictionary structure, where C(address) is the
-        local IP address the system uses for failover operations. Port
-        specifies the port the system uses for failover operations. If C(port)
-        is not specified, the default value C(1026) will be used.  If you are
-        specifying the (recommended) management IP address, use 'management-ip' in
+        local IP address the system uses for failover operations.
+      - Port specifies the port the system uses for failover operations. If C(port)
+        is not specified, the default value C(1026) will be used.
+      - If you are specifying the (recommended) management IP address, use 'management-ip' in
         the address field.
+      - When the value is set to empty list, the parameter value is removed from device.
     type: list
-    elements: str
+    elements: dict
   failover_multicast:
     description:
       - When C(yes), ensures the Failover Multicast configuration is enabled
         and, if no further multicast configuration is provided, ensures that
         C(multicast_interface), C(multicast_address) and C(multicast_port) are
-        the defaults specified in the description of each option. When C(no), ensures
-        that Failover Multicast configuration is disabled.
+        the defaults specified in the description of each option.
+      - When C(no), ensures that Failover Multicast configuration is disabled.
     type: bool
   multicast_interface:
     description:
       - Interface over which the system sends multicast messages associated
-        with failover. When C(failover_multicast) is C(yes) and this option is
-        not provided, a default of C(eth0) will be used.
+        with failover.
+      - When C(failover_multicast) is C(yes) and this option is not provided, a default of C(eth0) will be used.
     type: str
   multicast_address:
     description:
       - IP address for the system to send multicast messages associated with
-        failover. When C(failover_multicast) is C(yes) and this option is not
-        provided, a default of C(224.0.0.245) will be used.
+        failover.
+      - When C(failover_multicast) is C(yes) and this option is not provided, a default of C(224.0.0.245) will be used.
     type: str
   multicast_port:
     description:
       - Port for the system to send multicast messages associated with
-        failover. When C(failover_multicast) is C(yes) and this option is not
-        provided, a default of C(62960) will be used. This value must be between
-        0 and 65535.
+        failover.
+      - When C(failover_multicast) is C(yes) and this option is not provided, a default of C(62960) will be used.
+        This value must be between 0 and 65535.
     type: int
   cluster_mirroring:
     description:
@@ -303,7 +304,7 @@ class ModuleParameters(Parameters):
     def unicast_failover(self):
         if self._values['unicast_failover'] is None:
             return None
-        if self._values['unicast_failover'] == ['none']:
+        if not self._values['unicast_failover']:
             return []
         result = []
         for item in self._values['unicast_failover']:
@@ -652,7 +653,7 @@ class ArgumentSpec(object):
             ),
             unicast_failover=dict(
                 type='list',
-                elements='str',
+                elements='dict',
             ),
             mirror_primary_address=dict(),
             mirror_secondary_address=dict(),
