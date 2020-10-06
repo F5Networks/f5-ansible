@@ -408,6 +408,8 @@ class ModuleManager(object):
         if self.exists():
             if self.want.force is False:
                 return False
+        if not self.exists() and self.want.force is True:
+            self.want.update({'force': None})
         if self.want.inline:
             task = self.inline_import()
             self.wait_for_task(task)

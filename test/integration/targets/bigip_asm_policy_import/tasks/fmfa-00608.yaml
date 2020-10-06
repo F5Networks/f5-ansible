@@ -1,0 +1,19 @@
+---
+
+- name: FMFA 00608 - Import ASM policy, non existent policy, force set to yes
+  bigip_asm_policy_import:
+    name: foo-policy
+    force: yes
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: FMFA 00608 - Import ASM policy, non existent policy, force set to yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: FMFA 00608 - Remove ASM policy
+  bigip_asm_policy_manage:
+    name: foo-policy
+    state: absent
