@@ -63,6 +63,7 @@ options:
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Nitin Khanna (@nitinthewiz)
 '''
 
 EXAMPLES = r'''
@@ -435,11 +436,12 @@ class ModuleManager(object):
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
             raise F5ModuleError(resp.content)
 
-        result, output = self.wait_for_task(response['id'])
+        result, output, file_size = self.wait_for_task(response['id'])
         if result and output:
             if 'file' in output:
                 self.changes.update(dict(inline_policy=output['file']))
         if result:
+            self.want.file_size = file_size
             return True
 
     def wait_for_task(self, task_id):
@@ -469,9 +471,9 @@ class ModuleManager(object):
             )
         if response['status'] == 'COMPLETED':
             if not self.want.inline:
-                return True, None
+                return True, None, response['result']['fileSize']
             else:
-                return True, response['result']
+                return True, response['result'], response['result']['fileSize']
 
     def _set_policy_link(self):
         policy_link = None
@@ -563,7 +565,7 @@ class ModuleManager(object):
             self.want.file
         )
         try:
-            download_asm_file(self.client, url, dest)
+            download_asm_file(self.client, url, dest, self.want.file_size)
         except F5ModuleError:
             raise F5ModuleError(
                 "Failed to download the file."
