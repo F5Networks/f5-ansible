@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix issue where ASM file download needs to be chunked for larger files.
