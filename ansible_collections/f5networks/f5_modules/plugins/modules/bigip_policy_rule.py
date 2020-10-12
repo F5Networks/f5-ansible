@@ -693,6 +693,11 @@ class ModuleParameters(Parameters):
                 connection=True,
                 shutdown=True
             ))
+        elif 'request' in item['event']:
+            action.update(dict(
+                connection=True,
+                shutdown=True
+            ))            
 
     def _handle_persist_action(self, action, item):
         """Handle the nuances of the persist type
