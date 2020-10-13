@@ -1,0 +1,52 @@
+---
+
+- name: Import ASM policy
+  bigip_asm_policy_import:
+    name: issue_01859
+    source: "{{ role_path }}/large_asm_file/large_asm_file.xml"
+  register: result
+
+- name: Export ASM policy in xml format
+  bigip_asm_policy_fetch:
+    name: issue_01859
+    file: issue_01859.xml
+    dest: "{{ role_path }}/files/"
+    binary: no
+  register: result
+
+- name: Assert Export ASM policy in xml format
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Get stats of a imported file
+  stat:
+    path: "{{ role_path }}/large_asm_file/large_asm_file.xml"
+  register: old_file
+
+- name: Get stats of a exported file
+  stat:
+    path: "{{ role_path }}/files/issue_01859.xml"
+  register: new_file
+
+- name: Convert to KB
+  set_fact:
+    new_file_size: "{{ (new_file.stat.size/1024) |round | int }}"
+    old_file_size: "{{ (old_file.stat.size/1024) |round | int }}"
+
+- debug:
+    msg: "{{ new_file_size }}"
+
+- debug:
+    msg: "{{ old_file_size }}"
+
+- name: Assert exported file is same size as imported one
+  assert: 
+    that:
+      - new_file_size == old_file_size
+
+- name: Remove ASM policy
+  bigip_asm_policy_manage:
+    name: issue_01859
+    state: absent
