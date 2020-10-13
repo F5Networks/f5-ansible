@@ -324,22 +324,21 @@ except ImportError:
 
 import os
 import tempfile
-
+from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 
-try:
-    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import dumps
-    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
-except ImportError:
-    from ansible.module_utils.network.common.config import dumps
-    from ansible.module_utils.network.common.utils import to_list
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import dumps
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, ImishConfig, f5_argument_spec
 )
-from ..module_utils.icontrol import upload_file
+from ..module_utils.icontrol import (
+    upload_file, tmos_version
+)
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -453,6 +452,8 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         result = dict()
         changed = self.present()
 
@@ -460,6 +461,7 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        send_teem(start, self.module, version)
         return result
 
     def present(self):

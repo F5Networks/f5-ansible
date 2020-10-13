@@ -4,6 +4,7 @@ cli_provider:
   server: "{{ ansible_host }}"
   server_port: "{{ bigip_ssh_port | default(22) }}"
   password: "{{ bigip_ssh_password | default('root') }}"
+  no_f5_teem: "{{ no_f5_teem }}"
 
 ssh_key_auth:
   transport: cli
@@ -11,3 +12,4 @@ ssh_key_auth:
   server: "{{ ansible_host }}"
   server_port: "{{ bigip_ssh_port | default(22) }}"
   ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+  no_f5_teem: "{{ no_f5_teem }}"

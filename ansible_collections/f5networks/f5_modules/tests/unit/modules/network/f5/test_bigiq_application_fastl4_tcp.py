@@ -108,12 +108,16 @@ class TestManager(unittest.TestCase):
         self.m1.return_value = '6.1.0'
         self.m2.return_value = Mock(return_value='https://localhost/mgmt/foobar1')
         self.m3.return_value = Mock(return_value='https://localhost/mgmt/foobar3')
+        self.p5 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigiq_application_fastl4_tcp.send_teem')
+        self.m5 = self.p5.start()
+        self.m5.return_value = True
 
     def tearDown(self):
         self.patcher1.stop()
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()
+        self.p5.stop()
 
     def test_create(self, *args):
         set_module_args(dict(

@@ -145,9 +145,10 @@ size:
 import os
 import re
 import tempfile
+from datetime import datetime
+from distutils.version import LooseVersion
 
 from ansible.module_utils.basic import AnsibleModule
-from distutils.version import LooseVersion
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -156,6 +157,7 @@ from ..module_utils.common import (
 from ..module_utils.icontrol import (
     tmos_version, download_file
 )
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -281,6 +283,8 @@ class BaseManager(object):
         self.changes = UsableChanges()
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         result = dict()
 
         self.present()
@@ -289,6 +293,7 @@ class BaseManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=True))
+        send_teem(start, self.module, version)
         return result
 
     def present(self):

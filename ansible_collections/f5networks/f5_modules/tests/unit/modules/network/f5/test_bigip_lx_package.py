@@ -65,8 +65,13 @@ class TestManager(unittest.TestCase):
         self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_lx_package.tmos_version')
         self.m1 = self.p1.start()
         self.m1.return_value = '12.1.3'
+        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_lx_package.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
 
     def tearDown(self):
+        self.p1.stop()
+        self.p2.stop()
         self.patcher1.stop()
 
     def test_create_iapp_template(self, *args):

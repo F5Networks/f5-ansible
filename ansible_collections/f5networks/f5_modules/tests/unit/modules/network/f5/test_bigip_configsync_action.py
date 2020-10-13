@@ -79,9 +79,17 @@ class TestManager(unittest.TestCase):
         self.spec = ArgumentSpec()
         self.patcher1 = patch('time.sleep')
         self.patcher1.start()
+        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_configsync_action.tmos_version')
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_configsync_action.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = '14.1.0'
+        self.m3 = self.p3.start()
+        self.m3.return_value = True
 
     def tearDown(self):
         self.patcher1.stop()
+        self.p2.stop()
+        self.p3.stop()
 
     def test_update_agent_status_traps(self, *args):
         set_module_args(dict(

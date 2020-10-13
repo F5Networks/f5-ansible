@@ -47,6 +47,7 @@
     F5_PASSWORD: "{{ bigip_password }}"
     F5_SERVER_PORT: "{{ bigip_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
+    F5_TEEM: "{{ no_f5_teem }}"
 
   roles:
     - bigip_ike_peer

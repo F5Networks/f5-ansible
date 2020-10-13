@@ -56,6 +56,7 @@
     F5_PASSWORD: "{{ bigip_password }}"
     F5_SERVER_PORT: "{{ bigip_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
+    F5_TEEM: "{{ no_f5_teem }}"
 
   roles:
     - bigip_routedomain
@@ -73,24 +74,10 @@
       password: "{{ bigip_password }}"
       server_port: "{{ bigip_port }}"
       validate_certs: "{{ validate_certs }}"
+      no_f5_teem: "{{ no_f5_teem }}"
 
   tasks:
     - name: Include Provider tests
       include_role:
         name: bigip_routedomain
         tasks_from: provider.yaml
-
-# TODO(Remove in Ansible 2.9)
-- name: Test the bigip_routedomain module with a provider
-  hosts: "f5-test[0]"
-  connection: local
-  any_errors_fatal: true
-
-  vars:
-    limit_to: '*'
-
-  tasks:
-    - name: Include Connection Parameter tests
-      include_role:
-        name: bigip_routedomain
-        tasks_from: connection-params.yaml

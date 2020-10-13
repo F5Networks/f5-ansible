@@ -92,13 +92,20 @@ class TestParameters(unittest.TestCase):
 
 
 class TestV1Manager(unittest.TestCase):
-
     def setUp(self):
         self.spec = ArgumentSpec()
         self.patcher1 = patch('time.sleep')
         self.patcher1.start()
+        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs.tmos_version')
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = '12.1.0'
+        self.m3 = self.p3.start()
+        self.m3.return_value = True
 
     def tearDown(self):
+        self.p2.stop()
+        self.p3.stop()
         self.patcher1.stop()
 
     def test_ucs_default_present(self, *args):
@@ -243,9 +250,21 @@ class TestV1Manager(unittest.TestCase):
 
 
 class TestV2Manager(unittest.TestCase):
-
     def setUp(self):
         self.spec = ArgumentSpec()
+        self.patcher1 = patch('time.sleep')
+        self.patcher1.start()
+        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs.tmos_version')
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = '14.1.0'
+        self.m3 = self.p3.start()
+        self.m3.return_value = True
+
+    def tearDown(self):
+        self.p2.stop()
+        self.p3.stop()
+        self.patcher1.stop()
 
     def test_ucs_default_present(self, *args):
         set_module_args(dict(

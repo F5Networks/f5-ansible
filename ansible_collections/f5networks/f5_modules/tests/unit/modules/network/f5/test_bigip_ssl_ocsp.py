@@ -73,9 +73,13 @@ class TestManager(unittest.TestCase):
         self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ssl_ocsp.tmos_version')
         self.m1 = self.p1.start()
         self.m1.return_value = '13.0.0'
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ssl_ocsp.send_teem')
+        self.m3 = self.p3.start()
+        self.m3.return_value = True
 
     def tearDown(self):
         self.p1.stop()
+        self.p3.stop()
 
     def test_create(self, *args):
         # Configure the arguments that would be sent to the Ansible module

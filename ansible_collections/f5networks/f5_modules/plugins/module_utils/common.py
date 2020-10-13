@@ -20,24 +20,15 @@ from ansible.module_utils.parsing.convert_bool import (
 )
 from collections import defaultdict
 
-try:
-    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
-        NetworkConfig, ConfigLine, ignore_line
-    )
-    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-        to_list, ComplexList
-    )
-except ImportError:
-    from ansible.module_utils.network.common.config import (
-        NetworkConfig, ConfigLine, ignore_line
-    )
-    from ansible.module_utils.network.common.utils import (
-        to_list, ComplexList
-    )
-
-MANAGED_BY_ANNOTATION_VERSION = 'f5-ansible.version'
-MANAGED_BY_ANNOTATION_MODIFIED = 'f5-ansible.last_modified'
-
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
+    NetworkConfig, ConfigLine, ignore_line
+)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    to_list, ComplexList
+)
+from .constants import (
+    MANAGED_BY_ANNOTATION_MODIFIED, MANAGED_BY_ANNOTATION_VERSION
+)
 
 f5_provider_spec = {
     'server': dict(
@@ -69,6 +60,10 @@ f5_provider_spec = {
         default='rest'
     ),
     'timeout': dict(type='int'),
+    'no_f5_teem': dict(
+        type='bool',
+        fallback=(env_fallback, ['F5_TEEM'])
+    ),
     'auth_provider': dict(),
 }
 
@@ -441,6 +436,7 @@ class F5BaseClient(object):
         self.merge_provider_auth_provider_param(result, provider)
         self.merge_provider_user_param(result, provider)
         self.merge_provider_password_param(result, provider)
+        self.merge_provider_no_f5_teem_param(result, provider)
 
         return result
 
@@ -514,6 +510,14 @@ class F5BaseClient(object):
             result['password'] = os.environ.get('ANSIBLE_NET_PASSWORD')
         else:
             result['password'] = None
+
+    def merge_provider_no_f5_teem_param(self, result, provider):
+        if self.validate_params('no_f5_teem', provider):
+            result['no_f5_teem'] = provider['no_f5_teem']
+        elif self.validate_params('F5_TEEM', os.environ):
+            result['no_f5_teem'] = os.environ['F5_TEEM']
+        else:
+            result['no_f5_teem'] = None
 
 
 class AnsibleF5Parameters(object):

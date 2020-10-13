@@ -44,6 +44,7 @@
     F5_PASSWORD: "{{ bigip_password }}"
     F5_SERVER_PORT: "{{ bigip_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
+    F5_TEEM: "{{ no_f5_teem }}"
 
   tasks:
     - name: Include role - Environment
@@ -67,6 +68,7 @@
       server_port: "{{ bigip_port }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
+      no_f5_teem: "{{ no_f5_teem }}"
 
   tasks:
     - name: Include role - Environment

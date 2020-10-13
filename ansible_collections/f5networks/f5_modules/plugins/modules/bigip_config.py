@@ -102,6 +102,7 @@ stdout_lines:
   type: list
   sample: [['...', '...'], ['...'], ['...']]
 '''
+from datetime import datetime
 
 try:
     from StringIO import StringIO
@@ -117,7 +118,10 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec
 )
-from ..module_utils.icontrol import upload_file
+from ..module_utils.icontrol import (
+    upload_file, tmos_version
+)
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -155,12 +159,15 @@ class ModuleManager(object):
         return lines
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         result = {}
 
         changed = self.execute()
 
         result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
+        send_teem(start, self.module, version)
         return result
 
     def execute(self):

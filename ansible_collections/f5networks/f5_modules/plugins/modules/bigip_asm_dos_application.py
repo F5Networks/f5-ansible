@@ -363,6 +363,7 @@ mobile_detection:
       sample: ['/Common/cert1.crt', '/Common/cert2.crt']
   sample: hash/dictionary of values
 '''
+from datetime import datetime
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
@@ -378,6 +379,7 @@ from ..module_utils.compare import (
 from ..module_utils.icontrol import (
     module_provisioned, tmos_version
 )
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -1032,6 +1034,8 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         if not module_provisioned(self.client, 'asm'):
             raise F5ModuleError(
                 "ASM must be provisioned to use this module."
@@ -1054,6 +1058,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def version_less_than_13_1(self):
