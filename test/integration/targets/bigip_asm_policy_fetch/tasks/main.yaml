@@ -89,4 +89,7 @@
       - result is success
       - result is changed
 
+- import_tasks: issue-01859.yaml
+  tags: issue-01859
+
 - import_tasks: teardown.yaml
