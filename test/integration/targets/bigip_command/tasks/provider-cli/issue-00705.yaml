@@ -12,6 +12,7 @@
       server_port: "{{ bigip_port }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
+      no_f5_teem: "{{ no_f5_teem }}"
     name: "{{ pool_name }}"
     state: present
   register: result
@@ -24,6 +25,7 @@
       server_port: "{{ bigip_port }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
+      no_f5_teem: "{{ no_f5_teem }}"
     connection_limit: "{{ connection_limit }}"
     description: "{{ node_description }}"
     host: "{{ node_host }}"
@@ -43,6 +45,7 @@
       server_port: "{{ bigip_ssh_port }}"
       password: "{{ bigip_ssh_password }}"
       validate_certs: "{{ validate_certs }}"
+      no_f5_teem: "{{ no_f5_teem }}"
     commands:
       - show sys software | grep 'yes'
       - list sys software | grep 'volume'

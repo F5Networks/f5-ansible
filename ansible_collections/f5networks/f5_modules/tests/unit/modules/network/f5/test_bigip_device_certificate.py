@@ -20,7 +20,7 @@ from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_cert
     ModuleManager, ArgumentSpec, ModuleParameters
 )
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
-from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock
+from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
 from ansible_collections.f5networks.f5_modules.tests.unit.modules.utils import set_module_args
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -74,6 +74,12 @@ class TestParameters(unittest.TestCase):
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_certificate.send_teem')
+        self.m3 = self.p3.start()
+        self.m3.return_value = True
+
+    def tearDown(self):
+        self.p3.stop()
 
     def test_update_expired_cert(self, *args):
         set_module_args(dict(

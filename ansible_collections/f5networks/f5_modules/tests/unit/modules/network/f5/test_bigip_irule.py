@@ -111,6 +111,16 @@ class TestManager(unittest.TestCase):
         members = load_fixture('load_gtm_irules.json')
         for item in members:
             self.gtm_irules.append(BigIpObj(**item))
+        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_irule.tmos_version')
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_irule.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = '14.1.0'
+        self.m3 = self.p3.start()
+        self.m3.return_value = True
+
+    def tearDown(self):
+        self.p2.stop()
+        self.p3.stop()
 
     def test_create_ltm_irule(self, *args):
         set_module_args(dict(

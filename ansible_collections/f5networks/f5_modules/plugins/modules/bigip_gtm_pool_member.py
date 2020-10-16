@@ -324,6 +324,7 @@ replace_all_with:
 '''
 
 from copy import deepcopy
+from datetime import datetime
 
 from ansible.module_utils.urls import urlparse
 from ansible.module_utils.basic import (
@@ -331,18 +332,16 @@ from ansible.module_utils.basic import (
 )
 from ansible.module_utils.six import iteritems
 
-try:
-    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import remove_default_spec
-except ImportError:
-    from ansible.module_utils.network.common.utils import remove_default_spec
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import remove_default_spec
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean, fq_name
 )
 from ..module_utils.icontrol import (
-    module_provisioned, TransactionContextManager
+    module_provisioned, TransactionContextManager, tmos_version
 )
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -623,6 +622,8 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         if not module_provisioned(self.client, 'gtm'):
             raise F5ModuleError(
                 "GTM must be provisioned to use this module."
@@ -655,6 +656,7 @@ class ModuleManager(object):
             result.update(output)
         if changed:
             result['changed'] = True
+        send_teem(start, self.module, version)
         return result
 
     def merge_defaults_for_aggregate(self, params):

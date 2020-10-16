@@ -10,6 +10,7 @@
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
       password: "{{ bigip_ssh_password }}"
+      no_f5_teem: "{{ no_f5_teem }}"
   register: result
 
 - name: Assert Run single command - provider
@@ -28,6 +29,7 @@
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
       password: "{{ bigip_ssh_password }}"
+      no_f5_teem: "{{ no_f5_teem }}"
   register: result
 
 - name: Assert Run multiple commands - provider
@@ -45,6 +47,7 @@
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
       password: "{{ bigip_ssh_password }}"
+      no_f5_teem: "{{ no_f5_teem }}"
   register: result
 
 - name: Assert Run command missing tmsh - provider
@@ -63,6 +66,7 @@
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
       password: "{{ bigip_ssh_password }}"
+      no_f5_teem: "{{ no_f5_teem }}"
   register: result
 
 - debug:
@@ -85,6 +89,7 @@
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
       password: "{{ bigip_ssh_password }}"
+      no_f5_teem: "{{ no_f5_teem }}"
   register: result
 
 - name: Assert Wait for something - provider
@@ -104,6 +109,7 @@
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
       password: "{{ bigip_ssh_password }}"
+      no_f5_teem: "{{ no_f5_teem }}"
   register: result
 
 - name: Assert Run modify commands - provider
@@ -123,6 +129,7 @@
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
       password: "{{ bigip_ssh_password }}"
+      no_f5_teem: "{{ no_f5_teem }}"
   register: result
 
 - name: Assert Run modify commands with a show command - provider

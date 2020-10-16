@@ -273,20 +273,16 @@ RETURN = r'''
 import hashlib
 import os
 import re
+from datetime import datetime
 
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
 
-try:
-    from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import (
-        ip_network, ip_interface
-    )
-except ImportError:
-    from ansible.module_utils.compat.ipaddress import (
-        ip_network, ip_interface
-    )
+from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import (
+    ip_network, ip_interface
+)
 
 try:
     from StringIO import StringIO
@@ -300,9 +296,11 @@ from ..module_utils.common import (
 from ..module_utils.compare import (
     cmp_str_with_none, compare_complex_list
 )
-from ..module_utils.icontrol import upload_file
+from ..module_utils.icontrol import (
+    upload_file, tmos_version
+)
 from ..module_utils.ipaddress import is_valid_ip_interface
-
+from ..module_utils.teem import send_teem
 
 LINE_LIMIT = 65000
 SIZE_LIMIT_BYTES = 4000000
@@ -907,6 +905,8 @@ class BaseManager(object):
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         changed = False
         result = dict()
         state = self.want.state
@@ -921,6 +921,7 @@ class BaseManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def _announce_deprecations(self, result):

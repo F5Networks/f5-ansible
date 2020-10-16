@@ -88,6 +88,10 @@ print(resp.json())
 
 from ansible.module_utils.six.moves.urllib.error import HTTPError
 
+from .constants import (
+    LOGOUT, BASE_HEADERS
+)
+
 
 class Response(object):
     def __init__(self):
@@ -177,7 +181,7 @@ class iControlRestSession(object):
         json = kwargs.pop('json', None)
 
         if not data and json is not None:
-            self.request.headers['Content-Type'] = 'application/json'
+            self.request.headers.update(BASE_HEADERS)
             body = _json.dumps(json)
             if not isinstance(body, bytes):
                 body = body.encode('utf-8')
@@ -245,8 +249,8 @@ class iControlRestSession(object):
             return
         try:
             p = generic_urlparse(urlparse(self.last_url))
-            uri = "https://{0}:{1}/mgmt/shared/authz/tokens/{2}".format(
-                p['hostname'], p['port'], token
+            uri = "https://{0}:{1}{2}{3}".format(
+                p['hostname'], p['port'], LOGOUT, token
             )
             self.delete(uri)
         except ValueError:
@@ -588,7 +592,7 @@ def bigiq_version(client):
         return version
 
     raise F5ModuleError(
-        'Failed to retrieve BIGIQ version information.'
+        'Failed to retrieve BIG-IQ version information.'
     )
 
 

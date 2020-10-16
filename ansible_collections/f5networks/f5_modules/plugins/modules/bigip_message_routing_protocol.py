@@ -151,7 +151,7 @@ no_response:
   type: bool
   sample: yes
 '''
-
+from datetime import datetime
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
@@ -163,6 +163,7 @@ from ..module_utils.common import (
 )
 from ..module_utils.compare import cmp_str_with_none
 from ..module_utils.icontrol import tmos_version
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -349,14 +350,15 @@ class ModuleManager(object):
                 version=warning['version']
             )
 
-    def version_less_than_14(self):
-        version = tmos_version(self.client)
+    def version_less_than_14(self, version):
         if LooseVersion(version) < LooseVersion('14.0.0'):
             return True
         return False
 
     def exec_module(self):
-        if self.version_less_than_14():
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
+        if self.version_less_than_14(version):
             raise F5ModuleError('Message routing is not supported on TMOS version below 14.x')
         changed = False
         result = dict()
@@ -372,6 +374,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def present(self):

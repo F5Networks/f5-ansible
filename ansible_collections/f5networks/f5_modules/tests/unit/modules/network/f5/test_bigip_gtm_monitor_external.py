@@ -75,9 +75,17 @@ class TestManager(unittest.TestCase):
         self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_monitor_external.module_provisioned')
         self.m1 = self.p1.start()
         self.m1.return_value = True
+        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_monitor_external.tmos_version')
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_monitor_external.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = '14.1.0'
+        self.m3 = self.p3.start()
+        self.m3.return_value = True
 
     def tearDown(self):
         self.p1.stop()
+        self.p2.stop()
+        self.p3.stop()
 
     def test_create_monitor(self, *args):
         set_module_args(dict(

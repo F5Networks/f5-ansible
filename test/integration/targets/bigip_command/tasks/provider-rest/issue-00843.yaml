@@ -11,6 +11,7 @@
       server_port: "{{ bigip_port }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
+      no_f5_teem: "{{ no_f5_teem }}"
     commands: sys standby failover
   register: result
   ignore_errors: true
@@ -24,6 +25,7 @@
       server_port: "{{ bigip_port }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
+      no_f5_teem: "{{ no_f5_teem }}"
     commands: sys standby failover
   register: result
   ignore_errors: true

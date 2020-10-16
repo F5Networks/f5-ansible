@@ -20,7 +20,7 @@ from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_profile_udp
     ApiParameters, ModuleParameters, ModuleManager, ArgumentSpec
 )
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
-from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock
+from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
 from ansible_collections.f5networks.f5_modules.tests.unit.modules.utils import set_module_args
 
 
@@ -69,9 +69,18 @@ class TestParameters(unittest.TestCase):
 
 
 class TestManager(unittest.TestCase):
-
     def setUp(self):
         self.spec = ArgumentSpec()
+        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_profile_udp.tmos_version')
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_profile_udp.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = '14.1.0'
+        self.m3 = self.p3.start()
+        self.m3.return_value = True
+
+    def tearDown(self):
+        self.p2.stop()
+        self.p3.stop()
 
     def test_create(self, *args):
         # Configure the arguments that would be sent to the Ansible module

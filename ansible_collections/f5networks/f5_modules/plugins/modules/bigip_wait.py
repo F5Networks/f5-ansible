@@ -102,6 +102,8 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, is_cli, f5_argument_spec
 )
+from ..module_utils.icontrol import tmos_version
+from ..module_utils.teem import send_teem
 
 try:
     from ..module_utils.common import run_commands
@@ -162,17 +164,6 @@ class BaseManager(object):
         self.have = None
         self.want = Parameters(params=self.module.params)
         self.changes = Parameters()
-
-    def exec_module(self):
-        result = dict()
-
-        changed = self.execute()
-
-        changes = self.changes.to_return()
-        result.update(**changes)
-        result.update(dict(changed=changed))
-        self._announce_deprecations(result)
-        return result
 
     def _announce_deprecations(self, result):
         warnings = result.pop('__warnings', [])
@@ -241,6 +232,19 @@ class BaseManager(object):
 
 
 class V1Manager(BaseManager):
+    def exec_module(self):
+        start = datetime.datetime.now().isoformat()
+        result = dict()
+
+        changed = self.execute()
+
+        changes = self.changes.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        self._announce_deprecations(result)
+        send_teem(start, self.module, None)
+        return result
+
     def wait_for_device(self, start, end):
         while datetime.datetime.utcnow() < end:
             time.sleep(int(self.want.sleep))
@@ -304,6 +308,20 @@ class V1Manager(BaseManager):
 
 
 class V2Manager(BaseManager):
+    def exec_module(self):
+        start = datetime.datetime.now().isoformat()
+        version = tmos_version(self.client)
+        result = dict()
+
+        changed = self.execute()
+
+        changes = self.changes.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        self._announce_deprecations(result)
+        send_teem(start, self.module, version)
+        return result
+
     def wait_for_device(self, start, end):
         while datetime.datetime.utcnow() < end:
             time.sleep(int(self.want.sleep))

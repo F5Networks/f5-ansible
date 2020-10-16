@@ -126,6 +126,7 @@ RETURN = r'''
 
 import re
 import time
+from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -133,7 +134,9 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec
 )
+from ..module_utils.icontrol import bigiq_version
 from ..module_utils.ipaddress import is_valid_ip
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -418,6 +421,8 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = bigiq_version(self.client)
         changed = False
         result = dict()
         state = self.want.state
@@ -432,6 +437,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def _announce_deprecations(self, result):

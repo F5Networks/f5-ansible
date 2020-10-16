@@ -354,6 +354,13 @@ class TestManager(unittest.TestCase):
         self.m4.return_value = Mock(return_value=True)
         self.m5.return_value = Mock(return_value=True)
 
+        self.p6 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_virtual_server.tmos_version')
+        self.p7 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_virtual_server.send_teem')
+        self.m6 = self.p6.start()
+        self.m6.return_value = '14.1.0'
+        self.m7 = self.p7.start()
+        self.m7.return_value = True
+
     def tearDown(self):
         self.p1.stop()
         self.p2.stop()

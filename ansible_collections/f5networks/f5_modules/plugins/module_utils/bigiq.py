@@ -12,6 +12,9 @@ import os
 from .common import (
     F5BaseClient, F5ModuleError
 )
+from .constants import (
+    LOGIN, BASE_HEADERS
+)
 from .icontrol import iControlRestSession
 
 
@@ -19,9 +22,7 @@ class F5RestClient(F5BaseClient):
     def __init__(self, *args, **kwargs):
         super(F5RestClient, self).__init__(*args, **kwargs)
         self.provider = self.merge_provider_params()
-        self.headers = {
-            'Content-Type': 'application/json'
-        }
+        self.headers = BASE_HEADERS
 
     @property
     def api(self):
@@ -36,8 +37,8 @@ class F5RestClient(F5BaseClient):
     def connect_via_token_auth(self):
         provider = self.provider['auth_provider'] or 'local'
 
-        url = "https://{0}:{1}/mgmt/shared/authn/login".format(
-            self.provider['server'], self.provider['server_port']
+        url = "https://{0}:{1}{2}".format(
+            self.provider['server'], self.provider['server_port'], LOGIN
         )
         payload = {
             'username': self.provider['user'],

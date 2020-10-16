@@ -237,6 +237,7 @@ transparent:
   type: bool
   sample: False
 '''
+from datetime import datetime
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -246,8 +247,11 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, fq_name
 )
-from ..module_utils.icontrol import module_provisioned
+from ..module_utils.icontrol import (
+    module_provisioned, tmos_version
+)
 from ..module_utils.ipaddress import is_valid_ip
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -616,6 +620,8 @@ class ModuleManager(object):
             self.want.update({'send': 'GET /\r\n'})
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         if not module_provisioned(self.client, 'gtm'):
             raise F5ModuleError(
                 "GTM must be provisioned to use this module."
@@ -634,6 +640,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def create(self):

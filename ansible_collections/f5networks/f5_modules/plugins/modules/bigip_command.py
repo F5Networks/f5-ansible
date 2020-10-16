@@ -193,6 +193,7 @@ warn:
 import copy
 import re
 import time
+from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import string_types
@@ -202,13 +203,14 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     ComplexList, to_list
 )
 
-
 from collections import deque
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec, is_cli
 )
+from ..module_utils.icontrol import tmos_version
+from ..module_utils.teem import send_teem
 
 try:
     from ..module_utils.common import run_commands
@@ -409,16 +411,6 @@ class BaseManager(object):
             lines.append(item)
         return lines
 
-    def exec_module(self):
-        result = dict()
-
-        changed = self.execute()
-
-        result.update(**self.changes.to_return())
-        result.update(dict(changed=changed))
-        self._announce_warnings(result)
-        return result
-
     def _announce_warnings(self, result):
         warnings = result.pop('warnings', [])
         for warning in warnings:
@@ -572,6 +564,18 @@ class V1Manager(BaseManager):
             raise
         return False
 
+    def exec_module(self):
+        start = datetime.now().isoformat()
+        result = dict()
+
+        changed = self.execute()
+
+        result.update(**self.changes.to_return())
+        result.update(dict(changed=changed))
+        self._announce_warnings(result)
+        send_teem(start, self.module, None)
+        return result
+
     def execute(self):
         self.want.update({'is_tmsh': self.is_tmsh()})
         return super(V1Manager, self).execute()
@@ -591,6 +595,19 @@ class V2Manager(BaseManager):
     @property
     def commands(self):
         return self.want.rest_commands
+
+    def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
+        result = dict()
+
+        changed = self.execute()
+
+        result.update(**self.changes.to_return())
+        result.update(dict(changed=changed))
+        self._announce_warnings(result)
+        send_teem(start, self.module, version)
+        return result
 
     def execute_on_device(self, commands):
         responses = []

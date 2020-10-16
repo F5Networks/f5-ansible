@@ -111,20 +111,21 @@ EXAMPLES = '''
 RETURN = r'''
 # only common fields returned
 '''
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
-
 import re
 import time
 import xml.etree.ElementTree
+from datetime import datetime
 
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, is_empty_list, f5_argument_spec
 )
 from ..module_utils.icontrol import iControlRestSession
+
+from ..module_utils.teem import send_teem
 
 
 class LicenseXmlParser(object):
@@ -402,6 +403,7 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
         changed = False
         result = dict()
         state = self.want.state
@@ -420,6 +422,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, None)
         return result
 
     def _announce_deprecations(self, result):

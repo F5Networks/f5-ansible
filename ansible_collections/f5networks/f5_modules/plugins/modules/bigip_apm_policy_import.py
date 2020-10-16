@@ -135,6 +135,8 @@ reuse_objects:
 '''
 
 import os
+from datetime import datetime
+
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
@@ -147,6 +149,7 @@ from ..module_utils.common import (
 from ..module_utils.icontrol import (
     module_provisioned, tmos_version, upload_file
 )
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -244,6 +247,8 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         if not module_provisioned(self.client, 'apm'):
             raise F5ModuleError(
                 "APM must be provisioned to use this module."
@@ -261,6 +266,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def version_less_than_14(self):

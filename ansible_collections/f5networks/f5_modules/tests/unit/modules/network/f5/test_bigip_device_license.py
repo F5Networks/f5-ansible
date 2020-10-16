@@ -68,9 +68,13 @@ class TestModuleManager(unittest.TestCase):
         self.spec = ArgumentSpec()
         self.patcher1 = patch('time.sleep')
         self.patcher1.start()
+        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_license.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
 
     def tearDown(self):
         self.patcher1.stop()
+        self.p2.stop()
 
     def test_create(self, *args):
         set_module_args(

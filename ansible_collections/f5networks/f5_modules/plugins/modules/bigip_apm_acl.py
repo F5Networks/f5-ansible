@@ -374,29 +374,27 @@ entries:
       sample: packet
   sample: hash/dictionary of values
 '''
+from datetime import datetime
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-
-try:
-    from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import (
-        ip_network, ip_interface
-    )
-except ImportError:
-    from ansible.module_utils.compat.ipaddress import (
-        ip_network, ip_interface
-    )
+from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import (
+    ip_network, ip_interface
+)
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean
 )
 from ..module_utils.compare import cmp_str_with_none
-from ..module_utils.icontrol import module_provisioned
+from ..module_utils.icontrol import (
+    module_provisioned, tmos_version
+)
 from ..module_utils.ipaddress import (
     is_valid_ip, is_valid_ip_network
 )
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -762,6 +760,8 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         if not module_provisioned(self.client, 'apm'):
             raise F5ModuleError(
                 "APM must be provisioned to use this module."
@@ -780,6 +780,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def present(self):

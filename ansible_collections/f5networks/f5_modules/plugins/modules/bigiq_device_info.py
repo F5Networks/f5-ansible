@@ -834,6 +834,7 @@ from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec, flatten_boolean, transform_name
 )
 from ..module_utils.icontrol import bigiq_version
+from ..module_utils.teem import send_teem
 
 
 def parseStats(entry):
@@ -896,11 +897,14 @@ class BaseManager(object):
         self.kwargs = kwargs
 
     def exec_module(self):
+        start = datetime.datetime.now().isoformat()
+        version = bigiq_version(self.client)
         results = []
         facts = self.read_facts()
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
+        send_teem(start, self.module, version)
         return results
 
 
