@@ -696,9 +696,6 @@ releases:
     - description: Configures the BIG-IP DNS system to answer TCP or UDP DNS requests.
       name: bigip_gtm_dns_listener
       namespace: ''
-    - description: Manages F5 BIG-IP LTM TCP monitors.
-      name: bigip_monitor_tcp
-      namespace: ''
     release_date: '2020-06-09'
   1.5.0:
     changes:

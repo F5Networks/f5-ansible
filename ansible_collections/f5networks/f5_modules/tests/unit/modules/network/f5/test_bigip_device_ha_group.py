@@ -141,9 +141,13 @@ class TestManager(unittest.TestCase):
         self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_ha_group.tmos_version')
         self.m1 = self.p1.start()
         self.m1.return_value = '13.1.0'
+        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_ha_group.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
 
     def tearDown(self):
         self.p1.stop()
+        self.p2.stop()
 
     def test_create_ha_group(self, *args):
         set_module_args(dict(

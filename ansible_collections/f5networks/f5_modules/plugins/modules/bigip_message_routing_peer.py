@@ -188,11 +188,12 @@ ratio:
   type: int
   sample: 500
 '''
+from datetime import datetime
+from distutils.version import LooseVersion
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from distutils.version import LooseVersion
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -200,6 +201,7 @@ from ..module_utils.common import (
 )
 from ..module_utils.compare import cmp_str_with_none
 from ..module_utils.icontrol import tmos_version
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -411,6 +413,8 @@ class BaseManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         changed = False
         result = dict()
         state = self.want.state
@@ -425,6 +429,7 @@ class BaseManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def present(self):

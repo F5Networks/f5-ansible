@@ -239,7 +239,7 @@ irules:
   type: list
   sample: ['/Common/rule1', '/Common/rule2']
 '''
-
+from datetime import datetime
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
@@ -248,6 +248,8 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean, is_empty_list, fq_name
 )
+from ..module_utils.icontrol import tmos_version
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -653,6 +655,8 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         changed = False
         result = dict()
         state = self.want.state
@@ -667,6 +671,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def present(self):

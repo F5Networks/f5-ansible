@@ -181,8 +181,9 @@ servers:
 '''
 
 import time
-
+from datetime import datetime
 from distutils.version import LooseVersion
+
 from ansible.module_utils.basic import AnsibleModule
 
 from ..module_utils.bigip import F5RestClient
@@ -191,6 +192,7 @@ from ..module_utils.common import (
 )
 from ..module_utils.icontrol import bigiq_version
 from ..module_utils.ipaddress import is_valid_ip
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -516,15 +518,16 @@ class ModuleManager(object):
             return True
         return False
 
-    def check_bigiq_version(self):
-        version = bigiq_version(self.client)
+    def check_bigiq_version(self, version):
         if LooseVersion(version) >= LooseVersion('6.1.0'):
             raise F5ModuleError(
                 'Module supports only BIGIQ version 6.0.x or lower.'
             )
 
     def exec_module(self):
-        self.check_bigiq_version()
+        start = datetime.now().isoformat()
+        version = bigiq_version(self.client)
+        self.check_bigiq_version(version)
         changed = False
         result = dict()
         state = self.want.state
@@ -539,6 +542,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def _announce_deprecations(self, result):

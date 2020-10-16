@@ -156,7 +156,7 @@ cluster_mirroring:
   type: str
   sample: between-clusters
 '''
-
+from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 
@@ -165,6 +165,8 @@ from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec
 )
 from ..module_utils.ipaddress import is_valid_ip
+from ..module_utils.icontrol import tmos_version
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -502,12 +504,16 @@ class ModuleManager(object):
         return False
 
     def should_update(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         result = self._update_changed_options()
         if result:
             return True
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         result = dict()
 
         changed = self.update()
@@ -516,6 +522,7 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        send_teem(start, self.module, version)
         return result
 
     def update(self):

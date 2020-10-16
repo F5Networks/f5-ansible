@@ -102,8 +102,10 @@ import socket
 import ssl
 import time
 
-from ansible.module_utils.basic import AnsibleModule
+from datetime import datetime
 from distutils.version import LooseVersion
+
+from ansible.module_utils.basic import AnsibleModule
 
 try:
     import urlparse
@@ -114,7 +116,10 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec
 )
-from ..module_utils.icontrol import download_file
+from ..module_utils.icontrol import (
+    download_file, tmos_version
+)
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -221,16 +226,7 @@ class ModuleManager(object):
             return BulkLocationManager(**self.kwargs)
 
     def is_version_less_than_14(self):
-        uri = "https://{0}:{1}/mgmt/tm/sys".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-        version = urlparse.parse_qs(urlparse.urlparse(response['selfLink']).query)['ver'][0]
+        version = tmos_version(self.client)
         if LooseVersion(version) < LooseVersion('14.0.0'):
             return True
         else:
@@ -254,12 +250,15 @@ class BaseManager(object):
             self.changes = Parameters(params=changed)
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         result = dict()
 
         self.present()
 
         result.update(**self.changes.to_return())
         result.update(dict(changed=False))
+        send_teem(start, self.module, version)
         return result
 
     def present(self):

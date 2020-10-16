@@ -204,8 +204,8 @@ shell:
 
 import os
 import tempfile
-
-from ansible.module_utils._text import to_bytes
+from datetime import datetime
+from distutils.version import LooseVersion
 
 try:
     from BytesIO import BytesIO
@@ -216,7 +216,7 @@ from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
 from ansible.module_utils.six import string_types
-from distutils.version import LooseVersion
+from ansible.module_utils._text import to_bytes
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -225,7 +225,7 @@ from ..module_utils.common import (
 from ..module_utils.icontrol import (
     tmos_version, upload_file
 )
-
+from ..module_utils.teem import send_teem
 
 try:
     # Crypto is used specifically for changing the root password via
@@ -524,6 +524,8 @@ class BaseManager(object):
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         changed = False
         result = dict()
         state = self.want.state
@@ -538,6 +540,7 @@ class BaseManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def present(self):
@@ -817,6 +820,8 @@ class RootUserManager(BaseManager):
                 "required to change the 'root' password."
             )
 
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         changed = False
         result = dict()
         state = self.want.state
@@ -833,6 +838,7 @@ class RootUserManager(BaseManager):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def exists(self):

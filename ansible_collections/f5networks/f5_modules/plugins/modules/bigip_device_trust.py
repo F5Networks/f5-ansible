@@ -106,6 +106,7 @@ peer_hostname:
 '''
 
 import re
+from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -114,6 +115,8 @@ from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec
 )
 from ..module_utils.ipaddress import is_valid_ip
+from ..module_utils.icontrol import tmos_version
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -192,6 +195,8 @@ class ModuleManager(object):
             self.changes = Parameters(params=changed)
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         changed = False
         result = dict()
         state = self.want.state
@@ -204,6 +209,7 @@ class ModuleManager(object):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        send_teem(start, self.module, version)
         return result
 
     def provided_password(self):

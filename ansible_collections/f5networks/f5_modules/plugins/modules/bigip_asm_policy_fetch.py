@@ -168,6 +168,7 @@ binary:
 import os
 import time
 import tempfile
+from datetime import datetime
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -177,8 +178,9 @@ from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec, flatten_boolean, fq_name
 )
 from ..module_utils.icontrol import (
-    module_provisioned, download_asm_file
+    module_provisioned, download_asm_file, tmos_version
 )
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -356,6 +358,8 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         if not module_provisioned(self.client, 'asm'):
             raise F5ModuleError(
                 "ASM must be provisioned to use this module."
@@ -368,6 +372,7 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=True))
+        send_teem(start, self.module, version)
         return result
 
     def export(self):

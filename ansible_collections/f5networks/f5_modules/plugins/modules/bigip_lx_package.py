@@ -102,10 +102,12 @@ RETURN = r'''
 
 import os
 import time
+from datetime import datetime
+from distutils.version import LooseVersion
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.urls import urlparse
-from distutils.version import LooseVersion
+
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec, flatten_boolean
@@ -113,6 +115,7 @@ from ..module_utils.common import (
 from ..module_utils.icontrol import (
     tmos_version, upload_file
 )
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -203,10 +206,10 @@ class ModuleManager(object):
 
     def exec_module(self):
         result = dict()
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         changed = False
         state = self.want.state
-
-        version = tmos_version(self.client)
         if LooseVersion(version) <= LooseVersion('12.0.0'):
             raise F5ModuleError(
                 "This version of BIG-IP is not supported."
@@ -220,6 +223,7 @@ class ModuleManager(object):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        send_teem(start, self.module, version)
         return result
 
     def present(self):

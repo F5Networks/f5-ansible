@@ -166,11 +166,19 @@ class TestManager(unittest.TestCase):
         self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_vcmp_guest.ModuleParameters.initial_hotfix_exists')
         self.m2 = self.p2.start()
         self.m2.return_value = True
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_vcmp_guest.tmos_version')
+        self.p4 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_vcmp_guest.send_teem')
+        self.m3 = self.p3.start()
+        self.m3.return_value = '14.1.0'
+        self.m4 = self.p4.start()
+        self.m4.return_value = True
 
     def tearDown(self):
         self.patcher1.stop()
         self.p1.stop()
         self.p2.stop()
+        self.p3.stop()
+        self.p4.stop()
 
     def test_create_vcmpguest(self, *args):
         set_module_args(dict(

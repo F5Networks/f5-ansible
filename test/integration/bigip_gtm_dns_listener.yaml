@@ -43,10 +43,11 @@
 
   environment:
     F5_SERVER: "{{ ansible_host }}"
-    F5_USER: "ak-admin"
-    F5_PASSWORD: "Seattle2010+"
-    F5_SERVER_PORT: "443"
-    F5_VALIDATE_CERTS: "no"
+    F5_USER: "{{ bigip_username }}"
+    F5_PASSWORD: "{{ bigip_password }}"
+    F5_SERVER_PORT: "{{ bigip_port }}"
+    F5_VALIDATE_CERTS: "{{ validate_certs }}"
+    F5_TEEM: "{{ no_f5_teem }}"
 
   roles:
     - bigip_gtm_dns_listener

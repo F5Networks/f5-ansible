@@ -137,9 +137,10 @@ memory:
 '''
 
 import time
+from datetime import datetime
+from distutils.version import LooseVersion
 
 from ansible.module_utils.basic import AnsibleModule
-from distutils.version import LooseVersion
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -148,6 +149,7 @@ from ..module_utils.common import (
 from ..module_utils.icontrol import (
     TransactionContextManager, tmos_version
 )
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -298,6 +300,8 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         changed = False
         result = dict()
         state = self.want.state
@@ -310,6 +314,7 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        send_teem(start, self.module, version)
         return result
 
     def version_is_greater_or_equal_15(self):

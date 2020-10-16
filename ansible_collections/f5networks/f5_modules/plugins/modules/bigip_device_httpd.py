@@ -249,8 +249,9 @@ ssl_protocols:
   type: str
   sample: all -SSLv2 -SSLv3
 '''
-
 import time
+from datetime import datetime
+
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import string_types
@@ -259,6 +260,8 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec
 )
+from ..module_utils.icontrol import tmos_version
+from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -562,6 +565,8 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         result = dict()
 
         changed = self.present()
@@ -571,6 +576,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.module, version)
         return result
 
     def _announce_deprecations(self, result):
