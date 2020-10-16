@@ -100,7 +100,7 @@ class TestManager(unittest.TestCase):
     def tearDown(self):
         self.p2.stop()
         self.p3.stop()
-        
+
     def test_update(self, *args):
         set_module_args(dict(
             arp_log_level='debug',

@@ -143,7 +143,7 @@ class TestManager(unittest.TestCase):
     def tearDown(self):
         self.p2.stop()
         self.p3.stop()
-        
+
     def test_create_blackhole(self, *args):
         set_module_args(dict(
             name='test-route',

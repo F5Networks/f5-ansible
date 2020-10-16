@@ -123,6 +123,7 @@ class TestManager(unittest.TestCase):
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()
+
     def test_create_monitor(self, *args):
         set_module_args(dict(
             name='foo',

@@ -95,7 +95,6 @@ class TestManager(unittest.TestCase):
         self.p2.stop()
         self.p3.stop()
 
-
     def test_create_user(self, *args):
         set_module_args(dict(
             username_credential='someuser',

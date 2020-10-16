@@ -91,6 +91,7 @@ class TestManager(unittest.TestCase):
     def tearDown(self):
         self.p2.stop()
         self.p3.stop()
+
     def test_create(self, *args):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
