@@ -503,9 +503,9 @@ releases:
   1.1.0:
     changes:
       bugfixes:
+      - Fix IPv6 netmask for self IPs in bigip_device_info
       - Fix allowing authenticated not authorized users using modules to modify a
         resource
-      - Fix IPv6 netmask for self IPs in bigip_device_info
       - Fix save_when parameter not saving the configuration as expected in bigip_imish_config
         module
       deprecated_features:
@@ -565,7 +565,8 @@ releases:
       bugfixes:
       - Change bigip_data_group module's records parameter type to 'raw'
       - Fix '?' character handling in value for bigip_data_group module
-      - Fix a bug with using the true_name parameter in the bigip_profile_client_ssl module
+      - Fix a bug with using the true_name parameter in the bigip_profile_client_ssl
+        module
       - Fix an issue with /32 IPV6 subnets being saved as host rather than a network
         in bigip_data_group module
       - Fix attribute error in bigip_software_install module
@@ -609,13 +610,15 @@ releases:
     release_date: '2020-03-17'
   1.3.0:
     changes:
+      bugfixes:
+      - Fix invalid data type of partition_access parameter in the bigip_user module
       major_changes:
       - Broke apart bigip_device_auth_radius to implement radius server configuration
         in bigip_device_auth_server module. Refer to module documentation for usage
         details
-      bugfixes:
-      - Fix invalid data type of partition_access parameter in the bigip_user module
       minor_changes:
+      - Add SSL certificate subject_alternative_name information to bigip_device_info
+        module
       - Add ability to install software images on vCMP guests with the bigip_software_install
         module
       - Add cipher_list parameter to bigip_monitor_https
@@ -624,8 +627,6 @@ releases:
       - Add pool order option to bigip_gtm_wide_ip module
       - Add pva_acceleration parameter to bigip_profile_fastl4 module
       - Add set_variable type to bigip_policy_rule module
-      - Add SSL certificate subject_alternative_name information to bigip_device_info
-        module
       - Add time_wait_timeout parameter to bigip_profile_tcp module
       - Add use_for_auth parameter to bigip_device_auth_ldap module to allow setting
         up LDAP as the authentication source
@@ -700,10 +701,68 @@ releases:
   1.5.0:
     changes:
       bugfixes:
-      - Fix the download of an APM policy in bigip_apm_policy_fetch module
       - Fix issue with control characters in pool_id in bigiq_regkey_license_assignment
         module
+      - Fix the download of an APM policy in bigip_apm_policy_fetch module
     fragments:
     - 1624-bugfix-bigiq-control.yaml
     - 1781-bugfix-apm-policy-fetch.yaml
     release_date: '2020-07-21'
+  1.6.0:
+    changes:
+      bugfixes:
+      - Changed unicast_failover element type to dictionary
+      - Fix force parameter set to yes causing list index out of range error
+      - Fix invalid parameter name in the bigip_config_sync action module
+      - Fix issue where ASM file download needs to be chunked for larger files.
+      - Fix issue with retaining package files in the bigip_lx_package module
+      - Fix key error in list comprehension in the AsmPolicyStatsParameters class
+      - Fix missing ssh-keyfile parameter causing key error in the bigip action plugin
+      minor_changes:
+      - Add AS3 declaration information to the bigip_device_info module
+      - Add AS3, TS, CFE, and DO information to the bigip_device_info module
+      - Add CFE declaration information to the bigip_device_info module
+      - Add DO declaration information to the bigip_device_info module
+      - Add TS declaration information to the bigip_device_info module
+      - Add access policy information to the bigip_device_info module
+      - Add access profile information to the bigip_device_info module
+      - Add meaningful error message for the wait_for parameter in the bigip_command
+        module
+      - Add parent_policies and policies_pending_changes information parameters to
+        obtain when gathering asm-policy-stats
+      - Add remote_syslog information to the bigip_device_info module.
+      - Add renewal option to the bigip_device_license module
+      - Add reuse_objects parameter to the bigip_apm_policy_import module
+      - Add sync-status information to the bigip_device_info module
+      - Add the ability to import API Protection policies to the bigip_apm_policy_import
+        module
+      - Added apply information parameter to indicate if an ASM policy has pending
+        changes that need to be applied.
+      - Changed the meaning of policies_active and policies_inactive stat information
+        due to changes in TMOS 13.x
+      - New bigip_ssl_key_cert module to manage SSL certificates and keys with the
+        transaction interface
+      removed_features:
+      - Removed arp_state parameter from the bigip_virtual_address module
+    fragments:
+    - 1217-new-bigp-ssl-key-cert.yaml
+    - 1710-add-bigip-device-info.yaml
+    - 1728-bugfix-command.yaml
+    - 1777-add-syslog-device-info.yaml
+    - 1778-sync-status-bigip-info.yaml
+    - 1782-add-reuse-objects.yaml
+    - 1784-add-apm-info.yaml
+    - 1795-fix-unicast-param-device-conn.yaml
+    - 1816-license-renew.yaml
+    - 1832-remove-deprecations.yaml
+    - 1834-atc-add-bigip-device-info.yaml
+    - 1834-atc-bigip-device-info.yaml
+    - 1840-bugfix-lxpackage-configsync.yaml
+    - 1855-add-api-protect-apm.yaml
+    - 1859-bugfix-asm-file-download-fix.yaml
+    - 608-fix-force-parameter-asm-policy.yaml
+    modules:
+    - description: Import/Delete SSL keys and certs from BIG-IP
+      name: bigip_ssl_key_cert
+      namespace: ''
+    release_date: '2020-10-19'
