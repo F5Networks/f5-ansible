@@ -14,7 +14,7 @@ module: {{ module }}
 short_description: __SHORT_DESCRIPTION__
 description:
   - __LONG DESCRIPTION__.
-version_added: "f5_modules 1.7.0"
+version_added: "1.7.0"
 options:
   name:
     description:
