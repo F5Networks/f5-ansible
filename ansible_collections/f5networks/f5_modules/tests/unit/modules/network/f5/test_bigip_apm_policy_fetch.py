@@ -99,11 +99,8 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
         )
 
-        mp = ModuleParameters(params=module.params)
-        mp._item_exists = Mock(return_value=True)
         mm = ModuleManager(module=module)
         mm.version_less_than_14 = Mock(return_value=False)
-        mm.want = Mock(return_value=mp)
         mm.exists = Mock(return_value=False)
         mm.create_on_device = Mock(return_value=True)
         mm.execute = Mock(return_value=True)

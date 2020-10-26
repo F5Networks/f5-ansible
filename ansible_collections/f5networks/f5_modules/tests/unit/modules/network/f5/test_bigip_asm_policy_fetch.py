@@ -102,10 +102,7 @@ class TestManager(unittest.TestCase):
             mutually_exclusive=self.spec.mutually_exclusive,
         )
 
-        mp = ModuleParameters(params=module.params)
-        mp._policy_exists = Mock(return_value=True)
         mm = ModuleManager(module=module)
-        mm.want = Mock(return_value=mp)
         mm.want.binary = False
         mm.exists = Mock(return_value=False)
         mm.create_on_device = Mock(return_value=True)
