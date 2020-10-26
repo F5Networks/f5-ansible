@@ -73,6 +73,10 @@ options:
     type: bool
     default: no
 extends_documentation_fragment: f5networks.f5_modules.f5
+notes:
+  - This module can be used to license BIG-IPs that do not have access to internet.
+  - Only the Ansible Controller needs internet access as the license activation is done on the Ansible Controller from
+    which the module is running.
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
