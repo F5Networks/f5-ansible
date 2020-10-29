@@ -718,6 +718,9 @@ releases:
       - Fix issue with retaining package files in the bigip_lx_package module
       - Fix key error in list comprehension in the AsmPolicyStatsParameters class
       - Fix missing ssh-keyfile parameter causing key error in the bigip action plugin
+      major_changes:
+      - Add phone home Teem integration into all modules, functionality can be disabled
+        by setting up F5_TEEM environment variable or no_f5_teem provider parameter
       minor_changes:
       - Add AS3 declaration information to the bigip_device_info module
       - Add AS3, TS, CFE, and DO information to the bigip_device_info module
@@ -760,6 +763,7 @@ releases:
     - 1840-bugfix-lxpackage-configsync.yaml
     - 1855-add-api-protect-apm.yaml
     - 1859-bugfix-asm-file-download-fix.yaml
+    - 1884-add-teem-phone-home.yaml
     - 608-fix-force-parameter-asm-policy.yaml
     modules:
     - description: Import/Delete SSL keys and certs from BIG-IP

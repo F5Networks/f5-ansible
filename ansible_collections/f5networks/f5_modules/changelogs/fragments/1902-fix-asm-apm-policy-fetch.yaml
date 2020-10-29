@@ -1,0 +1,8 @@
+---
+bugfixes:
+  - Fix apm policy existence checks in bigip_apm_policy_fetch module
+  - Fix asm policy existence checks in bigip_asm_policy_fetch module
+  - Fix issue with bigip_asm_policy_fetch where existing file would break the module run
+
+minor_changes:
+  - Changed apm_policy_fetch module to use standard download function

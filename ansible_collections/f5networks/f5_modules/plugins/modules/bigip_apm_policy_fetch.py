@@ -129,7 +129,7 @@ from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec
 )
 from ..module_utils.icontrol import (
-    module_provisioned, tmos_version, download_asm_file
+    module_provisioned, tmos_version, download_file
 )
 from ..module_utils.teem import send_teem
 
@@ -155,28 +155,6 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
-    def _item_exists(self):
-        if self.type == 'access_policy':
-            uri = 'https://{0}:{1}/mgmt/tm/apm/policy/access-policy/{2}'.format(
-                self.client.provider['server'],
-                self.client.provider['server_port'],
-                transform_name(self.partition, self.name)
-            )
-        else:
-            uri = 'https://{0}:{1}/mgmt/tm/apm/profile/access/{2}'.format(
-                self.client.provider['server'],
-                self.client.provider['server_port'],
-                transform_name(self.partition, self.name)
-            )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-        if 'items' in response and response['items'] != []:
-            return True
-        return False
-
     @property
     def file(self):
         if self._values['file'] is not None:
@@ -214,14 +192,6 @@ class ModuleParameters(Parameters):
                 "Destination {0} not writable".format(os.path.dirname(result))
             )
         return result
-
-    @property
-    def name(self):
-        if not self._item_exists():
-            raise F5ModuleError('The provided {0} with the name {1} does not exist on device.'.format(
-                self.type, self._values['name'])
-            )
-        return self._values['name']
 
 
 class Changes(Parameters):
@@ -306,6 +276,7 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "File '{0}' already exists.".format(self.want.fulldest)
             )
+        self.create_on_device()
         self.execute()
 
     def create(self):
@@ -330,13 +301,49 @@ class ModuleManager(object):
         return True
 
     def exists(self):
+        self.policy_exists()
         if os.path.exists(self.want.fulldest):
             return True
         return False
 
+    def policy_exists(self):
+        errors = [401, 403, 409, 500, 501, 502, 503, 504]
+        if self.want.type == 'access_policy':
+            uri = 'https://{0}:{1}/mgmt/tm/apm/policy/access-policy/{2}'.format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.want.partition, self.want.name)
+            )
+        else:
+            uri = 'https://{0}:{1}/mgmt/tm/apm/profile/access/{2}'.format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+                transform_name(self.want.partition, self.want.name)
+            )
+        resp = self.client.api.get(uri)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            raise F5ModuleError('The provided {0} with the name {1} does not exist on device.'.format(
+                self.want.type, self.want.name)
+            )
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+
+        if resp.status in errors or 'code' in response and response['code'] in errors:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+
     def create_on_device(self):
-        cmd = 'ng_export -t {0} {1} {2} -p {3}'.format(
-            self.want.type, self.want.name, self.want.name, self.want.partition
+        cmd = 'ng_export -t {0} {1} {1} -p {2}'.format(
+            self.want.type, self.want.name, self.want.partition
         )
         uri = "https://{0}:{1}/mgmt/tm/util/bash/".format(
             self.client.provider['server'],
@@ -406,7 +413,7 @@ class ModuleManager(object):
             self.want.file
         )
         try:
-            download_asm_file(self.client, url, dest)
+            download_file(self.client, url, dest)
         except F5ModuleError:
             raise F5ModuleError(
                 "Failed to download the file."
