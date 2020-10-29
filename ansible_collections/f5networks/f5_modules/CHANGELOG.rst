@@ -8,6 +8,11 @@ F5Networks F5_Modules Collection Release Notes
 v1.6.0
 ======
 
+Major Changes
+-------------
+
+- Add phone home Teem integration into all modules, functionality can be disabled by setting up F5_TEEM environment variable or no_f5_teem provider parameter
+
 Minor Changes
 -------------
 
