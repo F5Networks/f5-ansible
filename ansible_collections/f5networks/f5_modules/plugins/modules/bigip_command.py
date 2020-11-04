@@ -91,7 +91,7 @@ notes:
   - When running this module in an HA environment via SSH connection and using a role other than C(admin)
     or C(root), you may see a C(Change Pending) status, even if you did not make any changes.
     This is being tracked with ID429869.
-  - When utilizing the bigip_command module with the REST API there are a number of places that that regex is used
+  - When using the bigip_command module with the REST API, there are a number of places regex is used
     internally to escape characters such as quotation marks. If your TMSH command contains regex characters itself,
     such as datagroup wildcards C(*), then a large amount of escape characters may be needed.
 extends_documentation_fragment: f5networks.f5_modules.f5_rest_cli
