@@ -9,24 +9,25 @@
     - "/tmp/{{ ucs_name_1 }}"
     - "/tmp/{{ ucs_name }}"
 
-- name: Create a UCS
+- name: Create a UCS with custom timeout
   bigip_ucs_fetch:
     dest: "/tmp/{{ ucs_name }}"
     src: "{{ ucs_name }}"
+    async_timeout: 200
   register: result
 
-- name: Assert Create a UCS
+- name: Assert Create a UCS with custom timeout
   assert:
     that:
       - result is changed
 
-- name: Create the same UCS, default force
+- name: Create the same UCS, default force, default timeout
   bigip_ucs_fetch:
     dest: "/tmp/{{ ucs_name }}"
     src: "{{ ucs_name }}"
   register: result
 
-- name: Assert Create the same UCS, default force
+- name: Assert Create the same UCS, default force, default timeout
   assert:
     that:
       - result is changed

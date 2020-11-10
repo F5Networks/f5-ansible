@@ -55,6 +55,13 @@ options:
     description:
       - The name of the UCS file to create on the remote server for downloading.
     type: str
+  async_timeout:
+    description:
+      - Parameter used when creating new UCS file on device.
+      - The amount of time in seconds to wait for the API async interface to complete its task.
+      - The accepted value range is between C(150) and C(1800) seconds.
+    type: int
+    default: 150
 notes:
   - BIG-IP provides no way to get a checksum of the UCS files on the system
     via any interface with the possible exception of logging in directly to the box (which
@@ -145,6 +152,8 @@ size:
 import os
 import re
 import tempfile
+import time
+
 from datetime import datetime
 from distutils.version import LooseVersion
 
@@ -218,6 +227,19 @@ class Parameters(AnsibleF5Parameters):
             )
         return result
 
+    @property
+    def async_timeout(self):
+        divisor = 100
+        timeout = self._values['async_timeout']
+        if timeout < 150 or timeout > 1800:
+            raise F5ModuleError(
+                "Timeout value must be between 150 and 1800 seconds."
+            )
+
+        delay = timeout / divisor
+
+        return delay, divisor
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -227,7 +249,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -362,6 +384,11 @@ class BaseManager(object):
         return True
 
     def create_on_device(self):
+        task = self.create_async_task_on_device()
+        self._start_task_on_device(task)
+        self.async_wait(task)
+
+    def create_async_task_on_device(self):
         if self.want.passphrase:
             params = dict(
                 command='save',
@@ -374,7 +401,7 @@ class BaseManager(object):
                 name=self.want.src,
             )
 
-        uri = "https://{0}:{1}/mgmt/tm/sys/ucs".format(
+        uri = "https://{0}:{1}/mgmt/tm/task/sys/ucs".format(
             self.client.provider['server'],
             self.client.provider['server_port']
         )
@@ -383,11 +410,54 @@ class BaseManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return response['_taskId']
+        raise F5ModuleError(resp.content)
+
+    def _start_task_on_device(self, task):
+        payload = {"_taskState": "VALIDATING"}
+        uri = "https://{0}:{1}/mgmt/tm/task/sys/ucs/{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            task
+        )
+        resp = self.client.api.put(uri, json=payload)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201, 202] or 'code' in response and response['code'] in [200, 201, 202]:
+            return True
+        raise F5ModuleError(resp.content)
+
+    def async_wait(self, task):
+        delay, period = self.want.async_timeout
+        uri = "https://{0}:{1}/mgmt/tm/task/sys/ucs/{2}/result".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            task
+        )
+        for x in range(0, period):
+            resp = self.client.api.get(uri)
+            try:
+                response = resp.json()
+            except ValueError:
+                # It is possible that the API call can return invalid JSON.
+                # This invalid JSON appears to be just empty strings.
+                continue
+            if resp.status in [200, 201, 202] or 'code' in response and response['code'] in [200, 201, 202]:
+                if response['_taskState'] == 'FAILED':
+                    raise F5ModuleError("Task failed unexpectedly.")
+                if response['_taskState'] == 'COMPLETED':
+                    return True
+
+            time.sleep(delay)
+        raise F5ModuleError(
+            "Module timeout reached, state change is unknown, "
+            "please increase the async_timeout parameter for long lived actions."
+        )
 
     def download(self):
         self.download_from_device(self.want.dest)
@@ -574,7 +644,11 @@ class ArgumentSpec(object):
                 default='no',
                 type='bool'
             ),
-            src=dict()
+            src=dict(),
+            async_timeout=dict(
+                type='int',
+                default=150
+            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
