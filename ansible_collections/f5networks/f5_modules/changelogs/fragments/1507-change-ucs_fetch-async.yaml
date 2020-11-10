@@ -1,0 +1,4 @@
+---
+major_changes:
+  - Changed bigip_ucs_fetch module to use asynchronous interface when generating UCS files.
+  - Added async_timeout parameter to bigip_ucs_fetch module to allow customization of module wait for async interface.
