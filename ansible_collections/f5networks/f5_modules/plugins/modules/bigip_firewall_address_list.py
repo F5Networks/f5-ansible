@@ -615,6 +615,8 @@ class Changes(Parameters):
 class ReportableChanges(Changes):
     @property
     def addresses(self):
+        if self._values['addresses'] is None:
+            return None
         result = []
         for item in self._values['addresses']:
             if '-' in item['name']:
@@ -624,6 +626,8 @@ class ReportableChanges(Changes):
 
     @property
     def address_ranges(self):
+        if self._values['address_ranges'] is None:
+            return None
         result = []
         for item in self._values['addresses']:
             if '-' not in item['name']:
@@ -647,6 +651,8 @@ class ReportableChanges(Changes):
 
     @property
     def address_lists(self):
+        if self._values['address_lists'] is None:
+            return None
         result = []
         for x in self._values['address_lists']:
             item = '/{0}/{1}'.format(x['partition'], x['name'])
