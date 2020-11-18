@@ -102,7 +102,7 @@ def publish(c, filename, api_key, ah=None):
     version="What version of collection to set in the galaxy.yml file, the version must follow in SemVer format."
 ))
 def changelog(c, version):
-    """Build changelog and update galaxy.yml file with next version number."""
+    """Build changelog and update galaxy.yml file version number."""
     collection = '{0}/ansible_collections/f5networks/f5_modules'.format(BASE_DIR)
     validate_version(version)
     with c.cd(collection):
