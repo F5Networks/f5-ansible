@@ -12,6 +12,7 @@ cache/
 output
 test/integration/targets/bigip_imish_config/backup
 assets/
+.plugin-cache.yaml
 
 # Byte-compiled files
 __pycache__/
