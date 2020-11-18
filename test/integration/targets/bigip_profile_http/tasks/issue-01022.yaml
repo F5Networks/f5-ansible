@@ -142,19 +142,29 @@
       - result is not changed
       - result is success
 
-- name: Issue 01022 - Change HTTP profile , change erase_header invalid value - Expect Failure
+- name: Issue 01022 - Change HTTP profile , change erase_header invalid value - Expect Success
   bigip_profile_http:
     name: "{{ profile_1 }}"
     header_erase: "{{ invalid_header_1 }}"
   register: result
-  failed_when: result is success
 
-- name: Issue 01022 - Change HTTP profile , change insert_header invalid value - Expect Failure
+- name: Issue 01022 - Assert Change HTTP profile , change erase_header invalid value - Expect Success
+  assert:
+    that:
+      - result is changed
+      - result.header_erase == ":foo"
+
+- name: Issue 01022 - Change HTTP profile , change insert_header invalid value - Expect Success
   bigip_profile_http:
     name: "{{ profile_1 }}"
     header_insert: "{{ invalid_header_2 }}"
   register: result
-  failed_when: result is success
+
+- name: Issue 01022 - Assert Change HTTP profile , change insert_header invalid value - Expect Success
+  assert:
+    that:
+      - result is changed
+      - result.header_insert == "bar:foo:baz"
 
 - name: Issue 01022 - Change HTTP profile , remove erase_header readd server agent name
   bigip_profile_http:
