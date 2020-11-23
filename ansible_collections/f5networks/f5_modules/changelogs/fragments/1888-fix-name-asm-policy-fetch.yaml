@@ -1,0 +1,4 @@
+---
+bugfixes:
+  - Fix issue with bigip_asm_policy_fetch where similiar policy names would cause wrong policy to be fetched
+  - Fix issue with bigip_asm_policy_manage where similiar policy names would cause wrong policy id to be selected
