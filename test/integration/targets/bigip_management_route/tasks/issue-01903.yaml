@@ -1,0 +1,36 @@
+- name: Issue 01903 - Create a management route
+  bigip_management_route:
+    name: "{{ default_network }}"
+    description: ROUTE TO TACACS {{ default_network }}
+    gateway: "{{ default_gateway }}"
+    network: "{{ default_network }}"
+  register: result
+
+- name: Issue 01903 - Assert Create a management route
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01903 - Create a management route - Idempotent check
+  bigip_management_route:
+    name: "{{ default_network }}"
+    description: ROUTE TO TACACS {{ default_network }}
+    gateway: "{{ default_gateway }}"
+    network: "{{ default_network }}"
+  register: result
+
+- name: Issue 01903 - Assert Create a management route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01903 - Remove management route
+  bigip_management_route:
+    name: "{{ default_network }}"
+    state: absent
+  register: result
+
+- name: Issue 01903 - Assert Remove management route
+  assert:
+    that:
+      - result is changed

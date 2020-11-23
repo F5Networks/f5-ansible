@@ -100,7 +100,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, f5_argument_spec
+    F5ModuleError, AnsibleF5Parameters, f5_argument_spec, transform_name
 )
 from ..module_utils.ipaddress import is_valid_ip
 from ..module_utils.icontrol import tmos_version
@@ -322,7 +322,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/sys/management-route/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.get(uri)
         try:
@@ -371,7 +371,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/sys/management-route/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.patch(uri, json=params)
         try:
@@ -387,7 +387,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/sys/management-route/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            transform_name(self.want.partition, self.want.name)
         )
         response = self.client.api.delete(uri)
         if response.status == 200:
@@ -398,7 +398,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/sys/management-route/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.get(uri)
         try:
