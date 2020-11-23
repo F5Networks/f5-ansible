@@ -1,0 +1,29 @@
+---
+- name: Issue 01888 - Create ASM policies
+  bigip_asm_policy_manage:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "test_generic_asm_policy"
+    - "test_generic_asm_policy_2"
+
+- name: Issue 01888 - Export One Policy Inline
+  bigip_asm_policy_fetch:
+    partition: "Common"
+    name: "test_generic_asm_policy"
+    inline: yes
+  register: policyOut
+
+- debug:
+    msg: policyOut
+
+- name: Issue 01888 - Remove ASM policies
+  bigip_asm_policy_manage:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "test_generic_asm_policy"
+    - "test_generic_asm_policy_2"
+
+- name: Issue 01888 - Clean up files folder
+  shell: find "{{ role_path }}/files/" -mindepth 1 -maxdepth 1 -print0 | xargs -0 rm -rf

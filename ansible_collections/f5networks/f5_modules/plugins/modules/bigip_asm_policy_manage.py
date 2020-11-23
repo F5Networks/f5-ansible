@@ -696,7 +696,13 @@ class BaseManager(object):
             raise F5ModuleError(resp.content)
 
         if 'items' in response and response['items'] != []:
-            policy_id = response['items'][0]['id']
+            if len(response['items']) == 1:
+                policy_id = response['items'][0]['id']
+            else:
+                for item in response['items']:
+                    if item['name'] == self.want.name:
+                        policy_id = item['id']
+
         if not policy_id:
             raise F5ModuleError("The policy was not found")
 

@@ -330,6 +330,8 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         if not module_provisioned(self.client, 'asm'):
             raise F5ModuleError(
                 "ASM must be provisioned to use this module."
@@ -342,6 +344,7 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=True))
+        send_teem(start, self.module, version)
         return result
 
     def export(self):
@@ -412,8 +415,12 @@ class ModuleManager(object):
             raise F5ModuleError(resp.content)
 
         if 'items' in response and response['items'] != []:
-            return True
-
+            if len(response['items']) == 1:
+                return True
+            else:
+                for item in response['items']:
+                    if item['name'] == self.want.name:
+                        return True
         raise F5ModuleError(
             "The specified ASM policy {0} on partition {1} does not exist on device.".format(
                 self.want.name, self.want.partition
@@ -490,9 +497,13 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
         if 'items' in response and response['items'] != []:
-            policy_link = response['items'][0]['selfLink']
+            if len(response['items']) == 1:
+                policy_link = response['items'][0]['selfLink']
+            else:
+                for item in response['items']:
+                    if item['name'] == self.want.name:
+                        policy_link = item['selfLink']
 
         if not policy_link:
             raise F5ModuleError("The policy was not found")
