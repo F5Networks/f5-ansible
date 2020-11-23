@@ -55,6 +55,8 @@ options:
         by the module.
     type: bool
     default: no
+notes:
+  - This module requires that sys db variable on device C(systemauth.disablebash) is set to C(false).
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
