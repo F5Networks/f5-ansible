@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix bigip_management_route module not idempotent
