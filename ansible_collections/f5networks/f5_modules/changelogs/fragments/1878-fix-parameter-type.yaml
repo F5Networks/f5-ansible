@@ -1,0 +1,5 @@
+---
+bugfixes:
+  - Fix host_begins_with_any, host_is_any, server_name_is_any and host_is_not_any parameters of the bigip_policy_rule
+    module to enforce list as the required parameter type. Change was required since in Ansible a string conversion is
+    applied when the provided argument type is not matching the expected one causing undesired side effects.

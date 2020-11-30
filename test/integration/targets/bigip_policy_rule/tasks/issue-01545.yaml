@@ -148,7 +148,8 @@
     name: rule1
     conditions:
       - type: ssl_extension
-        server_name_is_any: foo.bar.com
+        server_name_is_any:
+          - foo.bar.com
         event: ssl_server_hello
   register: result
 
@@ -164,7 +165,8 @@
     name: rule1
     conditions:
       - type: ssl_extension
-        server_name_is_any: foo.bar.com
+        server_name_is_any:
+          - foo.bar.com
         event: ssl_server_hello
   register: result
 

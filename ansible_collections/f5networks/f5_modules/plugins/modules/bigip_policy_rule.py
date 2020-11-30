@@ -146,27 +146,27 @@ options:
         description:
           - A list of strings of characters the HTTP URI should start with.
           - This parameter is only valid with the C(http_uri) type.
-        type: str
+        type: list
       host_is_any:
         description:
           - A list of strings of characters the HTTP Host should match.
           - This parameter is only valid with the C(http_host) type.
-        type: str
+        type: list
       host_is_not_any:
         description:
           - A list of strings of characters the HTTP Host should not match.
           - This parameter is only valid with the C(http_host) type.
-        type: str
+        type: list
       host_begins_with_any:
         description:
           - A list of strings of characters the HTTP Host should start with.
           - This parameter is only valid with the C(http_host) type.
-        type: str
+        type: list
       server_name_is_any:
         description:
           - A list of strings of characters the SSL Extension should match.
           - This parameter is only valid with the C(ssl_extension) type.
-        type: str
+        type: list
       event:
         description:
           - Events on which conditions such as SSL Extension can be triggered.
@@ -214,7 +214,8 @@ EXAMPLES = r'''
     name: rule3
     conditions:
       - type: http_uri
-        path_begins_with_any: /ABC
+        path_begins_with_any:
+          - /ABC
     actions:
       - type: forward
         pool: pool-svrs
@@ -242,14 +243,16 @@ EXAMPLES = r'''
           pool: pool-svrs
       conditions:
         - type: http_uri
-          path_begins_with_any: /euro
+          path_begins_with_any:
+            - /euro
     - name: rule2
       actions:
         - type: forward
           pool: pool-svrs
       conditions:
         - type: http_uri
-          path_begins_with_any: /HomePage/
+          path_begins_with_any:
+            - /HomePage/
     - name: rule3
       actions:
         - type: set_variable
@@ -258,7 +261,8 @@ EXAMPLES = r'''
           event: request
       conditions:
         - type: http_uri
-          path_begins_with_any: /HomePage/
+          path_begins_with_any:
+            - /HomePage/
 
 - name: Remove all rules and confitions from the rule
   bigip_policy_rule:
@@ -1293,11 +1297,11 @@ class ArgumentSpec(object):
                         ],
                         required=True
                     ),
-                    path_begins_with_any=dict(),
-                    host_begins_with_any=dict(),
-                    host_is_any=dict(),
-                    host_is_not_any=dict(),
-                    server_name_is_any=dict(),
+                    path_begins_with_any=dict(type='list'),
+                    host_begins_with_any=dict(type='list'),
+                    host_is_any=dict(type='list'),
+                    host_is_not_any=dict(type='list'),
+                    server_name_is_any=dict(type='list'),
                     event=dict()
                 ),
             ),
