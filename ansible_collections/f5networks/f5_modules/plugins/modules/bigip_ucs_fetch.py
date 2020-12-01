@@ -53,7 +53,7 @@ options:
     default: yes
   src:
     description:
-      - The name of the UCS file to create on the remote server for downloading.
+      - The name of the UCS file to create on the remote server for downloading. The file will be retrieved or created in /var/local/ucs/.
     type: str
   async_timeout:
     description:
