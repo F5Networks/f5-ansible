@@ -114,7 +114,8 @@
     name: rule1
     conditions:
       - type: http_host
-        host_begins_with_any: foo.bar.com
+        host_begins_with_any:
+          - foo.bar.com
   register: result
 
 - name: Issue 00899 - One value in condition
@@ -129,7 +130,8 @@
     name: rule1
     conditions:
       - type: http_host
-        host_begins_with_any: foo.bar.com
+        host_begins_with_any:
+          - foo.bar.com
   register: result
 
 - name: Issue 00899 - One value in condition - Idempotent check
@@ -248,7 +250,8 @@
     name: rule1
     conditions:
       - type: http_host
-        host_is_any: foo.bar.com
+        host_is_any:
+          - foo.bar.com
   register: result
 
 - name: Issue 00899 - One value condition is_any
@@ -263,7 +266,8 @@
     name: rule1
     conditions:
       - type: http_host
-        host_is_any: foo.bar.com
+        host_is_any:
+          - foo.bar.com
   register: result
 
 - name: Issue 00899 - One value condition is_any - Idempotent check
