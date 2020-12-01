@@ -147,26 +147,31 @@ options:
           - A list of strings of characters the HTTP URI should start with.
           - This parameter is only valid with the C(http_uri) type.
         type: list
+        elements: str
       host_is_any:
         description:
           - A list of strings of characters the HTTP Host should match.
           - This parameter is only valid with the C(http_host) type.
         type: list
+        elements: str
       host_is_not_any:
         description:
           - A list of strings of characters the HTTP Host should not match.
           - This parameter is only valid with the C(http_host) type.
         type: list
+        elements: str
       host_begins_with_any:
         description:
           - A list of strings of characters the HTTP Host should start with.
           - This parameter is only valid with the C(http_host) type.
         type: list
+        elements: str
       server_name_is_any:
         description:
           - A list of strings of characters the SSL Extension should match.
           - This parameter is only valid with the C(ssl_extension) type.
         type: list
+        elements: str
       event:
         description:
           - Events on which conditions such as SSL Extension can be triggered.
@@ -1297,11 +1302,26 @@ class ArgumentSpec(object):
                         ],
                         required=True
                     ),
-                    path_begins_with_any=dict(type='list'),
-                    host_begins_with_any=dict(type='list'),
-                    host_is_any=dict(type='list'),
-                    host_is_not_any=dict(type='list'),
-                    server_name_is_any=dict(type='list'),
+                    path_begins_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    host_begins_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    host_is_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    host_is_not_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    server_name_is_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
                     event=dict()
                 ),
             ),
