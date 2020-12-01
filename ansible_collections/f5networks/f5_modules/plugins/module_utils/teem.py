@@ -9,7 +9,10 @@ __metaclass__ = type
 import json
 import sys
 import uuid
+import random
 import re
+import socket
+
 
 from time import time
 from datetime import datetime
@@ -29,15 +32,17 @@ class TeemClient(object):
         self.ansible_version = module.ansible_version
         self.version = version
         self.start_time = start_time
+        self.docker = False
 
     def prepare_request(self):
-        asset_id = str(uuid.uuid4())
+        self.docker = in_docker()
         user_agent = 'F5_MODULES{0}'.format(CURRENT_COLL_VERSION)
+        dai = generate_asset_id(socket.gethostname())
         telemetry = self.build_telemetry()
         url = 'https://%s/ee/v1/telemetry' % TEEM_ENDPOINT
         headers = {
             'F5-ApiKey': TEEM_KEY,
-            'F5-DigitalAssetId': asset_id,
+            'F5-DigitalAssetId': str(dai),
             'F5-TraceId': str(uuid.uuid4()),
             'User-Agent': user_agent
         }
@@ -45,7 +50,7 @@ class TeemClient(object):
         data = {
             'digitalAssetName': 'F5_MODULES',
             'digitalAssetVersion': CURRENT_COLL_VERSION,
-            'digitalAssetId': asset_id,
+            'digitalAssetId': str(dai),
             'documentType': 'F5_MODULES Ansible Collection',
             'documentVersion': '1',
             'observationStartTime': self.start_time,
@@ -87,8 +92,32 @@ class TeemClient(object):
             'f5Platform': platform,
             'f5SoftwareVersion': self.version,
             'ControllerAnsibleVersion': self.ansible_version,
-            'ControllerPythonVersion': python_version
+            'ControllerPythonVersion': python_version,
+            'ControllerAsDocker': self.docker
         }]
+
+
+def in_docker():
+    """Check to see if we are running in a container
+
+    Returns:
+        bool: True if in a container. False otherwise.
+    """
+    try:
+        with open('/proc/1/cgroup') as fh:
+            lines = fh.readlines()
+    except IOError:
+        return False
+    if any('/docker/' in x for x in lines):
+        return True
+    return False
+
+
+def generate_asset_id(seed):
+    rd = random.Random()
+    rd.seed(seed)
+    result = uuid.UUID(int=rd.getrandbits(128))
+    return result
 
 
 def send_teem(start_time, module, version=None):
