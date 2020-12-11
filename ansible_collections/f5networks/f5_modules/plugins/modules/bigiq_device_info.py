@@ -819,6 +819,7 @@ vlans:
   sample: hash/dictionary of values
 '''
 
+import copy
 import datetime
 import math
 import re
@@ -1628,14 +1629,13 @@ class SystemInfoParameters(BaseParameters):
 
     def _transform_name_attribute(self, entry):
         if isinstance(entry, dict):
-            for k, v in iteritems(entry):
+            tmp = copy.deepcopy(entry)
+            for k, v in iteritems(tmp):
                 if k == 'tmName':
                     entry['name'] = entry.pop('tmName')
                 self._transform_name_attribute(v)
         elif isinstance(entry, list):
             for k in entry:
-                if k == 'tmName':
-                    entry['name'] = entry.pop('tmName')
                 self._transform_name_attribute(k)
         else:
             return

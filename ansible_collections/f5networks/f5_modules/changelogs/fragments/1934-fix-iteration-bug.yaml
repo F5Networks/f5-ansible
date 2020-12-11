@@ -1,0 +1,5 @@
+---
+bugfixes:
+  - Fix iteration bug in bigiq_device_info module
+minor_changes:
+  - Add better error handling for TEEM telemetry connection
