@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix GTM virtual server depenedncy where path to Iapp resources were incorrectly stripped.
