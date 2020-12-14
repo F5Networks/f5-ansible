@@ -14,11 +14,14 @@ import re
 import socket
 
 
-from time import time
 from datetime import datetime
+from ssl import SSLError
+from time import time
 
 from ansible.module_utils.urls import open_url
-from ansible.module_utils.six.moves.urllib.error import HTTPError
+from ansible.module_utils.six.moves.urllib.error import (
+    HTTPError, URLError
+)
 
 from .constants import (
     TEEM_ENDPOINT, TEEM_KEY, TEEM_TIMEOUT, TEEM_VERIFY,
@@ -74,8 +77,10 @@ class TeemClient(object):
                 validate_certs=TEEM_VERIFY,
                 data=payload
             )
-        except HTTPError:
-            return False
+        # we need to ensure that any connection errors to TEEM do not cause failure of module to run.
+        except (HTTPError, URLError, SSLError):
+            return None
+
         ok = re.search(r'20[01-4]', str(response.code))
         if ok:
             return True
