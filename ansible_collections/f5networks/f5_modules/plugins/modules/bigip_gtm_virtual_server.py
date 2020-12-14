@@ -258,7 +258,6 @@ limits:
   sample: { 'bits_enabled': true, 'bits_limit': 100 }
 '''
 
-import os
 import re
 from datetime import datetime
 
@@ -617,7 +616,7 @@ class ModuleParameters(Parameters):
         for dependency in self._values['virtual_server_dependencies']:
             result = dict(
                 server=fq_name(self.partition, dependency['server']),
-                virtual_server=os.path.basename(dependency['virtual_server'])
+                virtual_server=dependency['virtual_server']
             )
             results.append(result)
         if results:
