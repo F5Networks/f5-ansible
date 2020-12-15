@@ -54,6 +54,7 @@ options:
       - The C(lw4o6-table) datastore does not keep checksums of its file. Therefore, you
         would need to provide this argument to update any of these files.
     type: bool
+    default: no
   partition:
     description:
       - Device partition to manage resources on.

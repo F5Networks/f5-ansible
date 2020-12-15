@@ -17,3 +17,9 @@ plugins/modules/bigip_pool_member.py validate-modules:doc-missing-type
 plugins/modules/bigip_pool_member.py validate-modules:missing-suboption-docs
 plugins/action/bigip.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added
 plugins/action/bigiq.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added
+plugins/modules/bigip_imish_config.py validate-modules:parameter-type-not-in-doc
+plugins/modules/bigip_imish_config.py validate-modules:undocumented-parameter
+plugins/modules/bigip_ucs_fetch.py validate-modules:parameter-type-not-in-doc
+plugins/modules/bigip_ucs_fetch.py validate-modules:undocumented-parameter
+plugins/modules/bigip_imish_config.py validate-modules:doc-default-does-not-match-spec
+plugins/modules/bigip_ucs_fetch.py validate-modules:doc-default-does-not-match-spec

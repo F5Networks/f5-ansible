@@ -46,6 +46,7 @@ options:
         automatically.
       - When creating a new device group, this option will default to C(no).
     type: bool
+    default: no
   save_on_auto_sync:
     description:
       - When performing an auto-sync, specifies whether the configuration
