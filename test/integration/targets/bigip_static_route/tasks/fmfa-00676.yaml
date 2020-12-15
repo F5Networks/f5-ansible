@@ -1,0 +1,95 @@
+---
+- name: Fmfa 00676 - Include issue variables
+  include_vars:
+    file: fmfa-00676.yaml
+
+- name: Fmfa 00676 - Create Partition
+  bigip_partition:
+    name: "{{ slb_partition.name }}"
+
+- name: Fmfa 00676 - Create VLAN
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    partition: "{{ slb_partition.name }}"
+
+- name: Fmfa 00676 - Create route domain
+  bigip_routedomain:
+    name: "{{ network_routedomain.name }}"
+    id: "{{ network_routedomain.id }}"
+    partition: "{{ slb_partition.name }}"
+    vlans:
+      - "{{ vlan_name }}"
+
+- name: Fmfa 00676 - Create selfip
+  bigip_selfip:
+    name: "{{ selfip.name }}"
+    partition: "{{ slb_partition.name }}"
+    address: "{{ selfip.addr }}"
+    route_domain: "{{ network_routedomain.id }}"
+    netmask: "{{ selfip.mask }}"
+    vlan: "{{ vlan_name }}"
+
+- name: Fmfa 00676 - Create Static Route
+  bigip_static_route:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    partition: "{{ slb_partition.name }}"
+    route_domain: "{{ item.route_domain }}"
+    destination: "{{ item.destination }}"
+    netmask: "{{ item.netmask }}"
+    gateway_address: "{{ item.gateway_address }}"
+  with_items: "{{ network_routes }}"
+  register: result
+
+- name: Fmfa 00676 - Assert Create Static Route
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Fmfa 00676 - Create Static Route - Idempotent check
+  bigip_static_route:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    partition: "{{ slb_partition.name }}"
+    route_domain: "{{ item.route_domain }}"
+    destination: "{{ item.destination }}"
+    netmask: "{{ item.netmask }}"
+    gateway_address: "{{ item.gateway_address }}"
+  with_items: "{{ network_routes }}"
+  register: result
+
+- name: Fmfa 00676 - Assert Create Static Route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Fmfa 00676 - Remove Static Route
+  bigip_static_route:
+    name: "any%{{ network_routedomain.id }}"
+    partition: "{{ slb_partition.name }}"
+    state: absent
+
+- name: Fmfa 00676 - Remove self-IP
+  bigip_selfip:
+    name: "{{ selfip.name }}"
+    partition: "{{ slb_partition.name }}"
+    state: absent
+
+- name: Fmfa 00676 - Remove Route Domain
+  bigip_routedomain:
+    id: "{{ network_routedomain.id }}"
+    partition: "{{ slb_partition.name }}"
+    state: absent
+
+- name: Fmfa 00676 - Remove VLAN
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    partition: "{{ slb_partition.name }}"
+    state: absent
+
+- name: Fmfa 00676 - Remove Partition
+  bigip_partition:
+    name: "{{ slb_partition.name }}"
+    state: absent

@@ -1,0 +1,17 @@
+---
+slb_partition:
+  name: "nd"
+network_routedomain:
+  name: "nd"
+  id: 2
+network_routes:
+  - { name: "any%{{ network_routedomain.id }}",
+      description: NIK, route_domain: "{{ network_routedomain.id }}",
+      destination: 0.0.0.0, netmask: 0.0.0.0, gateway_address: 10.27.0.5 }
+
+vlan_name: net676
+
+selfip:
+  name: "nd-self"
+  addr: 10.27.0.1
+  mask: 255.255.255.0

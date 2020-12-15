@@ -1,0 +1,183 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Issue 00752 - Create a partition
+  bigip_partition:
+    name: Part_Ilb
+
+- name: Issue 00752 - Create a vlan
+  bigip_vlan:
+    name: v100
+
+- name: Issue 00752 - Create a route domain
+  bigip_routedomain:
+    id: 100
+    vlans:
+      - v100
+
+- name: Create a specific selfip
+  bigip_selfip:
+    name: net4
+    address: "fe80:0:0:0:0:0:0:12"
+    netmask: "ffff:ffff:ffff:ffff:0:0:0:0"
+    route_domain: 100
+    vlan: v100
+
+- name: Issue 00752 - Create DefaultRoute
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    gateway_address: 10.2.2.20
+    name: DefaultRoute
+    partition: Part_Ilb
+  register: result
+
+- name: Issue 00752 - Assert Create DefaultRoute
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00752 - Create DefaultRoute - Idempotent check
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    gateway_address: 10.2.2.20
+    name: DefaultRoute
+    partition: Part_Ilb
+  register: result
+
+- name: Issue 00752 - Assert Create DefaultRoute - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00752 - Remove route
+  bigip_static_route:
+    name: DefaultRoute
+    partition: Part_Ilb
+    state: absent
+  register: result
+
+- name: Issue 00752 - Create DefaultRoute, with route domain
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    route_domain: 100
+    gateway_address: 10.2.2.20
+    name: DefaultRoute
+    partition: Part_Ilb
+  register: result
+
+- name: Issue 00752 - Assert Create DefaultRoute, with route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00752 - Create DefaultRoute, with route domain - Idempotent check
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    route_domain: 100
+    gateway_address: 10.2.2.20
+    name: DefaultRoute
+    partition: Part_Ilb
+  register: result
+
+- name: Issue 00752 - Assert Create DefaultRoute, with route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00752 - Remove DefaultRoute, with route domain
+  bigip_static_route:
+    name: DefaultRoute
+    partition: Part_Ilb
+    state: absent
+  register: result
+
+- name: Issue 00752 - Remove DefaultRoute, with route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00752 - Remove DefaultRoute, with route domain - Idempotent check
+  bigip_static_route:
+    name: DefaultRoute
+    partition: Part_Ilb
+    state: absent
+  register: result
+
+- name: Issue 00752 - Remove DefaultRoute, with route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00752 - Create DefaultRoute, IPv6 with route domain
+  bigip_static_route:
+    destination: "::"
+    netmask: "::"
+    route_domain: 100
+    gateway_address: "fe80:0:0:0:0:0:0:12"
+    vlan: /Common/v100
+    name: DefaultRoute
+    partition: Part_Ilb
+  register: result
+
+- name: Issue 00752 - Assert Create DefaultRoute, IPv6 with route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00752 - Create DefaultRoute, IPv6 with route domain - Idempotent check
+  bigip_static_route:
+    destination: "::"
+    netmask: "::"
+    route_domain: 100
+    gateway_address: "fe80:0:0:0:0:0:0:12"
+    vlan: /Common/v100
+    name: DefaultRoute
+    partition: Part_Ilb
+  register: result
+
+- name: Issue 00752 - Assert Create DefaultRoute, IPv6 with route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00752 - Remove DefaultRoute, IPv6 with route domain
+  bigip_static_route:
+    name: DefaultRoute
+    partition: Part_Ilb
+    state: absent
+  register: result
+
+- name: Issue 00752 - Remove selfip
+  bigip_selfip:
+    name: net4
+    state: absent
+
+- name: Issue 00752 - Remove route domain
+  bigip_routedomain:
+    id: 100
+    state: absent
+
+- name: Issue 00752 - Remove vlan
+  bigip_vlan:
+    name: v100
+    state: absent
+
+- name: Issue 00752 - Remove partition
+  bigip_partition:
+    name: Part_Ilb
+    state: absent
+
+- import_tasks: teardown.yaml

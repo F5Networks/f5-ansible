@@ -1,0 +1,85 @@
+--
+
+- name: Issue 00945 - Create partition
+  bigip_partition:
+    name: foo
+
+- name: Issue 00945 - Create VLAN
+  bigip_vlan:
+    name: net945
+    partition: foo
+
+- name: Issue 00945 - Create route domain
+  bigip_routedomain:
+    id: 1034
+    partition: foo
+    vlans:
+      - net945
+
+- name: Issue 00945 - Create self-IP
+  bigip_selfip:
+    name: net945
+    partition: foo
+    address: 3.3.3.3
+    route_domain: 1034
+    netmask: 255.255.255.0
+    vlan: net945
+
+- name: Issue 00945 - Creating a default static route
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0.0.0.0
+    gateway_address: 3.3.3.5%1034
+    partition: foo
+    name: default
+  register: result
+
+- name: Issue 00945 - Assert Creating a default static route
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00945 - Creating a default static route - Idempotent check
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0.0.0.0
+    gateway_address: 3.3.3.5%1034
+    partition: foo
+    name: default
+  register: result
+
+- name: Issue 00945 - Assert Creating a default static route - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00945 - Remove static route
+  bigip_static_route:
+    partition: foo
+    name: default
+    state: absent
+
+- name: Issue 00945 - Remove self-IP
+  bigip_selfip:
+    name: net945
+    partition: foo
+    state: absent
+
+- name: Issue 00945 - Remove route domain
+  bigip_routedomain:
+    id: 1034
+    partition: foo
+    state: absent
+
+- name: Issue 00945 - Remove VLAN
+  bigip_vlan:
+    name: net945
+    partition: foo
+    state: absent
+
+- name: Issue 00945 - Remove partition
+  bigip_partition:
+    name: foo
+    state: absent

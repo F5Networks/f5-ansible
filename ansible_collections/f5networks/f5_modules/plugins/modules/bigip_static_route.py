@@ -245,9 +245,13 @@ class ModuleParameters(Parameters):
         try:
             if '%' in self._values['gateway_address']:
                 addr = self._values['gateway_address'].split('%')[0]
+                ip_interface(u'%s' % str(addr))
             else:
                 addr = self._values['gateway_address']
-            ip_interface(u'%s' % str(addr))
+                ip_interface(u'%s' % str(addr))
+                if self.route_domain:
+                    result = str(addr) + '%' + str(self.route_domain)
+                    return result
             return str(self._values['gateway_address'])
         except ValueError:
             raise F5ModuleError(
