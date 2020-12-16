@@ -1,0 +1,347 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create static route with gateway address
+  bigip_static_route:
+    destination: "{{ destination1 }}"
+    netmask: 255.255.255.255
+    gateway_address: "{{ gateway_address1 }}"
+    name: "{{ static_route_name }}"
+  register: result
+
+- name: Assert Create static route with gateway address
+  assert:
+    that:
+      - result is changed
+
+- name: Create static route with gateway address - Idempotent check
+  bigip_static_route:
+    destination: "{{ destination1 }}"
+    netmask: 255.255.255.255
+    gateway_address: "{{ gateway_address1 }}"
+    name: "{{ static_route_name }}"
+  register: result
+
+- name: Assert Create static route with gateway address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set static route description
+  bigip_static_route:
+    description: "{{ description1 }}"
+    name: "{{ static_route_name }}"
+  register: result
+
+- name: Assert Set static route description
+  assert:
+    that:
+      - result is changed
+
+- name: Set static route description - Idempotent check
+  bigip_static_route:
+    description: "{{ description1 }}"
+    name: "{{ static_route_name }}"
+  register: result
+
+- name: Assert Set static route description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set route to blackhole
+  bigip_static_route:
+    name: "{{ static_route_name }}"
+    reject: yes
+  register: result
+
+- name: Assert Set route to blackhole
+  assert:
+    that:
+      - result is changed
+
+- name: Set route to blackhole - Idempotent check
+  bigip_static_route:
+    name: "{{ static_route_name }}"
+    reject: yes
+  register: result
+
+- name: Assert Set route to blackhole - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Attempt to change netmask
+  bigip_static_route:
+    name: "{{ static_route_name }}"
+    netmask: 24
+    reject: yes
+  register: result
+  failed_when: result is success
+
+- name: Assert Attempt to change netmask
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete a static route
+  bigip_static_route:
+    name: "{{ static_route_name }}"
+    state: absent
+  register: result
+
+- name: Assert Delete a static route
+  assert:
+    that:
+      - result is changed
+
+- name: Delete a static route - Idempotent check
+  bigip_static_route:
+    name: "{{ static_route_name }}"
+    state: absent
+  register: result
+
+- name: Assert Delete a static route - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create static route with CIDR
+  bigip_static_route:
+    destination: "{{ destination3 }}"
+    netmask: 32
+    gateway_address: "{{ gateway_address1 }}"
+    name: route2
+  register: result
+
+- name: Assert Create static route with gateway address
+  assert:
+    that:
+      - result is changed
+
+- name: Create static route with gateway address - Idempotent check
+  bigip_static_route:
+    destination: "{{ destination3 }}"
+    netmask: 32
+    gateway_address: "{{ gateway_address1 }}"
+    name: route2
+  register: result
+
+- name: Assert Create static route with gateway address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete other static route
+  bigip_static_route:
+    name: route2
+    state: absent
+  register: result
+
+- name: Attempt to create static route from hostname (not allowed)
+  bigip_static_route:
+    destination: "{{ destination2 }}"
+    netmask: 32
+    gateway_address: "{{ gateway_address1 }}"
+    name: bad
+  register: result
+  failed_when: result is success
+
+- name: Assert Attempt to create static route from hostname (not allowed)
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create route with netmask 0
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    gateway_address: "{{ gateway_address1 }}"
+    name: "{{ static_route_name }}1"
+  register: result
+
+- name: Create route with netmask 0
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create route with netmask 0 - Idempotent check
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    gateway_address: "{{ gateway_address1 }}"
+    name: "{{ static_route_name }}1"
+  register: result
+
+- name: Create route with netmask 0 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Attempt create route with abnormal netmask for IP
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 128
+    gateway_address: "{{ gateway_address1 }}"
+    name: "{{ static_route_name }}2"
+  register: result
+  failed_when: result is success
+
+- name: Attempt create route with abnormal netmask for IP
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create ipv6 route with 0 netmask
+  bigip_static_route:
+    destination: "::"
+    netmask: 0
+    gateway_address: "FE80::"
+    vlan: net1
+    name: "{{ static_route_name }}3"
+  register: result
+
+- name: Create ipv6 route with 0 netmask
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create ipv6 route with 0 netmask - Idempotent check
+  bigip_static_route:
+    destination: "::"
+    netmask: 0
+    gateway_address: "FE80::"
+    vlan: net1
+    name: "{{ static_route_name }}3"
+  register: result
+
+- name: Create ipv6 route with 0 netmask - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create ipv4 route with 32 netmask
+  bigip_static_route:
+    destination: 1.1.1.1
+    netmask: 32
+    gateway_address: "{{ gateway_address1 }}"
+    name: "{{ static_route_name }}4"
+  register: result
+
+- name: Create ipv4 route with 32 netmask
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create ipv4 route with 32 netmask - Idempotent check
+  bigip_static_route:
+    destination: 1.1.1.1
+    netmask: 32
+    gateway_address: "{{ gateway_address1 }}"
+    name: "{{ static_route_name }}4"
+  register: result
+
+- name: Create ipv4 route with 32 netmask - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Create ipv6 route with 128 netmask
+  bigip_static_route:
+    destination: "2001:db8::"
+    netmask: 128
+    gateway_address: "FE80::"
+    vlan: net1
+    name: "{{ static_route_name }}5"
+  register: result
+
+- name: Create ipv6 route with 128 netmask
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create ipv6 route with 128 netmask - Idempotent check
+  bigip_static_route:
+    destination: "2001:db8::"
+    netmask: 128
+    gateway_address: "FE80::"
+    vlan: net1
+    name: "{{ static_route_name }}5"
+  register: result
+
+- name: Create ipv6 route with 128 netmask - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Attempt route with 129 netmask - Expected failure
+  bigip_static_route:
+    destination: "2001:db8::"
+    netmask: 129
+    gateway_address: "FE80::"
+    vlan: net1
+    name: "{{ static_route_name }}6"
+  register: result
+  failed_when: result is success
+
+- name: Create route with 129 netmask - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+      - "'The provided netmask must be between' in result.msg"
+
+- name: Attempt route with -1 netmask - Expected failure
+  bigip_static_route:
+    destination: "2001:db8::"
+    netmask: -1
+    gateway_address: "FE80::"
+    vlan: net1
+    name: "{{ static_route_name }}7"
+  register: result
+  failed_when: result is success
+
+- name: Create route with -1 netmask - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+      - "'The provided netmask must be between' in result.msg"
+
+- name: Remove routes validating edge netmasks
+  bigip_static_route:
+    name: "{{ static_route_name }}{{ item }}"
+    state: absent
+  with_sequence: start=1 end=7
+
+- import_tasks: teardown.yaml
+
+- import_tasks: issue-00104.yaml
+  tags: issue-00104
+
+- import_tasks: issue-00545.yaml
+  tags: issue-00545
+
+- import_tasks: issue-00618.yaml
+  tags: issue-00618
+
+- import_tasks: issue-00752.yaml
+  tags: issue-00752
+
+- import_tasks: issue-00865.yaml
+  tags: issue-00865
+
+- import_tasks: fmfa-00676.yaml
+  tags: fmfa-00676

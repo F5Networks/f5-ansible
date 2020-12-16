@@ -87,7 +87,7 @@ fi
 export ANSIBLE_COLLECTIONS_PATHS="${SHIPPABLE_BUILD_DIR}"
 TEST_DIR="${SHIPPABLE_BUILD_DIR}/ansible_collections/f5networks/f5_modules"
 SHIPPABLE_RESULT_DIR="$(pwd)/shippable"
-retry pip install ansible==2.9.9 --disable-pip-version-check
+retry pip install ansible
 retry ansible-galaxy -vvv collection install ansible.netcommon
 cd "${TEST_DIR}"
 

@@ -1,0 +1,13 @@
+---
+
+- name: Create VLAN
+  bigip_vlan:
+    name: vlan1
+    state: present
+
+- name: Create self-IP
+  bigip_selfip:
+    name: main-tests
+    address: 20.2.2.1
+    netmask: 255.255.255.0
+    vlan: vlan1

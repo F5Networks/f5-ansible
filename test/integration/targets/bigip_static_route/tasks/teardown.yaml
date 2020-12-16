@@ -1,0 +1,11 @@
+---
+
+- name: Remove self-IP
+  bigip_selfip:
+    name: main-tests
+    state: absent
+
+- name: Remove VLAN
+  bigip_vlan:
+    name: vlan1
+    state: absent

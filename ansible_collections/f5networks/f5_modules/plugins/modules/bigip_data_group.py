@@ -1408,7 +1408,10 @@ class ArgumentSpec(object):
                 choices=['address', 'addr', 'ip', 'string', 'str', 'integer', 'int'],
                 default='string'
             ),
-            delete_data_group_file=dict(type='bool'),
+            delete_data_group_file=dict(
+                type='bool',
+                default='no'
+            ),
             internal=dict(type='bool', default='no'),
             records=dict(
                 type='list',

@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix idempotency issue with gateway_address and route domain in bigip_static_route module
