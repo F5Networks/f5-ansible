@@ -108,7 +108,7 @@ options:
         root directory or role root directory, if playbook is part of an
         Ansible role. If the directory does not exist, it is created.
     type: bool
-    default: 'no'
+    default: no
   running_config:
     description:
       - By default, the module will connect to the remote device and
@@ -207,7 +207,7 @@ options:
         address families are configured.
       - Only used with the C(lines) parameter.
     type: bool
-    default: 'no'
+    default: no
     version_added: "1.2.0"
 notes:
   - Abbreviated commands are NOT idempotent, see
@@ -798,7 +798,7 @@ class ArgumentSpec(object):
             replace=dict(default='line', choices=['line', 'block']),
             running_config=dict(aliases=['config']),
             intended_config=dict(),
-            backup=dict(type='bool', default=False),
+            backup=dict(type='bool', default='no'),
             backup_options=dict(type='dict', options=backup_spec),
             save_when=dict(choices=['always', 'never', 'modified', 'changed'], default='never'),
             diff_against=dict(choices=['running', 'startup', 'intended'], default='startup'),
@@ -806,7 +806,7 @@ class ArgumentSpec(object):
                 type='list',
                 elements='str',
             ),
-            allow_duplicates=dict(type='bool', default=False)
+            allow_duplicates=dict(type='bool', default='no')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

@@ -457,7 +457,7 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            force=dict(type='bool'),
+            force=dict(type='bool', default='no'),
             image=dict(required=True),
             state=dict(
                 default='present',

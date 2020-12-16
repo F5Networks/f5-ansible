@@ -1,0 +1,57 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Issue 00104 - Create static route with gateway address
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    gateway_address: 10.2.2.5
+    name: default
+  register: result
+
+- name: Issue 00104 - Assert Create static route with gateway address
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00104 - Create static route with gateway address - Idempotent check
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    gateway_address: 10.2.2.5
+    name: default
+  register: result
+
+- name: Issue 00104 - Assert Create static route with gateway address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00104 - Remove static route with gateway address
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    name: default
+    state: absent
+  register: result
+
+- name: Issue 00104 - Assert Remove static route with gateway address
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00104 - Remove static route with gateway address - Idempotent check
+  bigip_static_route:
+    destination: 0.0.0.0
+    netmask: 0
+    name: default
+    state: absent
+  register: result
+
+- name: Issue 00104 - Assert Remove static route with gateway address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- import_tasks: teardown.yaml

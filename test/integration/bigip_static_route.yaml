@@ -33,7 +33,7 @@
       tested_platforms:
         - NA
 
-- name: Test the bigip_static_route module - Environment
+- name: Test the bigip_static_route module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
@@ -49,34 +49,6 @@
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
     F5_TEEM: "{{ no_f5_teem }}"
 
-  tasks:
-    - name: Include role - Environment
-      import_role:
-        name: bigip_static_route
-        tasks_from: environment.yaml
-      tags:
-        - environment
+  roles:
+    - bigip_static_route
 
-- name: Test the bigip_static_route module - Provider
-  hosts: "f5-test[0]"
-  connection: local
-  any_errors_fatal: true
-
-  vars:
-    limit_to: '*'
-    provider:
-      transport: rest
-      user: "{{ bigip_username }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      no_f5_teem: "{{ no_f5_teem }}"
-
-  tasks:
-    - name: Include role - Provider
-      import_role:
-        name: bigip_static_route
-        tasks_from: provider.yaml
-      tags:
-        - provider
