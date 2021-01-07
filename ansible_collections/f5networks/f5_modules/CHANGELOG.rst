@@ -5,6 +5,36 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.7.0-devel
+============
+
+Major Changes
+-------------
+
+- Added async_timeout parameter to bigip_ucs_fetch module to allow customization of module wait for async interface
+- Changed bigip_ucs_fetch module to use asynchronous interface when generating UCS files
+
+Minor Changes
+-------------
+
+- Add better error handling for TEEM telemetry connection
+- Changed apm_policy_fetch module to use standard download function
+
+Bugfixes
+--------
+
+- Fix AFM firewall address list error
+- Fix GTM virtual server depenedncy where path to Iapp resources were incorrectly stripped.
+- Fix apm policy existence checks in bigip_apm_policy_fetch module
+- Fix asm policy existence checks in bigip_asm_policy_fetch module
+- Fix bigip_management_route module not idempotent
+- Fix host_begins_with_any, host_is_any, server_name_is_any and host_is_not_any parameters of the bigip_policy_rule module to enforce list as the required parameter type. Change was required since in Ansible a string conversion is applied when the provided argument type is not matching the expected one causing undesired side effects.
+- Fix idempotency issue with gateway_address and route domain in bigip_static_route module
+- Fix issue with bigip_asm_policy_fetch where existing file would break the module run
+- Fix issue with bigip_asm_policy_fetch where similiar policy names would cause wrong policy to be fetched
+- Fix issue with bigip_asm_policy_manage where similiar policy names would cause wrong policy id to be selected
+- Fix iteration bug in bigiq_device_info module
+
 v1.6.0
 ======
 
