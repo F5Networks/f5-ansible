@@ -770,7 +770,7 @@ releases:
       name: bigip_ssl_key_cert
       namespace: ''
     release_date: '2020-10-19'
-  1.7.0-devel:
+  1.7.0:
     changes:
       bugfixes:
       - Fix AFM firewall address list error

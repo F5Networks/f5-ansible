@@ -5,7 +5,7 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
-v1.7.0-devel
+v1.7.0
 ============
 
 Major Changes

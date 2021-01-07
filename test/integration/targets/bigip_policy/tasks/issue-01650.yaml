@@ -1,0 +1,37 @@
+---
+- name: Issue 01650 - Create a draft policy with rules containing spaces
+  bigip_policy:
+    name: issue-01650
+    state: draft
+    rules:
+      - rule 1
+      - rule 2
+      - Drop All
+  register: result
+
+- name: Issue 01650 - Assert Create a draft policy with rules containing spaces
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01650 - Create a draft policy with rules containing spaces - Idempotent Check
+  bigip_policy:
+    name: issue-01650
+    state: draft
+    rules:
+      - rule 1
+      - rule 2
+      - Drop All
+  register: result
+
+- name: Issue 01650 - Assert Create a draft policy with rules containing spaces - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01650 - Remove a policy
+  bigip_policy:
+    name: issue-01650
+    state: absent

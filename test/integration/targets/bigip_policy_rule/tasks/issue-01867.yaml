@@ -1,0 +1,157 @@
+---
+- name: Issue 01867 - Create published policy
+  bigip_policy:
+    name: issue-01867
+
+- name: Issue 01867 - Create published rule with remove actions
+  bigip_policy_rule:
+    policy: issue-01867
+    name: rule1
+    actions:
+      - type: remove
+        http_header:
+          event: "response"
+          name: "foobar"
+      - type: remove
+        http_referer:
+          event: "request"
+      - type: remove
+        http_set_cookie:
+          name: "bazbar"
+      - type: remove
+        http_cookie:
+          name: "bazbar"
+          event: "request"
+  register: result
+
+- name: Issue 01867 - Assert Create published rule with remove actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01867 - Create published rule with remove actions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01867
+    name: rule1
+    actions:
+      - type: remove
+        http_header:
+          event: "response"
+          name: "foobar"
+      - type: remove
+        http_referer:
+          event: "request"
+      - type: remove
+        http_set_cookie:
+          name: "bazbar"
+      - type: remove
+        http_cookie:
+          name: "bazbar"
+          event: "request"
+  register: result
+
+- name: Issue 01867 - Assert Create published rule with remove actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01867 - Change published rule with remove actions
+  bigip_policy_rule:
+    policy: issue-01867
+    name: rule1
+    actions:
+      - type: remove
+        http_header:
+          event: "request"
+          name: "bazfoo"
+      - type: remove
+        http_referer:
+          event: "proxy_connect"
+      - type: remove
+        http_cookie:
+          name: "bazbar"
+          event: "proxy_request"
+  register: result
+
+- name: Issue 01867 - Assert Change published rule with remove actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01867 - Change published rule with remove actions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01867
+    name: rule1
+    actions:
+      - type: remove
+        http_header:
+          event: "request"
+          name: "bazfoo"
+      - type: remove
+        http_referer:
+          event: "proxy_connect"
+      - type: remove
+        http_cookie:
+          name: "bazbar"
+          event: "proxy_request"
+  register: result
+
+- name: Issue 01867 - Assert Change published rule with remove actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01867 - Change published rule with remove actions second time
+  bigip_policy_rule:
+    policy: issue-01867
+    name: rule1
+    actions:
+      - type: remove
+        http_set_cookie:
+          name: "bazbar"
+      - type: remove
+        http_cookie:
+          name: "bazbar"
+          event: "proxy_connect"
+      - type: remove
+        http_referer:
+          event: "proxy_request"
+  register: result
+
+- name: Issue 01867 - Assert Change published rule with remove actions second time
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01867 - Change published rule with remove actions second time - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01867
+    name: rule1
+    actions:
+      - type: remove
+        http_set_cookie:
+          name: "bazbar"
+      - type: remove
+        http_cookie:
+          name: "bazbar"
+          event: "proxy_connect"
+      - type: remove
+        http_referer:
+          event: "proxy_request"
+  register: result
+
+- name: Issue 01867 - Assert Change published rule with remove actions second time - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01867 - Remove published policy
+  bigip_policy:
+    name: issue-01867
+    state: absent
