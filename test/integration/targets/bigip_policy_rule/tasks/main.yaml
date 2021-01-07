@@ -400,4 +400,13 @@
 - import_tasks: issue-01678.yaml
   tags: issue-01678
 
+- import_tasks: issue-01867.yaml
+  tags: issue-01867
+
+- import_tasks: issue-01868.yaml
+  tags: issue-01868
+
+- import_tasks: issue-01871.yaml
+  tags: issue-01871
+
 - import_tasks: teardown.yaml

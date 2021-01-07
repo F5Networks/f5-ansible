@@ -1,7 +1,7 @@
 ---
 
 - name: Issue 01413 - Create ASM policy, compact XML file - current
-  bigip_asm_policy:
+  bigip_asm_policy_import:
     name: foo2-policy
     file: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
     active: yes
@@ -9,7 +9,7 @@
   when: f.system_info.product_version >= "13.0.0"
 
 - name: Issue 01413 - Create ASM policy, compact XML file - legacy
-  bigip_asm_policy:
+  bigip_asm_policy_import:
     name: foo2-policy
     file: "{{ role_path }}/files/v1_policy_default_compact_format_enabled.xml"
     active: yes

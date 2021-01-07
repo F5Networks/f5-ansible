@@ -204,6 +204,11 @@ from ..module_utils.common import (
 from ..module_utils.icontrol import tmos_version
 from ..module_utils.teem import send_teem
 
+try:
+    from urllib import quote_plus
+except ImportError:
+    from urllib.parse import quote_plus
+
 
 class Parameters(AnsibleF5Parameters):
     def to_return(self):
@@ -386,7 +391,7 @@ class BaseManager(object):
                 self.client.provider['server'],
                 self.client.provider['server_port'],
                 transform_name(self.want.partition, self.want.name, sub_path='Drafts'),
-                rule_name
+                quote_plus(rule_name)
             )
         else:
             uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
@@ -442,7 +447,7 @@ class BaseManager(object):
                 self.client.provider['server'],
                 self.client.provider['server_port'],
                 transform_name(self.want.partition, self.want.name, sub_path='Drafts'),
-                rule_name
+                quote_plus(rule_name)
             )
         else:
             uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
@@ -469,7 +474,7 @@ class BaseManager(object):
                 self.client.provider['server'],
                 self.client.provider['server_port'],
                 transform_name(self.want.partition, self.want.name, sub_path='Drafts'),
-                rule_name
+                quote_plus(rule_name)
             )
         else:
             uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
@@ -493,7 +498,7 @@ class BaseManager(object):
                 self.client.provider['server'],
                 self.client.provider['server_port'],
                 transform_name(self.want.partition, self.want.name, sub_path='Drafts'),
-                rule_name
+                quote_plus(rule_name)
             )
         else:
             uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(

@@ -6,7 +6,7 @@
 
 found=''
 
-findings=$(egrep "(import q|q\.q|@q)" ansible_collections/f5networks/f5_modules/plugins/ -R | grep -v "filter/q.py")
+findings=$(egrep "(import q$|q\.q|@q)" ansible_collections/f5networks/f5_modules/plugins/ -R | grep -v "filter/q.py")
 if [ "$findings" ]; then
     echo "${findings}"
     found=1
