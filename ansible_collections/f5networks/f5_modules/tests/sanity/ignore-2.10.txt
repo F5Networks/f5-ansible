@@ -26,3 +26,5 @@ plugins/modules/bigip_ucs_fetch.py validate-modules:parameter-type-not-in-doc
 plugins/modules/bigip_ucs_fetch.py validate-modules:undocumented-parameter
 plugins/modules/bigip_imish_config.py validate-modules:doc-default-does-not-match-spec
 plugins/modules/bigip_ucs_fetch.py validate-modules:doc-default-does-not-match-spec
+plugins/modules/bigip_log_destination.py validate-modules:collection-deprecated-version
+plugins/modules/bigip_node.py validate-modules:collection-deprecated-version

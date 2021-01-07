@@ -1,0 +1,173 @@
+---
+- name: Issue 01868 - Create published policy
+  bigip_policy:
+    name: issue-01868
+
+- name: Issue 01868 - Create published rule with insert actions
+  bigip_policy_rule:
+    policy: issue-01868
+    name: rule1
+    actions:
+      - type: insert
+        http_header:
+          event: "response"
+          name: "foobar"
+          value: "BAZ123"
+      - type: insert
+        http_referer:
+          event: "request"
+          value: "http://localhost"
+      - type: insert
+        http_set_cookie:
+          name: "cat"
+          value: "DOG"
+      - type: insert
+        http_cookie:
+          name: "F5LB"
+          event: "request"
+          value: "DOESAGOODJOB"
+  register: result
+
+- name: Issue 01868 - Assert Create published rule with insert actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01868 - Create published rule with insert actions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01868
+    name: rule1
+    actions:
+      - type: insert
+        http_header:
+          event: "response"
+          name: "foobar"
+          value: "BAZ123"
+      - type: insert
+        http_referer:
+          event: "request"
+          value: "http://localhost"
+      - type: insert
+        http_set_cookie:
+          name: "cat"
+          value: "DOG"
+      - type: insert
+        http_cookie:
+          name: "F5LB"
+          event: "request"
+          value: "DOESAGOODJOB"
+  register: result
+
+- name: Issue 01868 - Assert Create published rule with insert actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01868 - Change published rule with insert actions
+  bigip_policy_rule:
+    policy: issue-01868
+    name: rule1
+    actions:
+      - type: insert
+        http_header:
+          event: "request"
+          name: "BAZ"
+          value: "FOO"
+      - type: insert
+        http_referer:
+          event: "proxy_connect"
+          value: "http://example"
+      - type: insert
+        http_cookie:
+          name: "DOG"
+          event: "proxy_request"
+          value: "BONE"
+  register: result
+
+- name: Issue 01868 - Assert Change published rule with insert actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01868 - Change published rule with insert actions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01868
+    name: rule1
+    actions:
+      - type: insert
+        http_header:
+          event: "request"
+          name: "BAZ"
+          value: "FOO"
+      - type: insert
+        http_referer:
+          event: "proxy_connect"
+          value: "http://example"
+      - type: insert
+        http_cookie:
+          name: "DOG"
+          event: "proxy_request"
+          value: "BONE"
+  register: result
+
+- name: Issue 01868 - Assert Change published rule with insert actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01868 - Change published rule with insert and remove actions
+  bigip_policy_rule:
+    policy: issue-01868
+    name: rule1
+    actions:
+      - type: remove
+        http_set_cookie:
+          name: "CAT"
+      - type: insert
+        http_cookie:
+          name: "MOUSE"
+          value: "CHEESE"
+          event: "proxy_connect"
+      - type: remove
+        http_referer:
+          event: "proxy_request"
+  register: result
+
+- name: Issue 01868 - Assert Change published rule with insert and remove actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01868 - Change published rule with insert and remove actions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01868
+    name: rule1
+    actions:
+      - type: remove
+        http_set_cookie:
+          name: "CAT"
+      - type: insert
+        http_cookie:
+          name: "MOUSE"
+          value: "CHEESE"
+          event: "proxy_connect"
+      - type: remove
+        http_referer:
+          event: "proxy_request"
+  register: result
+
+- name: Issue 01868 - Assert Change published rule with insert and remove actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01868 - Remove published policy
+  bigip_policy:
+    name: issue-01868
+    state: absent

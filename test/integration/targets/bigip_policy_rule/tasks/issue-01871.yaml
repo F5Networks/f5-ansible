@@ -1,0 +1,145 @@
+---
+- name: Issue 01871 - Create published policy
+  bigip_policy:
+    name: issue-01871
+
+- name: Issue 01871 - Create published rule with conditions
+  bigip_policy_rule:
+    policy: issue-01871
+    name: rule1
+    conditions:
+      - type: http_host
+        host_ends_with_any:
+          - .bar.com
+          - .cool.com
+  register: result
+
+- name: Issue 01871 - Create published rule with conditions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01871 - Create published rule with conditions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01871
+    name: rule1
+    conditions:
+      - type: http_host
+        host_ends_with_any:
+          - .bar.com
+          - .cool.com
+  register: result
+
+- name: Issue 01871 - Create published rule with conditions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01871 - Add value to condition
+  bigip_policy_rule:
+    policy: issue-01871
+    name: rule1
+    conditions:
+      - type: http_host
+        host_ends_with_any:
+          - .bar.com
+          - .cool.com
+          - .dog.com
+  register: result
+
+- name: Issue 01871 - Add value to condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01871 - Add value to condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01871
+    name: rule1
+    conditions:
+      - type: http_host
+        host_ends_with_any:
+          - .bar.com
+          - .cool.com
+          - .dog.com
+  register: result
+
+- name: Issue 01871 - Add value to condition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01871 - Remove value from condition
+  bigip_policy_rule:
+    policy: issue-01871
+    name: rule1
+    conditions:
+      - type: http_host
+        host_ends_with_any:
+          - .bar.com
+          - .dog.com
+  register: result
+
+- name: Issue 01871 - Remove value from condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01871 - Remove value from condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01871
+    name: rule1
+    conditions:
+      - type: http_host
+        host_ends_with_any:
+          - .bar.com
+          - .dog.com
+  register: result
+
+- name: Issue 01871 - Remove value from condition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01871 - One value in condition
+  bigip_policy_rule:
+    policy: issue-01871
+    name: rule1
+    conditions:
+      - type: http_host
+        host_ends_with_any:
+          - .bar.com
+  register: result
+
+- name: Issue 01871 - One value in condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01871 - One value in condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01871
+    name: rule1
+    conditions:
+      - type: http_host
+        host_ends_with_any:
+          - .bar.com
+  register: result
+
+- name: Issue 01871 - One value in condition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01871 - Remove published policy
+  bigip_policy:
+    name: issue-01871
+    state: absent
