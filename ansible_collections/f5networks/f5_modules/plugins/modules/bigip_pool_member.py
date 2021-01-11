@@ -423,7 +423,6 @@ from ..module_utils.compare import cmp_str_with_none
 from ..module_utils.icontrol import (
     TransactionContextManager, tmos_version
 )
-from ..module_utils.icontrol import tmos_version
 from ..module_utils.teem import send_teem
 
 
@@ -1348,7 +1347,6 @@ class ModuleManager(object):
     def _update_address_with_existing_nodes(self):
         try:
             have = self.read_current_node_from_device(self.want.node_name)
-
             if self.want.fqdn_auto_populate and self.want.reuse_nodes:
                 self.module.warn(
                     "'fqdn_auto_populate' is discarded in favor of the re-used node's auto-populate setting."
