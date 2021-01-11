@@ -1,0 +1,68 @@
+---
+- name: Issue 01800 - Create a pool
+  bigip_pool:
+    name: pool1
+    lb_method: round-robin
+    provider: "{{ provider }}"
+
+- name: Issue 01800 - Create pool member
+  bigip_pool_member:
+    pool: pool1
+    fqdn: google.com
+    port: 80
+    provider: "{{ provider }}"
+
+- name: Issue 01800 - Assert Create pool member
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01800 - Create pool member - Idempotent check
+  bigip_pool_member:
+    pool: pool1
+    fqdn: google.com
+    port: 80
+    provider: "{{ provider }}"
+
+- name: Issue 01800 - Assert Create pool member - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01800 - Reuse fqdn node for next member
+  bigip_pool_member:
+    state: present
+    pool: pool1
+    fqdn: google.com
+    port: 8080
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01800 - Assert Reuse fqdn node for next member
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01800 - Reuse fqdn node for next member - Idempotent check
+  bigip_pool_member:
+    state: present
+    pool: pool1
+    fqdn: google.com
+    port: 8080
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 01800 - Assert Reuse fqdn node for next member - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01800 - Remove a pool
+  bigip_pool:
+    name: pool1
+    state: absent
+    provider: "{{ provider }}"
