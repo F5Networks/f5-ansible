@@ -44,6 +44,7 @@ options:
           - When C(type) is C(set_variable), the system sets a variable based on the evaluated Tcl C(expression) based on C(event).
           - When C(type) is C(remove), the system removes C(http_set_cookie), C(http_referer), C(http_header) or C(http_cookie) with this rule
           - When C(type) is C(insert), the system inserts C(http_set_cookie), C(http_referer), C(http_header) or C(http_cookie) with this rule
+          - When C(type) is C(replace), the system replaces C(http_connect), C(http_referer), C(http_header), C(http_uri) or C(http_host) with this rule
         type: str
         required: true
         choices:
@@ -56,6 +57,7 @@ options:
           - set_variable
           - remove
           - insert
+          - replace
       pool:
         description:
           - Pool to which you want to forward traffic.
@@ -84,9 +86,11 @@ options:
         type: str
       event:
         description:
-          - Events on which actions, such as reset, can be triggered.
+          - Events on which actions, such as reset, forward can be triggered.
           - With the C(set_variable) action, it is used for specifying
             an action event, such as request or response.
+          - "Valid event choices for C(forward) type are: client_accepted, proxy_request
+            request, ssl_client_hello and ssl_client_server_hello_send."
         type: str
       expression:
         description:
@@ -111,17 +115,21 @@ options:
       http_header:
         description:
           - HTTP Header that you want to remove or insert.
-          - This parameter is only valid with the C(remove) and C(insert) type.
+          - This parameter is only valid with the C(remove), C(insert) and C(replace) type.
         type: dict
         suboptions:
           event:
             description:
-              - Type of event when the C(http_header) is removed or inserted.
+              - Type of event when the C(http_header) is removed, replaced or inserted.
+              - The C(request) and C(response) events are only choices with C(remove) and C(insert) type.
+              - All of events are valid with C(replace) type action.
             type: str
-            required: True
             choices:
               - request
               - response
+              - proxy_connect
+              - proxy_request
+              - proxy_response
           name:
             description:
               - The name of C(http_header).
@@ -130,18 +138,18 @@ options:
           value:
             description:
               - The value of C(http_header).
-              - Mandatory parameter when configured with C(insert) type action.
+              - Mandatory parameter when configured with C(insert) or C(replace) type.
             type: str
         version_added: "1.8.0"
       http_referer:
         description:
-          - HTTP Referer header that you want to remove or insert.
-          - This parameter is only valid with the C(remove) and C(insert) type.
+          - HTTP Referer header that you want to remove, replace or insert.
+          - This parameter is only valid with the C(remove), C(insert) and C(replace) type.
         type: dict
         suboptions:
           event:
             description:
-              - Type of event when the c(http_referer) is removed or inserted.
+              - Type of event when the c(http_referer) is removed, replaced or inserted.
             required: True
             type: str
             choices:
@@ -152,11 +160,13 @@ options:
             description:
               - The value of C(http_referer).
               - Mandatory parameter when configured with C(insert) type action.
+              - Parameter is ignored for C(remove) type.
+              - Parameter is optional for C(replace) type.
             type: str
         version_added: "1.8.0"
       http_set_cookie:
         description:
-          - HTTP Set-Cookie header that you want to remove or insert .
+          - HTTP Set-Cookie header that you want to remove or insert.
           - This parameter is only valid with the C(remove) or c(insert) type.
         type: dict
         suboptions:
@@ -167,7 +177,7 @@ options:
             required: True
           value:
             description:
-              - The value of C(http_referer).
+              - The value of C(http_set_cookie).
               - Mandatory parameter when configured with C(insert) type action.
             type: str
         version_added: "1.8.0"
@@ -179,8 +189,7 @@ options:
         suboptions:
           event:
             description:
-              - Type of event when the c(http_cookie) is removed or inserted.
-            required: True
+              - Type of event when the C(http_cookie) is removed or inserted.
             type: str
             choices:
               - request
@@ -196,6 +205,83 @@ options:
               - The value of C(http_cookie).
               - Mandatory parameter when configured with C(insert) type action.
             type: str
+        version_added: "1.8.0"
+      http_connect:
+        description:
+          - HTTP Connect header that you want to replace.
+          - This parameter is only valid with the C(replace) type.
+        type: dict
+        suboptions:
+          event:
+            description:
+              - Type of event when the C(http_connect) header is replaced.
+            required: True
+            type: str
+            choices:
+              - client_accepted
+              - proxy_connect
+              - proxy_request
+              - proxy_response
+              - request
+              - server_connected
+              - ssl_client_hello
+          value:
+            description:
+              - The value of C(http_connect).
+            type: str
+          port:
+            description:
+              - The port number.
+            type: int
+        version_added: "1.8.0"
+      http_host:
+        description:
+          - HTTP Host header that you want to replace.
+          - This parameter is only valid with the C(replace) type.
+        type: dict
+        suboptions:
+          event:
+            description:
+              - Type of event when the C(http_host) is replaced.
+            type: str
+            choices:
+              - request
+              - proxy_connect
+              - proxy_request
+          value:
+            description:
+              - The value of C(http_host).
+            type: str
+            required: True
+        version_added: "1.8.0"
+      http_uri:
+        description:
+          - Replaces HTTP URI, path, or string.
+          - This parameter is only valid with the C(replace) type.
+        type: dict
+        suboptions:
+          event:
+            description:
+              - Type of event when the C(http_uri) is replaced.
+            type: str
+            choices:
+              - request
+              - proxy_connect
+              - proxy_request
+          type:
+            description:
+              - Specifies the part of the C(http_uri) to be replaced.
+            type: str
+            required: True
+            choices:
+              - path
+              - query_string
+              - full_string
+          value:
+            description:
+              - The value of C(http_uri).
+            type: str
+            required: True
         version_added: "1.8.0"
   policy:
     description:
@@ -241,6 +327,20 @@ options:
           - This parameter is only valid with the C(http_uri) type.
         type: list
         elements: str
+      path_contains:
+        description:
+          - A list of strings of characters the HTTP URI should contain.
+          - This parameter is only valid with the C(http_uri) type.
+        type: list
+        elements: str
+        version_added: "1.8.0"
+      path_is_any:
+        description:
+          - A list of strings of characters the HTTP URI should match.
+          - This parameter is only valid with the C(http_uri) type.
+        type: list
+        elements: str
+        version_added: "1.8.0"
       host_is_any:
         description:
           - A list of strings of characters the HTTP Host should match.
@@ -535,6 +635,7 @@ class ApiParameters(Parameters):
                 action.pop('vlanId', None)
                 action.pop('timeout', None)
                 action.pop('offset', None)
+                del action['remove']
             elif 'insert' in item:
                 action.update(item)
                 action['type'] = 'insert'
@@ -547,6 +648,19 @@ class ApiParameters(Parameters):
                 action.pop('vlanId', None)
                 action.pop('timeout', None)
                 action.pop('offset', None)
+                del action['insert']
+            elif 'replace' in item:
+                action.update(item)
+                action['type'] = 'replace'
+                action.pop('fullPath', None)
+                action.pop('code', None)
+                action.pop('expirySecs', None)
+                action.pop('length', None)
+                action.pop('status', None)
+                action.pop('vlanId', None)
+                action.pop('timeout', None)
+                action.pop('offset', None)
+                del action['replace']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -619,6 +733,8 @@ class ModuleParameters(Parameters):
                 self._handle_remove_action(action, item)
             elif item['type'] == 'insert':
                 self._handle_insert_action(action, item)
+            elif item['type'] == 'replace':
+                self._handle_replace_action(action, item)
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
         return result
@@ -647,7 +763,15 @@ class ModuleParameters(Parameters):
         return result
 
     def _handle_http_host_condition(self, action, item):
+        options = ['host_begins_with_any', 'host_ends_with_any', 'host_is_any', 'host_is_not_any']
         action['type'] = 'http_host'
+
+        if not any(x for x in options if x in item):
+            raise F5ModuleError(
+                "A 'host_begins_with_any', 'host_ends_with_any', host_is_any, or 'host_is_not_any' must be specified "
+                "when the 'http_uri' type is used."
+            )
+
         if 'host_begins_with_any' in item and item['host_begins_with_any'] is not None:
             if isinstance(item['host_begins_with_any'], list):
                 values = item['host_begins_with_any']
@@ -658,7 +782,7 @@ class ModuleParameters(Parameters):
                 startsWith=True,
                 values=values
             ))
-        if 'host_ends_with_any' in item and item['host_ends_with_any'] is not None:
+        elif 'host_ends_with_any' in item and item['host_ends_with_any'] is not None:
             if isinstance(item['host_ends_with_any'], list):
                 values = item['host_ends_with_any']
             else:
@@ -691,30 +815,45 @@ class ModuleParameters(Parameters):
             })
 
     def _handle_http_uri_condition(self, action, item):
-        """Handle the nuances of the forwarding type
-
-        Right now there is only a single type of forwarding that can be done. As that
-        functionality expands, so-to will the behavior of this, and other, methods.
-        Therefore, do not be surprised that the logic here is so rigid. It's deliberate.
-
-        :param action:
-        :param item:
-        :return:
-        """
         action['type'] = 'http_uri'
-        if 'path_begins_with_any' not in item:
+        options = ['path_begins_with_any', 'path_contains', 'path_is_any']
+
+        if all(k not in item for k in options):
             raise F5ModuleError(
-                "A 'path_begins_with_any' must be specified when the 'http_uri' type is used."
+                "A 'path_begins_with_any', 'path_contains' or 'path_is_any' must be specified "
+                "when the 'http_uri' type is used."
             )
-        if isinstance(item['path_begins_with_any'], list):
-            values = item['path_begins_with_any']
-        else:
-            values = [item['path_begins_with_any']]
-        action.update(dict(
-            path=True,
-            startsWith=True,
-            values=values
-        ))
+
+        if 'path_begins_with_any' in item and item['path_begins_with_any'] is not None:
+            if isinstance(item['path_begins_with_any'], list):
+                values = item['path_begins_with_any']
+            else:
+                values = [item['path_begins_with_any']]
+            action.update(dict(
+                path=True,
+                startsWith=True,
+                values=values
+            ))
+        elif 'path_contains' in item and item['path_contains'] is not None:
+            if isinstance(item['path_contains'], list):
+                values = item['path_contains']
+            else:
+                values = [item['path_contains']]
+            action.update(dict(
+                path=True,
+                contains=True,
+                values=values
+            ))
+        elif 'path_is_any' in item and item['path_is_any'] is not None:
+            if isinstance(item['path_is_any'], list):
+                values = item['path_is_any']
+            else:
+                values = [item['path_is_any']]
+            action.update(dict(
+                path=True,
+                equals=True,
+                values=values
+            ))
 
     def _handle_ssl_extension_condition(self, action, item):
         action['type'] = 'ssl_extension'
@@ -752,8 +891,18 @@ class ModuleParameters(Parameters):
         :param item:
         :return:
         """
+
+        event_map = dict(
+            client_accepted='clientAccepted',
+            proxy_request='proxyRequest',
+            request='request',
+            ssl_client_hello='sslClientHello',
+            ssl_client_server_hello_send='sslClientServerhelloSend'
+        )
+
         action['type'] = 'forward'
-        if not any(x for x in ['pool', 'virtual', 'node'] if x in item):
+        options = ['pool', 'virtual', 'node']
+        if not any(x for x in options if x in item):
             raise F5ModuleError(
                 "A 'pool' or 'virtual' or 'node' must be specified when the 'forward' type is used."
             )
@@ -763,6 +912,11 @@ class ModuleParameters(Parameters):
             action['virtual'] = fq_name(self.partition, item['virtual'])
         elif item.get('node', None):
             action['node'] = item['node']
+
+        if 'event' in item and item['event'] is not None:
+            event = event_map.get(item['event'], None)
+            if event:
+                action[event] = True
 
     def _handle_set_variable_action(self, action, item):
         """Handle the nuances of the set_variable type
@@ -874,7 +1028,8 @@ class ModuleParameters(Parameters):
         """
 
         action['type'] = 'remove'
-        if not any(x for x in ['http_header', 'http_referer', 'http_set_cookie', 'http_cookie'] if x in item):
+        options = ['http_header', 'http_referer', 'http_set_cookie', 'http_cookie']
+        if not any(x for x in options if x in item):
             raise F5ModuleError(
                 "A 'http_header', 'http_referer', 'http_set_cookie' or 'http_cookie' must be specified when "
                 "the 'remove' type is used."
@@ -886,11 +1041,16 @@ class ModuleParameters(Parameters):
                     tmName=item['http_header']['name'],
                     request=True
                 )
-            if item['http_header']['event'] == 'response':
+            elif item['http_header']['event'] == 'response':
                 action.update(
                     httpHeader=True,
                     tmName=item['http_header']['name'],
                     response=True
+                )
+            else:
+                action.update(
+                    httpHeader=True,
+                    tmName=item['http_header']['name']
                 )
         if 'http_referer' in item and item['http_referer']:
             if item['http_referer']['event'] == 'request':
@@ -915,17 +1075,22 @@ class ModuleParameters(Parameters):
                     tmName=item['http_cookie']['name'],
                     request=True
                 )
-            if item['http_cookie']['event'] == 'proxy_connect':
+            elif item['http_cookie']['event'] == 'proxy_connect':
                 action.update(
                     httpCookie=True,
                     tmName=item['http_cookie']['name'],
                     proxyConnect=True
                 )
-            if item['http_cookie']['event'] == 'proxy_request':
+            elif item['http_cookie']['event'] == 'proxy_request':
                 action.update(
                     httpCookie=True,
                     tmName=item['http_cookie']['name'],
                     proxyRequest=True
+                )
+            else:
+                action.update(
+                    httpCookie=True,
+                    tmName=item['http_cookie']['name']
                 )
         if 'http_set_cookie' in item and item['http_set_cookie']:
             action.update(
@@ -943,7 +1108,8 @@ class ModuleParameters(Parameters):
         """
 
         action['type'] = 'insert'
-        if not any(x for x in ['http_header', 'http_referer', 'http_set_cookie', 'http_cookie'] if x in item):
+        options = ['http_header', 'http_referer', 'http_set_cookie', 'http_cookie']
+        if not any(x for x in options if x in item):
             raise F5ModuleError(
                 "A 'http_header', 'http_referer', 'http_set_cookie' or 'http_cookie' must be specified when "
                 "the 'insert' type is used."
@@ -961,12 +1127,18 @@ class ModuleParameters(Parameters):
                     value=item['http_header']['value'],
                     request=True
                 )
-            if item['http_header']['event'] == 'response':
+            elif item['http_header']['event'] == 'response':
                 action.update(
                     httpHeader=True,
                     tmName=item['http_header']['name'],
                     value=item['http_header']['value'],
                     response=True
+                )
+            else:
+                action.update(
+                    httpHeader=True,
+                    tmName=item['http_header']['name'],
+                    value=item['http_header']['value']
                 )
         if 'http_referer' in item and item['http_referer']:
             if item['http_referer']['value'] is None:
@@ -1003,19 +1175,25 @@ class ModuleParameters(Parameters):
                     value=item['http_cookie']['value'],
                     request=True
                 )
-            if item['http_cookie']['event'] == 'proxy_connect':
+            elif item['http_cookie']['event'] == 'proxy_connect':
                 action.update(
                     httpCookie=True,
                     tmName=item['http_cookie']['name'],
                     value=item['http_cookie']['value'],
                     proxyConnect=True
                 )
-            if item['http_cookie']['event'] == 'proxy_request':
+            elif item['http_cookie']['event'] == 'proxy_request':
                 action.update(
                     httpCookie=True,
                     tmName=item['http_cookie']['name'],
                     value=item['http_cookie']['value'],
                     proxyRequest=True
+                )
+            else:
+                action.update(
+                    httpCookie=True,
+                    tmName=item['http_cookie']['name'],
+                    value=item['http_cookie']['value']
                 )
         if 'http_set_cookie' in item and item['http_set_cookie']:
             if item['http_set_cookie']['value'] is None:
@@ -1028,6 +1206,116 @@ class ModuleParameters(Parameters):
                 value=item['http_set_cookie']['value'],
                 response=True
             )
+
+    def _handle_replace_action(self, action, item):
+        """Handle the nuances of the replace type
+
+        :param action:
+        :param item:
+        :return:
+        """
+
+        action['type'] = 'replace'
+        options = ['http_header', 'http_referer', 'http_host', 'http_connect', 'http_uri']
+        if not any(x for x in options if x in item):
+            raise F5ModuleError(
+                "A 'http_header', 'http_referer', 'http_host', 'http_connect' or 'http_uri' must be specified when "
+                "the 'replace' type is used."
+            )
+        event_map = dict(
+            client_accepted='clientAccepted',
+            proxy_connect='proxyConnect',
+            proxy_request='proxyRequest',
+            proxy_response='proxyResponse',
+            request='request',
+            response='response',
+            server_connected='serverConnected',
+            ssl_client_hello='sslClientHello'
+        )
+        type_map = dict(
+            path='path',
+            query_string='queryString',
+            full_string='value'
+        )
+        if 'http_header' in item and item['http_header']:
+            if item['http_header']['value'] is None:
+                raise F5ModuleError(
+                    "The http_header value key is required when action is of type 'replace'."
+                )
+            if item['http_header']['event'] is not None:
+                action.update({
+                    'httpHeader': True,
+                    'tmName': item['http_header']['name'],
+                    'value': item['http_header']['value'],
+                    event_map[item['http_header']['event']]: True
+                })
+            else:
+                action.update({
+                    'httpHeader': True,
+                    'tmName': item['http_header']['name'],
+                    'value': item['http_header']['value']
+                })
+        if 'http_referer' in item and item['http_referer']:
+            if item['http_referer']['value'] is not None:
+                action.update({
+                    'httpReferer': True,
+                    'value': item['http_referer']['value'],
+                    event_map[item['http_referer']['event']]: True
+                })
+            else:
+                action.update({
+                    'httpReferer': True,
+                    event_map[item['http_referer']['event']]: True
+                })
+        if 'http_connect' in item and item['http_connect']:
+            if item['http_connect']['value'] is None and item['http_connect']['port'] is not None:
+                action.update({
+                    'httpConnect': True,
+                    'port': item['http_connect']['port'],
+                    event_map[item['http_connect']['event']]: True
+                })
+            elif item['http_connect']['value'] is not None and item['http_connect']['port'] is None:
+                action.update({
+                    'httpConnect': True,
+                    'host': item['http_connect']['value'],
+                    event_map[item['http_connect']['event']]: True
+                })
+            elif item['http_connect']['value'] is not None and item['http_connect']['port'] is not None:
+                action.update({
+                    'httpConnect': True,
+                    'host': item['http_connect']['value'],
+                    'port': item['http_connect']['port'],
+                    event_map[item['http_connect']['event']]: True
+                })
+            else:
+                action.update({
+                    'httpConnect': True,
+                    event_map[item['http_connect']['event']]: True
+                })
+        if 'http_uri' in item and item['http_uri']:
+            if item['http_uri']['event'] is not None:
+                action.update({
+                    'httpUri': True,
+                    type_map[item['http_uri']['type']]: item['http_uri']['value'],
+                    event_map[item['http_uri']['event']]: True
+                })
+            else:
+                action.update({
+                    'httpUri': True,
+                    type_map[item['http_uri']['type']]: item['http_uri']['value'],
+                })
+        if 'http_host' in item and item['http_host']:
+            if item['http_host']['event'] is not None:
+                action.update({
+                    'httpHost': True,
+                    'value': item['http_host']['value'],
+                    event_map[item['http_host']['event']]: True
+                })
+            else:
+                action.update({
+                    'httpHost': True,
+                    'value': item['http_host']['value'],
+                })
 
 
 class Changes(Parameters):
@@ -1043,9 +1331,35 @@ class Changes(Parameters):
 
 
 class ReportableChanges(Changes):
+    event_map = dict(
+        clientAccepted='client_accepted',
+        proxyConnect='proxy_connect',
+        proxyRequest='proxy_request',
+        proxyResponse='proxy_response',
+        request='request',
+        response='response',
+        serverConnected='server_connected',
+        sslClientHello='ssl_client_hello'
+    )
+    uri_type_map = dict(
+        path='path',
+        queryString='query_string',
+        value='full_string'
+    )
     returnables = [
         'description', 'actions', 'conditions'
     ]
+
+    def _map_value(self, item, t=False):
+        if not t:
+            for k in self.event_map.keys():
+                if k in item:
+                    return k
+        else:
+            for k in self.uri_type_map.keys():
+                if k in item:
+                    return k
+        return None
 
     @property
     def actions(self):
@@ -1058,6 +1372,96 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'forward'
                 del action['forward']
+            elif 'replace' in item:
+                action.update(item)
+                action['type'] = 'replace'
+                if 'httpHeader' in item:
+                    event = self._map_value(item)
+                    if event:
+                        http_header = dict(event=self.event_map[event], name=action['tmName'], value=action['value'])
+                        action['http_header'] = http_header
+                        del action[event]
+                    else:
+                        http_header = dict(name=action['tmName'], value=action['value'])
+                        action['http_header'] = http_header
+                    del action['httpHeader']
+                    del action['value']
+                    del action['tmName']
+                if 'httpReferer' in item:
+                    event = self._map_value(item)
+                    if event:
+                        if 'value' in item:
+                            http_ref = dict(event=self.event_map[event], value=action['value'])
+                            action['http_referer'] = http_ref
+                            del action['value']
+                        else:
+                            http_ref = dict(event=self.event_map[event])
+                            action['http_referer'] = http_ref
+                        del action[event]
+                    else:
+                        if 'value' in item:
+                            http_ref = dict(event=self.event_map[event], value=action['value'])
+                            action['http_referer'] = http_ref
+                            del action['value']
+                    del action['httpReferer']
+                if 'httpConnect' in item:
+                    event = self._map_value(item)
+                    if event:
+                        if 'value' in item and 'port' in item:
+                            http_con = dict(event=self.event_map[event], value=action['value'], port=action['item'])
+                            action['http_connect'] = http_con
+                            del action['value']
+                            del action['port']
+                        elif 'value' in item and 'port' not in item:
+                            http_con = dict(event=self.event_map[event], value=action['value'])
+                            action['http_connect'] = http_con
+                            del action['value']
+                        elif 'value' not in item and 'port' in item:
+                            http_con = dict(event=self.event_map[event], port=action['port'])
+                            action['http_connect'] = http_con
+                            del action['port']
+                        else:
+                            http_con = dict(event=self.event_map[event])
+                            action['http_connect'] = http_con
+                        del action[event]
+                    else:
+                        if 'value' in item and 'port' in item:
+                            http_con = dict(value=action['value'], port=action['item'])
+                            action['http_connect'] = http_con
+                            del action['value']
+                            del action['port']
+                        elif 'value' in item and 'port' not in item:
+                            http_con = dict(value=action['value'])
+                            action['http_connect'] = http_con
+                            del action['value']
+                        elif 'value' not in item and 'port' in item:
+                            http_con = dict(port=action['port'])
+                            action['http_connect'] = http_con
+                            del action['port']
+                    del action['httpConnect']
+                if 'httpUri' in item:
+                    event = self._map_value(item)
+                    kind = self._map_value(item, True)
+                    if event:
+                        http_uri = dict(event=self.event_map[event], type=self.uri_type_map[kind], value=action[kind])
+                        action['http_uri'] = http_uri
+                        del action[event]
+                    else:
+                        http_uri = dict(type=self.uri_type_map[kind], value=action[kind])
+                        action['http_uri'] = http_uri
+                    del action[kind]
+                    del action['httpUri']
+                if 'httpHost' in item:
+                    event = self._map_value(item)
+                    if event:
+                        http_uri = dict(event=self.event_map[event], value=action['value'])
+                        action['http_uri'] = http_uri
+                        del action[event]
+                    else:
+                        http_uri = dict(value=action['value'])
+                        action['http_uri'] = http_uri
+                    del action['value']
+                    del action['httpHost']
             elif 'insert' in item:
                 action.update(item)
                 action['type'] = 'insert'
@@ -1102,8 +1506,10 @@ class ReportableChanges(Changes):
                     del action['httpCookie']
                     del action['tmName']
                 if 'httpSetCookie' in item:
-                    action['http_set_cookie'] = dict(name=action['tmName'])
+                    http_set_cookie = dict(name=action['tmName'], value=action['value'])
+                    action['http_set_cookie'] = http_set_cookie
                     del action['response']
+                    del action['value']
                     del action['tmName']
                 del action['insert']
                 del action['value']
@@ -1250,6 +1656,9 @@ class UsableChanges(Changes):
                 del action['type']
             elif action['type'] == 'insert':
                 action['insert'] = True
+                del action['type']
+            elif action['type'] == 'replace':
+                action['replace'] = True
                 del action['type']
             result.append(action)
         return result
@@ -1675,7 +2084,8 @@ class ArgumentSpec(object):
                             'persist',
                             'set_variable',
                             'remove',
-                            'insert'
+                            'insert',
+                            'replace'
                         ],
                         required=True
                     ),
@@ -1693,12 +2103,12 @@ class ArgumentSpec(object):
                         type='dict',
                         options=dict(
                             event=dict(
-                                choices=['request', 'response'],
-                                required=True
+                                choices=[
+                                    'request', 'response', 'proxy_connect',
+                                    'proxy_request', 'proxy_response'
+                                ]
                             ),
-                            name=dict(
-                                required=True
-                            ),
+                            name=dict(required=True),
                             value=dict()
                         )
                     ),
@@ -1723,18 +2133,54 @@ class ArgumentSpec(object):
                         type='dict',
                         options=dict(
                             event=dict(
-                                choices=['request', 'proxy_connect', 'proxy_request'],
-                                required=True
+                                choices=['request', 'proxy_connect', 'proxy_request']
                             ),
                             name=dict(required=True),
                             value=dict()
                         )
-                    )
+                    ),
+                    http_connect=dict(
+                        type='dict',
+                        options=dict(
+                            event=dict(
+                                choices=[
+                                    'client_accepted', 'proxy_connect', 'proxy_request',
+                                    'proxy_response', 'request', 'server_connected', 'ssl_client_hello'
+                                ],
+                                required=True
+                            ),
+                            value=dict(),
+                            port=dict(type='int'),
+                        )
+                    ),
+                    http_host=dict(
+                        type='dict',
+                        options=dict(
+                            event=dict(
+                                choices=['request', 'proxy_connect', 'proxy_request'],
+                            ),
+                            value=dict(required=True)
+                        )
+                    ),
+                    http_uri=dict(
+                        type='dict',
+                        options=dict(
+                            event=dict(
+                                choices=['request', 'proxy_connect', 'proxy_request'],
+                            ),
+                            type=dict(
+                                choices=['path', 'query_string', 'full_string'],
+                                required=True
+                            ),
+                            value=dict(required=True)
+                        ),
+
+                    ),
                 ),
-                mutually_exclusive=[[
-                    'pool', 'asm_policy', 'virtual', 'location', 'cookie_insert', 'node',
-                    'http_header', 'http_referer', 'http_set_cookie', 'http_cookie'
-                ]]
+                mutually_exclusive=[
+                    ['pool', 'asm_policy', 'virtual', 'location', 'cookie_insert', 'node', 'http_header',
+                     'http_referer', 'http_set_cookie', 'http_cookie', 'http_uri', 'http_host', 'http_connect']
+                ]
             ),
             conditions=dict(
                 type='list',
@@ -1750,6 +2196,14 @@ class ArgumentSpec(object):
                         required=True
                     ),
                     path_begins_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    path_contains=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    path_is_any=dict(
                         type='list',
                         elements='str',
                     ),
