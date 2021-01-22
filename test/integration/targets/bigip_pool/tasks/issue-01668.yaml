@@ -1,0 +1,48 @@
+---
+- name: Issue 01668 - Create server pool
+  bigip_pool:
+    name: "replace_with_all_bug_pool"
+    state: present
+
+- name: Issue 01668 - Create aggregate
+  bigip_pool_member:
+    pool: "replace_with_all_bug_pool"
+    aggregate:
+      - { ip: "192.168.0.1", port: "10001" }
+      - { ip: "192.168.0.2", port: "10001" }
+      - { ip: "192.168.0.3", port: "10001" }
+      - { ip: "192.168.0.4", port: "10001" }
+      - { ip: "192.168.1.1", port: "10001" }
+      - { ip: "192.168.1.2", port: "10001" }
+      - { ip: "192.168.1.3", port: "10001" }
+      - { ip: "192.168.1.4", port: "10001" }
+    replace_all_with: "yes"
+    state: present
+
+- name: Issue 01668 - Replace aggregates
+  bigip_pool_member:
+    pool: "replace_with_all_bug_pool"
+    aggregate:
+      - { ip: "192.168.0.1", port: "10002" }
+      - { ip: "192.168.0.2", port: "10002" }
+      - { ip: "192.168.0.3", port: "10002" }
+      - { ip: "192.168.0.4", port: "10002" }
+    replace_all_with: "yes"
+    state: present
+
+- name: Issue 01668 - Gather Pool information
+  bigip_device_info:
+    gather_subset:
+      - ltm-pools
+  register: result
+
+- name: Issue 01668 - Verify Pool Member Count is 4
+  assert:
+    that:
+      - result is success
+      - result.ltm_pools | json_query("[?name=='replace_with_all_bug_pool'].member_count") | first == 4
+
+- name: Issue 01668 - Cleanup
+  bigip_pool:
+    pool: "replace_with_all_bug_pool"
+    state: absent
