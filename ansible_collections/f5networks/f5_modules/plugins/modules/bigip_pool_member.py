@@ -70,6 +70,7 @@ options:
     description:
       - Pool member port.
       - This value cannot be changed after it has been set.
+      - Parameter must be provided when using aggregates.
     type: int
   connection_limit:
     description:
@@ -191,9 +192,6 @@ options:
     default: no
     aliases:
       - purge
-notes:
-  - In previous versions of this module which used the SDK, the C(name) parameter would act as C(fqdn) if C(address) or
-    C(fqdn) were not provided.
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -403,6 +401,7 @@ replace_all_with:
 
 import os
 import re
+
 from copy import deepcopy
 from datetime import datetime
 
@@ -1105,12 +1104,24 @@ class ModuleManager(object):
             return False
         return False
 
+    def _join_address_port(self, item):
+        if 'port' not in item:
+            raise F5ModuleError(
+                "Aggregates must be provided with both address and port."
+            )
+        delimiter = ':'
+        try:
+            if validate_ip_v6_address(item['address']):
+                delimiter = '.'
+        except TypeError:
+            pass
+        return '{0}{1}{2}'.format(item['address'], delimiter, item['port'])
+
     def compare_addresses(self, items):
         if any('address' in item for item in items):
-            aggregates = [item['address'] for item in items if 'address' in item and item['address']]
+            aggregates = [self._join_address_port(item) for item in items if 'address' in item and item['address']]
             collection = [member['address'] for member in self.on_device]
             diff = set(collection) - set(aggregates)
-
             if diff:
                 addresses = [item['selfLink'] for item in self.on_device if item['address'] in diff]
                 self.purge_links.extend(addresses)
