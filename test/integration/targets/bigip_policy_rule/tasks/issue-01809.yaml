@@ -1,0 +1,97 @@
+---
+- name: Issue 01809 - Create published policy
+  bigip_policy:
+    name: issue-01809
+
+- name: Issue 01809 - Create a pool for testing forwarding to pools
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+
+- name: Issue 01809 - Add http_uri condition
+  bigip_policy_rule:
+    policy: issue-01809
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+    conditions:
+      - type: http_uri
+        path_contains:
+          - bar.com
+          - cool.com
+  register: result
+
+- name: Issue 01809 - Assert Add http_uri condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01809 - Add http_uri condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01809
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+    conditions:
+      - type: http_uri
+        path_contains:
+          - bar.com
+          - cool.com
+  register: result
+
+- name: Issue 01809 - Assert Add http_uri condition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01809 - Change http_uri condition
+  bigip_policy_rule:
+    policy: issue-01809
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+    conditions:
+      - type: http_uri
+        path_contains:
+          - changed.com
+  register: result
+
+- name: Issue 01809 - Assert Change http_uri condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01809 - Change http_uri condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01809
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+    conditions:
+      - type: http_uri
+        path_contains:
+          - changed.com
+  register: result
+
+- name: Issue 01809 - Assert Change http_uri condition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01809 - Remove published policy
+  bigip_policy:
+    name: issue-01809
+    state: absent
+
+- name: Issue 01809 - Remove created pool
+  bigip_pool:
+    name: foo-pool
+    state: absent

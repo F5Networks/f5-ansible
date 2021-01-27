@@ -1,0 +1,236 @@
+---
+- name: Issue 01883 - Create published policy
+  bigip_policy:
+    name: issue-01883
+
+- name: Issue 01883 - Create a pool for testing forwarding to pools
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+
+- name: Issue 01883 - Add http_uri path_is_any condition
+  bigip_policy_rule:
+    policy: issue-01883
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+    conditions:
+      - type: http_uri
+        path_is_any:
+          - bar.com
+          - cool.com
+  register: result
+
+- name: Issue 01883 - Assert Add http_uri path_is_any condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01883 - Add http_uri path_is_any condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01883
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+    conditions:
+      - type: http_uri
+        path_is_any:
+          - bar.com
+          - cool.com
+  register: result
+
+- name: Issue 01883 - Assert Add http_uri path_is_any condition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01883 - Change http_uri path_is_any condition
+  bigip_policy_rule:
+    policy: issue-01883
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+    conditions:
+      - type: http_uri
+        path_is_any:
+          - changed.com
+  register: result
+
+- name: Issue 01883 - Assert Change http_uri path_is_any condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01883 - Change http_uri path_is_any condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01883
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+    conditions:
+      - type: http_uri
+        path_is_any:
+          - changed.com
+  register: result
+
+- name: Issue 01883 - Assert Change http_uri path_is_any condition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01883 - Remove published policy
+  bigip_policy:
+    name: issue-01883
+    state: absent
+
+- name: Issue 01883 - Remove created pool
+  bigip_pool:
+    name: foo-pool
+    state: absent
+
+- name: Issue 01883 - Create published policy - replace action tests
+  bigip_policy:
+    name: issue-01883
+
+- name: Issue 01883 - Add replace actions
+  bigip_policy_rule:
+    policy: issue-01883
+    name: rule1
+    actions:
+      - type: replace
+        http_header:
+          name: "foobar"
+          value: "BAZ123"
+      - type: replace
+        http_referer:
+          event: "proxy_request"
+          value: "http://localhost"
+      - type: replace
+        http_connect:
+          event: "client_accepted"
+          value: "bazbar"
+          port: 8076
+      - type: replace
+        http_uri:
+            type: "query_string"
+            value: "name=ferret&color=purple"
+      - type: replace
+        http_host:
+            value: "fakehost"
+  register: result
+
+- name: Issue 01883 - Assert Add replace actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01883 - Add replace actions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01883
+    name: rule1
+    actions:
+      - type: replace
+        http_header:
+          name: "foobar"
+          value: "BAZ123"
+      - type: replace
+        http_referer:
+          event: "proxy_request"
+          value: "http://localhost"
+      - type: replace
+        http_connect:
+          event: "client_accepted"
+          value: "bazbar"
+          port: 8076
+      - type: replace
+        http_uri:
+            type: "query_string"
+            value: "name=ferret&color=purple"
+      - type: replace
+        http_host:
+            value: "fakehost"
+  register: result
+
+- name: Issue 01883 - Assert Add replace actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01883 - Change replace actions
+  bigip_policy_rule:
+    policy: issue-01883
+    name: rule1
+    actions:
+      - type: replace
+        http_header:
+          event: "proxy_connect"
+          name: "bar"
+          value: "BAZ321"
+      - type: replace
+        http_referer:
+          event: "request"
+      - type: replace
+        http_connect:
+          event: "server_connected"
+      - type: replace
+        http_uri:
+            type: "full_string"
+            value: "https://example.com/"
+      - type: replace
+        http_host:
+            event: "proxy_connect"
+            value: "fakehost"
+  register: result
+
+- name: Issue 01883 - Assert Change replace actions
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01883 - Change replace actions - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01883
+    name: rule1
+    actions:
+      - type: replace
+        http_header:
+          event: "proxy_connect"
+          name: "bar"
+          value: "BAZ321"
+      - type: replace
+        http_referer:
+          event: "request"
+      - type: replace
+        http_connect:
+          event: "server_connected"
+      - type: replace
+        http_uri:
+            type: "full_string"
+            value: "https://example.com/"
+      - type: replace
+        http_host:
+            event: "proxy_connect"
+            value: "fakehost"
+  register: result
+
+- name: Issue 01883 - Assert Change replace actions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01883 - Remove published policy - replace action tests
+  bigip_policy:
+    name: issue-01883
+    state: absent
