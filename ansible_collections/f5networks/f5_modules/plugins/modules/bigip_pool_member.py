@@ -498,7 +498,10 @@ class ModuleParameters(Parameters):
     @property
     def full_name_dict(self):
         if self._values['name'] is None:
-            name = self._values['address'] if self._values['address'] else self._values['fqdn']
+            if self._values['address'] and not self._values['fqdn']:
+                name = self._values['address']
+            else:
+                name = self._values['fqdn']
         else:
             name = self._values['name']
         return dict(
