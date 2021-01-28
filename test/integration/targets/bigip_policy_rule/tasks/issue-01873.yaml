@@ -1,0 +1,170 @@
+---
+- name: Issue 01873 - Create published policy
+  bigip_policy:
+    name: issue-01873
+
+- name: Issue 01873 - Create published rule with conditions type tcp address match with any
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_any:
+          - "42.0.0.0/8"
+          - "43.0.0.0/8"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - Create published rule with conditions type tcp address match with any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01873 - Create published rule with conditions type tcp address match with any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_any:
+          - "42.0.0.0/8"
+          - "43.0.0.0/8"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - Create published rule with conditions - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01873 - Add value to condition type tcp
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_any:
+          - "42.0.0.0/8"
+          - "43.0.0.0/8"
+          - "44.0.0.0/8"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - Add value to condition type tcp
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01873 - Add value to condition type tcp- Idempotent check
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_any:
+          - "42.0.0.0/8"
+          - "43.0.0.0/8"
+          - "44.0.0.0/8"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - Add value to condition type tcp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01873 - Remove value from condition type tcp
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_any:
+          - "42.0.0.0/8"
+          - "43.0.0.0/8"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - Remove value from condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01873 - Remove value from condition type tcp - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_any:
+          - "42.0.0.0/8"
+          - "43.0.0.0/8"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - Remove value from condition type tcp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01873 - One value in condition type tcp
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_any:
+          - "42.0.0.0/8"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - One value in condition type tcp
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01873 - One value in condition type tcp - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_any:
+          - "42.0.0.0/8"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - One value in condition type tcp- Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01873 - Create published rule with conditions type tcp address match with datagroup
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_datagroup:
+          - "/Common/aol"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - Create published rule with conditions type tcp address match with datagroup
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01873 - Remove published policy
+  bigip_policy:
+    name: issue-01873
+    state: absent
