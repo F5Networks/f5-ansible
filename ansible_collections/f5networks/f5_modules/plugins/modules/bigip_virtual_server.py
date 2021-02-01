@@ -158,6 +158,8 @@ options:
         if this is incorrect, resembling C(lists profiles incompatible with its protocol).
       - If you are unsure what the correct profile combinations are, we suggest having a BIG-IP
         available in which you can make changes and copy what the correct combinations are.
+      - To use C(http2) in full proxy to enable C(HTTP MRF Router) option seen in the GUI you need to assign
+        C(/Common/httprouter) profile with C(context) set to C(all). See the bottom of examples section below.
     type: raw
     aliases:
       - all_profiles
@@ -610,9 +612,8 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Add metadata to virtual
-  bigip_pool:
-    state: absent
-    name: my-pool
+  bigip_virtual_server:
+    name: my-virtual-server
     partition: Common
     metadata:
       ansible: 2.4
@@ -624,9 +625,8 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Add virtual with two profiles
-  bigip_pool:
-    state: absent
-    name: my-pool
+  bigip_virtual_server:
+    name: my-virtual-server
     partition: Common
     profiles:
       - http
@@ -638,9 +638,8 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Remove HTTP profile from previous virtual
-  bigip_pool:
-    state: absent
-    name: my-pool
+  bigip_virtual_server:
+    name: my-virtual-server
     partition: Common
     profiles:
       - tcp
@@ -651,9 +650,8 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Add the HTTP profile back to the previous virtual
-  bigip_pool:
-    state: absent
-    name: my-pool
+  bigip_virtual_server:
+    name: my-virtual-server
     partition: Common
     profiles:
       - http
@@ -708,6 +706,27 @@ EXAMPLES = r'''
     clone_pools:
       - pool_name: FooPool
         context: clientside
+    provider:
+      server: lb.mydomain.net
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Add virtual with MRF router option set
+  bigip_virtual_server:
+    name: my-virtual-server
+    destination: 10.10.10.10
+    port: 443
+    partition: Common
+    profiles:
+      - http
+      - tcp
+      - name: noneg-ssl
+        context: client-side
+      - name: http2
+        context: client-side
+      - name: httprouter
+        context: all
     provider:
       server: lb.mydomain.net
       user: admin
