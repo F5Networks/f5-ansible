@@ -159,7 +159,7 @@ options:
       - If you are unsure what the correct profile combinations are, we suggest having a BIG-IP
         available in which you can make changes and copy what the correct combinations are.
       - To use C(http2) in full proxy to enable C(HTTP MRF Router) option seen in the GUI you need to assign
-        C(/Common/httprouter) profile with C(context) set to C(all). See the bottom of examples section below. 
+        C(/Common/httprouter) profile with C(context) set to C(all). See the bottom of examples section below.
     type: raw
     aliases:
       - all_profiles
