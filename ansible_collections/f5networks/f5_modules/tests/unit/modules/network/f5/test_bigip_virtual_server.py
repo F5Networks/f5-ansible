@@ -143,6 +143,33 @@ class TestParameters(unittest.TestCase):
         assert p.destination_tuple.port == 80
         assert p.destination_tuple.route_domain == 2
 
+    def test_destination_mutex_13(self):
+        args = dict(
+            destination='/Common/any%2:80'
+        )
+        p = ApiParameters(params=args)
+        assert p.destination_tuple.ip == 'any'
+        assert p.destination_tuple.port == 80
+        assert p.destination_tuple.route_domain == 2
+
+    def test_destination_mutex_14(self):
+        args = dict(
+            destination='/Common/any%23.any'
+        )
+        p = ApiParameters(params=args)
+        assert p.destination_tuple.ip == 'any'
+        assert p.destination_tuple.port == 0
+        assert p.destination_tuple.route_domain == 23
+
+    def test_destination_mutex_15(self):
+        args = dict(
+            destination='/Common/any%24.90'
+        )
+        p = ApiParameters(params=args)
+        assert p.destination_tuple.ip == 'any'
+        assert p.destination_tuple.port == 90
+        assert p.destination_tuple.route_domain == 24
+
     def test_module_no_partition_prefix_parameters(self):
         args = dict(
             state='present',

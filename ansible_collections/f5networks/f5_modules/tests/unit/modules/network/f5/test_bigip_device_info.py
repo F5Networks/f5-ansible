@@ -18,7 +18,8 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info import (
-    Parameters, VirtualAddressesFactManager, ArgumentSpec, ModuleManager
+    Parameters, VirtualAddressesFactManager, ArgumentSpec, ModuleManager,
+    VirtualServersParameters
 )
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
 from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
@@ -61,6 +62,33 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(params=args)
         assert p.gather_subset == ['virtual-servers']
+
+    def test_destination_1(self):
+        args = dict(
+            destination='/Common/any%2:80'
+        )
+        p = VirtualServersParameters(params=args)
+        assert p.destination_tuple.ip == 'any'
+        assert p.destination_tuple.port == 80
+        assert p.destination_tuple.route_domain == 2
+
+    def test_destination_2(self):
+        args = dict(
+            destination='/Common/any%23.any'
+        )
+        p = VirtualServersParameters(params=args)
+        assert p.destination_tuple.ip == 'any'
+        assert p.destination_tuple.port == 0
+        assert p.destination_tuple.route_domain == 23
+
+    def test_destination_3(self):
+        args = dict(
+            destination='/Common/any%24.90'
+        )
+        p = VirtualServersParameters(params=args)
+        assert p.destination_tuple.ip == 'any'
+        assert p.destination_tuple.port == 90
+        assert p.destination_tuple.route_domain == 24
 
 
 class TestManager(unittest.TestCase):

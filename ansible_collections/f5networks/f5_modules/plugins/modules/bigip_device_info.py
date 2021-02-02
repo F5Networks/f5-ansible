@@ -16488,8 +16488,11 @@ class VirtualServersParameters(BaseParameters):
         # 1.1.1.1%2:80
         # /Common/1.1.1.1%2:80
         # /Common/2700:bc00:1f10:101::6%2.any
+        # /Common/any%2:80
+        # /Common/any%2.any
+        # /Common/any%2.80
         #
-        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+|any)'
+        pattern = r'(?P<ip>[^%]+|any)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+|any)'
         matches = re.search(pattern, destination)
         if matches:
             try:
@@ -16500,7 +16503,7 @@ class VirtualServersParameters(BaseParameters):
                 if port == 'any':
                     port = 0
             ip = matches.group('ip')
-            if not is_valid_ip(ip):
+            if not is_valid_ip(ip) and ip.lower() != 'any':
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
@@ -16511,11 +16514,11 @@ class VirtualServersParameters(BaseParameters):
             )
             return result
 
-        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)'
+        pattern = r'(?P<ip>[^%]+|any)%(?P<route_domain>[0-9]+)'
         matches = re.search(pattern, destination)
         if matches:
             ip = matches.group('ip')
-            if not is_valid_ip(ip):
+            if not is_valid_ip(ip) and ip.lower() != 'any':
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
                 )
