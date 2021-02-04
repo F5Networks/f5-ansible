@@ -403,6 +403,9 @@
 - import_tasks: issue-01809.yaml
   tags: issue-01809
 
+- import_tasks: issue-01835.yaml
+  tags: issue-01835
+
 - import_tasks: issue-01867.yaml
   tags: issue-01867
 
@@ -412,7 +415,13 @@
 - import_tasks: issue-01871.yaml
   tags: issue-01871
 
+- import_tasks: issue-01876.yaml
+  tags: issue-01876
+
 - import_tasks: issue-01883.yaml
   tags: issue-01883
+
+- import_tasks: issue-01880.yaml
+  tags: issue-01880
 
 - import_tasks: teardown.yaml

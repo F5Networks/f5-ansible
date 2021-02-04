@@ -1,0 +1,121 @@
+---
+
+- name: Issue 01835 - Create published policy
+  bigip_policy:
+    name: issue-01835
+
+- name: Issue 01835 - Change condition header_is_any
+  bigip_policy_rule:
+    policy: issue-01835
+    name: rule1
+    conditions:
+      - type: http_header
+        header_name: foobar
+        header_is_any:
+          - BAZ123
+          - BAR123
+  register: result
+
+- name: Issue 01835 - Assert Change condition header_is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01835 - Change condition header_is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01835
+    name: rule1
+    conditions:
+      - type: http_header
+        header_name: foobar
+        header_is_any:
+          - BAZ123
+          - BAR123
+  register: result
+
+- name: Issue 01835 - Assert Change condition header_is_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01835 - Add value condition header_is_any
+  bigip_policy_rule:
+    policy: issue-01835
+    name: rule1
+    conditions:
+      - type: http_header
+        header_name: foobar
+        header_is_any:
+          - BAZ123
+          - BAR123
+          - FOO9999
+  register: result
+
+- name: Issue 01835 - Assert Add value condition header_is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01835 - Add value condition header_is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01835
+    name: rule1
+    conditions:
+      - type: http_header
+        header_name: foobar
+        header_is_any:
+          - BAZ123
+          - BAR123
+          - FOO9999
+  register: result
+
+- name: Issue 01835 - Assert Add value condition header_is_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01835 - Remove value condition header_is_any
+  bigip_policy_rule:
+    policy: issue-01835
+    name: rule1
+    conditions:
+      - type: http_header
+        header_name: foobar
+        header_is_any:
+          - BAZ123
+          - FOO9999
+  register: result
+
+- name: Issue 01835 - Assert Remove value condition header_is_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01835 - Remove value condition header_is_any - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01835
+    name: rule1
+    conditions:
+      - type: http_header
+        header_name: foobar
+        header_is_any:
+          - BAZ123
+          - FOO9999
+  register: result
+
+- name: Issue 01835 - Assert Remove value condition header_is_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01835 - Remove published policy
+  bigip_policy:
+    name: issue-01835
+    state: absent
+

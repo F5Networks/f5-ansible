@@ -42,9 +42,10 @@ options:
           - When C(type) is C(reset), the system resets the connection upon C(event).
           - When C(type) is C(persist), the system associates C(cookie_insert) and C(cookie_expiry) with this rule.
           - When C(type) is C(set_variable), the system sets a variable based on the evaluated Tcl C(expression) based on C(event).
-          - When C(type) is C(remove), the system removes C(http_set_cookie), C(http_referer), C(http_header) or C(http_cookie) with this rule
-          - When C(type) is C(insert), the system inserts C(http_set_cookie), C(http_referer), C(http_header) or C(http_cookie) with this rule
-          - When C(type) is C(replace), the system replaces C(http_connect), C(http_referer), C(http_header), C(http_uri) or C(http_host) with this rule
+          - When C(type) is C(remove), the system removes C(http_set_cookie), C(http_referer), C(http_header) or C(http_cookie) with this rule.
+          - When C(type) is C(insert), the system inserts C(http_set_cookie), C(http_referer), C(http_header) or C(http_cookie) with this rule.
+          - When C(type) is C(replace), the system replaces C(http_connect), C(http_referer), C(http_header), C(http_uri) or C(http_host) with this rule.
+          - When C(type) is C(disable), the system disables C(disable_target) with this rule.
         type: str
         required: true
         choices:
@@ -58,6 +59,7 @@ options:
           - remove
           - insert
           - replace
+          - disable
       pool:
         description:
           - Pool to which you want to forward traffic.
@@ -74,6 +76,14 @@ options:
           - This parameter is only valid with the C(forward) type.
         type: str
         version_added: "1.2.0"
+      disable_target:
+        description:
+          - Target which you want to disable.
+          - This parameter is only valid with the C(disable) type.
+        type: str
+        version_added: "1.8.0"
+        choices:
+          - server_ssl
       asm_policy:
         description:
           - ASM policy to enable.
@@ -89,8 +99,14 @@ options:
           - Events on which actions, such as reset, forward can be triggered.
           - With the C(set_variable) action, it is used for specifying
             an action event, such as request or response.
-          - "Valid event choices for C(forward) type are: client_accepted, proxy_request
+          - "Valid event choices for C(forward) action type are: client_accepted, proxy_request
             request, ssl_client_hello and ssl_client_server_hello_send."
+          - "Valid event choices for C(reset) acton type are: client_accepted, proxy_connect
+            proxy_request, proxy_response, request, response, server_connected, ssl_client_hello,
+            ssl_client_server_hello_send, ssl_server_handshake, ssl_server_hello, websocket_request,
+            websocket_response."
+          - "Valid event choices for C(disable) acton type are: client_accepted, proxy_connect
+            proxy_request, proxy_response, request, server_connected."
         type: str
       expression:
         description:
@@ -309,9 +325,12 @@ options:
       type:
         description:
           - The condition type. This value controls which of the following options are required.
-          - When C(type) is C(http_uri), the system associates a given C(path_begins_with_any)
-            list of strings with which the HTTP URI should begin. Any item in the
-            list will provide a match.
+          - "When C(type) is C(http_uri), the valid choices are: C(path_begins_with_any), C(path_contains) or
+            C(path_is_any)."
+          - "When C(type) is C(http_host), the valid choices are: C(host_is_any), C(host_is_not_any),
+            C(host_begins_with_any) or C(host_ends_with_any)."
+          - "When C(type) is C(http_host), the C(header_name) parameter is mandatory and the valid choice is:
+            C(header_is_any)."
           - When C(type) is C(all_traffic), the system removes all existing conditions from
             this rule.
         type: str
@@ -320,6 +339,7 @@ options:
           - http_uri
           - all_traffic
           - http_host
+          - http_header
           - ssl_extension
       path_begins_with_any:
         description:
@@ -366,6 +386,19 @@ options:
         type: list
         elements: str
         version_added: "1.8.0"
+      header_is_any:
+        description:
+          - A list of strings of characters the HTTP Header value should match.
+          - This parameter is only valid with the C(http_header) type.
+        type: list
+        elements: str
+        version_added: "1.8.0"
+      header_name:
+        description:
+          - A name of C(http_header).
+          - This parameter is only valid with the C(http_header) type.
+        type: str
+        version_added: "1.8.0"
       server_name_is_any:
         description:
           - A list of strings of characters the SSL Extension should match.
@@ -375,6 +408,8 @@ options:
       event:
         description:
           - Events on which conditions such as SSL Extension can be triggered.
+          - "Valid choices for C(http_header) condition types are: C(proxy_connect),
+            C(proxy_request), C(proxy_response), C(request) and C(response)."
         type: str
   state:
     description:
@@ -600,6 +635,10 @@ class ApiParameters(Parameters):
                 action.update(item)
                 action['type'] = 'enable'
                 del action['enable']
+            elif 'disable' in item:
+                action.update(item)
+                action['type'] = 'disable'
+                del action['disable']
             elif 'redirect' in item:
                 action.update(item)
                 action['type'] = 'redirect'
@@ -691,11 +730,19 @@ class ApiParameters(Parameters):
                 action['type'] = 'http_host'
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
+                del action['httpHost']
+            elif 'httpHeader' in item:
+                action.update(item)
+                action['type'] = 'http_header'
+                if 'values' in action:
+                    action['values'] = [str(x) for x in action['values']]
+                del action['httpHeader']
             elif 'sslExtension' in item:
                 action.update(item)
                 action['type'] = 'ssl_extension'
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
+                del action['sslExtension']
             result.append(action)
         # Names contains the index in which the rule is at.
         result = sorted(result, key=lambda x: x['name'])
@@ -720,6 +767,8 @@ class ModuleParameters(Parameters):
                 self._handle_set_variable_action(action, item)
             elif item['type'] == 'enable':
                 self._handle_enable_action(action, item)
+            if item['type'] == 'disable':
+                self._handle_disable_action(action, item)
             elif item['type'] == 'ignore':
                 return [dict(type='ignore')]
             elif item['type'] == 'redirect':
@@ -754,6 +803,8 @@ class ModuleParameters(Parameters):
                 self._handle_http_uri_condition(action, item)
             elif item['type'] == 'http_host':
                 self._handle_http_host_condition(action, item)
+            elif item['type'] == 'http_header':
+                self._handle_http_header_condition(action, item)
             elif item['type'] == 'ssl_extension':
                 self._handle_ssl_extension_condition(action, item)
             elif item['type'] == 'all_traffic':
@@ -880,6 +931,41 @@ class ModuleParameters(Parameters):
                 sslServerHello=True
             ))
 
+    def _handle_http_header_condition(self, action, item):
+        action['type'] = 'http_header'
+        options = ['header_is_any']
+        event_map = dict(
+            proxy_connect='proxyConnect',
+            proxy_request='proxyRequest',
+            proxy_response='proxyResponse',
+            request='request',
+            response='response',
+        )
+        if 'header_name' not in item:
+            raise F5ModuleError(
+                "An 'header_name' must be specified when the 'http_header' condition is used."
+            )
+        if not any(x for x in options if x in item):
+            raise F5ModuleError(
+                "A 'header_is_any' must be specified when the 'http_header' type is used."
+            )
+        if 'event' in item and item['event'] is not None:
+            event = event_map.get(item['event'], None)
+            if event:
+                action[event] = True
+
+        if 'header_is_any' in item:
+            if isinstance(item['header_is_any'], list):
+                values = item['header_is_any']
+            else:
+                values = [item['header_is_any']]
+
+            action.update(dict(
+                equals=True,
+                tmName=item['header_name'],
+                values=values
+            ))
+
     def _handle_forward_action(self, action, item):
         """Handle the nuances of the forwarding type
 
@@ -959,6 +1045,38 @@ class ModuleParameters(Parameters):
             asm=True
         ))
 
+    def _handle_disable_action(self, action, item):
+        """Handle the nuances of the disable type
+
+        :param action:
+        :param item:
+        :return:
+        """
+
+        target_map = dict(
+            server_ssl='serverSsl'
+        )
+        event_map = dict(
+            client_accepted='clientAccepted',
+            proxy_connect='proxyConnect',
+            proxy_request='proxyRequest',
+            proxy_response='proxyResponse',
+            request='request',
+            server_connected='serverConnected',
+        )
+
+        action['type'] = 'disable'
+        if 'disable_target' not in item:
+            raise F5ModuleError(
+                "An 'disable_target' must be specified when the 'enable' type is used."
+            )
+        if 'event' in item and item['event'] is not None:
+            event = event_map.get(item['event'], None)
+            if event:
+                action[event] = True
+
+        action[target_map[item['disable_target']]] = True
+
     def _handle_redirect_action(self, action, item):
         """Handle the nuances of the redirect type
 
@@ -983,17 +1101,39 @@ class ModuleParameters(Parameters):
         :param item:
         :return:
         """
+        event_map = dict(
+            client_accepted='clientAccepted',
+            proxy_connect='proxyConnect',
+            proxy_request='proxyRequest',
+            proxy_response='proxyResponse',
+            request='request',
+            response='response',
+            server_connected='serverConnected',
+            ssl_client_hello='sslClientHello',
+            ssl_client_server_hello_send='sslClientServerhelloSend',
+            ssl_server_handshake='sslServerHandshake',
+            ssl_server_hello='sslServerHello',
+            websocket_request='wsRequest',
+            websocket_response='wsResponse'
+        )
+
         action['type'] = 'reset'
         if 'event' not in item:
             raise F5ModuleError(
                 "An 'event' must be specified when the 'reset' type is used."
             )
-        elif 'ssl_client_hello' in item['event']:
-            action.update(dict(
-                sslClientHello=True,
-                connection=True,
-                shutdown=True
-            ))
+        event = event_map.get(item['event'], None)
+        if not event:
+            raise F5ModuleError(
+                "Invalid event type specified for reset action: {0},"
+                "check module documentation for valid event types.".format(item['event'])
+            )
+
+        action[event] = True
+        action.update({
+            'connection': True,
+            'shutdown': True
+        })
 
     def _handle_persist_action(self, action, item):
         """Handle the nuances of the persist type
@@ -1346,6 +1486,7 @@ class ReportableChanges(Changes):
         queryString='query_string',
         value='full_string'
     )
+
     returnables = [
         'description', 'actions', 'conditions'
     ]
@@ -1569,6 +1710,13 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'enable'
                 del action['enable']
+            elif 'disable' in item:
+                action.update(item)
+                action['type'] = 'disable'
+                if 'serverSsl' in action and action['serverSsl']:
+                    action['disable_target'] = 'server_ssl'
+                    del action['serverSsl']
+                del action['enable']
             elif 'redirect' in item:
                 action.update(item)
                 action['type'] = 'redirect'
@@ -1608,6 +1756,12 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'http_host'
                 del action['httpHost']
+            elif 'httpHeader' in item:
+                action.update(item)
+                action['type'] = 'http_header'
+                action['header_name'] = action['tmName']
+                del action['httpHeader']
+                del action['tmName']
             elif 'sslExtension' in item:
                 action.update(item)
                 action['type'] = 'ssl_extension'
@@ -1632,6 +1786,9 @@ class UsableChanges(Changes):
                 del action['type']
             elif action['type'] == 'enable':
                 action['enable'] = True
+                del action['type']
+            elif action['type'] == 'disable':
+                action['disable'] = True
                 del action['type']
             elif action['type'] == 'set_variable':
                 action['setVariable'] = True
@@ -1676,6 +1833,9 @@ class UsableChanges(Changes):
                 del condition['type']
             elif condition['type'] == 'http_host':
                 condition['httpHost'] = True
+                del condition['type']
+            elif condition['type'] == 'http_header':
+                condition['httpHeader'] = True
                 del condition['type']
             elif condition['type'] == 'ssl_extension':
                 condition['sslExtension'] = True
@@ -2085,7 +2245,8 @@ class ArgumentSpec(object):
                             'set_variable',
                             'remove',
                             'insert',
-                            'replace'
+                            'replace',
+                            'disable',
                         ],
                         required=True
                     ),
@@ -2099,6 +2260,9 @@ class ArgumentSpec(object):
                     cookie_expiry=dict(type='int'),
                     expression=dict(),
                     variable_name=dict(),
+                    disable_target=dict(
+                        choices=['server_ssl']
+                    ),
                     http_header=dict(
                         type='dict',
                         options=dict(
@@ -2179,7 +2343,9 @@ class ArgumentSpec(object):
                 ),
                 mutually_exclusive=[
                     ['pool', 'asm_policy', 'virtual', 'location', 'cookie_insert', 'node', 'http_header',
-                     'http_referer', 'http_set_cookie', 'http_cookie', 'http_uri', 'http_host', 'http_connect']
+                     'http_referer', 'http_set_cookie', 'http_cookie', 'http_uri', 'http_host', 'http_connect',
+                     'disable_target'
+                     ]
                 ]
             ),
             conditions=dict(
@@ -2190,6 +2356,7 @@ class ArgumentSpec(object):
                         choices=[
                             'http_uri',
                             'http_host',
+                            'http_header',
                             'ssl_extension',
                             'all_traffic'
                         ],
@@ -2220,6 +2387,11 @@ class ArgumentSpec(object):
                         elements='str',
                     ),
                     host_is_not_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    header_name=dict(),
+                    header_is_any=dict(
                         type='list',
                         elements='str',
                     ),
