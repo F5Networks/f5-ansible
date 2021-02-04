@@ -1,0 +1,84 @@
+- name: Issue 01880 - Create published policy
+  bigip_policy:
+    name: issue-01880
+
+- name: Issue 01880 - Create published rule with reset action and event
+  bigip_policy_rule:
+    policy: issue-01880
+    name: rule1
+    actions:
+      - type: reset
+        event: request
+    conditions:
+      - type: http_uri
+        path_begins_with_any:
+          - /ABC
+  register: result
+
+- name: Issue 01880 - Assert Create published rule with reset action and event
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01880 - Create published rule with reset action and event - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01880
+    name: rule1
+    actions:
+      - type: reset
+        event: request
+    conditions:
+      - type: http_uri
+        path_begins_with_any:
+          - /ABC
+  register: result
+
+- name: Issue 01880 - Assert Create published rule with reset action and event - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01880 - Change Create published rule with reset action and event
+  bigip_policy_rule:
+    policy: issue-01880
+    name: rule1
+    actions:
+      - type: reset
+        event: response
+    conditions:
+      - type: http_uri
+        path_begins_with_any:
+          - /ABC
+  register: result
+
+- name: Issue 01880 - Assert Change Create published rule with reset action and event
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01880 - Change Create published rule with reset action and event - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01880
+    name: rule1
+    actions:
+      - type: reset
+        event: response
+    conditions:
+      - type: http_uri
+        path_begins_with_any:
+          - /ABC
+  register: result
+
+- name: Issue 01880 - Assert Change Create published rule with reset action and event - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01880 - Remove policy
+  bigip_policy:
+    name: issue-01880
+    state: absent
