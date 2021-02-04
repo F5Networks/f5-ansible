@@ -1,0 +1,101 @@
+---
+- name: Issue 01876 - Create published policy
+  bigip_policy:
+    name: issue-01876
+
+- name: Issue 01876 - Create a pool for testing forwarding to pools
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+
+- name: Issue 01876 - Add rule without SSL
+  bigip_policy_rule:
+    policy: issue-01876
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "FOOBAR"
+    actions:
+      - type: disable
+        disable_target: server_ssl
+        event: request
+      - type: forward
+        pool: foo-pool
+  register: result
+
+- name: Issue 01876 - Add rule without SSL
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01876 - Add rule without SSL - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01876
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "FOOBAR"
+    actions:
+      - type: disable
+        disable_target: server_ssl
+        event: request
+      - type: forward
+        pool: foo-pool
+  register: result
+
+- name: Issue 01876 - Add rule without SSL - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01876 - Change rule
+  bigip_policy_rule:
+    policy: issue-01876
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "BAZBAR"
+    actions:
+      - type: disable
+        disable_target: server_ssl
+      - type: forward
+        pool: foo-pool
+  register: result
+
+- name: Issue 01876 - Change rule
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01876 - Change rule - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01876
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "BAZBAR"
+    actions:
+      - type: disable
+        disable_target: server_ssl
+      - type: forward
+        pool: foo-pool
+  register: result
+
+- name: Issue 01876 - Change rule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01876 - Remove published policy
+  bigip_policy:
+    name: issue-01876
+    state: absent
+
+- name: Issue 01876 - Remove a pool
+  bigip_pool:
+    name: foo-pool
+    state: absent
