@@ -1,0 +1,29 @@
+---
+- name: Issue 01948 - Add performance virtual
+  bigip_virtual_server:
+    name: performance-vip
+    destination: 10.10.10.10
+    port: 2222
+    partition: Common
+    ip_protocol: any
+    profiles:
+      - name: fastL4
+        context: all
+    type: performance-l4
+
+- name: Issue 01948 - Get the Virtual Servers
+  bigip_device_info:
+    gather_subset:
+      - virtual-servers
+  register: result
+
+- name: Issue 01948 - Verify proper type is displayed
+  assert:
+    that:
+      - result is success
+      - result.virtual_servers | json_query("[?name=='performance-vip'].type") | first == "performance-l4"
+
+- name: Issue 01948 - Remove performance virtual
+  bigip_virtual_server:
+    name: performance-vip
+    state: absent

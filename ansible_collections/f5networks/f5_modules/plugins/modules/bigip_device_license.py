@@ -558,7 +558,8 @@ class ModuleManager(object):
                     data=self.want.license_envelope,
                 )
             except Exception:
-                continue
+                # Failures to connect to licensing server must be passed upstream not supressed
+                raise
 
             try:
                 resp = LicenseXmlParser(content=resp.content)
@@ -572,7 +573,8 @@ class ModuleManager(object):
                 # is an issue with the license server.
                 raise
             except Exception:
-                continue
+                # Any other exceptions must be raised also
+                raise
 
             if result['state'] == 'EULA_REQUIRED':
                 self.want.update({'eula': result['eula']})

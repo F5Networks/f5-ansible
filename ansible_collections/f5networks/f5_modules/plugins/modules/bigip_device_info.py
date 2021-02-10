@@ -16340,7 +16340,6 @@ class VirtualServersParameters(BaseParameters):
 
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
             raise F5ModuleError(resp.content)
-
         result = [x['name'] for x in response['items']]
         return result
 
@@ -16465,22 +16464,13 @@ class VirtualServersParameters(BaseParameters):
 
     @property
     def destination_tuple(self):
-        Destination = namedtuple('Destination', ['ip', 'port', 'route_domain'])
+        Destination = namedtuple('Destination', ['ip', 'port', 'route_domain', 'mask'])
 
         # Remove the partition
         if self._values['destination'] is None:
-            result = Destination(ip=None, port=None, route_domain=None)
+            result = Destination(ip=None, port=None, route_domain=None, mask=None)
             return result
         destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
-
-        if is_valid_ip(destination):
-            result = Destination(
-                ip=destination,
-                port=None,
-                route_domain=None
-            )
-            return result
-
         # Covers the following examples
         #
         # /Common/2700:bc00:1f10:101::6%2.80
@@ -16499,69 +16489,109 @@ class VirtualServersParameters(BaseParameters):
                 port = matches.group('port')
                 if port == 'any':
                     port = 0
-            ip = matches.group('ip')
-            if not is_valid_ip(ip):
-                raise F5ModuleError(
-                    "The provided destination is not a valid IP address"
-                )
             result = Destination(
                 ip=matches.group('ip'),
                 port=port,
-                route_domain=int(matches.group('route_domain'))
+                route_domain=int(matches.group('route_domain')),
+                mask=self.mask
             )
             return result
 
         pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)'
         matches = re.search(pattern, destination)
         if matches:
-            ip = matches.group('ip')
-            if not is_valid_ip(ip):
-                raise F5ModuleError(
-                    "The provided destination is not a valid IP address"
-                )
             result = Destination(
                 ip=matches.group('ip'),
                 port=None,
-                route_domain=int(matches.group('route_domain'))
+                route_domain=int(matches.group('route_domain')),
+                mask=self.mask
             )
             return result
 
-        parts = destination.split('.')
-        if len(parts) == 4:
-            # IPv4
-            ip, port = destination.split(':')
-            if not is_valid_ip(ip):
-                raise F5ModuleError(
-                    "The provided destination is not a valid IP address"
-                )
+        # this will match any IPV4 Address and port, no RD
+        pattern = r'^(?P<ip>(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4]' \
+                  r'[0-9]|25[0-5])):(?P<port>[0-9]+)'
+
+        matches = re.search(pattern, destination)
+        if matches:
             result = Destination(
-                ip=ip,
-                port=int(port),
-                route_domain=None
+                ip=matches.group('ip'),
+                port=int(matches.group('port')),
+                route_domain=None,
+                mask=self.mask
             )
             return result
-        elif len(parts) == 2:
-            # IPv6
-            ip, port = destination.split('.')
+
+        # match standalone IPV6 address, no port
+        pattern = r'^([0-9a-f]{0,4}:){2,7}(:|[0-9a-f]{1,4})$'
+        matches = re.search(pattern, destination)
+        if matches:
+            result = Destination(
+                ip=destination,
+                port=None,
+                route_domain=None,
+                mask=self.mask
+            )
+            return result
+
+        # match IPV6 address with port
+        pattern = r'(?P<ip>([0-9a-f]{0,4}:){2,7}(:|[0-9a-f]{1,4}).(?P<port>[0-9]+|any))'
+        matches = re.search(pattern, destination)
+        if matches:
+            ip = matches.group('ip').split('.')[0]
             try:
-                port = int(port)
+                port = int(matches.group('port'))
             except ValueError:
                 # Can be a port of "any". This only happens with IPv6
+                port = matches.group('port')
                 if port == 'any':
                     port = 0
-            if not is_valid_ip(ip):
-                raise F5ModuleError(
-                    "The provided destination is not a valid IP address"
-                )
             result = Destination(
                 ip=ip,
                 port=port,
-                route_domain=None
+                route_domain=None,
+                mask=self.mask
             )
             return result
-        else:
-            result = Destination(ip=None, port=None, route_domain=None)
+
+        # this will match any alphanumeric Virtual Address and port
+        pattern = r'(?P<name>^[a-zA-Z0-9_.-]+):(?P<port>[0-9]+)'
+        matches = re.search(pattern, destination)
+        if matches:
+            result = Destination(
+                ip=matches.group('name'),
+                port=int(matches.group('port')),
+                route_domain=None,
+                mask=self.mask
+            )
             return result
+
+        # this will match any alphanumeric Virtual Address
+        pattern = r'(?P<name>^[a-zA-Z0-9_.-]+)'
+        matches = re.search(pattern, destination)
+        if matches:
+            result = Destination(
+                ip=matches.group('name'),
+                port=None,
+                route_domain=None,
+                mask=self.mask
+            )
+            return result
+
+        # match IPv6 wildcard with port without RD
+        pattern = r'(?P<ip>[^.]+).(?P<port>[0-9]+|any)'
+        matches = re.search(pattern, destination)
+        if matches:
+            result = Destination(
+                ip=matches.group('ip'),
+                port=matches.group('port'),
+                route_domain=None,
+                mask=self.mask
+            )
+            return result
+
+        result = Destination(ip=None, port=None, route_domain=None, mask=None)
+        return result
 
     @property
     def policies(self):
@@ -16578,7 +16608,6 @@ class VirtualServersFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(VirtualServersFactManager, self).__init__(**kwargs)
-        self.want = VirtualServersParameters(client=self.client, params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -16600,7 +16629,7 @@ class VirtualServersFactManager(BaseManager):
         for resource in collection:
             attrs = resource
             attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
-            params = VirtualServersParameters(params=attrs)
+            params = VirtualServersParameters(client=self.client, params=attrs)
             results.append(params)
         return results
 
