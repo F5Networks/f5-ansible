@@ -1,0 +1,110 @@
+---
+- name: Issue 01946 - Create LTM policy
+  bigip_policy:
+    name: issue-01946
+    partition: Common
+    strategy: best
+
+- name: Issue 01946 - Create default rule "default" in LTM policy
+  bigip_policy_rule:
+    name: default
+    description: default
+    policy: issue-01946
+    partition: Common
+    conditions:
+      - type: all_traffic
+    actions:
+      - type: set_variable
+        variable_name: "ltm_policy_default_rule_matched"
+        expression: "1"
+        event: "request"
+      - type: remove
+        http_header:
+          name: X-Pingback
+          event: response
+      - type: remove
+        http_header:
+          name: X-Drupal-Cache
+          event: response
+  register: result
+
+- name: Issue 01946 - Assert Create default rule "default" in LTM policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01946 - Create default rule "default" in LTM policy - Idempotent check
+  bigip_policy_rule:
+    name: default
+    description: default
+    policy: issue-01946
+    partition: Common
+    conditions:
+      - type: all_traffic
+    actions:
+      - type: set_variable
+        variable_name: "ltm_policy_default_rule_matched"
+        expression: "1"
+        event: "request"
+      - type: remove
+        http_header:
+          name: X-Pingback
+          event: response
+      - type: remove
+        http_header:
+          name: X-Drupal-Cache
+          event: response
+  register: result
+
+- name: Issue 01946 - Assert Create default rule "default" in LTM policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01946 - Remove header from a rule in LTM policy
+  bigip_policy_rule:
+    name: default
+    policy: issue-01946
+    conditions:
+      - type: all_traffic
+    actions:
+      - type: set_variable
+        variable_name: "ltm_policy_default_rule_matched"
+        expression: "1"
+        event: "request"
+      - type: remove
+        http_header:
+          name: X-Pingback
+          event: response
+  register: result
+
+- name: Issue 01946 - Assert Remove header from a rule in LTM policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01946 - Remove header from a rule in LTM policy - Idempotent check
+  bigip_policy_rule:
+    name: default
+    policy: issue-01946
+    conditions:
+      - type: all_traffic
+    actions:
+      - type: set_variable
+        variable_name: "ltm_policy_default_rule_matched"
+        expression: "1"
+        event: "request"
+      - type: remove
+        http_header:
+          name: X-Pingback
+          event: response
+  register: result
+
+- name: Issue 01946 - Assert Remove header from a rule in LTM policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success

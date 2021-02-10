@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix issue where error messages were replaced by generic error message in bigip_device_policy module

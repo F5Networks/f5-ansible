@@ -109,6 +109,7 @@
         http_header:
           name: "foobar"
           value: "BAZ123"
+          event: "request"
       - type: replace
         http_referer:
           event: "proxy_request"
@@ -120,11 +121,13 @@
           port: 8076
       - type: replace
         http_uri:
-            type: "query_string"
-            value: "name=ferret&color=purple"
+          event: "request"
+          type: "query_string"
+          value: "name=ferret&color=purple"
       - type: replace
         http_host:
-            value: "fakehost"
+          value: "fakehost"
+          event: "request"
   register: result
 
 - name: Issue 01883 - Assert Add replace actions
@@ -142,6 +145,7 @@
         http_header:
           name: "foobar"
           value: "BAZ123"
+          event: "request"
       - type: replace
         http_referer:
           event: "proxy_request"
@@ -153,11 +157,13 @@
           port: 8076
       - type: replace
         http_uri:
-            type: "query_string"
-            value: "name=ferret&color=purple"
+          event: "request"
+          type: "query_string"
+          value: "name=ferret&color=purple"
       - type: replace
         http_host:
-            value: "fakehost"
+          value: "fakehost"
+          event: "request"
   register: result
 
 - name: Issue 01883 - Assert Add replace actions - Idempotent check
@@ -182,14 +188,16 @@
       - type: replace
         http_connect:
           event: "server_connected"
+          value: "bazbar"
       - type: replace
         http_uri:
-            type: "full_string"
-            value: "https://example.com/"
+          event: "request"
+          type: "full_string"
+          value: "https://example.com/"
       - type: replace
         http_host:
-            event: "proxy_connect"
-            value: "fakehost"
+          event: "proxy_connect"
+          value: "fakehost"
   register: result
 
 - name: Issue 01883 - Assert Change replace actions
@@ -214,14 +222,16 @@
       - type: replace
         http_connect:
           event: "server_connected"
+          value: "bazbar"
       - type: replace
         http_uri:
-            type: "full_string"
-            value: "https://example.com/"
+          event: "request"
+          type: "full_string"
+          value: "https://example.com/"
       - type: replace
         http_host:
-            event: "proxy_connect"
-            value: "fakehost"
+          event: "proxy_connect"
+          value: "fakehost"
   register: result
 
 - name: Issue 01883 - Assert Change replace actions - Idempotent check
