@@ -1,0 +1,31 @@
+---
+- name: Issue 01957 - Add forwarding virtual
+  bigip_virtual_server:
+    name: forwarding-vip
+    destination: any
+    port: 0
+    partition: Common
+    ip_protocol: any
+    source: 10.0.0.0/8
+    profiles:
+      - name: fastL4
+        context: all
+    type: forwarding-ip
+
+- name: Issue 01957 - Get the Virtual Servers
+  bigip_device_info:
+    gather_subset:
+      - virtual-servers
+  register: result
+
+- name: Issue 01957 - Verify properties are populated
+  assert:
+    that:
+      - result is success
+      - result.virtual_servers | json_query("[?name=='forwarding-vip'].destination_address") | first == "0.0.0.0"
+      - result.virtual_servers | json_query("[?name=='forwarding-vip'].destination_port") | first == 0
+
+- name: Issue 01957 - Remove forwarding virtual
+  bigip_virtual_server:
+    name: forwarding-vip
+    state: absent

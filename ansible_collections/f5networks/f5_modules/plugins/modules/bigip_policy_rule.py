@@ -140,6 +140,7 @@ options:
               - The C(request) and C(response) events are only choices with C(remove) and C(insert) type.
               - All of events are valid with C(replace) type action.
             type: str
+            required: True
             choices:
               - request
               - response
@@ -207,6 +208,7 @@ options:
             description:
               - Type of event when the C(http_cookie) is removed or inserted.
             type: str
+            required: True
             choices:
               - request
               - proxy_connect
@@ -245,9 +247,12 @@ options:
             description:
               - The value of C(http_connect).
             type: str
+            required: True
           port:
             description:
               - The port number.
+              - If port number is not provided the value is set to 0 by default.
+              - To avoid overriding desired port values be explicit when defining rules.
             type: int
         version_added: "1.8.0"
       http_host:
@@ -260,6 +265,7 @@ options:
             description:
               - Type of event when the C(http_host) is replaced.
             type: str
+            required: True
             choices:
               - request
               - proxy_connect
@@ -280,6 +286,7 @@ options:
             description:
               - Type of event when the C(http_uri) is replaced.
             type: str
+            required: True
             choices:
               - request
               - proxy_connect
@@ -566,6 +573,7 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, fq_name
 )
+from ..module_utils.compare import compare_complex_list
 from ..module_utils.icontrol import tmos_version
 from ..module_utils.teem import send_teem
 
@@ -699,6 +707,8 @@ class ApiParameters(Parameters):
                 action.pop('vlanId', None)
                 action.pop('timeout', None)
                 action.pop('offset', None)
+                if 'httpConnect' not in action:
+                    action.pop('port', None)
                 del action['replace']
             result.append(action)
         result = sorted(result, key=lambda x: x['name'])
@@ -1408,28 +1418,18 @@ class ModuleParameters(Parameters):
                     event_map[item['http_referer']['event']]: True
                 })
         if 'http_connect' in item and item['http_connect']:
-            if item['http_connect']['value'] is None and item['http_connect']['port'] is not None:
-                action.update({
-                    'httpConnect': True,
-                    'port': item['http_connect']['port'],
-                    event_map[item['http_connect']['event']]: True
-                })
-            elif item['http_connect']['value'] is not None and item['http_connect']['port'] is None:
+            if item['http_connect']['port'] is None:
                 action.update({
                     'httpConnect': True,
                     'host': item['http_connect']['value'],
-                    event_map[item['http_connect']['event']]: True
-                })
-            elif item['http_connect']['value'] is not None and item['http_connect']['port'] is not None:
-                action.update({
-                    'httpConnect': True,
-                    'host': item['http_connect']['value'],
-                    'port': item['http_connect']['port'],
+                    'port': 0,
                     event_map[item['http_connect']['event']]: True
                 })
             else:
                 action.update({
                     'httpConnect': True,
+                    'host': item['http_connect']['value'],
+                    'port': item['http_connect']['port'],
                     event_map[item['http_connect']['event']]: True
                 })
         if 'http_uri' in item and item['http_uri']:
@@ -1894,11 +1894,14 @@ class Difference(object):
     @property
     def actions(self):
         result = self._diff_complex_items(self.want.actions, self.have.actions)
+        actioned = self._compare_complex_actions()
         if self._conditions_missing_default_rule_for_asm(result):
             raise F5ModuleError(
                 "Valid options when using an ASM policy in a rule's 'enable' "
                 "action include all_traffic, http_uri, or http_host."
             )
+        if result is None and actioned is True:
+            return self.want.actions
         return result
 
     @property
@@ -1919,6 +1922,15 @@ class Difference(object):
                 return False
             if any(y for y in conditions if y['type'] not in ['all_traffic', 'http_uri', 'http_host']):
                 return True
+        return False
+
+    def _compare_complex_actions(self):
+        types = ['insert', 'remove', 'replace']
+        want = [item for item in self.want.actions if item['type'] in types]
+        have = [item for item in self.have.actions if item['type'] in types]
+        result = compare_complex_list(want, have)
+        if result:
+            return True
         return False
 
 
@@ -2270,7 +2282,8 @@ class ArgumentSpec(object):
                                 choices=[
                                     'request', 'response', 'proxy_connect',
                                     'proxy_request', 'proxy_response'
-                                ]
+                                ],
+                                required=True
                             ),
                             name=dict(required=True),
                             value=dict()
@@ -2297,7 +2310,9 @@ class ArgumentSpec(object):
                         type='dict',
                         options=dict(
                             event=dict(
-                                choices=['request', 'proxy_connect', 'proxy_request']
+                                choices=['request', 'proxy_connect', 'proxy_request'],
+                                required=True
+
                             ),
                             name=dict(required=True),
                             value=dict()
@@ -2313,7 +2328,9 @@ class ArgumentSpec(object):
                                 ],
                                 required=True
                             ),
-                            value=dict(),
+                            value=dict(
+                                required=True
+                            ),
                             port=dict(type='int'),
                         )
                     ),
@@ -2322,6 +2339,7 @@ class ArgumentSpec(object):
                         options=dict(
                             event=dict(
                                 choices=['request', 'proxy_connect', 'proxy_request'],
+                                required=True
                             ),
                             value=dict(required=True)
                         )
@@ -2331,6 +2349,7 @@ class ArgumentSpec(object):
                         options=dict(
                             event=dict(
                                 choices=['request', 'proxy_connect', 'proxy_request'],
+                                required=True
                             ),
                             type=dict(
                                 choices=['path', 'query_string', 'full_string'],
