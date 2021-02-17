@@ -5,6 +5,7 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -348,6 +349,7 @@ options:
           - http_host
           - http_header
           - ssl_extension
+          - tcp
       path_begins_with_any:
         description:
           - A list of strings of characters the HTTP URI should start with.
@@ -412,11 +414,29 @@ options:
           - This parameter is only valid with the C(ssl_extension) type.
         type: list
         elements: str
+      address_matches_with_any:
+        description:
+          - A list of IP Subnet address strings the tcp should match.
+          - This parameter is only valid with the C(tcp) type.
+        type: list
+        elements: str
+        version_added: "1.8.0"
+      address_matches_with_datagroup:
+        description:
+          - A list of datagroup strings the tcp should match.
+          - This parameter is only valid with the C(tcp) type.
+        type: list
+        elements: str
+        version_added: "1.8.0"
       event:
         description:
           - Events on which conditions such as SSL Extension can be triggered.
           - "Valid choices for C(http_header) condition types are: C(proxy_connect),
             C(proxy_request), C(proxy_response), C(request) and C(response)."
+          - "Valid choices for C(tcp) condition types are: C(request), C(client_accepted),
+            C(proxy_connect), C(proxy_request), C(proxy_response), C(ssl_client_hello), and
+            C(ssl_client_server_hello_send)."
+          - "Valid choices for C(ssl_extension) are: C(ssl_client_hello), and C(ssl_client_server_hello_send)."
         type: str
   state:
     description:
@@ -753,6 +773,11 @@ class ApiParameters(Parameters):
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
                 del action['sslExtension']
+            elif 'tcp' in item:
+                action.update(item)
+                action['type'] = 'tcp'
+                if 'values' in action:
+                    action['values'] = [str(x) for x in action['values']]
             result.append(action)
         # Names contains the index in which the rule is at.
         result = sorted(result, key=lambda x: x['name'])
@@ -817,6 +842,8 @@ class ModuleParameters(Parameters):
                 self._handle_http_header_condition(action, item)
             elif item['type'] == 'ssl_extension':
                 self._handle_ssl_extension_condition(action, item)
+            elif item['type'] == 'tcp':
+                self._handle_tcp_condition(action, item)
             elif item['type'] == 'all_traffic':
                 return [dict(type='all_traffic')]
             result.append(action)
@@ -915,6 +942,51 @@ class ModuleParameters(Parameters):
                 equals=True,
                 values=values
             ))
+
+    def _handle_tcp_condition(self, action, item):
+        options = ['address_matches_with_any', 'address_matches_with_datagroup']
+        event_map = dict(
+            client_accepted='clientAccepted',
+            proxy_connect='proxyConnect',
+            proxy_request='proxyRequest',
+            proxy_response='proxyResponse',
+            request='request',
+            ssl_client_hello='sslClientHello',
+            ssl_client_server_hello_send='sslClientServerhelloSend'
+        )
+        action['type'] = 'tcp'
+        if all(k not in item for k in options):
+            raise F5ModuleError(
+                "A 'address_matches_with_any','address_matches_with_datagroup' must be specified "
+                "when the 'tcp' type is used."
+            )
+        if 'address_matches_with_any' in item and item['address_matches_with_any'] is not None:
+            if isinstance(item['address_matches_with_any'], list):
+                values = item['address_matches_with_any']
+            else:
+                values = [item['address_matches_with_any']]
+            action.update(dict(
+                address=True,
+                matches=True,
+                values=values
+            ))
+        if 'address_matches_with_datagroup' in item and item['address_matches_with_datagroup'] is not None:
+            if isinstance(item['address_matches_with_datagroup'], list):
+                values = item['address_matches_with_datagroup']
+            else:
+                values = [item['address_matches_with_datagroup']]
+            for x in values:
+                tmp = x.split('/')
+                action.update(dict(
+                    address=True,
+                    matches=True,
+                    datagroup=x,
+                    datagroupReference=dict(link='https://localhost/mgmt/tm/ltm/data-group/internal/~{0}~{1}'.format(tmp[1], tmp[2]))
+                ))
+        if 'event' in item and item['event'] is not None:
+            event = event_map.get(item['event'], None)
+            if event:
+                action[event] = True
 
     def _handle_ssl_extension_condition(self, action, item):
         action['type'] = 'ssl_extension'
@@ -1762,6 +1834,10 @@ class ReportableChanges(Changes):
                 action['header_name'] = action['tmName']
                 del action['httpHeader']
                 del action['tmName']
+            elif 'tcp' in item:
+                action.update(item)
+                action['type'] = 'tcp'
+                del action['tcp']
             elif 'sslExtension' in item:
                 action.update(item)
                 action['type'] = 'ssl_extension'
@@ -1836,6 +1912,8 @@ class UsableChanges(Changes):
                 del condition['type']
             elif condition['type'] == 'http_header':
                 condition['httpHeader'] = True
+            elif condition['type'] == 'tcp':
+                condition['tcp'] = True
                 del condition['type']
             elif condition['type'] == 'ssl_extension':
                 condition['sslExtension'] = True
@@ -2377,7 +2455,8 @@ class ArgumentSpec(object):
                             'http_host',
                             'http_header',
                             'ssl_extension',
-                            'all_traffic'
+                            'all_traffic',
+                            'tcp'
                         ],
                         required=True
                     ),
@@ -2415,6 +2494,14 @@ class ArgumentSpec(object):
                         elements='str',
                     ),
                     server_name_is_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    address_matches_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    address_matches_with_datagroup=dict(
                         type='list',
                         elements='str',
                     ),
