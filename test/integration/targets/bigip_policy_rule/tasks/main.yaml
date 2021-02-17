@@ -415,6 +415,9 @@
 - import_tasks: issue-01871.yaml
   tags: issue-01871
 
+- import_tasks: issue-01873.yaml
+  tags: issue-01873
+
 - import_tasks: issue-01876.yaml
   tags: issue-01876
 
