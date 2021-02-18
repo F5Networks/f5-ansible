@@ -839,7 +839,6 @@ class V4Manager(BaseManager):
                 "'forward_to' is required when creating a new splunk destination."
             )
 
-
     def exists(self):
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/splunk/{2}".format(
