@@ -40,7 +40,6 @@
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
-    fqdn: "{{ node1['fqdn'] }}"
     monitors: "{{ node1['monitors'] }}"
     availability_requirements:
       type: "all"
@@ -55,7 +54,6 @@
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
-    fqdn: "{{ node1['fqdn'] }}"
     monitors: "{{ node1['monitors'] }}"
     availability_requirements:
       type: "all"
