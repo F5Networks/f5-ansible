@@ -7,9 +7,8 @@ node1:
   monitors:
     - icmp
     - tcp_echo
-  monitor_type: and_list
+
 
 node2:
   state: present
   monitors: icmp
-  monitor_type: single
