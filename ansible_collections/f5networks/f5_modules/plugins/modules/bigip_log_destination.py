@@ -37,72 +37,6 @@ options:
     description:
       - The description of the log destination.
     type: str
-  pool_settings:
-    description:
-      - This parameter is only available when C(type) is C(remote-high-speed-log).
-      - Deprecated. Use the equivalent top-level parameters instead.
-    suboptions:
-      pool:
-        description:
-          - Specifies the existing pool of remote high-speed log servers where logs will be sent.
-          - When creating a new destination (and C(type) is C(remote-high-speed-log)), this parameter
-            is required.
-        type: str
-      protocol:
-        description:
-          - Specifies the protocol for the system to use to send logs to the pool of remote high-speed
-            log servers, where the logs are stored.
-          - When creating a new log destination (and C(type) is C(remote-high-speed-log)), if this
-            parameter is not specified, the default is C(tcp).
-        type: str
-        choices:
-          - tcp
-          - udp
-      distribution:
-        description:
-          - Specifies the distribution method used by the Remote High Speed Log destination to send
-            messages to pool members.
-          - When C(adaptive), connections to pool members will be added as required to provide enough
-            logging bandwidth. This can have the undesirable effect of logs accumulating on only one
-            pool member when it provides sufficient logging bandwidth on its own.
-          - When C(balanced), sends each successive log to a new pool member, balancing the logs among
-            them according to the pool's load balancing method.
-          - When C(replicated), replicates each log to all pool members, for redundancy.
-          - When creating a new log destination (and C(type) is C(remote-high-speed-log)), if this
-            parameter is not specified, the default is C(adaptive).
-        type: str
-        choices:
-          - adaptive
-          - balanced
-          - replicated
-    type: dict
-  syslog_settings:
-    description:
-      - This parameter is only available when C(type) is C(remote-syslog).
-      - Deprecated. Use the equivalent top-level parameters instead.
-    suboptions:
-      syslog_format:
-        description:
-          - Specifies the method to use to format the logs associated with the remote Syslog log destination.
-          - When creating a new log destination (and C(type) is C(remote-syslog)), if this parameter is
-            not specified, the default is C(bsd-syslog).
-          - The C(syslog) and C(rfc5424) choices are the same.
-          - The C(bsd-syslog) and C(rfc3164) choices are the same.
-        type: str
-        choices:
-          - bsd-syslog
-          - syslog
-          - legacy-bigip
-          - rfc5424
-          - rfc3164
-      forward_to:
-        description:
-          - Specifies the management port log destination, which will be used to forward the logs to a
-            single log server, or a remote high-speed log destination, which will be used to forward the
-            logs to a pool of remote log servers.
-          - When creating a new log destination (and C(type) is C(remote-syslog)), this parameter is required.
-        type: str
-    type: dict
   syslog_format:
     description:
       - Specifies the method to use to format the logs associated with the remote Syslog log destination.
@@ -333,186 +267,7 @@ from ..module_utils.icontrol import tmos_version
 from ..module_utils.teem import send_teem
 
 
-class V1Parameters(AnsibleF5Parameters):
-    """Base Parameters for remote-syslog
-
-    """
-    api_map = {
-        'remoteHighSpeedLog': 'forward_to',
-        'format': 'syslog_format'
-    }
-
-    api_attributes = [
-        'remoteHighSpeedLog',
-        'format'
-    ]
-
-    returnables = [
-        'forward_to',
-        'syslog_format'
-    ]
-
-    updatables = [
-        'forward_to',
-        'syslog_format',
-        'type'
-    ]
-
-
-# TODO(Remove in 2.12)
-class V1ModuleParameters(V1Parameters):
-    @property
-    def forward_to(self):
-        if self._values['forward_to']:
-            result = self._values['forward_to']
-        else:
-            if self._values['syslog_settings'] is None:
-                return None
-            result = self._values['syslog_settings'].get('forward_to', None)
-
-        if result:
-            result = fq_name(self.partition, result)
-        return result
-
-    @property
-    def syslog_format(self):
-        if self._values['syslog_format']:
-            result = self._values['syslog_format']
-        else:
-            if self._values['syslog_settings'] is None:
-                return None
-            result = self._values['syslog_settings'].get('syslog_format', None)
-
-        if result == 'syslog':
-            result = 'rfc5424'
-        if result == 'bsd-syslog':
-            result = 'rfc3164'
-        return result
-
-
-# TODO(Remove in 2.12)
-class V1ApiParameters(V1Parameters):
-    @property
-    def type(self):
-        return 'remote-syslog'
-
-
-# TODO(Remove in 2.12)
-class V1Changes(V1Parameters):
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            raise
-        return result
-
-
-# TODO(Remove in 2.12)
-class V1UsableChanges(V1Changes):
-    pass
-
-
-# TODO(Remove in 2.12)
-class V1ReportableChanges(V1Changes):
-    pass
-
-
-# TODO(Remove in 2.12)
-class V2Parameters(AnsibleF5Parameters):
-    """Base Parameters for remote-high-speed-log
-
-    """
-    api_map = {
-        'poolName': 'pool'
-    }
-
-    api_attributes = [
-        'distribution',
-        'poolName',
-        'protocol'
-    ]
-
-    returnables = [
-        'pool',
-        'distribution',
-        'protocol'
-    ]
-
-    updatables = [
-        'pool',
-        'distribution',
-        'protocol',
-        'type'
-    ]
-
-
-# TODO(Remove in 2.12)
-class V2ModuleParameters(V2Parameters):
-    @property
-    def pool(self):
-        if self._values['pool']:
-            result = self._values['pool']
-        else:
-            if self._values['pool_settings'] is None:
-                return None
-            result = self._values['pool_settings'].get('pool', None)
-        if result:
-            result = fq_name(self.partition, result)
-        return result
-
-    @property
-    def protocol(self):
-        if self._values['protocol']:
-            return self._values['protocol']
-        else:
-            if self._values['pool_settings'] is None:
-                return None
-            return self._values['pool_settings'].get('protocol', None)
-
-    @property
-    def distribution(self):
-        if self._values['distribution']:
-            return self._values['distribution']
-        else:
-            if self._values['pool_settings'] is None:
-                return None
-            return self._values['pool_settings'].get('distribution', None)
-
-
-# TODO(Remove in 2.12)
-class V2ApiParameters(V2Parameters):
-    @property
-    def type(self):
-        return 'remote-high-speed-log'
-
-
-# TODO(Remove in 2.12)
-class V2Changes(V2Parameters):
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            raise
-        return result
-
-
-# TODO(Remove in 2.12)
-class V2UsableChanges(V2Changes):
-    pass
-
-
-# TODO(Remove in 2.12)
-class V2ReportableChanges(V2Changes):
-    pass
-
-
-class V3Parameters(AnsibleF5Parameters):
+class Parameters(AnsibleF5Parameters):
     api_map = {
         'forwardTo': 'forward_to',
         'poolName': 'pool',
@@ -573,7 +328,7 @@ class V3Parameters(AnsibleF5Parameters):
     ]
 
 
-class V3ModuleParameters(V3Parameters):
+class ModuleParameters(Parameters):
     @property
     def forward_to(self):
         if self._values['forward_to'] is None:
@@ -612,11 +367,11 @@ class V3ModuleParameters(V3Parameters):
         return fq_name(self.partition, self._values['transport_profile'])
 
 
-class V3ApiParameters(V3Parameters):
+class ApiParameters(Parameters):
     pass
 
 
-class V3Changes(V3Parameters):
+class Changes(Parameters):
     def to_return(self):
         result = {}
         try:
@@ -628,11 +383,11 @@ class V3Changes(V3Parameters):
         return result
 
 
-class V3UsableChanges(V3Changes):
+class UsableChanges(Changes):
     pass
 
 
-class V3ReportableChanges(V3Changes):
+class ReportableChanges(Changes):
     pass
 
 
@@ -677,18 +432,21 @@ class BaseManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = F5RestClient(**self.module.params)
+        self.want = ModuleParameters(params=self.module.params)
+        self.have = None
+        self.changes = UsableChanges()
 
     def _set_changed_options(self):
         changed = {}
-        for key in self.get_returnables():
+        for key in Parameters.returnables:
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = self.get_usable_changes(params=changed)
+            self.changes = UsableChanges(params=changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
-        updatables = self.get_updatables()
+        updatables = Parameters.updatables
         changed = dict()
         for k in updatables:
             change = diff.compare(k)
@@ -700,7 +458,7 @@ class BaseManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = self.get_usable_changes(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -722,7 +480,7 @@ class BaseManager(object):
         elif state == "absent":
             changed = self.absent()
 
-        reportable = self.get_reportable_changes(params=self.changes.to_return())
+        reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
@@ -783,12 +541,6 @@ class V1Manager(BaseManager):
 
     """
 
-    def __init__(self, *args, **kwargs):
-        super(V1Manager, self).__init__(*args, **kwargs)
-        self.want = self.get_module_params(params=self.module.params)
-        self.have = self.get_api_params()
-        self.changes = self.get_usable_changes()
-
     def _validate_creation_parameters(self):
         if self.want.syslog_format is None:
             self.want.update({'syslog_format': 'bsd-syslog'})
@@ -796,33 +548,6 @@ class V1Manager(BaseManager):
             raise F5ModuleError(
                 "'forward_to' is required when creating a new remote-syslog destination."
             )
-
-    # TODO(In 2.12, these get_* methods should no longer be needed)
-    def get_reportable_changes(self, params=None):
-        if params:
-            return V1ReportableChanges(params=params)
-        return V1ReportableChanges()
-
-    def get_usable_changes(self, params=None):
-        if params:
-            return V1UsableChanges(params=params)
-        return V1UsableChanges()
-
-    def get_returnables(self):
-        return V1ApiParameters.returnables
-
-    def get_updatables(self):
-        return V1ApiParameters.updatables
-
-    def get_module_params(self, params=None):
-        if params:
-            return V1ModuleParameters(params=params)
-        return V1ModuleParameters()
-
-    def get_api_params(self, params=None):
-        if params:
-            return V1ApiParameters(params=params)
-        return V1ApiParameters()
 
     def exists(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/remote-syslog/{2}".format(
@@ -910,7 +635,7 @@ class V1Manager(BaseManager):
 
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             response['type'] = 'remote-syslog'
-            return V1ApiParameters(params=response)
+            return ApiParameters(params=response)
         raise F5ModuleError(resp.content)
 
 
@@ -918,22 +643,6 @@ class V2Manager(BaseManager):
     """Manages remote-high-speed-log settings
 
     """
-    def __init__(self, *args, **kwargs):
-        super(V2Manager, self).__init__(*args, **kwargs)
-        self.want = self.get_module_params(params=self.module.params)
-        self.have = self.get_api_params()
-        self.changes = self.get_usable_changes()
-
-    def get_reportable_changes(self, params=None):
-        if params:
-            return V2ReportableChanges(params=params)
-        return V2ReportableChanges()
-
-    def get_usable_changes(self, params=None):
-        if params:
-            return V2UsableChanges(params=params)
-        return V2UsableChanges()
-
     def _validate_creation_parameters(self):
         if self.want.protocol is None:
             self.want.update({'protocol': 'tcp'})
@@ -943,22 +652,6 @@ class V2Manager(BaseManager):
             raise F5ModuleError(
                 "'pool' is required when creating a new remote-high-speed-log destination."
             )
-
-    def get_returnables(self):
-        return V2ApiParameters.returnables
-
-    def get_updatables(self):
-        return V2ApiParameters.updatables
-
-    def get_module_params(self, params=None):
-        if params:
-            return V2ModuleParameters(params=params)
-        return V2ModuleParameters()
-
-    def get_api_params(self, params=None):
-        if params:
-            return V2ApiParameters(params=params)
-        return V2ApiParameters()
 
     def exists(self):
         uri = "https://{0}:{1}/mgmt/tm/sys/log-config/destination/remote-high-speed-log/{2}".format(
@@ -1036,49 +729,16 @@ class V2Manager(BaseManager):
 
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             response['type'] = 'remote-high-speed-log'
-            return V2ApiParameters(params=response)
+            return ApiParameters(params=response)
         raise F5ModuleError(resp.content)
 
 
 class V3Manager(BaseManager):
-    def __init__(self, *args, **kwargs):
-        super(V3Manager, self).__init__(*args, **kwargs)
-        self.want = self.get_module_params(params=self.module.params)
-        self.have = self.get_api_params()
-        self.changes = self.get_usable_changes()
-
-    def get_reportable_changes(self, params=None):
-        if params:
-            return V3ReportableChanges(params=params)
-        return V3ReportableChanges()
-
-    def get_usable_changes(self, params=None):
-        if params:
-            return V3UsableChanges(params=params)
-        return V3UsableChanges()
-
     def _validate_creation_parameters(self):
         if self.want.forward_to is None:
             raise F5ModuleError(
                 "'forward_to' is required when creating a new arcsight destination."
             )
-
-    def get_returnables(self):
-        return V3ApiParameters.returnables
-
-    def get_updatables(self):
-        return V3ApiParameters.updatables
-
-    def get_module_params(self, params=None):
-        if params:
-            return V3ModuleParameters(params=params)
-        return V3ModuleParameters()
-
-    def get_api_params(self, params=None):
-        if params:
-
-            return V3ApiParameters(params=params)
-        return V3ApiParameters()
 
     def exists(self):
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
@@ -1165,36 +825,13 @@ class V3Manager(BaseManager):
 
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             response['type'] = 'arcsight'
-            return V3ApiParameters(params=response)
+            return ApiParameters(params=response)
         raise F5ModuleError(resp.content)
 
 
 class V4Manager(BaseManager):
     """Manager for Splunk
-
-    Do not worry about the usage of V3 classes in this V4 manager.
-    In Ansible 2.12, the Parameter classes will undergo a rename
-    because of parameters being deprecated.
-
-    The correct Parameter classes to use in this class are the
-    V3 Parameter classes.
-
     """
-    def __init__(self, *args, **kwargs):
-        super(V4Manager, self).__init__(*args, **kwargs)
-        self.want = self.get_module_params(params=self.module.params)
-        self.have = self.get_api_params()
-        self.changes = self.get_usable_changes()
-
-    def get_reportable_changes(self, params=None):
-        if params:
-            return V3ReportableChanges(params=params)
-        return V3ReportableChanges()
-
-    def get_usable_changes(self, params=None):
-        if params:
-            return V3UsableChanges(params=params)
-        return V3UsableChanges()
 
     def _validate_creation_parameters(self):
         if self.want.forward_to is None:
@@ -1202,22 +839,6 @@ class V4Manager(BaseManager):
                 "'forward_to' is required when creating a new splunk destination."
             )
 
-    def get_returnables(self):
-        return V3ApiParameters.returnables
-
-    def get_updatables(self):
-        return V3ApiParameters.updatables
-
-    def get_module_params(self, params=None):
-        if params:
-            return V3ModuleParameters(params=params)
-        return V3ModuleParameters()
-
-    def get_api_params(self, params=None):
-        if params:
-
-            return V3ApiParameters(params=params)
-        return V3ApiParameters()
 
     def exists(self):
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
@@ -1304,37 +925,13 @@ class V4Manager(BaseManager):
 
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             response['type'] = 'splunk'
-            return V3ApiParameters(params=response)
+            return ApiParameters(params=response)
         raise F5ModuleError(resp.content)
 
 
 class V5Manager(BaseManager):
     """Manager for Management Port
-
-    Do not worry about the usage of V3 classes in this V5 manager.
-    In Ansible 2.12, the Parameter classes will undergo a rename
-    because of parameters being deprecated.
-
-    The correct Parameter classes to use in this class are the
-    V3 Parameter classes.
-
     """
-    def __init__(self, *args, **kwargs):
-        super(V5Manager, self).__init__(*args, **kwargs)
-        self.want = self.get_module_params(params=self.module.params)
-        self.have = self.get_api_params()
-        self.changes = self.get_usable_changes()
-
-    def get_reportable_changes(self, params=None):
-        if params:
-            return V3ReportableChanges(params=params)
-        return V3ReportableChanges()
-
-    def get_usable_changes(self, params=None):
-        if params:
-            return V3UsableChanges(params=params)
-        return V3UsableChanges()
-
     def _validate_creation_parameters(self):
         if self.want.address is None:
             raise F5ModuleError(
@@ -1344,23 +941,6 @@ class V5Manager(BaseManager):
             raise F5ModuleError(
                 "'port' is required when creating a new management-port destination."
             )
-
-    def get_returnables(self):
-        return V3ApiParameters.returnables
-
-    def get_updatables(self):
-        return V3ApiParameters.updatables
-
-    def get_module_params(self, params=None):
-        if params:
-            return V3ModuleParameters(params=params)
-        return V3ModuleParameters()
-
-    def get_api_params(self, params=None):
-        if params:
-
-            return V3ApiParameters(params=params)
-        return V3ApiParameters()
 
     def exists(self):
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
@@ -1447,37 +1027,13 @@ class V5Manager(BaseManager):
 
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             response['type'] = 'management-port'
-            return V3ApiParameters(params=response)
+            return ApiParameters(params=response)
         raise F5ModuleError(resp.content)
 
 
 class V6Manager(BaseManager):
     """Manager for IPFIX
-
-    Do not worry about the usage of V3 classes in this V6 manager.
-    In Ansible 2.12, the Parameter classes will undergo a rename
-    because of parameters being deprecated.
-
-    The correct Parameter classes to use in this class are the
-    V3 Parameter classes.
-
     """
-    def __init__(self, *args, **kwargs):
-        super(V6Manager, self).__init__(*args, **kwargs)
-        self.want = self.get_module_params(params=self.module.params)
-        self.have = self.get_api_params()
-        self.changes = self.get_usable_changes()
-
-    def get_reportable_changes(self, params=None):
-        if params:
-            return V3ReportableChanges(params=params)
-        return V3ReportableChanges()
-
-    def get_usable_changes(self, params=None):
-        if params:
-            return V3UsableChanges(params=params)
-        return V3UsableChanges()
-
     def _validate_creation_parameters(self):
         if self.want.protocol is None:
             raise F5ModuleError(
@@ -1491,23 +1047,6 @@ class V6Manager(BaseManager):
             raise F5ModuleError(
                 "'transport_profile' is required when creating a new ipfix destination."
             )
-
-    def get_returnables(self):
-        return V3ApiParameters.returnables
-
-    def get_updatables(self):
-        return V3ApiParameters.updatables
-
-    def get_module_params(self, params=None):
-        if params:
-            return V3ModuleParameters(params=params)
-        return V3ModuleParameters()
-
-    def get_api_params(self, params=None):
-        if params:
-
-            return V3ApiParameters(params=params)
-        return V3ApiParameters()
 
     def exists(self):
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
@@ -1594,7 +1133,7 @@ class V6Manager(BaseManager):
 
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             response['type'] = 'ipfix'
-            return V3ApiParameters(params=response)
+            return ApiParameters(params=response)
         raise F5ModuleError(resp.content)
 
 
@@ -1690,55 +1229,10 @@ class ArgumentSpec(object):
             server_ssl_profile=dict(),
             template_retransmit_interval=dict(type='int'),
             template_delete_delay=dict(type='int'),
-
-            # Deprecated settings
-            pool_settings=dict(
-                type='dict',
-                options=dict(
-                    pool=dict(),
-                    protocol=dict(
-                        choices=['tcp', 'udp']
-                    ),
-                    distribution=dict(
-                        choices=[
-                            'adaptive',
-                            'balanced',
-                            'replicated',
-                        ]
-                    )
-                ),
-                removed_in_version="1.7.0",
-                removed_from_collection="f5networks.f5_modules"
-            ),
-            syslog_settings=dict(
-                type='dict',
-                options=dict(
-                    syslog_format=dict(
-                        choices=[
-                            'bsd-syslog',
-                            'syslog',
-                            'legacy-bigip',
-                            'rfc5424',
-                            'rfc3164'
-                        ]
-                    ),
-                    forward_to=dict()
-                ),
-                removed_in_version="1.7.0",
-                removed_from_collection="f5networks.f5_modules"
-            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
-        self.mutually_exclusive = [
-            ['syslog_settings', 'syslog_format'],
-            ['syslog_settings', 'forward_to'],
-
-            ['pool_settings', 'pool'],
-            ['pool_settings', 'protocol'],
-            ['pool_settings', 'distribution'],
-        ]
 
 
 def main():
@@ -1747,7 +1241,6 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        mutually_exclusive=spec.mutually_exclusive
     )
 
     try:

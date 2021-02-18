@@ -17,7 +17,7 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_log_destination import (
-    V1ApiParameters, V1ModuleParameters, ModuleManager, V1Manager, ArgumentSpec
+    ApiParameters, ModuleParameters, ModuleManager, V1Manager, ArgumentSpec
 )
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
 from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
@@ -46,34 +46,32 @@ def load_fixture(name):
     return data
 
 
-class TestV1Parameters(unittest.TestCase):
+class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
             name='foo',
-            syslog_settings=dict(
-                forward_to='pool1',
-                syslog_format='rfc5424'
-            ),
+            forward_to='pool1',
+            syslog_format='rfc5424',
             provider=dict(
                 server='localhost',
                 password='password',
                 user='admin'
             )
         )
-        p = V1ModuleParameters(params=args)
+        p = ModuleParameters(params=args)
         assert p.name == 'foo'
         assert p.forward_to == '/Common/pool1'
         assert p.syslog_format == 'rfc5424'
 
     def test_api_parameters(self):
         args = load_fixture('load_sys_log_config_destination_1.json')
-        p = V1ApiParameters(params=args)
+        p = ApiParameters(params=args)
         assert p.name == 'foo'
         assert p.syslog_format == 'rfc5424'
         assert p.forward_to == '/Common/pool1'
 
 
-class TestV1Manager(unittest.TestCase):
+class TestModuleManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
         self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_log_destination.tmos_version')
@@ -91,9 +89,7 @@ class TestV1Manager(unittest.TestCase):
         set_module_args(dict(
             name="foo",
             type='remote-syslog',
-            syslog_settings=dict(
-                forward_to='pool1',
-            ),
+            forward_to='pool1',
             state='present',
             provider=dict(
                 server='localhost',
@@ -105,7 +101,6 @@ class TestV1Manager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            mutually_exclusive=self.spec.mutually_exclusive
         )
 
         # Override methods in the specific type of manager
