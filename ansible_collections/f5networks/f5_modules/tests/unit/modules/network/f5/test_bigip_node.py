@@ -97,7 +97,6 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
 
@@ -130,7 +129,6 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
 
@@ -161,7 +159,6 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
 
@@ -194,7 +191,6 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
 
@@ -229,7 +225,6 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
 

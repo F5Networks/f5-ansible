@@ -10,7 +10,9 @@
     name: "{{ node1['name'] }}"
     fqdn: "{{ node1['fqdn'] }}"
     monitors: "{{ node1['monitors'] }}"
-    monitor_type: "{{ node1['monitor_type'] }}"
+    availability_requirements:
+      type: "at_least"
+      at_least: 1
   register: result
 
 - name: Assert Create node with multiple monitors
@@ -24,7 +26,9 @@
     name: "{{ node1['name'] }}"
     fqdn: "{{ node1['fqdn'] }}"
     monitors: "{{ node1['monitors'] }}"
-    monitor_type: "{{ node1['monitor_type'] }}"
+    availability_requirements:
+      type: "at_least"
+      at_least: 1
   register: result
 
 - name: Assert Create node with multiple monitors - Idempotent check
@@ -32,26 +36,39 @@
     that:
       - result is not changed
 
-- name: Change node to single monitor - Expected error due to multiple existing monitors
+- name: Modify node with multiple monitors - change requirements to all
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
-    monitor_type: "{{ node2['monitor_type'] }}"
+    monitors: "{{ node1['monitors'] }}"
+    availability_requirements:
+      type: "all"
   register: result
-  ignore_errors: true
 
-- name: Assert Change node to single monitor - Expected error due to multiple existing monitors
+- name: Assert Modify node with multiple monitors - change requirements to all
+  assert:
+    that:
+      - result is changed
+
+- name: Modify node with multiple monitors - change requirements to all - Idempotent check
+  bigip_node:
+    state: present
+    name: "{{ node1['name'] }}"
+    monitors: "{{ node1['monitors'] }}"
+    availability_requirements:
+      type: "all"
+  register: result
+
+- name: Assert Modify node with multiple monitors - change requirements to all - Idempotent check
   assert:
     that:
       - result is not changed
-      - "'A single monitor must be specified' in result.msg"
 
 - name: Change node to single monitor
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
     monitors: "{{ node2['monitors'] }}"
-    monitor_type: "{{ node2['monitor_type'] }}"
   register: result
 
 - name: Assert Change node to single monitor
@@ -64,7 +81,6 @@
     state: present
     name: "{{ node1['name'] }}"
     monitors: "{{ node2['monitors'] }}"
-    monitor_type: "{{ node2['monitor_type'] }}"
   register: result
 
 - name: Assert Change node to single monitor - Idempotent check

@@ -17,7 +17,7 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_pool import (
-    ApiParameters, ModuleParameters, ModuleManager, ArgumentSpec, UntypedManager, TypedManager
+    ApiParameters, ModuleParameters, ModuleManager, ArgumentSpec
 )
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
 from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
@@ -102,138 +102,7 @@ class TestParameters(unittest.TestCase):
         assert p.members[2] == '/Common/server1:vs3'
 
 
-class TestUntypedManager(unittest.TestCase):
-
-    def setUp(self):
-        self.spec = ArgumentSpec()
-        self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_pool.module_provisioned')
-        self.m1 = self.p1.start()
-        self.m1.return_value = True
-        self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_pool.tmos_version')
-        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_pool.send_teem')
-        self.m2 = self.p2.start()
-        self.m2.return_value = '14.1.0'
-        self.m3 = self.p3.start()
-        self.m3.return_value = True
-
-    def tearDown(self):
-        self.p1.stop()
-        self.p2.stop()
-        self.p3.stop()
-
-    def test_create_pool(self, *args):
-        set_module_args(dict(
-            name='foo',
-            preferred_lb_method='round-robin',
-            provider=dict(
-                server='localhost',
-                password='password',
-                user='admin'
-            )
-        ))
-
-        module = AnsibleModule(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            required_if=self.spec.required_if
-        )
-
-        # Override methods in the specific type of manager
-        tm = UntypedManager(module=module)
-        tm.exists = Mock(side_effect=[False, True])
-        tm.create_on_device = Mock(return_value=True)
-        tm.version_is_less_than_12 = Mock(return_value=True)
-
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(module=module)
-        mm.version_is_less_than_12 = Mock(return_value=True)
-        mm.get_manager = Mock(return_value=tm)
-        mm.gtm_provisioned = Mock(return_value=True)
-        mm.module_provisioned = Mock(return_value=True)
-
-        results = mm.exec_module()
-
-        assert results['changed'] is True
-        assert results['preferred_lb_method'] == 'round-robin'
-
-    def test_update_pool(self, *args):
-        set_module_args(dict(
-            name='foo',
-            preferred_lb_method='topology',
-            alternate_lb_method='drop-packet',
-            fallback_lb_method='cpu',
-            provider=dict(
-                server='localhost',
-                password='password',
-                user='admin'
-            )
-        ))
-
-        module = AnsibleModule(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            required_if=self.spec.required_if
-        )
-
-        current = ApiParameters(params=load_fixture('load_gtm_pool_untyped_default.json'))
-
-        # Override methods in the specific type of manager
-        tm = UntypedManager(module=module)
-        tm.exists = Mock(side_effect=[True, True])
-        tm.update_on_device = Mock(return_value=True)
-        tm.version_is_less_than_12 = Mock(return_value=True)
-        tm.read_current_from_device = Mock(return_value=current)
-
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(module=module)
-        mm.version_is_less_than_12 = Mock(return_value=True)
-        mm.get_manager = Mock(return_value=tm)
-        mm.gtm_provisioned = Mock(return_value=True)
-        mm.module_provisioned = Mock(return_value=True)
-
-        results = mm.exec_module()
-
-        assert results['changed'] is True
-        assert results['preferred_lb_method'] == 'topology'
-        assert results['alternate_lb_method'] == 'drop-packet'
-        assert results['fallback_lb_method'] == 'cpu'
-
-    def test_delete_pool(self, *args):
-        set_module_args(dict(
-            name='foo',
-            state='absent',
-            provider=dict(
-                server='localhost',
-                password='password',
-                user='admin'
-            )
-        ))
-
-        module = AnsibleModule(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            required_if=self.spec.required_if
-        )
-
-        # Override methods in the specific type of manager
-        tm = UntypedManager(module=module)
-        tm.exists = Mock(side_effect=[True, False])
-        tm.version_is_less_than_12 = Mock(return_value=True)
-        tm.remove_from_device = Mock(return_value=True)
-
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(module=module)
-        mm.version_is_less_than_12 = Mock(return_value=True)
-        mm.get_manager = Mock(return_value=tm)
-        mm.gtm_provisioned = Mock(return_value=True)
-        mm.module_provisioned = Mock(return_value=True)
-
-        results = mm.exec_module()
-
-        assert results['changed'] is True
-
-
-class TestTypedManager(unittest.TestCase):
+class TestModuledManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
         self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_pool.module_provisioned')
@@ -270,17 +139,10 @@ class TestTypedManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        tm = TypedManager(module=module)
-        tm.exists = Mock(side_effect=[False, True])
-        tm.create_on_device = Mock(return_value=True)
-        tm.version_is_less_than_12 = Mock(return_value=False)
-
-        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
-        mm.version_is_less_than_12 = Mock(return_value=False)
-        mm.get_manager = Mock(return_value=tm)
-        mm.gtm_provisioned = Mock(return_value=True)
         mm.module_provisioned = Mock(return_value=True)
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
@@ -310,18 +172,11 @@ class TestTypedManager(unittest.TestCase):
         current = ApiParameters(params=load_fixture('load_gtm_pool_a_default.json'))
 
         # Override methods in the specific type of manager
-        tm = TypedManager(module=module)
-        tm.exists = Mock(side_effect=[True, True])
-        tm.update_on_device = Mock(return_value=True)
-        tm.version_is_less_than_12 = Mock(return_value=False)
-        tm.read_current_from_device = Mock(return_value=current)
-
-        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
-        mm.version_is_less_than_12 = Mock(return_value=False)
-        mm.get_manager = Mock(return_value=tm)
-        mm.gtm_provisioned = Mock(return_value=True)
         mm.module_provisioned = Mock(return_value=True)
+        mm.exists = Mock(side_effect=[True, True])
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
 
         results = mm.exec_module()
 
@@ -349,17 +204,11 @@ class TestTypedManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        tm = TypedManager(module=module)
-        tm.exists = Mock(side_effect=[True, False])
-        tm.version_is_less_than_12 = Mock(return_value=False)
-        tm.remove_from_device = Mock(return_value=True)
-
-        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
-        mm.version_is_less_than_12 = Mock(return_value=False)
-        mm.get_manager = Mock(return_value=tm)
-        mm.gtm_provisioned = Mock(return_value=True)
         mm.module_provisioned = Mock(return_value=True)
+        mm.exists = Mock(side_effect=[True, False])
+        mm.version_is_less_than_12 = Mock(return_value=False)
+        mm.remove_from_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
