@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix issue with removal action not allowing atomic rule updates in bigip_policy_rule module

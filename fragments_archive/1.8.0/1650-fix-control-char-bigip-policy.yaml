@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix control characters causing url encoding errors in bigip_policy module
