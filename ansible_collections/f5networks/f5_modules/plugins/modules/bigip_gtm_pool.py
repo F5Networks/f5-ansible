@@ -104,10 +104,9 @@ options:
     type: str
   type:
     description:
-      - The type of GTM pool you want to create. On BIG-IP releases
-        prior to version 12, this parameter is not required. On later versions
-        of BIG-IP, this is a required parameter.
+      - The type of GTM pool you want to create.
     type: str
+    required: True
     choices:
       - a
       - aaaa
@@ -202,8 +201,6 @@ options:
     description:
       - Specifies the number of seconds the IP address, once found, is valid.
     type: int
-notes:
-  - Support for TMOS versions below v12.x has been deprecated for this module, and will be removed in f5_modules 1.4.
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -214,6 +211,7 @@ EXAMPLES = r'''
 - name: Create a GTM pool
   bigip_gtm_pool:
     name: my_pool
+    type: a
     provider:
       user: admin
       password: secret
@@ -224,6 +222,7 @@ EXAMPLES = r'''
   bigip_gtm_pool:
     state: disabled
     name: my_pool
+    type: a
     provider:
       user: admin
       password: secret
@@ -284,7 +283,6 @@ from datetime import datetime
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from distutils.version import LooseVersion
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -801,38 +799,7 @@ class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = F5RestClient(**self.module.params)
-        self.kwargs = kwargs
-
-    def exec_module(self):
-        if not module_provisioned(self.client, 'gtm'):
-            raise F5ModuleError(
-                "GTM must be provisioned to use this module."
-            )
-        if self.version_is_less_than_12():
-            manager = self.get_manager('untyped')
-        else:
-            manager = self.get_manager('typed')
-        return manager.exec_module()
-
-    def get_manager(self, type):
-        if type == 'typed':
-            return TypedManager(**self.kwargs)
-        elif type == 'untyped':
-            return UntypedManager(**self.kwargs)
-
-    def version_is_less_than_12(self):
-        version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('12.0.0'):
-            return True
-        else:
-            return False
-
-
-class BaseManager(object):
-    def __init__(self, *args, **kwargs):
-        self.module = kwargs.get('module', None)
-        self.client = F5RestClient(**self.module.params)
-        self.have = None
+        self.have = ApiParameters()
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
 
@@ -863,6 +830,10 @@ class BaseManager(object):
         return False
 
     def exec_module(self):
+        if not module_provisioned(self.client, 'gtm'):
+            raise F5ModuleError(
+                "GTM must be provisioned to use this module."
+            )
         start = datetime.now().isoformat()
         version = tmos_version(self.client)
         changed = False
@@ -884,28 +855,11 @@ class BaseManager(object):
 
     def _announce_deprecations(self, result):
         warnings = result.pop('__warnings', [])
-        if self.version_is_less_than_12():
-            self._deprecate_v11(warnings)
         for warning in warnings:
             self.module.deprecate(
                 msg=warning['msg'],
                 version=warning['version']
             )
-
-    def version_is_less_than_12(self):
-        version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('12.0.0'):
-            return True
-        else:
-            return False
-
-    def _deprecate_v11(self, result):
-        result.append(
-            dict(
-                msg='The support for this TMOS version is deprecated.',
-                version='f5_modules 1.4'
-            )
-        )
 
     def present(self):
         if self.exists():
@@ -961,31 +915,6 @@ class BaseManager(object):
         if self.exists():
             raise F5ModuleError("Failed to delete the GTM pool")
         return True
-
-
-class TypedManager(BaseManager):
-    def __init__(self, *args, **kwargs):
-        super(TypedManager, self).__init__(**kwargs)
-        if self.want.type is None:
-            raise F5ModuleError(
-                "The 'type' option is required for BIG-IP instances "
-                "greater than or equal to 12.x"
-            )
-
-    def present(self):
-        types = [
-            'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
-        ]
-        if self.want.type is None:
-            raise F5ModuleError(
-                "A pool 'type' must be specified"
-            )
-        elif self.want.type not in types:
-            raise F5ModuleError(
-                "The specified pool type is invalid"
-            )
-
-        return super(TypedManager, self).present()
 
     def exists(self):
         uri = "https://{0}:{1}/mgmt/tm/gtm/pool/{2}/{3}".format(
@@ -1083,103 +1012,6 @@ class TypedManager(BaseManager):
         raise F5ModuleError(response.content)
 
 
-class UntypedManager(BaseManager):
-    def exists(self):
-        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status == 404 or 'code' in response and response['code'] == 404:
-            return False
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-
-        errors = [401, 403, 409, 500, 501, 502, 503, 504]
-
-        if resp.status in errors or 'code' in response and response['code'] in errors:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-
-    def create_on_device(self):
-        params = self.changes.api_params()
-        params['name'] = self.want.name
-        params['partition'] = self.want.partition
-        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/".format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
-        )
-        resp = self.client.api.post(uri, json=params)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['selfLink']
-
-    def update_on_device(self):
-        params = self.changes.api_params()
-        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
-        )
-        resp = self.client.api.patch(uri, json=params)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-
-    def read_current_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
-
-    def remove_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/gtm/pool/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.name)
-        )
-        response = self.client.api.delete(uri)
-        if response.status == 200:
-            return True
-        raise F5ModuleError(response.content)
-
-
 class ArgumentSpec(object):
     def __init__(self):
         self.states = ['absent', 'present', 'enabled', 'disabled']
@@ -1220,6 +1052,7 @@ class ArgumentSpec(object):
             ),
             fallback_ip=dict(),
             type=dict(
+                required=True,
                 choices=self.types
             ),
             partition=dict(

@@ -1,12 +1,8 @@
 ---
-
-- name: Collect BIG-IP facts
-  bigip_device_info:
-    include: system-info
-  register: f
-
 - name: Provision GTM on the device
   bigip_provision:
     module: gtm
+    state: present
   tags:
     - module-provisioning
+    - provision-module

@@ -1,14 +1,6 @@
 ---
-
 - import_tasks: setup.yaml
-
-- name: Test BIG-IP versions greater than 12
-  import_tasks: typed-gtm-pools.yaml
-  when: f.system_info.product_version >= "12.0.0"
-
-- name: Test BIG-IP versions less than 12
-  import_tasks: untyped-gtm-pools.yaml
-  when: f.system_info.product_version < "12.0.0"
+- import_tasks: typed-gtm-pools.yaml
 
 - import_tasks: teardown.yaml
 
