@@ -9,8 +9,9 @@
     dynamic_ratio: 1
     monitors:
       - icmp
-    quorum: 1
-    monitor_type: m_of_n
+    availability_requirements:
+      type: "at_least"
+      at_least: 1
     rate_limit: 0
     ratio: 1
     state: enabled
@@ -31,8 +32,9 @@
     dynamic_ratio: 1
     monitors:
       - icmp
-    quorum: 1
-    monitor_type: m_of_n
+    availability_requirements:
+      type: "at_least"
+      at_least: 1
     rate_limit: 0
     ratio: 1
     state: enabled

@@ -1,0 +1,8 @@
+---
+
+removed_features:
+    - Removed TMOS v11 support for bigip_gtm_pool and bigip_gtm_wide_ip modules
+    - Removed syslog_settings and pool_settings parameters in bigip_log_destination moduke. See porting guides section at
+      https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+    - Removed quorum and monitor_type parameters in bigip_node module. See porting guides section at
+      https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html

@@ -42,24 +42,6 @@ options:
       - Specifies the name of the node.
     type: str
     required: True
-  monitor_type:
-    description:
-      - Monitor rule type when C(monitors) is specified. When creating a new
-        pool, if this value is not specified, the default of 'and_list' will
-        be used.
-      - Both C(single) and C(and_list) are functionally identical since BIG-IP
-        considers all monitors as "a list". BIG-IP either has a list of many,
-        or it has a list of one. Where they differ is in the extra guards that
-        C(single) provides; namely that it only allows a single monitor.
-    type: str
-    choices:
-     - and_list
-     - m_of_n
-     - single
-  quorum:
-    description:
-      - Monitor quorum value when C(monitor_type) is C(m_of_n).
-    type: int
   monitors:
     description:
       - Specifies the health monitors the system currently uses to
@@ -258,18 +240,6 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-monitor_type:
-  description:
-    - Changed value for the monitor_type of the node.
-  returned: changed and success
-  type: str
-  sample: m_of_n
-quorum:
-  description:
-    - Changed value for the quorum of the node.
-  returned: changed and success
-  type: int
-  sample: 1
 monitors:
   description:
     - Changed list of monitors for the node.
@@ -293,7 +263,7 @@ state:
     - Changed value for the internal state of the node.
   returned: changed and success
   type: str
-  sample: m_of_n
+  sample: user-down
 '''
 
 import re
@@ -483,7 +453,7 @@ class ModuleParameters(Parameters):
             return None
         if self._values['availability_requirements'][type] is None:
             return None
-        return int(self._values['availability_requirements'][type])
+        return self._values['availability_requirements'][type]
 
     @property
     def monitors_list(self):
@@ -500,39 +470,33 @@ class ModuleParameters(Parameters):
     def monitors(self):
         if self._values['monitors'] is None:
             return None
+        if self._values['monitors'] == 'default':
+            return 'default'
         if len(self._values['monitors']) == 1 and self._values['monitors'][0] == '':
             return '/Common/none'
         monitors = [fq_name(self.partition, x) for x in self.monitors_list]
-        if self.availability_requirement_type == 'at_least':
-            if self.at_least > len(self.monitors_list):
-                raise F5ModuleError(
-                    "The 'at_least' value must not exceed the number of 'monitors'."
-                )
-            monitors = ' '.join(monitors)
-            result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
-        else:
-            result = ' and '.join(monitors).strip()
-
-        return result
+        if len(self.monitors_list) > 1:
+            if self.availability_requirement_type == 'at_least':
+                if self.at_least > len(self.monitors_list):
+                    raise F5ModuleError(
+                        "The 'at_least' value must not exceed the number of 'monitors'."
+                    )
+                monitors = ' '.join(monitors)
+                result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
+            else:
+                result = ' and '.join(monitors).strip()
+            return result
+        if len(self.monitors_list) == 1:
+            return monitors[0]
 
     @property
     def availability_requirement_type(self):
-        if self._values['monitor_type']:
-            if self._values['monitor_type'] in ['single', 'and_list']:
-                result = 'all'
-            else:
-                result = 'at_least'
-            self._values['availability_requirements'] = dict(type=None)
-            self._values['availability_requirements']['type'] = result
         if self._values['availability_requirements'] is None:
             return None
         return self._values['availability_requirements']['type']
 
     @property
     def at_least(self):
-        if self._values['quorum']:
-            self._values['availability_requirements'] = dict(at_least=None)
-            self._values['availability_requirements']['at_least'] = self._values['quorum']
         return self._get_availability_value('at_least')
 
     @property
@@ -648,12 +612,15 @@ class ApiParameters(Parameters):
         if self._values['monitors'] == 'default':
             return 'default'
         monitors = [fq_name(self.partition, x) for x in self.monitors_list]
-        if self.availability_requirement_type == 'at_least':
-            monitors = ' '.join(monitors)
-            result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
-        else:
-            result = ' and '.join(monitors).strip()
-        return result
+        if len(self.monitors_list) > 1:
+            if self.availability_requirement_type == 'at_least':
+                monitors = ' '.join(monitors)
+                result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
+            else:
+                result = ' and '.join(monitors).strip()
+            return result
+        if len(self.monitors_list) == 1:
+            return monitors[0]
 
     @property
     def at_least(self):
@@ -701,18 +668,6 @@ class Difference(object):
 
     @property
     def monitors(self):
-        if self.want.monitor_type == 'single':
-            if len(self.want.monitors_list) > 1:
-                raise F5ModuleError(
-                    "When using a 'monitor_type' of 'single', only one monitor may be provided."
-                )
-            elif len(self.have.monitors_list) > 1 and len(self.want.monitors_list) == 0:
-                # Handle instances where there already exists many monitors, and the
-                # user runs the module again specifying that the monitor_type should be
-                # changed to 'single'
-                raise F5ModuleError(
-                    "A single monitor must be specified if more than one monitor currently exists on your pool."
-                )
         if self.want.monitors is None:
             return None
         if self.want.monitors == 'default' and self.have.monitors == 'default':
@@ -795,7 +750,7 @@ class ModuleManager(object):
             return True
         return False
 
-    def _announce_deprecations(self):  # lgtm [py/similar-function]
+    def _announce_deprecations(self):
         warnings = []
         if self.want:
             warnings += self.want._values.get('__warnings', [])
@@ -1142,29 +1097,10 @@ class ArgumentSpec(object):
                 type='list',
                 elements='str',
             ),
-
-
-            # Deprecated parameters
-            monitor_type=dict(
-                choices=[
-                    'and_list', 'm_of_n', 'single'
-                ],
-                removed_in_version="1.7.0",
-                removed_from_collection="f5networks.f5_modules"
-            ),
-            quorum=dict(
-                type='int',
-                removed_in_version="1.7.0",
-                removed_from_collection="f5networks.f5_modules"
-            ),
-
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
-        self.mutually_exclusive = [
-            ['monitor_type', 'quorum', 'availability_requirements']
-        ]
 
 
 def main():
@@ -1173,7 +1109,6 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        mutually_exclusive=spec.mutually_exclusive
     )
 
     try:

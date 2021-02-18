@@ -6,22 +6,7 @@
   tags:
     - module-provisioning
 
-- name: Collect BIG-IP facts
-  bigip_device_info:
-    include: system-info
-  register: f
-
-- name: Test BIG-IP versions greater than 12
-  import_tasks: typed-gtm-wideip.yaml
-  when: f.system_info.product_version >= "12.0.0"
-
-- name: Deprovision GTM
-  bigip_provision:
-    module: gtm
-    state: absent
-  tags:
-    - module-provisioning
-    - deprovision-module
+- import_tasks: typed-gtm-wideip.yaml
 
 - import_tasks: issue-00124.yaml
   tags: issue-00124
