@@ -1,3 +1,0 @@
----
-minor_changes:
-  - Add http_header condition type with header_is_any condition to bigip_policy_rule module

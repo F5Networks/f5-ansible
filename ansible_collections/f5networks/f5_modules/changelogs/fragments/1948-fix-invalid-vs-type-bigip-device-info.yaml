@@ -1,3 +1,0 @@
----
-bugfixes:
-  - Fix virtual server type value displaying incorrect information in bigip_device_info module

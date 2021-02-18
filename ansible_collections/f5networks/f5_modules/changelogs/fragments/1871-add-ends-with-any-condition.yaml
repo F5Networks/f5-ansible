@@ -1,3 +1,0 @@
----
-minor_changes:
-  - Add ends_with_any condition to bigip_policy_rule module

@@ -1,3 +1,0 @@
----
-bugfixes:
-    - Fix a bug with replace_with_all logic to consider ports in bigip_pool_member module

@@ -1,4 +1,0 @@
----
-minor_changes:
-  - Add replace action and appropriate scenarios to bigip_policy_rule module
-  - Add path_is_any option to conditions in bigip_policy_rule module

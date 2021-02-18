@@ -1,3 +1,0 @@
----
-minor_changes:
-  - Policy support with condition type TCP match with any of address/datagroup

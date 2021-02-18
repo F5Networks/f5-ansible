@@ -1,3 +1,0 @@
----
-minor_changes:
-  - Add path_contains condition to bigip_policy_rule module

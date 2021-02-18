@@ -1,3 +1,0 @@
----
-minor_changes:
-  - Add disable action and appropriate scenarios to bigip_policy_rule module

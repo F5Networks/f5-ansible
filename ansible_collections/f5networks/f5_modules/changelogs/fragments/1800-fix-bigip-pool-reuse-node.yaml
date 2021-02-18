@@ -1,3 +1,0 @@
----
-bugfixes:
-  - Fix issue in bigip_pool_member module invwhere incorrect IF statement in function preveninv ted from reusing FQDN nodes for new pool members

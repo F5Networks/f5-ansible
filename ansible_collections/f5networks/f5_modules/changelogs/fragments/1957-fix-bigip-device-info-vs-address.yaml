@@ -1,3 +1,0 @@
----
-bugfixes:
-    - Fix issue with destination_address and destination_port parameters not being properly returned by bigip_device_info module
