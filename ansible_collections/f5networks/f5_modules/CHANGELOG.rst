@@ -5,8 +5,44 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.8.0
+======
+
+Minor Changes
+-------------
+
+- Add disable action and appropriate scenarios to bigip_policy_rule module
+- Add ends_with_any condition to bigip_policy_rule module
+- Add http_header condition type with header_is_any condition to bigip_policy_rule module
+- Add insert action and appropriate scenarios to bigip_policy_rule module
+- Add path_contains condition to bigip_policy_rule module
+- Add path_is_any option to conditions in bigip_policy_rule module
+- Add remove action and appropriate scenarios to bigip_policy_rule module
+- Add replace action and appropriate scenarios to bigip_policy_rule module
+- Event types are now supported with forward type action
+- Event types are now supported with reset type action
+- Policy support with condition type TCP match with any of address/datagroup
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- Removed TMOS v11 support for bigip_gtm_pool and bigip_gtm_wide_ip modules
+- Removed quorum and monitor_type parameters in bigip_node module. See porting guides section at https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+- Removed syslog_settings and pool_settings parameters in bigip_log_destination moduke. See porting guides section at https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+
+Bugfixes
+--------
+
+- Fix a bug with replace_with_all logic to consider ports in bigip_pool_member module
+- Fix control characters causing url encoding errors in bigip_policy module
+- Fix issue in bigip_pool_member module invwhere incorrect IF statement in function preveninv ted from reusing FQDN nodes for new pool members
+- Fix issue where error messages were replaced by generic error message in bigip_device_policy module
+- Fix issue with destination_address and destination_port parameters not being properly returned by bigip_device_info module
+- Fix issue with removal action not allowing atomic rule updates in bigip_policy_rule module
+- Fix virtual server type value displaying incorrect information in bigip_device_info module
+
 v1.7.0
-============
+======
 
 Major Changes
 -------------

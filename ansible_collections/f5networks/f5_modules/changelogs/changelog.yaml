@@ -812,3 +812,58 @@ releases:
     - 1934-fix-iteration-bug.yaml
     - 1937-fix-bigip-static-route.yaml
     release_date: '2021-01-07'
+  1.8.0:
+    changes:
+      bugfixes:
+      - Fix a bug with replace_with_all logic to consider ports in bigip_pool_member
+        module
+      - Fix control characters causing url encoding errors in bigip_policy module
+      - Fix issue in bigip_pool_member module invwhere incorrect IF statement in function
+        preveninv ted from reusing FQDN nodes for new pool members
+      - Fix issue where error messages were replaced by generic error message in bigip_device_policy
+        module
+      - Fix issue with destination_address and destination_port parameters not being
+        properly returned by bigip_device_info module
+      - Fix issue with removal action not allowing atomic rule updates in bigip_policy_rule
+        module
+      - Fix virtual server type value displaying incorrect information in bigip_device_info
+        module
+      minor_changes:
+      - Add disable action and appropriate scenarios to bigip_policy_rule module
+      - Add ends_with_any condition to bigip_policy_rule module
+      - Add http_header condition type with header_is_any condition to bigip_policy_rule
+        module
+      - Add insert action and appropriate scenarios to bigip_policy_rule module
+      - Add path_contains condition to bigip_policy_rule module
+      - Add path_is_any option to conditions in bigip_policy_rule module
+      - Add remove action and appropriate scenarios to bigip_policy_rule module
+      - Add replace action and appropriate scenarios to bigip_policy_rule module
+      - Event types are now supported with forward type action
+      - Event types are now supported with reset type action
+      - Policy support with condition type TCP match with any of address/datagroup
+      removed_features:
+      - Removed TMOS v11 support for bigip_gtm_pool and bigip_gtm_wide_ip modules
+      - Removed quorum and monitor_type parameters in bigip_node module. See porting
+        guides section at https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+      - Removed syslog_settings and pool_settings parameters in bigip_log_destination
+        moduke. See porting guides section at https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+    fragments:
+    - 1650-fix-control-char-bigip-policy.yaml
+    - 1668-fix-aggregate-replace-all.yaml
+    - 1675-add-event-to-forward-action-bigip-policy-rule.yaml
+    - 1800-fix-bigip-pool-reuse-node.yaml
+    - 1809-add-path-contains-bigip-policy-rule.yaml
+    - 1835-add-http-header-condition-policy-rule.yaml
+    - 1867-add-remove-action-bigp-policy-rule.yaml
+    - 1868-add-insert-action-bigp-policy-rule.yaml
+    - 1871-add-ends-with-any-condition.yaml
+    - 1873-add-policy-condition-type-tcp-bigip-policy-rule.yaml
+    - 1876-add-disable-action-policy-rule.yaml
+    - 1880-add-event-type-to-reset-action-policy-rule.yaml
+    - 1883-add-replace-type-action-bigip-policy-ryle.yaml
+    - 1939-fix-error-reporting-bigip-license.yaml
+    - 1946-fix-bigip-policy-rule-remove-action.yaml
+    - 1948-fix-invalid-vs-type-bigip-device-info.yaml
+    - 1957-fix-bigip-device-info-vs-address.yaml
+    - 1968-remove-deprecations.yaml
+    release_date: '2021-02-18'
