@@ -6,6 +6,7 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -7495,7 +7496,6 @@ class ApmAccessProfileFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(ApmAccessProfileFactManager, self).__init__(**kwargs)
-        self.want = ApmAccessProfileFactParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -7557,7 +7557,6 @@ class ApmAccessPolicyFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(ApmAccessPolicyFactManager, self).__init__(**kwargs)
-        self.want = ApmAccessProfileFactParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -7617,7 +7616,6 @@ class As3FactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(As3FactManager, self).__init__(**kwargs)
-        self.want = self.module.params
 
     def exec_module(self):
         facts = self._exec_module()
@@ -7625,7 +7623,6 @@ class As3FactManager(BaseManager):
         return result
 
     def _exec_module(self):
-        results = []
         facts = self.read_facts()
         return facts
 
@@ -7650,7 +7647,7 @@ class As3FactManager(BaseManager):
 
         if 'class' not in response:
             return []
-        result = {}
+        result = dict()
         result['declaration'] = response
         return result
 
@@ -7744,7 +7741,6 @@ class AsmPolicyStatsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(AsmPolicyStatsFactManager, self).__init__(**kwargs)
-        self.want = AsmPolicyStatsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -8131,6 +8127,7 @@ class AsmPolicyFactParameters(BaseParameters):
     def protocol_independent(self):
         return flatten_boolean(self._values['protocol_independent'])
 
+
 # TODO include: web-scraping,ip-intelligence,session-tracking,
 # TODO login-enforcement,data-guard,redirection-protection,vulnerability-assessment, parentPolicyReference
 
@@ -8140,7 +8137,6 @@ class AsmPolicyFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(AsmPolicyFactManager, self).__init__(**kwargs)
-        self.want = AsmPolicyFactParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -8271,7 +8267,6 @@ class AsmServerTechnologyFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(AsmServerTechnologyFactManager, self).__init__(**kwargs)
-        self.want = AsmServerTechnologyFactParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -8367,6 +8362,7 @@ class AsmSignatureSetsFactParameters(BaseParameters):
     def default_learn(self):
         return flatten_boolean(self._values['default_learn'])
 
+
 # TODO: add the following: filter, systems, signatureReferences
 
 
@@ -8375,7 +8371,6 @@ class AsmSignatureSetsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(AsmSignatureSetsFactManager, self).__init__(**kwargs)
-        self.want = AsmSignatureSetsFactParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -8707,7 +8702,6 @@ class ClientSslProfilesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(ClientSslProfilesFactManager, self).__init__(**kwargs)
-        self.want = ClientSslProfilesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -8765,7 +8759,6 @@ class CFEFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(CFEFactManager, self).__init__(**kwargs)
-        self.want = self.module.params
 
     def exec_module(self):
         facts = self._exec_module()
@@ -8871,7 +8864,6 @@ class DeviceGroupsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(DeviceGroupsFactManager, self).__init__(**kwargs)
-        self.want = DeviceGroupsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -9029,7 +9021,6 @@ class DevicesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(DevicesFactManager, self).__init__(**kwargs)
-        self.want = DevicesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -9087,7 +9078,6 @@ class DOFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(DOFactManager, self).__init__(**kwargs)
-        self.want = self.module.params
 
     def exec_module(self):
         facts = self._exec_module()
@@ -9180,7 +9170,6 @@ class ExternalMonitorsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(ExternalMonitorsFactManager, self).__init__(**kwargs)
-        self.want = ExternalMonitorsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -9329,7 +9318,6 @@ class FastHttpProfilesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(FastHttpProfilesFactManager, self).__init__(**kwargs)
-        self.want = FastHttpProfilesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -9656,7 +9644,6 @@ class FastL4ProfilesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(FastL4ProfilesFactManager, self).__init__(**kwargs)
-        self.want = FastL4ProfilesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -9756,7 +9743,6 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GatewayIcmpMonitorsFactManager, self).__init__(**kwargs)
-        self.want = GatewayIcmpMonitorsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -9994,7 +9980,6 @@ class GtmAPoolsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmAPoolsFactManager, self).__init__(**kwargs)
-        self.want = GtmXPoolsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10046,7 +10031,6 @@ class GtmAaaaPoolsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmAaaaPoolsFactManager, self).__init__(**kwargs)
-        self.want = GtmXPoolsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10098,7 +10082,6 @@ class GtmCnamePoolsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmCnamePoolsFactManager, self).__init__(**kwargs)
-        self.want = GtmXPoolsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10150,7 +10133,6 @@ class GtmMxPoolsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmMxPoolsFactManager, self).__init__(**kwargs)
-        self.want = GtmXPoolsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10202,7 +10184,6 @@ class GtmNaptrPoolsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmNaptrPoolsFactManager, self).__init__(**kwargs)
-        self.want = GtmXPoolsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10254,7 +10235,6 @@ class GtmSrvPoolsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmSrvPoolsFactManager, self).__init__(**kwargs)
-        self.want = GtmXPoolsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10508,7 +10488,6 @@ class GtmServersFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmServersFactManager, self).__init__(**kwargs)
-        self.want = GtmServersParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10633,7 +10612,6 @@ class GtmAWideIpsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmAWideIpsFactManager, self).__init__(**kwargs)
-        self.want = GtmXWideIpsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10684,7 +10662,6 @@ class GtmAaaaWideIpsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmAaaaWideIpsFactManager, self).__init__(**kwargs)
-        self.want = GtmXWideIpsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10735,7 +10712,6 @@ class GtmCnameWideIpsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmCnameWideIpsFactManager, self).__init__(**kwargs)
-        self.want = GtmXWideIpsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10786,7 +10762,6 @@ class GtmMxWideIpsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmMxWideIpsFactManager, self).__init__(**kwargs)
-        self.want = GtmXWideIpsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10837,7 +10812,6 @@ class GtmNaptrWideIpsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmNaptrWideIpsFactManager, self).__init__(**kwargs)
-        self.want = GtmXWideIpsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10888,7 +10862,6 @@ class GtmSrvWideIpsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmSrvWideIpsFactManager, self).__init__(**kwargs)
-        self.want = GtmXWideIpsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -10978,7 +10951,6 @@ class GtmTopologyRegionFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(GtmTopologyRegionFactManager, self).__init__(**kwargs)
-        self.want = GtmTopologyRegionParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -11094,7 +11066,6 @@ class HttpMonitorsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(HttpMonitorsFactManager, self).__init__(**kwargs)
-        self.want = HttpMonitorsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -11208,7 +11179,6 @@ class HttpsMonitorsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(HttpsMonitorsFactManager, self).__init__(**kwargs)
-        self.want = HttpsMonitorsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -11459,7 +11429,6 @@ class HttpProfilesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(HttpProfilesFactManager, self).__init__(**kwargs)
-        self.want = HttpProfilesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -11558,7 +11527,6 @@ class IappServicesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(IappServicesFactManager, self).__init__(**kwargs)
-        self.want = IappServicesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -11622,7 +11590,6 @@ class IapplxPackagesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(IapplxPackagesFactManager, self).__init__(**kwargs)
-        self.want = IapplxPackagesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -11760,7 +11727,6 @@ class IcmpMonitorsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(IcmpMonitorsFactManager, self).__init__(**kwargs)
-        self.want = IcmpMonitorsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -11880,7 +11846,6 @@ class InterfacesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(InterfacesFactManager, self).__init__(**kwargs)
-        self.want = InterfacesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -11942,7 +11907,6 @@ class InternalDataGroupsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(InternalDataGroupsFactManager, self).__init__(**kwargs)
-        self.want = InternalDataGroupsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -12040,7 +12004,6 @@ class IrulesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(IrulesFactManager, self).__init__(**kwargs)
-        self.want = IrulesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -12396,7 +12359,6 @@ class LtmPoolsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(LtmPoolsFactManager, self).__init__(**kwargs)
-        self.want = LtmPoolsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -12564,7 +12526,6 @@ class LtmPolicyFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(LtmPolicyFactManager, self).__init__(**kwargs)
-        self.want = LtmPolicyParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -12697,7 +12658,6 @@ class NodesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(NodesFactManager, self).__init__(**kwargs)
-        self.want = NodesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -12818,7 +12778,6 @@ class OneConnectProfilesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(OneConnectProfilesFactManager, self).__init__(**kwargs)
-        self.want = OneConnectProfilesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -12881,7 +12840,6 @@ class PartitionFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(PartitionFactManager, self).__init__(**kwargs)
-        self.want = PartitionParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -12948,7 +12906,6 @@ class ProvisionInfoFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(ProvisionInfoFactManager, self).__init__(**kwargs)
-        self.want = ProvisionInfoParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13039,7 +12996,6 @@ class RouteDomainFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(RouteDomainFactManager, self).__init__(**kwargs)
-        self.want = RouteDomainParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13152,7 +13108,6 @@ class SelfIpsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SelfIpsFactManager, self).__init__(**kwargs)
-        self.want = SelfIpsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13457,7 +13412,6 @@ class ServerSslProfilesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(ServerSslProfilesFactManager, self).__init__(**kwargs)
-        self.want = ServerSslProfilesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13544,7 +13498,6 @@ class SoftwareVolumesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SoftwareVolumesFactManager, self).__init__(**kwargs)
-        self.want = SoftwareVolumesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13611,7 +13564,6 @@ class SoftwareHotfixesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SoftwareHotfixesFactManager, self).__init__(**kwargs)
-        self.want = SoftwareHotfixesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13737,7 +13689,6 @@ class SoftwareImagesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SoftwareImagesFactManager, self).__init__(**kwargs)
-        self.want = SoftwareImagesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13835,7 +13786,6 @@ class SslCertificatesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SslCertificatesFactManager, self).__init__(**kwargs)
-        self.want = SslCertificatesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13912,7 +13862,6 @@ class SslKeysFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SslKeysFactManager, self).__init__(**kwargs)
-        self.want = SslKeysParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -13998,8 +13947,8 @@ class SyncStatusParameters(BaseParameters):
     def details(self):
         result = []
         details = (self._values.get('https://localhost/mgmt/tm/cm/syncStatus/0/details', {})
-                               .get('nestedStats', {})
-                               .get('entries', {}))
+                   .get('nestedStats', {})
+                   .get('entries', {}))
         for entry in details.keys():
             result.append(
                 details[entry].get('nestedStats', {})
@@ -14045,7 +13994,6 @@ class SyncStatusFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SyncStatusFactManager, self).__init__(**kwargs)
-        self.want = SyncStatusParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -14077,9 +14025,9 @@ class SyncStatusFactManager(BaseManager):
             raise F5ModuleError(resp.content)
 
         result = response.get('entries', {}) \
-                         .get('https://localhost/mgmt/tm/cm/sync-status/0', {}) \
-                         .get('nestedStats', {}) \
-                         .get('entries')
+            .get('https://localhost/mgmt/tm/cm/sync-status/0', {}) \
+            .get('nestedStats', {}) \
+            .get('entries')
         return result
 
 
@@ -14088,7 +14036,6 @@ class SystemDbFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SystemDbFactManager, self).__init__(**kwargs)
-        self.want = SystemDbParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -14309,7 +14256,6 @@ class SystemInfoFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SystemInfoFactManager, self).__init__(**kwargs)
-        self.want = SystemInfoParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -14588,7 +14534,6 @@ class TSFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(TSFactManager, self).__init__(**kwargs)
-        self.want = self.module.params
 
     def exec_module(self):
         facts = self._exec_module()
@@ -14689,7 +14634,6 @@ class TcpMonitorsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(TcpMonitorsFactManager, self).__init__(**kwargs)
-        self.want = TcpMonitorsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -14776,7 +14720,6 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(TcpHalfOpenMonitorsFactManager, self).__init__(**kwargs)
-        self.want = TcpHalfOpenMonitorsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -15200,7 +15143,6 @@ class TcpProfilesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(TcpProfilesFactManager, self).__init__(**kwargs)
-        self.want = TcpProfilesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -15303,7 +15245,6 @@ class TrafficGroupsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(TrafficGroupsFactManager, self).__init__(**kwargs)
-        self.want = TrafficGroupsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -15389,7 +15330,7 @@ class TrunksParameters(BaseParameters):
         'name',
         'description',
         'media_speed',
-        'lacp_mode',        # 'active' or 'passive'
+        'lacp_mode',  # 'active' or 'passive'
         'lacp_enabled',
         'stp_enabled',
         'operational_member_count',
@@ -15427,7 +15368,6 @@ class TrunksFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(TrunksFactManager, self).__init__(**kwargs)
-        self.want = TrunksParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -15531,7 +15471,6 @@ class UsersFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(UsersFactManager, self).__init__(**kwargs)
-        self.want = UsersParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -15643,7 +15582,6 @@ class UdpProfilesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(UdpProfilesFactManager, self).__init__(**kwargs)
-        self.want = UdpProfilesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -15732,7 +15670,6 @@ class VcmpGuestsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(VcmpGuestsFactManager, self).__init__(**kwargs)
-        self.want = VcmpGuestsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -15847,7 +15784,6 @@ class VirtualAddressesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(VirtualAddressesFactManager, self).__init__(**kwargs)
-        self.want = VirtualAddressesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -16769,7 +16705,6 @@ class VlansFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(VlansFactManager, self).__init__(**kwargs)
-        self.want = VlansParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -16856,7 +16791,6 @@ class ManagementRouteFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(ManagementRouteFactManager, self).__init__(**kwargs)
-        self.want = ManagementRouteParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -16941,7 +16875,6 @@ class RemoteSyslogFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(RemoteSyslogFactManager, self).__init__(**kwargs)
-        self.want = RemoteSyslogParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
