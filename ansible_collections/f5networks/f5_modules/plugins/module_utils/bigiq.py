@@ -36,7 +36,6 @@ class F5RestClient(F5BaseClient):
 
     def connect_via_token_auth(self):
         provider = self.provider['auth_provider'] or 'local'
-
         url = "https://{0}:{1}{2}".format(
             self.provider['server'], self.provider['server_port'], LOGIN
         )
@@ -44,7 +43,6 @@ class F5RestClient(F5BaseClient):
             'username': self.provider['user'],
             'password': self.provider['password'],
         }
-
         # - local is a special provider that is baked into the system and
         #   has no loginReference
         if provider != 'local':
@@ -54,16 +52,13 @@ class F5RestClient(F5BaseClient):
         session = iControlRestSession(
             validate_certs=self.provider['validate_certs']
         )
-
         response = session.post(
             url,
             json=payload,
             headers=self.headers
         )
-
         if response.status not in [200]:
             return None, response.content
-
         session.request.headers['X-F5-Auth-Token'] = response.json()['token']['token']
         return session, None
 
