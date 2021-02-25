@@ -19,13 +19,13 @@ DOCUMENTATION = """
 EXAMPLES = """
 - name: Get a regkey license from a license pool
   bigiq_regkey_license:
-    key: "{{ lookup('bigiq_license', pool_name='foo_pool', username=baz, password=bar, host=192.168.1.1, port=10443}}"
+    key: "{{ lookup('f5networks.f5_modules.bigiq_license', pool_name='foo_pool', username=baz, password=bar, host=192.168.1.1, port=10443}}"
     state: present
     pool: foo_pool
 
 - name: Get a regkey license from a license pool, use default credentials and port, disable SSL verification
   bigiq_regkey_license:
-    key: "{{ lookup('bigiq_license', pool_name='foo_pool', host=192.168.1.1, validate_certs=false}}"
+    key: "{{ lookup('f5networks.f5_modules.bigiq_license', pool_name='foo_pool', host=192.168.1.1, validate_certs=false}}"
     state: present
     pool: foo_pool
 """
