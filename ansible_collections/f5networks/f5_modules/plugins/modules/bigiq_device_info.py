@@ -991,7 +991,6 @@ class ApplicationsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(ApplicationsFactManager, self).__init__(**kwargs)
-        self.want = ApplicationsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -1117,7 +1116,6 @@ class ManagedDevicesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(ManagedDevicesFactManager, self).__init__(**kwargs)
-        self.want = ManagedDevicesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -1253,7 +1251,6 @@ class PurchasedPoolLicensesFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(PurchasedPoolLicensesFactManager, self).__init__(**kwargs)
-        self.want = PurchasedPoolLicensesParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -1396,7 +1393,6 @@ class RegkeyPoolsFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(RegkeyPoolsFactManager, self).__init__(**kwargs)
-        self.want = RegkeyPoolsParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -1673,7 +1669,6 @@ class SystemInfoFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(SystemInfoFactManager, self).__init__(**kwargs)
-        self.want = SystemInfoParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
@@ -2065,7 +2060,6 @@ class VlansFactManager(BaseManager):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
         super(VlansFactManager, self).__init__(**kwargs)
-        self.want = VlansParameters(params=self.module.params)
 
     def exec_module(self):
         facts = self._exec_module()
