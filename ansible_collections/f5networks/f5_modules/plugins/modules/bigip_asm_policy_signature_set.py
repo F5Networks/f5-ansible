@@ -131,6 +131,7 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
+  
 - name: Remove Signature Set to ASM Policy
   bigip_asm_policy_signature_set:
     name: IIS and Windows Signatures
@@ -552,7 +553,6 @@ class ModuleManager(object):
             for item in response['items']:
                 if item['name'] == signature_set:
                     result = dict(link=item['selfLink'])
-
         return result
 
     def _get_policy_id(self):
