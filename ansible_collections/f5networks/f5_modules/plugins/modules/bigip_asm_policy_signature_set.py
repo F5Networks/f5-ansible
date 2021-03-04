@@ -131,7 +131,7 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
-  
+
 - name: Remove Signature Set to ASM Policy
   bigip_asm_policy_signature_set:
     name: IIS and Windows Signatures
