@@ -1,0 +1,5 @@
+---
+bugfixes:
+    - Fix issue with expired tokens causing module run to fail in bigiq_device_discovery
+minor_changes:
+    - Add token refresh handling to bigiq local client

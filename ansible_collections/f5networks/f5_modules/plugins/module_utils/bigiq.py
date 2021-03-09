@@ -23,6 +23,8 @@ class F5RestClient(F5BaseClient):
         super(F5RestClient, self).__init__(*args, **kwargs)
         self.provider = self.merge_provider_params()
         self.headers = BASE_HEADERS
+        self.access_token = None
+        self.refresh_token = None
 
     @property
     def api(self):
@@ -63,8 +65,9 @@ class F5RestClient(F5BaseClient):
 
         if response.status not in [200]:
             return None, response.content
-
-        session.request.headers['X-F5-Auth-Token'] = response.json()['token']['token']
+        self.access_token = response.json()['token']['token']
+        self.refresh_token = response.json()['refreshToken']['token']
+        session.request.headers['X-F5-Auth-Token'] = self.access_token
         return session, None
 
     def get_login_ref(self, provider):
@@ -131,3 +134,30 @@ class F5RestClient(F5BaseClient):
             else:
                 raise F5ModuleError(resp.content)
         return response
+
+    def reconnect(self):
+        url = "https://{0}:{1}/mgmt/shared/authn/exchange".format(
+            self.provider['server'], self.provider['server_port']
+        )
+        payload = {
+            'refreshToken': {
+                'token': self.refresh_token
+            }
+        }
+
+        session = iControlRestSession(
+            validate_certs=self.provider['validate_certs']
+        )
+
+        response = session.post(
+            url,
+            json=payload,
+            headers=BASE_HEADERS
+        )
+
+        if response.status not in [200]:
+            raise F5ModuleError('Failed to refresh token, server returned: {0}'.format(response.content))
+        self.access_token = response.json()['token']['token']
+        self.refresh_token = response.json()['refreshToken']['token']
+        session.request.headers['X-F5-Auth-Token'] = self.access_token
+        self._client = session
