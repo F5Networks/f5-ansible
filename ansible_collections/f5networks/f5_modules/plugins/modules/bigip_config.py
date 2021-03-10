@@ -189,8 +189,8 @@ class ModuleManager(object):
         if self.want.save:
             response = self.save()
             responses.append(response)
-
-        self._detect_errors(responses)
+        if not self.module.check_mode:
+            self._detect_errors(responses)
         changes = {
             'stdout': responses,
             'stdout_lines': self._to_lines(responses)
