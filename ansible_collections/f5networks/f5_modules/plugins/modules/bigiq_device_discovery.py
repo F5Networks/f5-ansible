@@ -807,6 +807,11 @@ class ModuleManager(object):
         while True:
             resp = self.client.api.get(uri)
 
+            if resp.status == 401:
+                # handle expired tokens
+                self.client.reconnect()
+                resp = self.client.api.get(uri)
+
             try:
                 response = resp.json()
             except ValueError as ex:
