@@ -28,6 +28,19 @@
     that:
       - result is not changed
 
+- name: Add a license to the license pool using lookup plugin- Idempotent check
+  bigiq_regkey_license:
+    regkey_pool: regkey-pool-1
+    license_key: "{{ lookup('f5networks.f5_modules.bigiq_license', pool_name='regkey-pool-1') }}"
+    accept_eula: yes
+    description: my license
+  register: result
+
+- name: Assert Add a license to the license pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Remove a license from the license pool
   bigiq_regkey_license:
     regkey_pool: regkey-pool-1

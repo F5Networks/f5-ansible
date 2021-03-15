@@ -1,0 +1,4 @@
+---
+bugfixes:
+    - Fix lookup plugin support for bigiq_license
+    - Fix for documentation bigip_data_group module doesn't check records content
