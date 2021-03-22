@@ -126,7 +126,7 @@ class LookupModule(LookupBase):
         pool_id = self._get_pool_uuid()
         regkeys = self._get_registation_keys(pool_id)
         keys = []
-        regKeypool=[]
+        regkeypool = []
         for key in regkeys:
             uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/regkey/licenses/{2}/offerings/{3}/members'.format(
                 self.host,
@@ -150,5 +150,5 @@ class LookupModule(LookupBase):
                 keys.append(key)
 
         result = random.choice(keys)
-        regKeypool.append(result)
-        return regKeypool
+        regkeypool.append(result)
+        return regkeypool
