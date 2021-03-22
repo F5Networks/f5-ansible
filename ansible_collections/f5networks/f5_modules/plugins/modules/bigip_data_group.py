@@ -148,7 +148,7 @@ options:
 notes:
   - This module does NOT support atomic updates of data group members in a type C(internal) data group.
   - Addition/Deletion of data group members in a type C(external) data group should be done through Ansible modules only,
-    if changes made made manually ansible module will not detect those changes.
+    if changes are made manually ansible module will not detect those changes.
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
