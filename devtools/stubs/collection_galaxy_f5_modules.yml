@@ -1,9 +1,7 @@
 authors:
   - Wojciech Wypior (@wojtek0806)
-  - Greg Crosby (@crosbygw)
-  - Nitin Khanna (@nitinthewiz)
 dependencies:
-  ansible.netcommon: '*'
+  ansible.netcommon: "<2.0.0"
 description: F5 Modules for Ansible
 documentation: https://clouddocs.f5.com/products/orchestration/ansible/devel/modules/module_index.html
 homepage: https://clouddocs.f5.com/products/orchestration/ansible/devel/
