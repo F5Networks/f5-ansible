@@ -71,7 +71,7 @@ def change_galaxy_version(c, version, collection='f5_modules'):
     collection="The collection name to which the modules are upstreamed, DEFAULT: 'f5_modules'.",
     update="Allows updating galaxy file when requested."
 ))
-def build(c, version, collection='f5_modules', update=True):
+def build(c, version, collection='f5_modules', update=False):
     """Creates collection builds in the ansible_collections/_build directory."""
     validate_version(version)
     if update:
