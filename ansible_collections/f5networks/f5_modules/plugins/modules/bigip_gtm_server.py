@@ -18,9 +18,9 @@ version_added: "1.0.0"
 options:
   name:
     description:
-      - The name of the server.(If the virtual server is auto-discovered from the LTM,then the
-        partition name will need to be included as part of the virtualserver name when referencing from the module
-        ("/Common/vsname"))
+      - The name of the server.(If the virtual server is auto-discovered from the LTM,then the partition
+         name will need to be included as part of the virtualserver name when referencing from the module
+         ("/Common/vsname"))
     type: str
     required: True
   state:
