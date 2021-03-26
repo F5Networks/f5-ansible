@@ -204,7 +204,6 @@ class LicenseXmlParser(object):
             return result
         for elem in root:
             if elem.tag == 'faultNumber':
-                # result['faultNumber'] = int(elem.text)
                 result['faultNumber'] = elem.text
             elif elem.tag == 'faultText':
                 tmp = elem.attrib.get('{http://www.w3.org/2001/XMLSchema-instance}nil', None)
