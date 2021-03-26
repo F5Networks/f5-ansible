@@ -1205,7 +1205,7 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     def _read_sip_profiles_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/sip/profile/session/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
