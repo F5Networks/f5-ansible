@@ -7,25 +7,25 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = """
-    lookup: Select a random license key from a pool of biqiq available licenses
+    lookup: bigiq_license
     author: Wojciech Wypior <w.wypior@f5.com>
     version_added: "1.0"
-    short_description: Return random license from list
+    short_description: Select a random license key from a pool of biqiq available licenses
     description:
       - Select a random license key from a pool of biqiq available licenses
-      - Requires specifying BIGIQ license pool name and connection parameters
+         ,Requires specifying BIGIQ license pool name and connection parameters
 """
 
 EXAMPLES = """
 - name: Get a regkey license from a license pool
   bigiq_regkey_license:
-    key: "{{ lookup('bigiq_license', pool_name='foo_pool', username=baz, password=bar, host=192.168.1.1, port=10443}}"
+    key: "{{ lookup('f5networks.f5_modules.bigiq_license', pool_name='foo_pool', username=baz, password=bar, host=192.168.1.1, port=10443}}"
     state: present
     pool: foo_pool
 
 - name: Get a regkey license from a license pool, use default credentials and port, disable SSL verification
   bigiq_regkey_license:
-    key: "{{ lookup('bigiq_license', pool_name='foo_pool', host=192.168.1.1, validate_certs=false}}"
+    key: "{{ lookup('f5networks.f5_modules.bigiq_license', pool_name='foo_pool', host=192.168.1.1, validate_certs=false}}"
     state: present
     pool: foo_pool
 """
@@ -48,7 +48,7 @@ class LookupModule(LookupBase):
         super(LookupModule, self).__init__(loader, templar, **kwargs)
         self.username = None
         self.password = None
-        self.validate_certs = True
+        self.validate_certs = False
         self.host = None
         self.pool_name = None
         self.port = 443
@@ -58,7 +58,7 @@ class LookupModule(LookupBase):
     def _validate_and_merge_params(self, **kwargs):
         self.username = kwargs.pop('username', 'admin')
         self.password = kwargs.pop('password', 'admin')
-        self.validate_certs = kwargs.pop('validate_certs', True)
+        self.validate_certs = kwargs.pop('validate_certs', False)
         self.host = kwargs.pop('host', None)
         self.port = kwargs.pop('port', 443)
         self.pool_name = kwargs.pop('pool_name', None)
@@ -84,7 +84,6 @@ class LookupModule(LookupBase):
             response = resp.json()
         except ValueError as ex:
             raise AnsibleError(str(ex))
-
         if 'code' in response and response['code'] == 400:
             if 'message' in response:
                 raise AnsibleError(response['message'])
@@ -93,10 +92,10 @@ class LookupModule(LookupBase):
         if 'items' not in response:
             raise AnsibleError('No license pools configured on BIGIQ')
 
-        resource = next((x for x in response['items'] if x.name == self.pool_name), None)
+        resource = next((x for x in response['items'] if x['name'] == self.pool_name), None)
         if resource is None:
             raise AnsibleError("Could not find the specified license pool.")
-        return resource.id
+        return resource['id']
 
     def _get_registation_keys(self, pool_id):
         uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/regkey/licenses/{2}/offerings/'.format(
@@ -104,19 +103,17 @@ class LookupModule(LookupBase):
             self.port,
             pool_id,
         )
-
         resp = self.client.api.get(uri)
         try:
             response = resp.json()
         except ValueError as ex:
             raise AnsibleError(str(ex))
-
         if 'code' in response and response['code'] == 400:
             if 'message' in response:
                 raise AnsibleError(response['message'])
             else:
                 raise AnsibleError(resp.content)
-        regkeys = [x.registrationKey for x in response['items']]
+        regkeys = [x['regKey'] for x in response['items']]
 
         if not regkeys:
             raise AnsibleError('Failed to obtain registration keys')
@@ -125,10 +122,11 @@ class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
         self._validate_and_merge_params(**kwargs)
-        self.client = F5RestClient(self.params)
+        self.client = F5RestClient(**self.params)
         pool_id = self._get_pool_uuid()
         regkeys = self._get_registation_keys(pool_id)
         keys = []
+        regkeypool = []
         for key in regkeys:
             uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/regkey/licenses/{2}/offerings/{3}/members'.format(
                 self.host,
@@ -152,4 +150,5 @@ class LookupModule(LookupBase):
                 keys.append(key)
 
         result = random.choice(keys)
-        return result
+        regkeypool.append(result)
+        return regkeypool

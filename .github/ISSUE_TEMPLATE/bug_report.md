@@ -1,26 +1,30 @@
-<!--- Verify first that your issue/request is not already reported in GitHub -->
+---
+name: Bug report
+about: Report a defect in the product
+title: ''
+labels: bug, untriaged
+assignees: ''
 
-##### ISSUE TYPE
-<!--- Pick one below and delete the rest: -->
- - Bug Report
- - Feature Idea
- - Documentation Report
+---
+
+<!--
+When filing an issue please check to see if an issue already exists that matches your issue.
+
+Please open a case (https://support.f5.com/csp/article/K2633) with F5 if this is a critical issue.
+
+-->
 
 ##### COMPONENT NAME
 <!--- Name of the module/role/task -->
+
+
+### Environment
 
 ##### ANSIBLE VERSION
 <!--- Paste verbatim output from “ansible --version” between quotes below -->
 ```
 
 ```
-
-##### PYTHON VERSION
-<!--- Paste verbatim output from “python -V” between quotes below -->
-```
-
-```
-
 ##### BIGIP VERSION
 <!---
 Paste verbatim output from “tmsh show sys version” between quotes below
@@ -28,7 +32,6 @@ Paste verbatim output from “tmsh show sys version” between quotes below
 ```
 
 ```
-
 ##### CONFIGURATION
 <!---
 Mention any settings you have changed/added/removed in ansible.cfg
@@ -47,10 +50,8 @@ managing, or say “N/A” for anything that is not platform-specific.
 ##### STEPS TO REPRODUCE
 <!---
 For bugs, show exactly how to reproduce the problem, providing a test playbook using 
-latest f5ansible galaxy role. 
+latest f5ansible daily build. 
 This is a requirement for the issue to be accepted and resolved efficiently.
-For new features, show how the feature would be used.
-
 -->
 
 <!--- Paste example playbooks or commands between quotes below -->
