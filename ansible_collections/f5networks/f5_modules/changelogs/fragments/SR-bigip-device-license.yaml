@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix for bigip_device_license license reactivation
