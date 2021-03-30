@@ -204,7 +204,7 @@ class LicenseXmlParser(object):
             return result
         for elem in root:
             if elem.tag == 'faultNumber':
-                result['faultNumber'] = int(elem.text)
+                result['faultNumber'] = elem.text
             elif elem.tag == 'faultText':
                 tmp = elem.attrib.get('{http://www.w3.org/2001/XMLSchema-instance}nil', None)
                 if tmp == 'true':
@@ -411,7 +411,6 @@ class ModuleManager(object):
         changed = False
         result = dict()
         state = self.want.state
-
         if state == "present":
             changed = self.present()
         elif state == "latest":
