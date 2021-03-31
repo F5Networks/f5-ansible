@@ -161,7 +161,7 @@ from ansible.module_utils.basic import (
 )
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import (
+from ipaddress import (
     ip_network, ip_interface, ip_address
 )
 

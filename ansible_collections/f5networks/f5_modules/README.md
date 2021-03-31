@@ -5,6 +5,7 @@ This collection includes the most recently released ansible modules for BIG-IP a
 ## Requirements
 
  - ansible >= 2.9
+ - ipaddress (python < 3.5)
 
 ## Installation
 
@@ -27,6 +28,9 @@ Sematic Versioning examples below:
 - Increment major (for example: x in x.y.z) version number for an incompatible API change.
 - Increment minor (for example: y in x.y.z) version number for new functionality in a backwards compatible manner.
 - Increment patch (for example: z in x.y.z) version number for backwards compatible bug fixes.
+
+## Deprecation Notice
+Support for versions of Python earlier than 3.5 is being deprecated and will be removed at a future date. 
 
 ## Example Usage
 

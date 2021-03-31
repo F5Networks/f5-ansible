@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fixes issues with downloading ASM policies in binary format
