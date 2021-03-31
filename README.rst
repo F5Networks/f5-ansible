@@ -76,6 +76,10 @@ Documentation
 All documentation is available on |ansiblehelp|.
 Changelog information available on |changelog|.
 
+Python Version Deprecation
+--------------------------
+Support for versions of Python earlier than 3.5 is being deprecated and will be removed at a future date.
+
 Your ideas
 ----------
 

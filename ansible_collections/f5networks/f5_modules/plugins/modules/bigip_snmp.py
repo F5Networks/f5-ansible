@@ -124,7 +124,7 @@ from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import string_types
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import ip_network
+from ipaddress import ip_network
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (

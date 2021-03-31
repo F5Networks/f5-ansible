@@ -535,8 +535,43 @@ class ModuleManager(object):
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
             raise F5ModuleError(resp.content)
 
+        self._stat_binary_on_device()
         self._move_binary_to_download()
 
+        return True
+
+    def _stat_binary_on_device(self):
+        params = dict(
+            command='run',
+            utilCmdArgs='/var/tmp/{0} -l'.format(self.want.file)
+        )
+
+        uri = "https://{0}:{1}/mgmt/tm/util/unix-ls/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.post(uri, json=params)
+
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'commandResult' not in response:
+            raise F5ModuleError("Failed to obtain file information, aborting.")
+
+        if 'Error' in response['commandResult'] or 'error' in response['commandResult']:
+            raise F5ModuleError(response['commandResult'])
+
+        if '/var/tmp/{0}'.format(self.want.file) not in response['commandResult']:
+            raise F5ModuleError("Cannot get size of exported binary file, aborting")
+
+        size = response['commandResult']
+
+        self.want.file_size = int(size.split()[4])
         return True
 
     def _move_binary_to_download(self):

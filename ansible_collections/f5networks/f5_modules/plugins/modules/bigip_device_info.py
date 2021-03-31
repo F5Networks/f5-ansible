@@ -7383,7 +7383,7 @@ from ansible.module_utils.six import (
     iteritems, string_types
 )
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import ip_interface
+from ipaddress import ip_interface
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
