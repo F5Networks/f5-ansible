@@ -282,7 +282,7 @@ from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import (
+from ipaddress import (
     ip_network, ip_interface
 )
 

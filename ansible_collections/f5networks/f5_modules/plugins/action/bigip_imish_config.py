@@ -26,11 +26,7 @@ import glob
 
 from ansible.module_utils._text import to_text
 from ansible.module_utils.six.moves.urllib.parse import urlsplit
-try:
-    from ansible_collections.ansible.netcommon.plugins.action.network import ActionModule as ActionNetworkModule
-except ImportError:
-    from ansible.plugins.action.network import ActionModule as ActionNetworkModule
-
+from ansible_collections.ansible.netcommon.plugins.action.network import ActionModule as ActionNetworkModule
 from ansible.utils.display import Display
 
 display = Display()

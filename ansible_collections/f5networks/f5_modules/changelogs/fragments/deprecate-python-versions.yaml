@@ -1,0 +1,4 @@
+deprecated_features:
+    - Support for Python versions earlier than 3.5 is being deprecated
+minor_changes:
+    - Added requirement to install ipaddress package for python versions earlier than 3.5

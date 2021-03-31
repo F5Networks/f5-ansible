@@ -265,7 +265,7 @@ from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import ip_address
+from ipaddress import ip_address
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (

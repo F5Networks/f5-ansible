@@ -6,20 +6,11 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-try:
-    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-        validate_ip_address, validate_ip_v6_address
-    )
-    from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import (
-        ip_interface, ip_network
-    )
-except ImportError:
-    from ansible.module_utils.network.common.utils import (
-        validate_ip_address, validate_ip_v6_address
-    )
-    from ansible.module_utils.compat.ipaddress import (
-        ip_interface, ip_network
-    )
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    validate_ip_address, validate_ip_v6_address
+)
+
+from ipaddress import ip_interface, ip_network
 
 
 def is_valid_ip(addr, type='all'):
