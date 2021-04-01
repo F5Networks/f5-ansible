@@ -105,6 +105,8 @@ def changelog(c, version):
     """Build changelog and update galaxy.yml file version number."""
     collection = '{0}/ansible_collections/f5networks/f5_modules'.format(BASE_DIR)
     validate_version(version)
+    print('Updating galaxy.yaml file.')
+    update_galaxy_file(version, 'f5_modules')
     with c.cd(collection):
         print('Linting changelog fragments.')
         cmd = "antsibull-changelog lint -v"
@@ -116,6 +118,4 @@ def changelog(c, version):
         result = c.run(cmd, warn=True)
         if result.failed:
             sys.exit(1)
-    print('Updating galaxy.yaml file.')
-    update_galaxy_file(version, 'f5_modules')
     print('Changelog release complete.')

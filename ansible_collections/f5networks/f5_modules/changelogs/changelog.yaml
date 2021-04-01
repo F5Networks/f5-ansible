@@ -867,3 +867,26 @@ releases:
     - 1957-fix-bigip-device-info-vs-address.yaml
     - 1968-remove-deprecations.yaml
     release_date: '2021-02-18'
+  1.9.0:
+    changes:
+      bugfixes:
+      - Added Fix for bigip_config check mode issue
+      - Fix for bigip_device_license license reactivation
+      - Fix for documentation bigip_data_group module doesn't check records content
+      - Fix issue with expired tokens causing module run to fail in bigiq_device_discovery
+      - Fix lookup plugin support for bigiq_license
+      - Fixes issues with downloading ASM policies in binary format
+      deprecated_features:
+      - Support for Python versions earlier than 3.5 is being deprecated
+      minor_changes:
+      - Add token refresh handling to bigiq local client
+      - Added requirement to install ipaddress package for python versions earlier
+        than 3.5
+    fragments:
+    - 1952-lookup-plugin-bigiq_license.yaml
+    - 1970-add-support-checkmode-bigipconfig.yaml
+    - 1985-add-bigiq-token-refresh.yaml
+    - SR-bigip-device-license.yaml
+    - deprecate-python-versions.yaml
+    - fix-asm-policy-fetch-binary.yaml
+    release_date: '2021-03-31'
