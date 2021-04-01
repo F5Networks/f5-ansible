@@ -5,6 +5,30 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.9.0
+======
+
+Minor Changes
+-------------
+
+- Add token refresh handling to bigiq local client
+- Added requirement to install ipaddress package for python versions earlier than 3.5
+
+Deprecated Features
+-------------------
+
+- Support for Python versions earlier than 3.5 is being deprecated
+
+Bugfixes
+--------
+
+- Added Fix for bigip_config check mode issue
+- Fix for bigip_device_license license reactivation
+- Fix for documentation bigip_data_group module doesn't check records content
+- Fix issue with expired tokens causing module run to fail in bigiq_device_discovery
+- Fix lookup plugin support for bigiq_license
+- Fixes issues with downloading ASM policies in binary format
+
 v1.8.0
 ======
 
