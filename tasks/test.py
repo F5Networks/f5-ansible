@@ -42,7 +42,7 @@ def f5_sanity(c):
 @task
 def unit(c):
     """Unit tests on F5 Ansible modules."""
-    c.run("pytest -s {0}/ansible_collections/f5networks/f5_modules/tests/".format(BASE_DIR))
+    c.run("PYTHONPATH={0} pytest -s -x {0}/ansible_collections/f5networks/f5_modules/tests/".format(BASE_DIR))
 
 
 @task
