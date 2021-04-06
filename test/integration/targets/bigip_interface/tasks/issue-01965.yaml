@@ -1,0 +1,58 @@
+---
+## these tests require viprion platform
+
+- name: Issue 01965 - Disable target interface on Viprion
+  bigip_interface:
+    name: "1/1.1"
+    enabled: no
+    lldp_admin: txrx
+    stp: no
+  register: result
+
+- name: Issue 01965 - Assert Disable target interface on Viprion
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01965 - Disable target interface on Viprion - Idempotent check
+  bigip_interface:
+    name: "1/1.1"
+    enabled: no
+    lldp_admin: txrx
+    stp: no
+  register: result
+
+- name: Issue 01965 - Assert Disable target interface on Viprion - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01965 - Revert target interface on Viprion
+  bigip_interface:
+    name: "1/1.1"
+    enabled: yes
+    lldp_admin: txonly
+    stp: yes
+  register: result
+
+- name: Issue 01965 - Assert Revert target interface on Viprion
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01965 - Revert target interface on Viprion - Idempotent check
+  bigip_interface:
+    name: "1/1.1"
+    enabled: yes
+    lldp_admin: txonly
+    stp: yes
+  register: result
+
+- name: Issue 01965 - Assert Revert target interface on Viprion - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success

@@ -54,7 +54,7 @@ def style(c):
 @task(name='install-dep')
 def install_dependency(c):
     """Install netcommon collection if missing."""
-    c.run("ansible-galaxy collection install ansible.netcommon:==1.5.0 -p {0} --ignore-certs --force".format(BASE_DIR))
+    c.run("ansible-galaxy collection install ansible.netcommon -p {0} --ignore-certs --force".format(BASE_DIR))
 
 
 @task(name='ansible-test')

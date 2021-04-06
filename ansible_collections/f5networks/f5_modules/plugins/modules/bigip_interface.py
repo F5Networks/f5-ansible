@@ -418,7 +418,8 @@ from ansible.module_utils.basic import AnsibleModule
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, f5_argument_spec, flatten_boolean
+    F5ModuleError, AnsibleF5Parameters, f5_argument_spec, flatten_boolean,
+    transform_name
 )
 from ..module_utils.compare import cmp_str_with_none
 from ..module_utils.icontrol import tmos_version
@@ -786,7 +787,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/net/interface/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            transform_name(name=self.want.name)
         )
         resp = self.client.api.get(uri)
         try:
@@ -812,7 +813,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/net/interface/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            transform_name(name=self.want.name)
         )
         resp = self.client.api.patch(uri, json=params)
         try:
@@ -828,7 +829,7 @@ class ModuleManager(object):
         uri = "https://{0}:{1}/mgmt/tm/net/interface/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            self.want.name
+            transform_name(name=self.want.name)
         )
         resp = self.client.api.get(uri)
         try:

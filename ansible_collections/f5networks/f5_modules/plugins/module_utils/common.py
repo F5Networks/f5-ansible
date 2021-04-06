@@ -62,7 +62,8 @@ f5_provider_spec = {
     'timeout': dict(type='int'),
     'no_f5_teem': dict(
         type='bool',
-        fallback=(env_fallback, ['F5_TEEM'])
+        default='no',
+        fallback=(env_fallback, ['F5_TEEM', 'F5_TELEMETRY_OFF'])
     ),
     'auth_provider': dict(),
 }
