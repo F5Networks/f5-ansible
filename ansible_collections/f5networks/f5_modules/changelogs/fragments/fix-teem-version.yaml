@@ -4,4 +4,3 @@ bugfixes:
     - Disable cert validaton for Teem
 minor_changes:
     - Add ENV variable with better name, it should make it easier to understand when disabling F5 TEEM telemetry
-
