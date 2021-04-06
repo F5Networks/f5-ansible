@@ -120,3 +120,7 @@
       - result is success
 
 - import_tasks: teardown.yaml
+
+## these tests require viprion platform
+- import_tasks: issue-01965.yaml
+  tags: issue-01965

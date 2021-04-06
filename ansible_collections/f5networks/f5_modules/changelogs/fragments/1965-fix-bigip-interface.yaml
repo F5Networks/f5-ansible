@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix issue where viprion platrform interfaces interface naming scheme prevented the use of module
