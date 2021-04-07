@@ -425,7 +425,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, None)
+        send_teem(start, self.client, self.module, None)
         return result
 
     def _announce_deprecations(self, result):

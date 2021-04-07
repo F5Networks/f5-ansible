@@ -6,7 +6,6 @@ destination2: foo.bar.com
 version1: 1
 version2: 2c
 network1: management
-network2: default
 network3: other
 community1: foo
 community2: bar

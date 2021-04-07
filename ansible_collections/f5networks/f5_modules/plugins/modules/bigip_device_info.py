@@ -7434,7 +7434,7 @@ class BaseManager(object):
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return results
 
 

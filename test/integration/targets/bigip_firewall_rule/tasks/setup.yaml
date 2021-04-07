@@ -1,6 +1,6 @@
 ---
 
-- name: Provision necessary modules
+- name: Provision necessary modules - rule
   bigip_provision:
     name: afm
   tags:

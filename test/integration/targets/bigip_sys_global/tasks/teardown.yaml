@@ -10,4 +10,4 @@
     net_reboot: no
     quiet_boot: yes
     security_banner: yes
-  register: result
+

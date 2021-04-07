@@ -619,7 +619,7 @@ class V2Manager(BaseManager):
         result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
         self._announce_warnings(result)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def execute_on_device(self, commands):

@@ -218,10 +218,14 @@ class TestV2Manager(unittest.TestCase):
         self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_server.tmos_version')
         self.m2 = self.p2.start()
         self.m2.return_value = '13.0.0'
+        self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_server.send_teem')
+        self.m3 = self.p3.start()
+        self.m3.return_value = True
 
     def tearDown(self):
         self.p1.stop()
         self.p2.stop()
+        self.p3.stop()
 
     def test_create(self, *args):
         set_module_args(dict(

@@ -11,98 +11,98 @@
 #  Unavailable (Enabled) - The DNS server(s) are available; No records returned 2017-09-26 22:08:38
 #
 
-- name: Create present node
+- name: Create present node - statuses
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: present
   register: result
 
-- name: Assert Create present node
+- name: Assert Create present node - statuses
   assert:
     that:
       - result is changed
 
-- name: Create present node - Idempotent check
+- name: Create present node - Idempotent check - statuses
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: present
   register: result
 
-- name: Assert Create present node - Idempotent check
+- name: Assert Create present node - Idempotent check - statuses
   assert:
     that:
       - result is not changed
 
-- name: Create enabled node
+- name: Create enabled node - statuses
   bigip_node:
     fqdn: google.com
     name: google.com
     state: enabled
   register: result
 
-- name: Assert Create enabled node
+- name: Assert Create enabled node - statuses
   assert:
     that:
       - result is changed
 
-- name: Create enabled node - Idempotent check
+- name: Create enabled node - Idempotent check - statuses
   bigip_node:
     fqdn: google.com
     name: google.com
     state: enabled
   register: result
 
-- name: Assert Create enabled node - Idempotent check
+- name: Assert Create enabled node - Idempotent check - statuses
   assert:
     that:
       - result is not changed
 
-- name: Create disabled node
+- name: Create disabled node - statuses
   bigip_node:
     fqdn: mit.edu
     name: mit.edu
     state: disabled
   register: result
 
-- name: Assert Create disabled node
+- name: Assert Create disabled node - statuses
   assert:
     that:
       - result is changed
 
-- name: Create disabled node - Idempotent check
+- name: Create disabled node - Idempotent check - statuses
   bigip_node:
     fqdn: mit.edu
     name: mit.edu
     state: disabled
   register: result
 
-- name: Assert Create disabled node - Idempotent check
+- name: Assert Create disabled node - Idempotent check - statuses
   assert:
     that:
       - result is not changed
 
-- name: Create offline node
+- name: Create offline node - statuses
   bigip_node:
     fqdn: apple.com
     name: apple.com
     state: offline
   register: result
 
-- name: Assert Create offline node
+- name: Assert Create offline node - statuses
   assert:
     that:
       - result is changed
 
-- name: Create offline node - Idempotent check
+- name: Create offline node - Idempotent check - statuses
   bigip_node:
     fqdn: apple.com
     name: apple.com
     state: offline
   register: result
 
-- name: Assert Create offline node - Idempotent check
+- name: Assert Create offline node - Idempotent check - statuses
   assert:
     that:
       - result is not changed
@@ -112,7 +112,7 @@
 - import_tasks: status-offline.yaml
 - import_tasks: status-present.yaml
 
-- name: Remove nodes
+- name: Remove nodes - statuses
   bigip_node:
     name: "{{ item }}"
     state: absent

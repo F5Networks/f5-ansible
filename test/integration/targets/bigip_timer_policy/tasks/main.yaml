@@ -339,7 +339,7 @@
           - 443
           - 80
       - name: rule2
-        protocol: 200
+        protocol: udp
       - name: rule3
         protocol: sctp
         idle_timeout: 200
@@ -364,7 +364,7 @@
           - 443
           - 80
       - name: rule2
-        protocol: 200
+        protocol: udp
       - name: rule3
         protocol: sctp
         idle_timeout: 200

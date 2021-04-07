@@ -824,7 +824,7 @@ class ModuleManager(object):
             result.update(output)
         if changed:
             result['changed'] = True
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def merge_defaults_for_aggregate(self, params):

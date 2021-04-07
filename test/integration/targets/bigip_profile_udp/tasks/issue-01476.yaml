@@ -5,6 +5,7 @@
     name: test-0-timeout-01476
     parent: /Common/udp
     idle_timeout: '0'
+  register: result
 
 - name: Issue 01476 - Assert Create UDP profile with timeout 0
   assert:
@@ -17,6 +18,7 @@
     name: test-0-timeout-01476
     parent: /Common/udp
     idle_timeout: '0'
+  register: result
 
 - name: Issue 01476 - Assert Create UDP profile with timeout 0 - Idempotent check
   assert:

@@ -890,6 +890,7 @@ import os
 import re
 from collections import namedtuple
 from datetime import datetime
+from distutils.version import LooseVersion
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -1225,6 +1226,9 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     def _read_sip_profiles_from_device(self):
+        version = tmos_version(self.client)
+        if LooseVersion(version) < LooseVersion('14.0.0'):
+            return []
         uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/sip/profile/session/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -3396,7 +3400,7 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def present(self):

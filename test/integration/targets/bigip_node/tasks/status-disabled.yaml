@@ -2,163 +2,163 @@
 
 # Test changing status to other status' from the `present` status
 
-- name: Reset node to disabled
+- name: Reset node to disabled - status-disabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: disabled
   register: result
 
-- name: Change node to enabled
+- name: Change node to enabled - status-disabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: enabled
   register: result
 
-- name: Assert Change node to enabled
+- name: Assert Change node to enabled - status-disabled
   assert:
     that:
       - result is changed
 
-- name: Reset node to disabled
+- name: Reset node to disabled - status-disabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: disabled
   register: result
 
-- name: Change node to offline
+- name: Change node to offline - status-disabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: offline
   register: result
 
-- name: Assert Change node to offline
+- name: Assert Change node to offline - status-disabled
   assert:
     that:
       - result is changed
 
-- name: Reset node to disabled
+- name: Reset node to disabled - status-disabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: disabled
   register: result
 
-- name: Change node to present
+- name: Change node to present - status-disabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: present
   register: result
 
-- name: Assert Change node to present
+- name: Assert Change node to present - status-disabled
   assert:
     that:
       - result is changed
 
-- name: Create disabled node - address
+- name: Create disabled node - address - status-disabled
   bigip_node:
     address: 8.8.8.8
     name: google-public-dns-a.google.com
     state: disabled
   register: result
 
-- name: Change node to enabled
+- name: Change node to enabled - status-disabled
   bigip_node:
     name: google-public-dns-a.google.com
     state: enabled
   register: result
 
-- name: Assert Change node to enabled
+- name: Assert Change node to enabled - status-disabled
   assert:
     that:
       - result is changed
 
-- name: Reset node to disabled
+- name: Reset node to disabled - status-disabled
   bigip_node:
     name: google-public-dns-a.google.com
     state: disabled
   register: result
 
-- name: Change node to offline
+- name: Change node to offline - status-disabled
   bigip_node:
     name: google-public-dns-a.google.com
     state: offline
   register: result
 
-- name: Assert Change node to offline
+- name: Assert Change node to offline - status-disabled
   assert:
     that:
       - result is changed
 
-- name: Reset node to disabled
+- name: Reset node to disabled - status-disabled
   bigip_node:
     name: google-public-dns-a.google.com
     state: disabled
   register: result
 
-- name: Change node to present
+- name: Change node to present - status-disabled
   bigip_node:
     name: google-public-dns-a.google.com
     state: present
   register: result
 
-- name: Assert Change node to present
+- name: Assert Change node to present - status-disabled
   assert:
     that:
       - result is changed
 
-- name: Create disabled node - IPv6 address
+- name: Create disabled node - IPv6 address - status-disabled
   bigip_node:
     address: "2600:1409:a:186::255e"
     name: mit-v6
     state: disabled
   register: result
 
-- name: Change node to enabled
+- name: Change node to enabled - status-disabled
   bigip_node:
     name: mit-v6
     state: enabled
   register: result
 
-- name: Assert Change node to enabled
+- name: Assert Change node to enabled - status-disabled
   assert:
     that:
       - result is changed
 
-- name: Reset node to disabled
+- name: Reset node to disabled - status-disabled
   bigip_node:
     name: mit-v6
     state: disabled
   register: result
 
-- name: Change node to offline
+- name: Change node to offline - status-disabled
   bigip_node:
     name: mit-v6
     state: offline
   register: result
 
-- name: Assert Change node to offline
+- name: Assert Change node to offline - status-disabled
   assert:
     that:
       - result is changed
 
-- name: Reset node to disabled
+- name: Reset node to disabled - status-disabled
   bigip_node:
     name: mit-v6
     state: disabled
   register: result
 
-- name: Change node to present
+- name: Change node to present - status-disabled
   bigip_node:
     name: mit-v6
     state: present
   register: result
 
-- name: Assert Change node to present
+- name: Assert Change node to present - status-disabled
   assert:
     that:
       - result is changed

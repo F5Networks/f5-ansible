@@ -1,6 +1,6 @@
 ---
 
-- name: Issue-00732 - Create node - auto populate yes
+- name: Issue 00732 - Create node - auto populate yes
   bigip_node:
     fqdn: "{{ node_host_fqdn }}1"
     name: "{{ node_name }}1"
@@ -8,13 +8,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - auto populate yes
+- name: Issue 00732 - Assert Create node - auto populate yes
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue-00732 - Create node - auto populate yes - Idempotent check
+- name: Issue 00732 - Create node - auto populate yes - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}1"
     name: "{{ node_name }}1"
@@ -22,13 +22,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - auto populate yes - Idempotent check
+- name: Issue 00732 - Assert Create node - auto populate yes - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue-00732 - Create node - auto populate no
+- name: Issue 00732 - Create node - auto populate no
   bigip_node:
     fqdn: "{{ node_host_fqdn }}2"
     name: "{{ node_name }}2"
@@ -36,13 +36,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - auto populate no
+- name: Issue 00732 - Assert Create node - auto populate no
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue-00732 - Create node - auto populate no - Idempotent check
+- name: Issue 00732 - Create node - auto populate no - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}2"
     name: "{{ node_name }}2"
@@ -50,13 +50,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - auto populate no - Idempotent check
+- name: Issue 00732 - Assert Create node - auto populate no - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue-00732 - Create node - address type ipv4
+- name: Issue 00732 - Create node - address type ipv4
   bigip_node:
     fqdn: "{{ node_host_fqdn }}3"
     name: "{{ node_name }}3"
@@ -64,13 +64,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - address type ipv4
+- name: Issue 00732 - Assert Create node - address type ipv4
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue-00732 - Create node - address type ipv4 - Idempotent check
+- name: Issue 00732 - Create node - address type ipv4 - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}3"
     name: "{{ node_name }}3"
@@ -78,13 +78,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - address type ipv4 - Idempotent check
+- name: Issue 00732 - Assert Create node - address type ipv4 - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue-00732 - Create node - address type ipv6
+- name: Issue 00732 - Create node - address type ipv6
   bigip_node:
     fqdn: "{{ node_host_fqdn }}4"
     name: "{{ node_name }}4"
@@ -92,13 +92,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - address type ipv6
+- name: Issue 00732 - Assert Create node - address type ipv6
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue-00732 - Create node - address type ipv6 - Idempotent check
+- name: Issue 00732 - Create node - address type ipv6 - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}4"
     name: "{{ node_name }}4"
@@ -106,13 +106,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - address type ipv6 - Idempotent check
+- name: Issue 00732 - Assert Create node - address type ipv6 - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue-00732 - Create node - address type all
+- name: Issue 00732 - Create node - address type all
   bigip_node:
     fqdn: "{{ node_host_fqdn }}5"
     name: "{{ node_name }}5"
@@ -120,13 +120,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - address type all
+- name: Issue 00732 - Assert Create node - address type all
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue-00732 - Create node - address type all - Idempotent check
+- name: Issue 00732 - Create node - address type all - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}5"
     name: "{{ node_name }}5"
@@ -134,13 +134,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - address type all - Idempotent check
+- name: Issue 00732 - Assert Create node - address type all - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue-00732 - Create node - up interval number
+- name: Issue 00732 - Create node - up interval number
   bigip_node:
     fqdn: "{{ node_host_fqdn }}6"
     name: "{{ node_name }}6"
@@ -148,13 +148,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - up interval number
+- name: Issue 00732 - Assert Create node - up interval number
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue-00732 - Create node - up interval number - Idempotent check
+- name: Issue 00732 - Create node - up interval number - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}6"
     name: "{{ node_name }}6"
@@ -162,13 +162,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - up interval number - Idempotent check
+- name: Issue 00732 - Assert Create node - up interval number - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue-00732 - Create node - up interval ttl
+- name: Issue 00732 - Create node - up interval ttl
   bigip_node:
     fqdn: "{{ node_host_fqdn }}7"
     name: "{{ node_name }}7"
@@ -176,13 +176,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - up interval ttl
+- name: Issue 00732 - Assert Create node - up interval ttl
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue-00732 - Create node - up interval ttl - Idempotent check
+- name: Issue 00732 - Create node - up interval ttl - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}7"
     name: "{{ node_name }}7"
@@ -190,13 +190,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - up interval ttl - Idempotent check
+- name: Issue 00732 - Assert Create node - up interval ttl - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue-00732 - Create node - down interval number
+- name: Issue 00732 - Create node - down interval number
   bigip_node:
     fqdn: "{{ node_host_fqdn }}8"
     name: "{{ node_name }}8"
@@ -204,13 +204,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - down interval number
+- name: Issue 00732 - Assert Create node - down interval number
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue-00732 - Create node - down interval number - Idempotent check
+- name: Issue 00732 - Create node - down interval number - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}8"
     name: "{{ node_name }}8"
@@ -218,26 +218,26 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Create node - down interval number - Idempotent check
+- name: Issue 00732 - Assert Create node - down interval number - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue-00732 - Remove nodes
+- name: Issue 00732 - Remove nodes
   bigip_node:
     name: "{{ node_name }}{{ item }}"
     state: absent
   with_sequence: start=1 end=8
 
-- name: Issue-00732 - Create default node for changing
+- name: Issue 00732 - Create default node for changing
   bigip_node:
     fqdn: "{{ node_host_fqdn }}"
     name: "{{ node_name }}"
     state: present
   register: result
 
-- name: Issue-00732 - Change fqdn_address_type - EXPECTED FAILURE
+- name: Issue 00732 - Change fqdn_address_type - EXPECTED FAILURE
   bigip_node:
     fqdn: "{{ node_host_fqdn }}"
     name: "{{ node_name }}"
@@ -246,14 +246,14 @@
   register: result
   failed_when: result is success
 
-- name: Issue-00732 - Assert Change fqdn_address_type - EXPECTED FAILURE
+- name: Issue 00732 - Assert Change fqdn_address_type - EXPECTED FAILURE
   assert:
     that:
       - result is success
       - result is not changed
       - "\"The 'fqdn_address_type' parameter cannot be changed.\" in result.msg"
 
-- name: Issue-00732 - Change fqdn_auto_populate - EXPECTED FAILURE
+- name: Issue 00732 - Change fqdn_auto_populate - EXPECTED FAILURE
   bigip_node:
     fqdn: "{{ node_host_fqdn }}"
     name: "{{ node_name }}"
@@ -262,14 +262,14 @@
   register: result
   failed_when: result is success
 
-- name: Issue-00732 - Assert Change fqdn_auto_populate - EXPECTED FAILURE
+- name: Issue 00732 - Assert Change fqdn_auto_populate - EXPECTED FAILURE
   assert:
     that:
       - result is success
       - result is not changed
       - "\"The 'fqdn_auto_populate' parameter cannot be changed.\" in result.msg"
 
-- name: Issue-00732 - Change fqdn_up_interval
+- name: Issue 00732 - Change fqdn_up_interval
   bigip_node:
     fqdn: "{{ node_host_fqdn }}"
     name: "{{ node_name }}"
@@ -277,13 +277,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Change fqdn_up_interval
+- name: Issue 00732 - Assert Change fqdn_up_interval
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Issue-00732 - Change fqdn_up_interval - Idempotent check
+- name: Issue 00732 - Change fqdn_up_interval - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}"
     name: "{{ node_name }}"
@@ -291,13 +291,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Change fqdn_up_interval - Idempotent check
+- name: Issue 00732 - Assert Change fqdn_up_interval - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Issue-00732 - Change fqdn_down_interval
+- name: Issue 00732 - Change fqdn_down_interval
   bigip_node:
     fqdn: "{{ node_host_fqdn }}"
     name: "{{ node_name }}"
@@ -305,13 +305,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Change fqdn_down_interval
+- name: Issue 00732 - Assert Change fqdn_down_interval
   assert:
     that:
       - result is success
       - result is changed
 
-- name: Issue-00732 - Change fqdn_down_interval - Idempotent check
+- name: Issue 00732 - Change fqdn_down_interval - Idempotent check
   bigip_node:
     fqdn: "{{ node_host_fqdn }}"
     name: "{{ node_name }}"
@@ -319,14 +319,13 @@
     state: present
   register: result
 
-- name: Issue-00732 - Assert Change fqdn_down_interval - Idempotent check
+- name: Issue 00732 - Assert Change fqdn_down_interval - Idempotent check
   assert:
     that:
       - result is success
       - result is not changed
 
-- name: Remove node being changed
+- name: Issue 00732 - Remove node being changed
   bigip_node:
     name: "{{ node_name }}"
     state: absent
-  register: result

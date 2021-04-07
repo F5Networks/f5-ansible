@@ -438,7 +438,6 @@ class F5BaseClient(object):
         self.merge_provider_user_param(result, provider)
         self.merge_provider_password_param(result, provider)
         self.merge_provider_no_f5_teem_param(result, provider)
-
         return result
 
     def merge_provider_server_param(self, result, provider):
@@ -517,8 +516,15 @@ class F5BaseClient(object):
             result['no_f5_teem'] = provider['no_f5_teem']
         elif self.validate_params('F5_TEEM', os.environ):
             result['no_f5_teem'] = os.environ['F5_TEEM']
+        elif self.validate_params('F5_TELEMETRY_OFF', os.environ):
+            result['no_f5_teem'] = os.environ['F5_TELEMETRY_OFF']
         else:
-            result['no_f5_teem'] = None
+            result['no_f5_teem'] = False
+
+        if result['no_f5_teem'] in BOOLEANS_TRUE:
+            result['no_f5_teem'] = True
+        else:
+            result['no_f5_teem'] = False
 
 
 class AnsibleF5Parameters(object):

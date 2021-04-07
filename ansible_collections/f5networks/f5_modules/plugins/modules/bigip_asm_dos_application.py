@@ -849,6 +849,8 @@ class ReportableChanges(Changes):
     ]
 
     def _convert_include_list(self, items):
+        if items is None:
+            return None
         result = list()
         for item in items:
             element = dict()
@@ -1058,7 +1060,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def version_less_than_13_1(self):

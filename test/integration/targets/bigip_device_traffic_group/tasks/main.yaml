@@ -4,7 +4,7 @@
 
 - name: Create a traffic group
   bigip_device_traffic_group:
-    name: foo
+    name: foobaz
   register: result
 
 - name: Assert Create a traffic group
@@ -14,7 +14,7 @@
 
 - name: Create a traffic group - Idempotent check
   bigip_device_traffic_group:
-    name: foo
+    name: foobaz
   register: result
 
 - name: Assert Create a traffic group - Idempotent check
@@ -24,7 +24,7 @@
 
 - name: Remove traffic group
   bigip_device_traffic_group:
-    name: foo
+    name: foobaz
     state: absent
   register: result
 
@@ -35,7 +35,7 @@
 
 - name: Remove traffic group - Idempotent check
   bigip_device_traffic_group:
-    name: foo
+    name: foobaz
     state: absent
   register: result
 

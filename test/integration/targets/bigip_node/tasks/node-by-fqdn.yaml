@@ -1,4 +1,8 @@
 ---
+- name: Setup DNS - FQDN
+  bigip_device_dns:
+    name_servers:
+      - 172.27.1.1
 
 - name: Create node - FQDN
   bigip_node:

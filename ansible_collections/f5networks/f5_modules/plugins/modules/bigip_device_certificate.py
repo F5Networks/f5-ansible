@@ -253,7 +253,6 @@ from ansible.module_utils.connection import exec_command
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, is_cli, f5_argument_spec
 )
-from ..module_utils.teem import send_teem
 
 
 class Parameters(AnsibleF5Parameters):
@@ -395,7 +394,6 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
-        start = datetime.now().isoformat()
         if not is_cli(self.module):
             raise F5ModuleError('Module can only be run via SSH, set the transport property to CLI')
 
@@ -407,7 +405,6 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        send_teem(start, self.module, None)
         return result
 
     def present(self):

@@ -219,17 +219,17 @@ class ModuleParameters(Parameters):
         for rule in self._values['rules']:
             result = dict()
             result['name'] = rule['name']
-            if 'protocol' in rule:
+            if 'protocol' in rule and rule['protocol']:
                 result['protocol'] = str(rule['protocol'])
             else:
                 result['protocol'] = 'all-other'
 
-            if 'idle_timeout' in rule:
+            if 'idle_timeout' in rule and rule['idle_timeout']:
                 result['idle_timeout'] = str(rule['idle_timeout'])
             else:
                 result['idle_timeout'] = 'unspecified'
 
-            if 'destination_ports' in rule:
+            if 'destination_ports' in rule and rule['destination_ports']:
                 ports = list(set([str(x) for x in rule['destination_ports']]))
                 ports.sort()
                 ports = [str(self._validate_port_entries(x)) for x in ports]
@@ -279,7 +279,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -425,7 +425,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def _announce_deprecations(self, result):
