@@ -233,6 +233,7 @@ max_size:
   type: bool
   sample: no
 '''
+import q
 from datetime import datetime
 
 from ansible.module_utils.basic import (
@@ -638,12 +639,15 @@ class ModuleManager(object):
         return True
 
     def exists(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/sip/profile/session/{2}".format(
+        #uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.get(uri)
+        q(resp)
+        q(uri)
         try:
             response = resp.json()
         except ValueError as ex:
@@ -666,13 +670,17 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
-        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/sip/profile/session/".format(
+        #uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
         resp = self.client.api.post(uri, json=params)
+        q(resp)
+        q(uri)
         try:
             response = resp.json()
+            q(response)
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
@@ -681,18 +689,24 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+        q("-----------------no error in create")
+
         return True
 
     def update_on_device(self):
         params = self.changes.api_params()
-        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/sip/profile/session/{2}".format(
+        #uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.patch(uri, json=params)
+        q(resp)
+        q(uri)
         try:
             response = resp.json()
+            q(response)
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
@@ -701,27 +715,35 @@ class ModuleManager(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-
+        q("---------------------- no error on update")
     def remove_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/{2}".format(
+        q("--------------------in remove function")
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/sip/profile/session/{2}".format(
+        #uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
         response = self.client.api.delete(uri)
+        q(response)
+        q(uri)
         if response.status == 200:
             return True
         raise F5ModuleError(response.content)
 
     def read_current_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/{2}".format(
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/sip/profile/session/{2}".format(
+        #uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
         resp = self.client.api.get(uri)
+        q(resp)
+        q(uri)
         try:
             response = resp.json()
+            q(response)
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 

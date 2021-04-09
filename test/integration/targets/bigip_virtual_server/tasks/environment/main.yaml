@@ -18,14 +18,6 @@
 - import_tasks: teardown.yaml
 
 # Tests for different issues filed on Github
-- import_tasks: issue-00032.yaml
-  tags: issue-00032
-
-- import_tasks: issue-00038.yaml
-  tags: issue-00038
-
-- import_tasks: issue-00044.yaml
-  tags: issue-00044
 
 - import_tasks: issue-00053.yaml
   tags: issue-00053

@@ -39,13 +39,11 @@
   any_errors_fatal: true
 
   environment:
-    F5_SERVER: "{{ ansible_host }}"
-    F5_USER: "{{ bigip_username }}"
-    F5_PASSWORD: "{{ bigip_password }}"
-    F5_SERVER_PORT: "{{ bigip_port }}"
-    F5_VALIDATE_CERTS: "{{ validate_certs }}"
-    F5_TEEM: "{{ no_f5_teem }}"
-
+    F5_SERVER: "10.144.73.197"
+    F5_USER: "admin"
+    F5_PASSWORD: "F5site02"
+    F5_VALIDATE_CERTS: "no"
+    F5_SERVER_PORT: "443"  
   tasks:
     - name: Include role - Environment
       import_role:
@@ -63,12 +61,11 @@
     limit_to: '*'
     provider:
       transport: rest
-      user: "{{ bigip_username }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      no_f5_teem: "{{ no_f5_teem }}"
+      user: "admin"
+      server: "10.144.73.197"
+      password: "F5site02"
+      server_port: "443"
+      validate_certs: "no"
 
   tasks:
     - name: Include role - Environment

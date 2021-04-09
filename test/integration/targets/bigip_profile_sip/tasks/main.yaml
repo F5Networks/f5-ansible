@@ -5,7 +5,7 @@
 - name: Create a SIP profile
   bigip_profile_sip:
     name: foo
-    parent: sip
+    parent: sipsession
     log_profile: "alg_log_profile"
     log_publisher: "local-db-publisher"
     description: "this is a new profile"
