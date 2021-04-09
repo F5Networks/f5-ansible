@@ -1243,7 +1243,6 @@ class Parameters(AnsibleF5Parameters):
         result = [x['name'] for x in response['items']]
         return result
 
-
     def _read_current_fastl4_profiles_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/profile/fastl4/".format(
             self.client.provider['server'],
