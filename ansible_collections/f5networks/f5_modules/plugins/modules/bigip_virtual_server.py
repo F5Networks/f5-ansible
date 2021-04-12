@@ -1183,6 +1183,7 @@ class Parameters(AnsibleF5Parameters):
         result = []
         result += self._read_diameter_profiles_from_device()
         result += self._read_sip_profiles_from_device()
+        result += self._read_legacy_sip_profiles_from_device()
         return result
 
     def _read_diameter_profiles_from_device(self):
@@ -1204,8 +1205,27 @@ class Parameters(AnsibleF5Parameters):
         result = [x['name'] for x in response['items']]
         return result
 
-    def _read_sip_profiles_from_device(self):
+    def _read_legacy_sip_profiles_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/profile/sip/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp.content)
+        result = [x['name'] for x in response['items']]
+        return result
+
+    def _read_sip_profiles_from_device(self):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/sip/profile/session/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
