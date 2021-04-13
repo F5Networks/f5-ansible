@@ -999,7 +999,7 @@ class BaseManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def _announce_deprecations(self, result):
@@ -1255,9 +1255,30 @@ class NetworkSecurityManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
+        # in v15 and v16 new dos profiles do not have the vector family set so we need to "create" vector container
+        # on 404 response
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            self.create_vector_container_on_device()
+            return self.read_current_from_device()
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             return response.get('networkAttackVector', [])
+        raise F5ModuleError(resp.content)
+
+    def create_vector_container_on_device(self):
+        params = {"name": self.want.profile}
+        uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/dos-network/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.profile)
+        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
         raise F5ModuleError(resp.content)
 
 
@@ -1314,9 +1335,31 @@ class ProtocolDnsManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
+        # in v15 and v16 new dos profiles do not have the vector family set so we need to "create" vector container
+        # on 404 response
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            self.create_vector_container_on_device()
+            return self.read_current_from_device()
 
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             return response.get('dnsQueryVector', [])
+        raise F5ModuleError(resp.content)
+
+    def create_vector_container_on_device(self):
+        params = {"name": self.want.profile}
+        uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/protocol-dns/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.profile)
+        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
         raise F5ModuleError(resp.content)
 
 
@@ -1373,9 +1416,31 @@ class ProtocolSipManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
+        # in v15 and v16 new dos profiles do not have the vector family set so we need to "create" vector container
+        # on 404 response
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            self.create_vector_container_on_device()
+            return self.read_current_from_device()
 
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             return response.get('sipAttackVector', [])
+        raise F5ModuleError(resp.content)
+
+    def create_vector_container_on_device(self):
+        params = {"name": self.want.profile}
+        uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/protocol-sip/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            transform_name(self.want.partition, self.want.profile)
+        )
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
         raise F5ModuleError(resp.content)
 
 

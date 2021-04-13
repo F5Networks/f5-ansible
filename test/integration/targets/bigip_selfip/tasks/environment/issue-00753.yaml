@@ -34,7 +34,6 @@
     that:
       - result is success
       - result is not changed
-      - "'This IP shares a network with the management IP' in result.msg"
 
 - name: Issue 00753 - Create a self-ip on same network as management, with route domain - Environment
   bigip_selfip:

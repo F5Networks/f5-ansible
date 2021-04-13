@@ -580,7 +580,7 @@ class BaseManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def _announce_deprecations(self, result):

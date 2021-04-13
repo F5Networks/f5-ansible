@@ -45,26 +45,6 @@
     that:
       - result is not changed
 
-- name: Set the gui setup
-  bigip_sys_global:
-    gui_setup: "{{ gui_setup }}"
-  register: result
-
-- name: Assert Set the gui setup
-  assert:
-    that:
-      - result is changed
-
-- name: Set the gui setup - Idempotent check
-  bigip_sys_global:
-    gui_setup: "{{ gui_setup }}"
-  register: result
-
-- name: Assert the gui setup - Idempotent check
-  assert:
-    that:
-      - result is not changed
-
 - name: Set the lcd display
   bigip_sys_global:
     lcd_display: "{{ lcd_display }}"
@@ -81,26 +61,6 @@
   register: result
 
 - name: Assert the lcd display - Idempotent check
-  assert:
-    that:
-      - result is not changed
-
-- name: Set the mgmt dhcp
-  bigip_sys_global:
-    mgmt_dhcp: "{{ mgmt_dhcp }}"
-  register: result
-
-- name: Assert Set the mgmt dhcp
-  assert:
-    that:
-      - result is changed
-
-- name: Set the mgmt dhcp - Idempotent check
-  bigip_sys_global:
-    mgmt_dhcp: "{{ mgmt_dhcp }}"
-  register: result
-
-- name: Assert the mgmt dhcp - Idempotent check
   assert:
     that:
       - result is not changed

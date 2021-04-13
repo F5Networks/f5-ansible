@@ -92,7 +92,7 @@
 - import_tasks: issue-01859.yaml
   tags: issue-01859
 
-- import_tasks: teardown.yaml
-
 - import_tasks: issue-01888.yaml
   tags: issue-01888
+
+- import_tasks: teardown.yaml

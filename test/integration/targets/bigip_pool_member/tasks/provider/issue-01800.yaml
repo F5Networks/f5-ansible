@@ -11,6 +11,7 @@
     fqdn: google.com
     port: 80
     provider: "{{ provider }}"
+  register: result
 
 - name: Issue 01800 - Assert Create pool member
   assert:
@@ -24,6 +25,7 @@
     fqdn: google.com
     port: 80
     provider: "{{ provider }}"
+  register: result
 
 - name: Issue 01800 - Assert Create pool member - Idempotent check
   assert:

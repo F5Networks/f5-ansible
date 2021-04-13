@@ -2004,11 +2004,12 @@ class Difference(object):
 
     def _compare_complex_actions(self):
         types = ['insert', 'remove', 'replace']
-        want = [item for item in self.want.actions if item['type'] in types]
-        have = [item for item in self.have.actions if item['type'] in types]
-        result = compare_complex_list(want, have)
-        if result:
-            return True
+        if self.want.actions:
+            want = [item for item in self.want.actions if item['type'] in types]
+            have = [item for item in self.have.actions if item['type'] in types]
+            result = compare_complex_list(want, have)
+            if result:
+                return True
         return False
 
 
@@ -2060,7 +2061,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def _announce_deprecations(self, result):
@@ -2199,12 +2200,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def publish_on_device(self):
         params = dict(
@@ -2225,12 +2223,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return True
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -2246,12 +2241,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return response['selfLink']
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -2267,11 +2259,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/policy/{2}/rules/{3}".format(
@@ -2307,12 +2297,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return ApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return ApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
 
 class ArgumentSpec(object):

@@ -233,7 +233,7 @@
     state: present
   register: result
 
-- name: Add pool member by FQDN - Idempotent check
+- name: Assert Add pool member by FQDN - Idempotent check
   assert:
     that:
       - result is not changed
@@ -261,7 +261,7 @@
     state: present
   register: result
 
-- name: Add pool member by FQDN, setting the node name - Idempotent check
+- name: Assert Add pool member by FQDN, setting the node name - Idempotent check
   assert:
     that:
       - result is not changed
@@ -289,7 +289,7 @@
     state: present
   register: result
 
-- name: Add pool member by address, setting the node name - Idempotent check
+- name: Assert Add pool member by address, setting the node name - Idempotent check
   assert:
     that:
       - result is not changed

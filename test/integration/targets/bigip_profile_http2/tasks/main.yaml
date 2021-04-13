@@ -2,7 +2,7 @@
 
 - import_tasks: setup.yaml
 
-- name: Create HTTP profile
+- name: Create HTTP2 profile
   bigip_profile_http2:
     name: "{{ profile_1 }}"
   register: result

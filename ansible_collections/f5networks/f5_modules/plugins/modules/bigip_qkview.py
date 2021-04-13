@@ -72,6 +72,8 @@ notes:
     should be aware of how these Ansible products execute jobs in restricted
     environments. More information can be found here
     https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
+  - Some longer running tasks might cause the REST interface on BIG-IP to time out, to avoid this adjust the timers as
+    per this KB article https://support.f5.com/csp/article/K94602685
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -258,7 +260,7 @@ class BaseManager(object):
 
         result.update(**self.changes.to_return())
         result.update(dict(changed=False))
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def present(self):

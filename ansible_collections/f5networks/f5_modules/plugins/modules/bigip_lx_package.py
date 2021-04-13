@@ -223,7 +223,7 @@ class ModuleManager(object):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def present(self):

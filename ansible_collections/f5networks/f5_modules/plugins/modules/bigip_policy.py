@@ -586,7 +586,7 @@ class SimpleManager(BaseManager):
         result.update(dict(changed=changed))
         self._announce_deprecations()
         self._announce_warnings()
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def create(self):
@@ -775,7 +775,7 @@ class ComplexManager(BaseManager):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def should_update(self):

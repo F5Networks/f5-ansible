@@ -1,4 +1,11 @@
 ---
+
+- name: Issue 01888 - Provision ASM
+  bigip_provision:
+    name: asm
+  tags:
+    - module-provisioning
+
 - name: Issue 01888 - Create ASM policies
   bigip_asm_policy_manage:
     name: "{{ item }}"
