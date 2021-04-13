@@ -125,9 +125,9 @@ def generate_asset_id(seed):
     return result
 
 
-def send_teem(start_time, module, version=None):
+def send_teem(start_time, client, module, version=None):
     """ Sends Teem Data if allowed."""
-    if module.params['provider']['no_f5_teem'] is True:
+    if client.provider['no_f5_teem'] is True:
         return False
     teem = TeemClient(start_time, module, version)
     teem.send()

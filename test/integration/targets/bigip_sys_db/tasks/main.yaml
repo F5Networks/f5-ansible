@@ -1,67 +1,67 @@
 ---
 
-- name: Set setup.run variable "on"
+- name: Set failover.linksup variable "off"
   bigip_sys_db:
     key: "{{ bigip_sys_db_key_1 }}"
     value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
-- name: Assert Set setup.run variable
+- name: Assert Set failover.linksup variable
   assert:
     that:
       - result is changed
 
-- name: Set setup.run variable "on" - Idempotent check
+- name: Set failover.linksup variable "off" - Idempotent check
   bigip_sys_db:
     key: "{{ bigip_sys_db_key_1 }}"
     value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
-- name: Assert Set setup.run variable "on" - Idempotent check
+- name: Assert Set failover.linksup variable "off" - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set setup.run variable "off"
+- name: Set failover.linksup variable "on"
   bigip_sys_db:
     key: "{{ bigip_sys_db_key_1 }}"
     value: "{{ bigip_sys_db_val_2 }}"
   register: result
 
-- name: Assert Set setup.run variable "off"
+- name: Assert Set failover.linksup variable "on"
   assert:
     that:
       - result is changed
 
-- name: Set setup.run variable "off" - Idempotent check
+- name: Set failover.linksup variable "on" - Idempotent check
   bigip_sys_db:
     key: "{{ bigip_sys_db_key_1 }}"
     value: "{{ bigip_sys_db_val_2 }}"
   register: result
 
-- name: Assert Set setup.run variable "off" - Idempotent check
+- name: Assert Set failover.linksup variable "on" - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Reset setup.run variable
+- name: Reset failover.linksup variable
   bigip_sys_db:
     key: "{{ bigip_sys_db_key_1 }}"
     state: reset
   register: result
 
-- name: Assert Reset setup.run variable
+- name: Assert Reset failover.linksup variable
   assert:
     that:
       - result is changed
 
-- name: Reset setup.run variable - Idempotent check
+- name: Reset failover.linksup variable - Idempotent check
   bigip_sys_db:
     key: "{{ bigip_sys_db_key_1 }}"
     state: reset
   register: result
 
-- name: Assert Reset setup.run variable - Idempotent check
+- name: Assert Reset failover.linksup variable - Idempotent check
   assert:
     that:
       - result is not changed

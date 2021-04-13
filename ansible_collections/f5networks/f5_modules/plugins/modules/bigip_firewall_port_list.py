@@ -302,6 +302,8 @@ class Changes(Parameters):
 class ReportableChanges(Changes):
     @property
     def ports(self):
+        if not self._values['ports']:
+            return None
         result = []
         for item in self._values['ports']:
             if '-' in item['name']:
@@ -311,6 +313,8 @@ class ReportableChanges(Changes):
 
     @property
     def port_ranges(self):
+        if not self._values['ports']:
+            return None
         result = []
         for item in self._values['ports']:
             if '-' not in item['name']:
@@ -464,7 +468,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def _announce_deprecations(self, result):

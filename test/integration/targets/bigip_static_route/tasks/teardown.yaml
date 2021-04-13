@@ -5,7 +5,15 @@
     name: main-tests
     state: absent
 
-- name: Remove VLAN
-  bigip_vlan:
-    name: vlan1
+- name: Remove self-IP - ipv6
+  bigip_selfip:
+    name: main-tests-v6
     state: absent
+
+- name: Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+      - vlan1
+      - net1

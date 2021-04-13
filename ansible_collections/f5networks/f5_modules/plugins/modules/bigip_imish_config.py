@@ -459,7 +459,7 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def present(self):
@@ -573,7 +573,7 @@ class ModuleManager(object):
 
     def load_config(self, commands):
         # Add space to command list so that it won't chop last character from last command
-        commands = ['{} '.format(x) for x in commands]
+        commands = ['{0} '.format(x) for x in commands]
         content = StringIO("\n".join(commands))
 
         file = tempfile.NamedTemporaryFile()
@@ -834,8 +834,6 @@ def main():
         required_if=spec.required_if,
         add_file_common_args=spec.add_file_common_args,
     )
-
-    F5RestClient(**module.params)
 
     try:
         mm = ModuleManager(module=module)

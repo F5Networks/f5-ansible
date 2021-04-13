@@ -250,9 +250,9 @@ class ModuleParameters(Parameters):
                 addr = self._values['gateway_address']
                 ip_interface(u'%s' % str(addr))
                 if self.route_domain:
-                    result = str(addr) + '%' + str(self.route_domain)
+                    result = str(addr).lower() + '%' + str(self.route_domain)
                     return result
-            return str(self._values['gateway_address'])
+            return str(self._values['gateway_address']).lower()
         except ValueError:
             raise F5ModuleError(
                 "The provided gateway_address is not an IP address"
@@ -488,7 +488,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def _announce_deprecations(self, result):

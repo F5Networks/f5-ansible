@@ -169,7 +169,7 @@ class ModuleManager(object):
 
         result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def execute(self):

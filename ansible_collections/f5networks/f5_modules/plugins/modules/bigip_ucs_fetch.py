@@ -14,9 +14,9 @@ short_description: Fetches a UCS file from remote nodes
 description:
    - This module is used for fetching UCS files from remote machines and
      storing them locally in a file tree, organized by hostname. This module
-     is written to transfer UCS files that might not be present,
-     so a missing remote UCS is not an error unless C(fail_on_missing) is
-     set to 'yes'.
+     is written to create and transfer UCS files that might not be present,
+     it does not require UCS file to be pre-created. So a missing remote UCS
+     is not an error unless C(fail_on_missing) is set to 'yes'.
 version_added: "1.0.0"
 options:
   backup:
@@ -71,6 +71,8 @@ notes:
     should be aware of how these Ansible products execute jobs in restricted
     environments. More information can be found here
     https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
+  - Some longer running tasks might cause the REST interface on BIG-IP to time out, to avoid this adjust the timers as
+    per this KB article https://support.f5.com/csp/article/K94602685
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -315,7 +317,7 @@ class BaseManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=True))
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def present(self):

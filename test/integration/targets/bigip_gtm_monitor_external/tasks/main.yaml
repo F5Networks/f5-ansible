@@ -327,7 +327,7 @@
     state: absent
   register: result
 
-- import_tasks: teardown.yaml
-
 - import_tasks: issue-01074.yaml
   tags: issue-01074
+
+- import_tasks: teardown.yaml

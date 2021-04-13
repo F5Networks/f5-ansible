@@ -2,59 +2,59 @@
 
 # Test changing status to other status' from the `present` status
 
-- name: Reset node to enabled
+- name: Reset node to enabled - status-enabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: enabled
   register: result
 
-- name: Change node to disabled
+- name: Change node to disabled - status-enabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: disabled
   register: result
 
-- name: Assert Change node to disabled
+- name: Assert Change node to disabled - status-enabled
   assert:
     that:
       - result is changed
 
-- name: Reset node to disabled
+- name: Reset node to disabled - status-enabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: enabled
   register: result
 
-- name: Change node to offline
+- name: Change node to offline - status-enabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: offline
   register: result
 
-- name: Assert Change node to offline
+- name: Assert Change node to offline - status-enabled
   assert:
     that:
       - result is changed
 
-- name: Reset node to enabled
+- name: Reset node to enabled - status-enabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: enabled
   register: result
 
-- name: Change node to present
+- name: Change node to present - status-enabled
   bigip_node:
     fqdn: microsoft.com
     name: microsoft.com
     state: present
   register: result
 
-- name: Assert Change node to present
+- name: Assert Change node to present - status-enabled
   assert:
     that:
       - result is not changed

@@ -552,8 +552,8 @@ class UsableChanges(Changes):
         members = self._values['region_members']
         if members is None:
             return None
-        if members == 'none':
-            return members
+        if not members:
+            return 'none'
         return ' '.join(members)
 
 
@@ -646,7 +646,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def present(self):

@@ -1,5 +1,5 @@
 ---
 
-bigip_sys_db_key_1: setup.run
-bigip_sys_db_val_1: 'true'
-bigip_sys_db_val_2: 'false'
+bigip_sys_db_key_1: failover.linksup
+bigip_sys_db_val_1: 'false'
+bigip_sys_db_val_2: 'true'

@@ -692,7 +692,7 @@ class ApiParameters(Parameters):
 
     @property
     def state(self):
-        if (self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up']
+        if (self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up', 'fqdn-down']
            and self._values['session'] in ['user-enabled']):
             return 'present'
         elif self._values['state'] in ['down', 'up', 'checking'] and self._values['session'] == 'monitor-enabled':
@@ -920,6 +920,7 @@ class Difference(object):
     def state(self):
         if self.want.state == self.have.state:
             return None
+        self.want.f
         if self.want.state == 'forced_offline':
             return {
                 'state': 'user-down',
@@ -1046,7 +1047,6 @@ class ModuleManager(object):
 
         result = dict()
         changed = False
-
         if self.replace_all_with and self.purge_links:
             self.purge()
             changed = True
@@ -1065,7 +1065,7 @@ class ModuleManager(object):
             result.update(output)
         if changed:
             result['changed'] = True
-        send_teem(start, self.module, version)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def merge_defaults_for_aggregate(self, params):
@@ -1152,7 +1152,6 @@ class ModuleManager(object):
         changed = False
         result = dict()
         state = params['state']
-
         if state in ['present', 'enabled', 'disabled', 'forced_offline']:
             changed = self.present()
         elif state == "absent":
@@ -1255,7 +1254,6 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
@@ -1395,14 +1393,11 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        if 'items' in response:
-            return response['items']
-        return []
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if 'items' in response:
+                return response['items']
+            return []
+        raise F5ModuleError(resp.content)
 
     def create_on_device(self):
         params = self.changes.api_params()
@@ -1420,11 +1415,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] in [400, 403]:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -1441,11 +1434,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return True
+        raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/ltm/pool/{2}/members/{3}".format(
@@ -1485,11 +1476,8 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         # Read the current list of tunnels so that IP encapsulation
         # checking can take place.
@@ -1511,12 +1499,9 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        return NodeApiParameters(params=response)
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            return NodeApiParameters(params=response)
+        raise F5ModuleError(resp.content)
 
     def read_current_tunnels_from_device(self, tunnel_type):
         uri = "https://{0}:{1}/mgmt/tm/net/tunnels/{2}".format(
@@ -1530,14 +1515,11 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
-        if 'items' not in response:
-            return []
-        return [x['fullPath'] for x in response['items']]
+        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+            if 'items' not in response:
+                return []
+            return [x['fullPath'] for x in response['items']]
+        raise F5ModuleError(resp.content)
 
     def _prepare_links(self, collection):
         # this is to ensure no duplicates are in the provided collection
@@ -1566,11 +1548,8 @@ class ModuleManager(object):
                 except ValueError as ex:
                     raise F5ModuleError(str(ex))
 
-                if 'code' in response and response['code'] == 400:
-                    if 'message' in response:
-                        raise F5ModuleError(response['message'])
-                    else:
-                        raise F5ModuleError(resp.content)
+                if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+                    raise F5ModuleError(resp.content)
         return True
 
 

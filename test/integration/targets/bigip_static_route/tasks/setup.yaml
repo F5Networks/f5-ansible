@@ -2,12 +2,22 @@
 
 - name: Create VLAN
   bigip_vlan:
-    name: vlan1
+    name: "{{ item }}"
     state: present
+  with_items:
+      - vlan1
+      - net1
 
 - name: Create self-IP
   bigip_selfip:
     name: main-tests
-    address: 20.2.2.1
+    address: 10.2.2.1
     netmask: 255.255.255.0
     vlan: vlan1
+
+- name: Create self-IP - ipv6
+  bigip_selfip:
+    name: main-tests-v6
+    address: "FE80::1"
+    netmask: "0"
+    vlan: net

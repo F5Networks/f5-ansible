@@ -1,10 +1,10 @@
 ---
 
-- name: Include node monitor variables
+- name: Include node monitor variables - node monitor tests
   include_vars:
     file: node-monitors.yaml
 
-- name: Create node with multiple monitors
+- name: Create node with multiple monitors - node monitor tests
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
@@ -15,12 +15,12 @@
       at_least: 1
   register: result
 
-- name: Assert Create node with multiple monitors
+- name: Assert Create node with multiple monitors - node monitor tests
   assert:
     that:
       - result is changed
 
-- name: Create node with multiple monitors - Idempotent check
+- name: Create node with multiple monitors - Idempotent check - node monitor tests
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
@@ -31,12 +31,12 @@
       at_least: 1
   register: result
 
-- name: Assert Create node with multiple monitors - Idempotent check
+- name: Assert Create node with multiple monitors - Idempotent check - node monitor tests
   assert:
     that:
       - result is not changed
 
-- name: Modify node with multiple monitors - change requirements to all
+- name: Modify node with multiple monitors - change requirements to all - node monitor tests
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
@@ -45,12 +45,12 @@
       type: "all"
   register: result
 
-- name: Assert Modify node with multiple monitors - change requirements to all
+- name: Assert Modify node with multiple monitors - change requirements to all - node monitor tests
   assert:
     that:
       - result is changed
 
-- name: Modify node with multiple monitors - change requirements to all - Idempotent check
+- name: Modify node with multiple monitors - change requirements to all - Idempotent check - node monitor tests
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
@@ -59,53 +59,53 @@
       type: "all"
   register: result
 
-- name: Assert Modify node with multiple monitors - change requirements to all - Idempotent check
+- name: Assert Modify node with multiple monitors - change requirements to all - Idempotent check - node monitor tests
   assert:
     that:
       - result is not changed
 
-- name: Change node to single monitor
+- name: Change node to single monitor - node monitor tests
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
     monitors: "{{ node2['monitors'] }}"
   register: result
 
-- name: Assert Change node to single monitor
+- name: Assert Change node to single monitor - node monitor tests
   assert:
     that:
       - result is changed
 
-- name: Change node to single monitor - Idempotent check
+- name: Change node to single monitor - Idempotent check - node monitor tests
   bigip_node:
     state: present
     name: "{{ node1['name'] }}"
     monitors: "{{ node2['monitors'] }}"
   register: result
 
-- name: Assert Change node to single monitor - Idempotent check
+- name: Assert Change node to single monitor - Idempotent check - node monitor tests
   assert:
     that:
       - result is not changed
 
-- name: Delete node
+- name: Delete node - node monitor tests
   bigip_node:
     name: "{{ node1['name'] }}"
     state: absent
   register: result
 
-- name: Assert delete node
+- name: Assert delete node - node monitor tests
   assert:
     that:
       - result is changed
 
-- name: Delete node - Idempotent check
+- name: Delete node - Idempotent check - node monitor tests
   bigip_node:
     name: "{{ node1['name'] }}"
     state: absent
   register: result
 
-- name: Assert delete node - Idempotent check
+- name: Assert delete node - Idempotent check - node monitor tests
   assert:
     that:
       - result is not changed

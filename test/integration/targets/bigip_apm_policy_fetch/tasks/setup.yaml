@@ -22,4 +22,12 @@
   bigip_apm_policy_import:
     name: "{{ policy }}"
     source: "{{ role_path }}/fixtures/v15_1_profile.tar.gz"
-  when: f.system_info.product_version >= "15.0.0"
+  when:
+    - f.system_info.product_version >= "15.0.0"
+    - f.system_info.product_version < "16.0.0"
+
+- name: Create APM access profile v16
+  bigip_apm_policy_import:
+    name: "{{ policy }}"
+    source: "{{ role_path }}/fixtures/v16_1_profile.tar.gz"
+  when: f.system_info.product_version >= "16.0.0"

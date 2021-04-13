@@ -96,28 +96,6 @@
     that:
       - result is not changed
 
-- name: Set snmp network to default
-  bigip_snmp_trap:
-    name: "{{ trap_name1 }}"
-    network: "{{ network2 }}"
-  register: result
-
-- name: Assert Set snmp network to default
-  assert:
-    that:
-      - result is changed
-
-- name: Set snmp network to default - Idempotent check
-  bigip_snmp_trap:
-    name: "{{ trap_name1 }}"
-    network: "{{ network2 }}"
-  register: result
-
-- name: Assert Set snmp network to default - Idempotent check
-  assert:
-    that:
-      - result is not changed
-
 - name: Set snmp network to other
   bigip_snmp_trap:
     name: "{{ trap_name1 }}"
