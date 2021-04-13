@@ -572,6 +572,8 @@ class ModuleManager(object):
         return result['changed']
 
     def load_config(self, commands):
+        # Add space to command list so that it won't chop last character from last command
+        commands = ['{} '.format(x) for x in commands]
         content = StringIO("\n".join(commands))
 
         file = tempfile.NamedTemporaryFile()
