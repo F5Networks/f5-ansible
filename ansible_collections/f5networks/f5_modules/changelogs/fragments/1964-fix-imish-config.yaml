@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix imish config issue where last character is chopped off by adding extra space to commands
