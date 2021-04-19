@@ -1,0 +1,5 @@
+---
+bugfixes:
+    - Fix bigip_gtm_wide_ip to support wildcard type a wide ips
+
+
