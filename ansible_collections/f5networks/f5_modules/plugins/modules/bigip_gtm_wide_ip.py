@@ -387,7 +387,7 @@ class ModuleParameters(Parameters):
     @property
     def last_resort_pool(self):
         if self._values['last_resort_pool'] in [None, '', 'none']:
-            return ''
+            return None
         return '{0} {1}'.format(
             self.type, fq_name(self.partition, self._values['last_resort_pool'])
         )
