@@ -1,0 +1,5 @@
+---
+
+pool_lb_method: round-robin
+pool_name: issue-01920
+wide_ip1: '*.apps.example.com'
