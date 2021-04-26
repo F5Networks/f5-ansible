@@ -1,0 +1,75 @@
+---
+
+- name: Issue 01920 - Include issue variables
+  include_vars:
+    file: issue-01920.yaml
+
+- name: Issue 01920 - Provision GTM
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue 01920 - Collect BIG-IP facts
+  bigip_device_info:
+    include: system-info
+  register: f
+
+- name: Issue 01920 - Create pool, type 'a'
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    state: present
+    type: a
+  when: f.system_info.product_version >= "12.0.0"
+  register: result
+
+- name: Issue 01920 - Create wide IP
+  bigip_gtm_wide_ip:
+    lb_method: "{{ pool_lb_method }}"
+    state: present
+    type: a
+    name: "{{ wide_ip1 }}"
+    pools:
+      - name: "{{ pool_name }}"
+  when: f.system_info.product_version  >= "12.0.0"
+  register: result
+
+- name: Issue 01920 - Assert Create wide IP
+  assert:
+    that:
+      - result is changed
+  when: f.system_info.product_version  >= "12.0.0"
+
+- name: Issue 01920 - Create wide IP - Idempotent check
+  bigip_gtm_wide_ip:
+    lb_method: "{{ pool_lb_method }}"
+    state: present
+    type: a
+    wide_ip: "{{ wide_ip1 }}"
+    pools:
+      - name: "{{ pool_name }}"
+  when: f.system_info.product_version  >= "12.0.0"
+  register: result
+
+- name: Issue 01920 - Assert Create wide IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: f.system_info.product_version  >= "12.0.0"
+
+- name: Issue 01920 - Remove wide IP
+  bigip_gtm_wide_ip:
+    state: absent
+    type: a
+    wide_ip: "{{ wide_ip1 }}"
+  when: f.system_info.product_version  >= "12.0.0"
+  register: result
+
+- name: Issue 01920 - Deprovision GTM
+  bigip_provision:
+    module: gtm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

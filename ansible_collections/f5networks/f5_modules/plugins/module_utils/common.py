@@ -243,7 +243,7 @@ def is_valid_fqdn(host):
     if len(host) > 255:
         return False
     host = host.rstrip(".")
-    allowed = re.compile(r'(?!-)[A-Z0-9-]{1,63}(?<!-)$', re.IGNORECASE)
+    allowed = re.compile(r'(?!-)[A-Z0-9-*]{1,63}(?<!-)$', re.IGNORECASE)
     result = all(allowed.match(x) for x in host.split("."))
     if result:
         parts = host.split('.')
