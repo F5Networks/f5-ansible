@@ -1636,7 +1636,7 @@ class ModuleManager(object):
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
-        self.chunk = ['rechunk', 'selective', 'preserve']
+        self.chunk = ['rechunk', 'selective', 'preserve', 'sustain', 'unchunk']
         self.choices = ['pass-through', 'reject']
         self.select = ['allow', 'pass-through', 'reject']
         argument_spec = dict(
