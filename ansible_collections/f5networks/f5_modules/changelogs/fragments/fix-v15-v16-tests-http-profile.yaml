@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - Add new choices to request/response chunking parameter to accomodate TMOS v15 and above
