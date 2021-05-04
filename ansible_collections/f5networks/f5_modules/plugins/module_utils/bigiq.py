@@ -87,7 +87,7 @@ class F5RestClient(F5BaseClient):
         names = [os.path.basename(os.path.dirname(x['link'])) for x in info['providers'] if '-' in x['link']]
         if names.count(provider) > 1:
             raise F5ModuleError(
-                "Ambiguous bigiq_provider name provided. Please specify a specific provider name or UUID."
+                "Ambiguous auth_provider name provided. Please specify a specific provider name or UUID."
             )
         link = self._get_login_ref_by_name(info, provider)
         if not link:
