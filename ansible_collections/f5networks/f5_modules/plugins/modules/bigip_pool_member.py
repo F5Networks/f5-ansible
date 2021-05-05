@@ -693,7 +693,7 @@ class ApiParameters(Parameters):
     @property
     def state(self):
         if (self._values['state'] in ['user-up', 'unchecked', 'fqdn-up-no-addr', 'fqdn-up', 'fqdn-down']
-           and self._values['session'] in ['user-enabled']):
+           and self._values['session'] in ['user-enabled', 'monitor-enabled']):
             return 'present'
         elif self._values['state'] in ['down', 'up', 'checking'] and self._values['session'] == 'monitor-enabled':
             # monitor-enabled + checking:
@@ -1123,7 +1123,7 @@ class ModuleManager(object):
     def compare_addresses(self, items):
         if any('address' in item for item in items):
             aggregates = [self._join_address_port(item) for item in items if 'address' in item and item['address']]
-            collection = [member['address'] for member in self.on_device]
+            collection = [member['name'] for member in self.on_device]
             diff = set(collection) - set(aggregates)
             if diff:
                 addresses = [item['selfLink'] for item in self.on_device if item['address'] in diff]
