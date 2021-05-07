@@ -599,7 +599,7 @@ class RecordsDecoder(object):
         self._net_prefix_pattern = re.compile(r'^network\s+(?P<addr>[^ ]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
         self._rd_net_prefix_ptrn = re.compile(r'^network\s+(?P<addr>[^%]+)%(?P<rd>[0-9]+)'
                                               r'\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
-        self._host_pattern = re.compile(r'^host\s+(?P<addr>[^ ]+)\s+.*')
+        self._host_pattern = re.compile(r'^host\s+(?P<addr>[^ ,]+)\s?.*')
         self._net_pattern = re.compile(r'^^network\s+(?P<addr>[^ ,]+)\s?.*')
         self._rd_host_ptrn = re.compile(r'^host\s+(?P<addr>[^%]+)%(?P<rd>[0-9]+)\s+.*')
 
@@ -654,9 +654,11 @@ class RecordsDecoder(object):
             # host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host4"
             key = matches.group('addr')
             addr = ip_interface(u"{0}".format(str(key)))
-            value = record.split(self._separator)[1].strip().strip('"')
-            result = dict(name=str(addr), data=value)
-            return result
+            if len(record.split(self._separator)) > 1:
+                value = record.split(self._separator)[1].strip().strip('"')
+                result = dict(name=str(addr), data=value)
+                return result
+            return str(record)
 
         raise F5ModuleError(
             'The value "{0}" is not an address'.format(record)
