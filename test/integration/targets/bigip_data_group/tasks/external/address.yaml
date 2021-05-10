@@ -158,3 +158,75 @@
     name: external-dg2
     state: absent
     delete_data_group_file: yes
+
+- name: SR1-7089774221-Support datagroup with only key
+  bigip_data_group:
+    name: external-dg-keyonly
+    records_src: "{{ role_path }}/files/address3.txt"
+    type: address
+  register: result
+
+- name: Assert SR1-7089774221-Support datagroup with only key
+  assert:
+    that:
+      result is changed
+
+- name: SR1-7089774221-Support datagroup with only key - Idempotent check
+  bigip_data_group:
+    name: external-dg-keyonly
+    records_src: "{{ role_path }}/files/address3.txt"
+    type: address
+  register: result
+
+- name: SR1-7089774221-Support datagroup with only key - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove datagroup external-dg-keyonly(SR1-7089774221) (retain DG file)
+  bigip_data_group:
+    name: external-dg-keyonly
+    state: absent
+  register: result
+
+- name: Assert Remove datagroup external-dg-keyonly(SR1-7089774221) (retain DG file)
+  assert:
+    that:
+      result is changed
+
+- name: Remove datagroup external-dg-keyonly(SR1-7089774221) (retain DG file) - Idempotent check
+  bigip_data_group:
+    name: external-dg-keyonly
+    state: absent
+  register: result
+
+- name: Assert Remove datagroup external-dg-keyonly(SR1-7089774221) (retain DG file) - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove file used in external-dg-keyonly
+  bigip_data_group:
+    name: external-dg-keyonly
+    delete_data_group_file: yes
+    type: address
+    state: absent
+  register: result
+
+- name: Assert Remove file used in external-dg-keyonly
+  assert:
+    that:
+      result is changed
+
+- name: Remove file used in external-dg-keyonly - Idempotent check
+  bigip_data_group:
+    name: external-dg-keyonly
+    delete_data_group_file: yes
+    type: address
+    state: absent
+  register: result
+
+- name: Assert Remove file used in external-dg-keyonly - Idempotent check
+  assert:
+    that:
+      result is not changed

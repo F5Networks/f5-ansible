@@ -538,25 +538,28 @@ class RecordsEncoder(object):
             parts = [r.strip() for r in record.split(self._separator)]
             if parts[0] == '':
                 return
-            if not is_valid_ip_interface(parts[0]):
-                raise F5ModuleError(
-                    "When specifying an 'address' type, the value to the left of the separator must be an IP."
-                )
-            key = ip_interface(u"{0}".format(str(parts[0])))
-            ipv4_match = re.match(self._ipv4_cidr_ptrn, str(parts[0]))
-            ipv6_match = re.match(self._ipv6_cidr_ptrn, str(parts[0]))
+            if len(re.split(' ', parts[0])) == 1:
+                if not is_valid_ip_interface(parts[0]):
+                    raise F5ModuleError(
+                        "When specifying an 'address' type, the value to the left of the separator must be an IP."
+                    )
+                key = ip_interface(u"{0}".format(str(parts[0])))
+                ipv4_match = re.match(self._ipv4_cidr_ptrn, str(parts[0]))
+                ipv6_match = re.match(self._ipv6_cidr_ptrn, str(parts[0]))
 
-            if len(parts) == 2:
-                if (ipv4_match and key.network.prefixlen == 32) or (ipv6_match and key.network.prefixlen == 128):
-                    return self.encode_host(str(key.ip), parts[1])
-                else:
-                    return self.encode_network(str(key.network.network_address), key.network.prefixlen, parts[1])
-            elif len(parts) == 1 and parts[0] != '':
-                if (ipv4_match and key.network.prefixlen == 32) or (ipv6_match and key.network.prefixlen == 128):
-                    return self.encode_host(str(key.ip), str(key.ip))
-                return self.encode_network(
-                    str(key.network.network_address), key.network.prefixlen, str(key.network.network_address)
-                )
+                if len(parts) == 2:
+                    if (ipv4_match and key.network.prefixlen == 32) or (ipv6_match and key.network.prefixlen == 128):
+                        return self.encode_host(str(key.ip), parts[1])
+                    else:
+                        return self.encode_network(str(key.network.network_address), key.network.prefixlen, parts[1])
+                elif len(parts) == 1 and parts[0] != '':
+                    if (ipv4_match and key.network.prefixlen == 32) or (ipv6_match and key.network.prefixlen == 128):
+                        return self.encode_host(str(key.ip), str(key.ip))
+                    return self.encode_network(
+                        str(key.network.network_address), key.network.prefixlen, str(key.network.network_address)
+                    )
+            else:
+                return str(parts[0])
 
     def encode_host(self, key, value):
         return 'host {0} {1} {2}'.format(str(key), self._separator, str(value))
@@ -596,7 +599,8 @@ class RecordsDecoder(object):
         self._net_prefix_pattern = re.compile(r'^network\s+(?P<addr>[^ ]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
         self._rd_net_prefix_ptrn = re.compile(r'^network\s+(?P<addr>[^%]+)%(?P<rd>[0-9]+)'
                                               r'\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
-        self._host_pattern = re.compile(r'^host\s+(?P<addr>[^ ]+)\s+.*')
+        self._host_pattern = re.compile(r'^host\s+(?P<addr>[^ ,]+)\s?.*')
+        self._net_pattern = re.compile(r'^^network\s+(?P<addr>[^ ,]+)\s?.*')
         self._rd_host_ptrn = re.compile(r'^host\s+(?P<addr>[^%]+)%(?P<rd>[0-9]+)\s+.*')
 
     def decode(self, record):
@@ -624,6 +628,17 @@ class RecordsDecoder(object):
             value = record.split(self._separator)[1].strip().strip('"')
             result = dict(name=str(addr), data=value)
             return result
+        matches = self._net_pattern.match(record)
+        if matches:
+            # network 192.168.2.0/24,
+            # network 2402:9400:1000:0:: prefixlen 64 := "Network4",
+            key = u"{0}".format(matches.group('addr'))
+            addr = ip_network(key)
+            if len(record.split(self._separator)) > 1:
+                value = record.split(self._separator)[1].strip().strip('"')
+                result = dict(name=str(addr), data=value)
+                return result
+            return str(record)
         matches = self._rd_host_ptrn.match(record)
         if matches:
             # host 172.16.1.1%11/32 := "Host3"
@@ -639,9 +654,11 @@ class RecordsDecoder(object):
             # host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host4"
             key = matches.group('addr')
             addr = ip_interface(u"{0}".format(str(key)))
-            value = record.split(self._separator)[1].strip().strip('"')
-            result = dict(name=str(addr), data=value)
-            return result
+            if len(record.split(self._separator)) > 1:
+                value = record.split(self._separator)[1].strip().strip('"')
+                result = dict(name=str(addr), data=value)
+                return result
+            return str(record)
 
         raise F5ModuleError(
             'The value "{0}" is not an address'.format(record)
