@@ -1,0 +1,5 @@
+host 192.168.1.1,
+host 192.168.1.2 := "host 2",
+network 192.168.2.0/24,
+network 192.168.3.0 mask 255.255.255.0 := "network 3",
+network 192.168.4.0 prefixlen 24,
