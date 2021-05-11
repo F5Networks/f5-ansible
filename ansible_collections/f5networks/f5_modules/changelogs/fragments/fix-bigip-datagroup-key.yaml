@@ -1,0 +1,4 @@
+---
+bugfixes:
+    - Fix for bigip_data_group accepts address object without value
+    - Fix for bigip_pool_member aggregate fails to member comparison
