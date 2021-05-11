@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix issue where empty irules property on device would throw exception during comparison

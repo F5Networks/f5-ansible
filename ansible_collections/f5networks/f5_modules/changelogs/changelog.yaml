@@ -890,3 +890,42 @@ releases:
     - deprecate-python-versions.yaml
     - fix-asm-policy-fetch-binary.yaml
     release_date: '2021-03-31'
+  1.9.1:
+    changes:
+      bugfixes:
+      - Disable cert validaton for Teem
+      - Fix bigip_gtm_wide_ip to support wildcard type a wide ips
+      - Fix imish config issue where last character is chopped off by adding extra
+        space to commands
+      - Fix issue in bigip_firewall_dos_policy where in TMOS v15 and above creating
+        dos vector containers requires additional step in the API
+      - Fix issue in bigip_gtm_topology_region where parameter region_members being
+        set to empty list returned an error
+      - Fix issue in bigip_pool_member with module idempotency when pool member status
+        was fqdn-down
+      - Fix issue where bigip_firewall_port_list was failing when removing objects
+        (#1988)
+      - Fix issue where empty irules property on device would throw exception during
+        comparison
+      - Fix issue where viprion platrform interfaces interface naming scheme prevented
+        the use of module
+      - Fix issue with new telemetry environment variable not populated in provider
+      - Fix issue with send_teem function ignoring environment variable
+      - Fix teem version in constants.py
+      - Fix validation function for bigip_virtual_server module to include new api
+        endpoints for checking SIP profiles
+      - Fix various minor regressions and improved functional testing in collection
+      minor_changes:
+      - Add ENV variable with better name, it should make it easier to understand
+        when disabling F5 TEEM telemetry
+      - Add new choices to request/response chunking parameter to accomodate TMOS
+        v15 and above
+    fragments:
+    - 1920-fix-gtm-wideip-wildcardtype.yaml
+    - 1964-fix-imish-config.yaml
+    - 1965-fix-bigip-interface.yaml
+    - 2015-v16-test-fixes.yaml
+    - 2029-fix-irules-param-wide-ip.yaml
+    - fix-teem-version.yaml
+    - fix-v15-v16-tests-http-profile.yaml
+    release_date: '2021-05-11'

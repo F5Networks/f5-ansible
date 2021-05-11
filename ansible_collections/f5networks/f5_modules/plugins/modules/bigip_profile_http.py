@@ -184,6 +184,8 @@ options:
       - rechunk
       - selective
       - preserve
+      - sustain
+      - unchunk
   response_chunking:
     description:
       - Specifies how to handle chunked and unchunked responses.
@@ -193,6 +195,8 @@ options:
       - rechunk
       - selective
       - preserve
+      - sustain
+      - unchunk
   enforcement:
     description:
       - Specifies protocol enforcement settings for the HTTP profile.

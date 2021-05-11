@@ -24,7 +24,7 @@ To specify the version of the collection to install, include it at the end of th
 ansible-galaxy collection install f5networks.f5_modules:==1.0.0
 ```
 
-Sematic Versioning examples below:
+Semantic Versioning examples below:
 - Increment major (for example: x in x.y.z) version number for an incompatible API change.
 - Increment minor (for example: y in x.y.z) version number for new functionality in a backwards compatible manner.
 - Increment patch (for example: z in x.y.z) version number for backwards compatible bug fixes.
