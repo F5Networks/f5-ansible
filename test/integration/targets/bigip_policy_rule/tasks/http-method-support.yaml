@@ -1,0 +1,114 @@
+---
+
+- name: Support http-method - Create published policy
+  bigip_policy:
+    name: PolicyFoo
+
+- name: Support http-method - Change condition method_matches_with_any
+  bigip_policy_rule:
+    policy: PolicyFoo
+    name: rule1
+    conditions:
+      - type: http_method
+        method_matches_with_any:
+          - BAZ123
+          - BAR123
+  register: result
+
+- name: Support http-method - Assert Change condition method_matches_with_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Support http-method - Change condition method_matches_with_any - Idempotent check
+  bigip_policy_rule:
+    policy: PolicyFoo
+    name: rule1
+    conditions:
+      - type: http_method
+        method_matches_with_any:
+          - BAZ123
+          - BAR123
+  register: result
+
+- name: Support http-method - Assert Change condition method_matches_with_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Support http-method - Add value condition method_matches_with_any
+  bigip_policy_rule:
+    policy: PolicyFoo
+    name: rule1
+    conditions:
+      - type: http_method
+        method_matches_with_any:
+          - BAZ123
+          - BAR123
+          - FOO9999
+  register: result
+
+- name: Support http-method - Assert Add value condition method_matches_with_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Support http-method - Add value condition method_matches_with_any - Idempotent check
+  bigip_policy_rule:
+    policy: PolicyFoo
+    name: rule1
+    conditions:
+      - type: http_method
+        method_matches_with_any:
+          - BAZ123
+          - BAR123
+          - FOO9999
+  register: result
+
+- name: Support http-method - Assert Add value condition method_matches_with_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Support http-method - Remove value condition method_matches_with_any
+  bigip_policy_rule:
+    policy: PolicyFoo
+    name: rule1
+    conditions:
+      - type: http_method
+        method_matches_with_any:
+          - BAZ123
+          - FOO9999
+  register: result
+
+- name: Support http-method - Assert Remove value condition method_matches_with_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Support http-method - Remove value condition method_matches_with_any - Idempotent check
+  bigip_policy_rule:
+    policy: PolicyFoo
+    name: rule1
+    conditions:
+      - type: http_method
+        method_matches_with_any:
+          - BAZ123
+          - FOO9999
+  register: result
+
+- name: Support http-method - Assert Remove value condition method_matches_with_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Support http-method - Remove published policy
+  bigip_policy:
+    name: PolicyFoo
+    state: absent
