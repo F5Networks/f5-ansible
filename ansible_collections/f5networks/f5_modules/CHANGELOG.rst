@@ -18,6 +18,9 @@ Bugfixes
 --------
 
 - Disable cert validation for Teem
+- Fix bigiq non local provider backport from f5_bigip collection
+- Fix for bigip_data_group accepts address object without value
+- Fix for bigip_pool_member aggregate fails to member comparison
 - Fix bigip_gtm_wide_ip to support wildcard type a wide ips
 - Fix imish config issue where last character is chopped off by adding extra space to commands
 - Fix issue in bigip_firewall_dos_policy where in TMOS v15 and above creating dos vector containers requires additional step in the API
