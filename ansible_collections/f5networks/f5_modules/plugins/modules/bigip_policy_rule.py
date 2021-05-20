@@ -339,7 +339,7 @@ options:
             C(host_begins_with_any) or C(host_ends_with_any)."
           - "When C(type) is C(http_header), the C(header_name) parameter is mandatory and the valid choice is:
             C(header_is_any)."
-          - When C(type) is C(http_method), the valid choices are: C(method_matches_with_any).
+          - "When C(type) is C(http_method), the valid choices are: C(method_matches_with_any)."
           - When C(type) is C(all_traffic), the system removes all existing conditions from
             this rule.
         type: str
