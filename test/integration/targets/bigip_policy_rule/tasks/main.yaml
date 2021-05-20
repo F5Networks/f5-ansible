@@ -430,4 +430,10 @@
 - import_tasks: issue-01946.yaml
   tags: issue-01946
 
+- import_tasks: issue-01998.yaml
+  tags: issue-01998
+
+- import_tasks: issue-02002.yaml
+  tags: issue-02002
+
 - import_tasks: teardown.yaml

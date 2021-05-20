@@ -16,6 +16,27 @@ description:
   - This module will manage LTM policy rules on a BIG-IP.
 version_added: "1.0.0"
 options:
+  name:
+    description:
+      - The name of the rule.
+    type: str
+    required: True
+  policy:
+    description:
+      - The name of the policy you want to associate this rule with.
+    type: str
+    required: True
+  rule_order:
+    description:
+      - Specifies a number that indicates the order of this rule relative to other rules in policy.
+      - When not set, the device will set the parameter to 0.
+      - If there are rules with the same rule order number the device uses rule names as a tie-breaker
+        to determine how the rules are ordered.
+      - The lower the number, the lower the rule will be in the general order, with the lowest number C(0) being the
+        topmost one.
+      - Valid range of values is between C(0) and C(4294967295) inclusive.
+    type: int
+    version_added: "1.10.0"
   description:
     description:
       - Description of the policy rule.
@@ -85,6 +106,7 @@ options:
         version_added: "1.8.0"
         choices:
           - server_ssl
+          - persist
       asm_policy:
         description:
           - ASM policy to enable.
@@ -307,16 +329,6 @@ options:
             type: str
             required: True
         version_added: "1.8.0"
-  policy:
-    description:
-      - The name of the policy you want to associate this rule with.
-    type: str
-    required: True
-  name:
-    description:
-      - The name of the rule.
-    type: str
-    required: True
   conditions:
     description:
       - A list of attributes that describe the condition.
@@ -423,11 +435,18 @@ options:
         version_added: "1.8.0"
       address_matches_with_datagroup:
         description:
-          - A list of datagroup strings the tcp should match.
+          - A list of internal datagroup strings the tcp should match.
           - This parameter is only valid with the C(tcp) type.
         type: list
         elements: str
         version_added: "1.8.0"
+      address_matches_with_external_datagroup:
+        description:
+          - A list of external datagroup strings the tcp should match.
+          - This parameter is only valid with the C(tcp) type.
+        type: list
+        elements: str
+        version_added: "1.10.0"
       event:
         description:
           - Events on which conditions such as SSL Extension can be triggered.
@@ -581,6 +600,11 @@ description:
   returned: changed
   type: str
   sample: My rule
+rule_order:
+  description: Specifies a number that indicates the order of this rule relative to other rules in policy.
+  returned: changed
+  type: int
+  sample: 10
 '''
 from datetime import datetime
 
@@ -602,23 +626,27 @@ class Parameters(AnsibleF5Parameters):
     api_map = {
         'actionsReference': 'actions',
         'conditionsReference': 'conditions',
+        'ordinal': 'rule_order',
     }
     api_attributes = [
         'description',
         'actions',
         'conditions',
+        'ordinal',
     ]
 
     updatables = [
         'actions',
         'conditions',
         'description',
+        'rule_order',
     ]
 
     returnables = [
         'description',
         'action',
-        'conditions'
+        'conditions',
+        'rule_order',
     ]
 
     @property
@@ -639,7 +667,7 @@ class Parameters(AnsibleF5Parameters):
 class ApiParameters(Parameters):
     def _remove_internal_keywords(self, resource):
         items = [
-            'kind', 'generation', 'selfLink', 'poolReference', 'offset',
+            'kind', 'generation', 'selfLink', 'poolReference', 'offset', 'datagroupReference'
         ]
         for item in items:
             try:
@@ -785,6 +813,16 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
+    @property
+    def rule_order(self):
+        if self._values['rule_order'] is None:
+            return None
+        if 0 < self._values['rule_order'] > 4294967295:
+            raise F5ModuleError(
+                "Specified number is out of valid range, correct range is between 0 and 4294967295."
+            )
+        return self._values['rule_order']
+
     @property
     def actions(self):
         result = []
@@ -944,7 +982,9 @@ class ModuleParameters(Parameters):
             ))
 
     def _handle_tcp_condition(self, action, item):
-        options = ['address_matches_with_any', 'address_matches_with_datagroup']
+        options = [
+            'address_matches_with_any', 'address_matches_with_datagroup', 'address_matches_with_external_datagroup'
+        ]
         event_map = dict(
             client_accepted='clientAccepted',
             proxy_connect='proxyConnect',
@@ -957,8 +997,8 @@ class ModuleParameters(Parameters):
         action['type'] = 'tcp'
         if all(k not in item for k in options):
             raise F5ModuleError(
-                "A 'address_matches_with_any','address_matches_with_datagroup' must be specified "
-                "when the 'tcp' type is used."
+                "A 'address_matches_with_any','address_matches_with_datagroup' or"
+                "'address_matches_with_external_datagroup' must be specified when the 'tcp' type is used."
             )
         if 'address_matches_with_any' in item and item['address_matches_with_any'] is not None:
             if isinstance(item['address_matches_with_any'], list):
@@ -975,14 +1015,26 @@ class ModuleParameters(Parameters):
                 values = item['address_matches_with_datagroup']
             else:
                 values = [item['address_matches_with_datagroup']]
-            for x in values:
-                tmp = x.split('/')
+            for value in values:
                 action.update(dict(
                     address=True,
                     matches=True,
-                    datagroup=x,
-                    datagroupReference=dict(link='https://localhost/mgmt/tm/ltm/data-group/internal/~{0}~{1}'.format(tmp[1], tmp[2]))
-                ))
+                    datagroup=fq_name(self.partition, value)
+                )
+                )
+        if 'address_matches_with_external_datagroup' in item and \
+                item['address_matches_with_external_datagroup'] is not None:
+            if isinstance(item['address_matches_with_external_datagroup'], list):
+                values = item['address_matches_with_external_datagroup']
+            else:
+                values = [item['address_matches_with_external_datagroup']]
+            for value in values:
+                action.update(dict(
+                    address=True,
+                    matches=True,
+                    datagroup=fq_name(self.partition, value)
+                )
+                )
         if 'event' in item and item['event'] is not None:
             event = event_map.get(item['event'], None)
             if event:
@@ -1136,7 +1188,8 @@ class ModuleParameters(Parameters):
         """
 
         target_map = dict(
-            server_ssl='serverSsl'
+            server_ssl='serverSsl',
+            persist='persist'
         )
         event_map = dict(
             client_accepted='clientAccepted',
@@ -1788,6 +1841,9 @@ class ReportableChanges(Changes):
                 if 'serverSsl' in action and action['serverSsl']:
                     action['disable_target'] = 'server_ssl'
                     del action['serverSsl']
+                if 'persist' in action and action['persist']:
+                    action['disable_target'] = 'persist'
+                    del action['persist']
                 del action['enable']
             elif 'redirect' in item:
                 action.update(item)
@@ -2338,7 +2394,7 @@ class ArgumentSpec(object):
                     expression=dict(),
                     variable_name=dict(),
                     disable_target=dict(
-                        choices=['server_ssl']
+                        choices=['server_ssl', 'persist']
                     ),
                     http_header=dict(
                         type='dict',
@@ -2492,11 +2548,16 @@ class ArgumentSpec(object):
                         type='list',
                         elements='str',
                     ),
+                    address_matches_with_external_datagroup=dict(
+                        type='list',
+                        elements='str',
+                    ),
                     event=dict()
                 ),
             ),
             name=dict(required=True),
             policy=dict(required=True),
+            rule_order=dict(type='int'),
             state=dict(
                 default='present',
                 choices=['absent', 'present']

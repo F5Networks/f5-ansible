@@ -1,0 +1,112 @@
+---
+
+- name: Issue 01998 - Create published policy
+  bigip_policy:
+    name: issue-01998
+
+- name: Issue 01998 - Create published rule disable persistence, no rule_order provided
+  bigip_policy_rule:
+    policy: issue-01998
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "FOOBAR"
+    actions:
+      - type: disable
+        disable_target: persist
+        event: request
+  register: result
+
+- name: Issue 01998 - Assert Create published rule disable persistence, no rule_order provided
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01998 - Create published rule disable persistence, no rule_order provided - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01998
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "FOOBAR"
+    actions:
+      - type: disable
+        disable_target: persist
+        event: request
+  register: result
+
+- name: Issue 01998 - Assert Create published rule disable persistence, no rule_order provided - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01998 - Create second published rule disable persistence, no rule_order provided
+  bigip_policy_rule:
+    policy: issue-01998
+    name: rule2
+    conditions:
+      - type: http_host
+        host_is_any: "FOOBAR"
+    actions:
+      - type: disable
+        disable_target: persist
+        event: request
+
+- name: Issue 01998 - Update second published rule change rule order
+  bigip_policy_rule:
+    policy: issue-01998
+    name: rule2
+    rule_order: 10
+  register: result
+
+- name: Issue 01998 - Update second published rule change rule order
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01998 - Update second published rule change rule order - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01998
+    name: rule2
+    rule_order: 10
+  register: result
+
+- name: Issue 01998 - Update second published rule change rule order - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01998 - Update first published rule change rule order
+  bigip_policy_rule:
+    policy: issue-01998
+    name: rule1
+    rule_order: 100
+  register: result
+
+- name: Issue 01998 - Update first published rule change rule order
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01998 - Update first published rule change rule order - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01998
+    name: rule1
+    rule_order: 100
+  register: result
+
+- name: Issue 01998 - Update first published rule change rule order - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01998 - Delete published policy
+  bigip_policy:
+    name: issue-01998
+    state: absent
