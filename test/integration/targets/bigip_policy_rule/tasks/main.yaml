@@ -430,4 +430,7 @@
 - import_tasks: issue-01946.yaml
   tags: issue-01946
 
+- import_tasks: http-method-support.yaml
+  tags: http-method-support
+
 - import_tasks: teardown.yaml

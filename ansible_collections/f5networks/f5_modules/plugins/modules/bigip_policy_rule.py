@@ -337,8 +337,9 @@ options:
             C(path_is_any)."
           - "When C(type) is C(http_host), the valid choices are: C(host_is_any), C(host_is_not_any),
             C(host_begins_with_any) or C(host_ends_with_any)."
-          - "When C(type) is C(http_host), the C(header_name) parameter is mandatory and the valid choice is:
+          - "When C(type) is C(http_header), the C(header_name) parameter is mandatory and the valid choice is:
             C(header_is_any)."
+          - "When C(type) is C(http_method), the valid choices are: C(method_matches_with_any)."
           - When C(type) is C(all_traffic), the system removes all existing conditions from
             this rule.
         type: str
@@ -348,6 +349,7 @@ options:
           - all_traffic
           - http_host
           - http_header
+          - http_method
           - ssl_extension
           - tcp
       path_begins_with_any:
@@ -408,6 +410,13 @@ options:
           - This parameter is only valid with the C(http_header) type.
         type: str
         version_added: "1.8.0"
+      method_matches_with_any:
+        description:
+          - A list of strings of characters the HTTP Method value should match.
+          - This parameter is only valid with the C(http_method) type.
+        type: list
+        elements: str
+        version_added: "1.9.1"
       server_name_is_any:
         description:
           - A list of strings of characters the SSL Extension should match.
@@ -430,8 +439,11 @@ options:
         version_added: "1.8.0"
       event:
         description:
-          - Events on which conditions such as SSL Extension can be triggered.
+          - Events on which conditions type match rules can be triggered.
+          - Supported only for c(http_header),c(http_method),c(ssl_extension),c(tcp).
           - "Valid choices for C(http_header) condition types are: C(proxy_connect),
+            C(proxy_request), C(proxy_response), C(request) and C(response)."
+          - "Valid choices for C(http_method) condition types are: C(proxy_connect),
             C(proxy_request), C(proxy_response), C(request) and C(response)."
           - "Valid choices for C(tcp) condition types are: C(request), C(client_accepted),
             C(proxy_connect), C(proxy_request), C(proxy_response), C(ssl_client_hello), and
@@ -761,6 +773,12 @@ class ApiParameters(Parameters):
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
                 del action['httpHost']
+            elif 'httpMethod' in item:
+                action.update(item)
+                action['type'] = 'http_method'
+                if 'values' in action:
+                    action['values'] = [str(x) for x in action['values']]
+                del action['httpMethod']
             elif 'httpHeader' in item:
                 action.update(item)
                 action['type'] = 'http_header'
@@ -836,6 +854,8 @@ class ModuleParameters(Parameters):
                 action['name'] = str(idx)
             if item['type'] == 'http_uri':
                 self._handle_http_uri_condition(action, item)
+            elif item['type'] == 'http_method':
+                self._handle_http_method_condition(action, item)
             elif item['type'] == 'http_host':
                 self._handle_http_host_condition(action, item)
             elif item['type'] == 'http_header':
@@ -901,6 +921,37 @@ class ModuleParameters(Parameters):
                 'not': True,
                 'values': values
             })
+
+    def _handle_http_method_condition(self, action, item):
+        options = ['method_matches_with_any']
+        action['type'] = 'http_method'
+        event_map = dict(
+            proxy_connect='proxyConnect',
+            proxy_request='proxyRequest',
+            proxy_response='proxyResponse',
+            request='request',
+            response='response',
+        )
+
+        if not any(x for x in options if x in item):
+            raise F5ModuleError(
+                "A 'method_matches_with_any' must be specified when the 'http_method' type is used."
+            )
+
+        if 'event' in item and item['event'] is not None:
+            event = event_map.get(item['event'], None)
+            if event:
+                action[event] = True
+
+        if 'method_matches_with_any' in item and item['method_matches_with_any'] is not None:
+            if isinstance(item['method_matches_with_any'], list):
+                values = item['method_matches_with_any']
+            else:
+                values = [item['method_matches_with_any']]
+            action.update(dict(
+                startsWith=True,
+                values=values
+            ))
 
     def _handle_http_uri_condition(self, action, item):
         action['type'] = 'http_uri'
@@ -1824,6 +1875,10 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'http_uri'
                 del action['httpUri']
+            elif 'httpMethod' in item:
+                action.update(item)
+                action['type'] = 'http_method'
+                del action['httpMethod']
             elif 'httpHost' in item:
                 action.update(item)
                 action['type'] = 'http_host'
@@ -1906,6 +1961,9 @@ class UsableChanges(Changes):
                 continue
             if condition['type'] == 'http_uri':
                 condition['httpUri'] = True
+                del condition['type']
+            elif condition['type'] == 'http_method':
+                condition['httpMethod'] = True
                 del condition['type']
             elif condition['type'] == 'http_host':
                 condition['httpHost'] = True
@@ -2439,6 +2497,7 @@ class ArgumentSpec(object):
                     type=dict(
                         choices=[
                             'http_uri',
+                            'http_method',
                             'http_host',
                             'http_header',
                             'ssl_extension',
@@ -2477,6 +2536,10 @@ class ArgumentSpec(object):
                     ),
                     header_name=dict(),
                     header_is_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    method_matches_with_any=dict(
                         type='list',
                         elements='str',
                     ),
