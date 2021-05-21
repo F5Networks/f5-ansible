@@ -894,6 +894,9 @@ releases:
     changes:
       bugfixes:
       - Disable cert validaton for Teem
+      - Fix bigiq non local provider backport from f5_bigip collection
+      - Fix for bigip_data_group accepts address object without value
+      - Fix for bigip_pool_member aggregate fails to member comparison
       - Fix bigip_gtm_wide_ip to support wildcard type a wide ips
       - Fix imish config issue where last character is chopped off by adding extra
         space to commands
@@ -928,4 +931,6 @@ releases:
     - 2029-fix-irules-param-wide-ip.yaml
     - fix-teem-version.yaml
     - fix-v15-v16-tests-http-profile.yaml
+    - 2026-fix-bigiq-provider.yaml
+    - 2027-fix-bigip-datagroup-key.yaml
     release_date: '2021-05-11'
