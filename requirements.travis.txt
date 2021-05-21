@@ -10,3 +10,9 @@ mock
 virtualenv
 semver
 antsibull-changelog
+ipaddress; python_version < '3.5'
+cryptography
+objectpath
+ordereddict
+simplejson
+

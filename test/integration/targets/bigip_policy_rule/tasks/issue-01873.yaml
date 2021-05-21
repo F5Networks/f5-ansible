@@ -15,7 +15,7 @@
         event: client_accepted
   register: result
 
-- name: Issue 01873 - Create published rule with conditions type tcp address match with any
+- name: Issue 01873 - Assert Create published rule with conditions type tcp address match with any
   assert:
     that:
       - result is changed
@@ -33,7 +33,7 @@
         event: client_accepted
   register: result
 
-- name: Issue 01873 - Create published rule with conditions - Idempotent check
+- name: Issue 01873 - Assert Create published rule with conditions - Idempotent check
   assert:
     that:
       - result is not changed
@@ -52,7 +52,7 @@
         event: client_accepted
   register: result
 
-- name: Issue 01873 - Add value to condition type tcp
+- name: Issue 01873 - Assert Add value to condition type tcp
   assert:
     that:
       - result is changed
@@ -71,7 +71,7 @@
         event: client_accepted
   register: result
 
-- name: Issue 01873 - Add value to condition type tcp - Idempotent check
+- name: Issue 01873 - Assert Add value to condition type tcp - Idempotent check
   assert:
     that:
       - result is not changed
@@ -89,7 +89,7 @@
         event: client_accepted
   register: result
 
-- name: Issue 01873 - Remove value from condition
+- name: Issue 01873 - Assert Remove value from condition
   assert:
     that:
       - result is changed
@@ -107,7 +107,7 @@
         event: client_accepted
   register: result
 
-- name: Issue 01873 - Remove value from condition type tcp - Idempotent check
+- name: Issue 01873 - Assert Remove value from condition type tcp - Idempotent check
   assert:
     that:
       - result is not changed
@@ -124,7 +124,7 @@
         event: client_accepted
   register: result
 
-- name: Issue 01873 - One value in condition type tcp
+- name: Issue 01873 - Assert One value in condition type tcp
   assert:
     that:
       - result is changed
@@ -141,7 +141,7 @@
         event: client_accepted
   register: result
 
-- name: Issue 01873 - One value in condition type tcp- Idempotent check
+- name: Issue 01873 - Assert One value in condition type tcp - Idempotent check
   assert:
     that:
       - result is not changed
@@ -158,10 +158,27 @@
         event: client_accepted
   register: result
 
-- name: Issue 01873 - Create published rule with conditions type tcp address match with datagroup
+- name: Issue 01873 - Assert Create published rule with conditions type tcp address match with datagroup
   assert:
     that:
       - result is changed
+      - result is success
+
+- name: Issue 01873 - Create published rule with conditions type tcp address match with datagroup - Idempotent check
+  bigip_policy_rule:
+    policy: issue-01873
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_datagroup:
+          - "/Common/aol"
+        event: client_accepted
+  register: result
+
+- name: Issue 01873 - Assert Create published rule with conditions type tcp address match with datagroup - Idempotent check
+  assert:
+    that:
+      - result is not changed
       - result is success
 
 - name: Issue 01873 - Remove published policy

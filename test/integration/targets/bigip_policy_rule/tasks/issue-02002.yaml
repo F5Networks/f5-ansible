@@ -1,0 +1,57 @@
+---
+
+- name: Issue 02002 - Create address external data group
+  bigip_data_group:
+    name: external-dg1
+    records_src: "{{ role_path }}/files/address1.txt"
+    type: address
+
+- name: Issue 02002 - Create published policy
+  bigip_policy:
+    name: issue-02002
+
+- name: Issue 02002 - Create published rule with conditions type tcp address match with external datagroup
+  bigip_policy_rule:
+    policy: issue-02002
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_external_datagroup:
+          - "external-dg1"
+        event: client_accepted
+  register: result
+
+- name: Issue 02002 - Assert Create published rule with conditions type tcp address match with external datagroup
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02002 - Create published rule with conditions type tcp address match with external datagroup - Idempotent check
+  bigip_policy_rule:
+    policy: issue-02002
+    name: rule1
+    conditions:
+      - type: tcp
+        address_matches_with_external_datagroup:
+          - "external-dg1"
+        event: client_accepted
+  register: result
+
+- name: Issue 02002 - Assert Create published rule with conditions type tcp address match with external datagroup - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02002 - Remove published policy
+  bigip_policy:
+    name: issue-02002
+    state: absent
+
+- name: Issue 02002 - Remove file used in generic address external data group
+  bigip_data_group:
+    name: external-dg1
+    delete_data_group_file: yes
+    type: address
+    state: absent
