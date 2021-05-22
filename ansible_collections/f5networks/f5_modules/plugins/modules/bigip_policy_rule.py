@@ -428,7 +428,7 @@ options:
           - This parameter is only valid with the C(http_method) type.
         type: list
         elements: str
-        version_added: "1.9.1"
+        version_added: "1.10.0"
       server_name_is_any:
         description:
           - A list of strings of characters the SSL Extension should match.
@@ -459,7 +459,7 @@ options:
       event:
         description:
           - Events on which conditions type match rules can be triggered.
-          - Supported only for c(http_header),c(http_method),c(ssl_extension),c(tcp).
+          - Supported only for C(http_header), C(http_method), C(ssl_extension) and C(tcp).
           - "Valid choices for C(http_header) condition types are: C(proxy_connect),
             C(proxy_request), C(proxy_response), C(request) and C(response)."
           - "Valid choices for C(http_method) condition types are: C(proxy_connect),
