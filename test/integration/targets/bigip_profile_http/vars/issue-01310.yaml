@@ -8,7 +8,8 @@ choice_2: "reject"
 choice_3: "allow"
 
 chunk_1: "rechunk"
-chunk_2: "selective"
+chunk_2: "sustain"
+chunk_3: "unchunk"
 
 methods_1:
   - "foo"

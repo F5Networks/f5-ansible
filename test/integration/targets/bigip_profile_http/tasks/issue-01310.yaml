@@ -54,7 +54,7 @@
     fallback_host: "{{ host_2 }}"
     fallback_status_codes: "{{ codes_2 }}"
     request_chunking: "{{ chunk_2 }}"
-    response_chunking: "{{ chunk_2 }}"
+    response_chunking: "{{ chunk_3 }}"
   register: result
 
 - name: Issue 01310 - Assert Change HTTP profile multiple parameters
@@ -67,7 +67,7 @@
       - result.fallback_host == host_2
       - result.fallback_status_codes == codes_2
       - result.request_chunking == chunk_2
-      - result.response_chunking == chunk_2
+      - result.response_chunking == chunk_3
 
 - name: Issue 01310 - Change HTTP profile multiple parameters - Idempotent check
   bigip_profile_http:
@@ -78,7 +78,7 @@
     fallback_host: "{{ host_2 }}"
     fallback_status_codes: "{{ codes_2 }}"
     request_chunking: "{{ chunk_2 }}"
-    response_chunking: "{{ chunk_2 }}"
+    response_chunking: "{{ chunk_3 }}"
   register: result
 
 - name: Issue 01310 - Assert Change HTTP profile multiple parameters - Idempotent check

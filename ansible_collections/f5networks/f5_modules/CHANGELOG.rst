@@ -5,6 +5,36 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.9.1
+======
+
+Minor Changes
+-------------
+
+- Add ENV variable with better name, it should make it easier to understand when disabling F5 TEEM telemetry
+- Add new choices to request/response chunking parameter to accommodate TMOS v15 and above
+
+Bugfixes
+--------
+
+- Disable cert validation for Teem
+- Fix bigiq non local provider backport from f5_bigip collection
+- Fix for bigip_data_group accepts address object without value
+- Fix for bigip_pool_member aggregate fails to member comparison
+- Fix bigip_gtm_wide_ip to support wildcard type a wide ips
+- Fix imish config issue where last character is chopped off by adding extra space to commands
+- Fix issue in bigip_firewall_dos_policy where in TMOS v15 and above creating dos vector containers requires additional step in the API
+- Fix issue in bigip_gtm_topology_region where parameter region_members being set to empty list returned an error
+- Fix issue in bigip_pool_member with module idempotency when pool member status was fqdn-down
+- Fix issue where bigip_firewall_port_list was failing when removing objects (#1988)
+- Fix issue where empty irules property on device would throw exception during comparison
+- Fix issue where viprion platform interfaces interface naming scheme prevented the use of module
+- Fix issue with new telemetry environment variable not populated in provider
+- Fix issue with send_teem function ignoring environment variable
+- Fix teem version in constants.py
+- Fix validation function for bigip_virtual_server module to include new api endpoints for checking SIP profiles
+- Fix various minor regressions and improved functional testing in collection
+
 v1.9.0
 ======
 

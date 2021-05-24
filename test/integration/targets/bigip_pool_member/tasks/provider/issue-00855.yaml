@@ -123,6 +123,22 @@
       - result is not changed
       - result is success
 
+- name: Issue 00855 - Set monitors - empty - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    monitors: ''
+    provider: "{{ provider }}"
+  register: result
+
+- name: Issue 00855 - Assert Set monitors - empty - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
 - name: Issue 00855 - Set monitors - empty - Idempotent check - Provider
   bigip_pool_member:
     pool: pool1

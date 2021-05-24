@@ -16,6 +16,27 @@ description:
   - This module will manage LTM policy rules on a BIG-IP.
 version_added: "1.0.0"
 options:
+  name:
+    description:
+      - The name of the rule.
+    type: str
+    required: True
+  policy:
+    description:
+      - The name of the policy you want to associate this rule with.
+    type: str
+    required: True
+  rule_order:
+    description:
+      - Specifies a number that indicates the order of this rule relative to other rules in policy.
+      - When not set, the device will set the parameter to 0.
+      - If there are rules with the same rule order number the device uses rule names as a tie-breaker
+        to determine how the rules are ordered.
+      - The lower the number, the lower the rule will be in the general order, with the lowest number C(0) being the
+        topmost one.
+      - Valid range of values is between C(0) and C(4294967295) inclusive.
+    type: int
+    version_added: "1.10.0"
   description:
     description:
       - Description of the policy rule.
@@ -85,6 +106,7 @@ options:
         version_added: "1.8.0"
         choices:
           - server_ssl
+          - persist
       asm_policy:
         description:
           - ASM policy to enable.
@@ -307,16 +329,6 @@ options:
             type: str
             required: True
         version_added: "1.8.0"
-  policy:
-    description:
-      - The name of the policy you want to associate this rule with.
-    type: str
-    required: True
-  name:
-    description:
-      - The name of the rule.
-    type: str
-    required: True
   conditions:
     description:
       - A list of attributes that describe the condition.
@@ -337,8 +349,9 @@ options:
             C(path_is_any)."
           - "When C(type) is C(http_host), the valid choices are: C(host_is_any), C(host_is_not_any),
             C(host_begins_with_any) or C(host_ends_with_any)."
-          - "When C(type) is C(http_host), the C(header_name) parameter is mandatory and the valid choice is:
+          - "When C(type) is C(http_header), the C(header_name) parameter is mandatory and the valid choice is:
             C(header_is_any)."
+          - "When C(type) is C(http_method), the valid choices are: C(method_matches_with_any)."
           - When C(type) is C(all_traffic), the system removes all existing conditions from
             this rule.
         type: str
@@ -348,6 +361,7 @@ options:
           - all_traffic
           - http_host
           - http_header
+          - http_method
           - ssl_extension
           - tcp
       path_begins_with_any:
@@ -408,6 +422,13 @@ options:
           - This parameter is only valid with the C(http_header) type.
         type: str
         version_added: "1.8.0"
+      method_matches_with_any:
+        description:
+          - A list of strings of characters the HTTP Method value should match.
+          - This parameter is only valid with the C(http_method) type.
+        type: list
+        elements: str
+        version_added: "1.10.0"
       server_name_is_any:
         description:
           - A list of strings of characters the SSL Extension should match.
@@ -423,15 +444,25 @@ options:
         version_added: "1.8.0"
       address_matches_with_datagroup:
         description:
-          - A list of datagroup strings the tcp should match.
+          - A list of internal datagroup strings the tcp should match.
           - This parameter is only valid with the C(tcp) type.
         type: list
         elements: str
         version_added: "1.8.0"
+      address_matches_with_external_datagroup:
+        description:
+          - A list of external datagroup strings the tcp should match.
+          - This parameter is only valid with the C(tcp) type.
+        type: list
+        elements: str
+        version_added: "1.10.0"
       event:
         description:
-          - Events on which conditions such as SSL Extension can be triggered.
+          - Events on which conditions type match rules can be triggered.
+          - Supported only for C(http_header), C(http_method), C(ssl_extension) and C(tcp).
           - "Valid choices for C(http_header) condition types are: C(proxy_connect),
+            C(proxy_request), C(proxy_response), C(request) and C(response)."
+          - "Valid choices for C(http_method) condition types are: C(proxy_connect),
             C(proxy_request), C(proxy_response), C(request) and C(response)."
           - "Valid choices for C(tcp) condition types are: C(request), C(client_accepted),
             C(proxy_connect), C(proxy_request), C(proxy_response), C(ssl_client_hello), and
@@ -581,6 +612,11 @@ description:
   returned: changed
   type: str
   sample: My rule
+rule_order:
+  description: Specifies a number that indicates the order of this rule relative to other rules in policy.
+  returned: changed
+  type: int
+  sample: 10
 '''
 from datetime import datetime
 
@@ -602,23 +638,27 @@ class Parameters(AnsibleF5Parameters):
     api_map = {
         'actionsReference': 'actions',
         'conditionsReference': 'conditions',
+        'ordinal': 'rule_order',
     }
     api_attributes = [
         'description',
         'actions',
         'conditions',
+        'ordinal',
     ]
 
     updatables = [
         'actions',
         'conditions',
         'description',
+        'rule_order',
     ]
 
     returnables = [
         'description',
         'action',
-        'conditions'
+        'conditions',
+        'rule_order',
     ]
 
     @property
@@ -639,7 +679,7 @@ class Parameters(AnsibleF5Parameters):
 class ApiParameters(Parameters):
     def _remove_internal_keywords(self, resource):
         items = [
-            'kind', 'generation', 'selfLink', 'poolReference', 'offset',
+            'kind', 'generation', 'selfLink', 'poolReference', 'offset', 'datagroupReference'
         ]
         for item in items:
             try:
@@ -761,6 +801,12 @@ class ApiParameters(Parameters):
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
                 del action['httpHost']
+            elif 'httpMethod' in item:
+                action.update(item)
+                action['type'] = 'http_method'
+                if 'values' in action:
+                    action['values'] = [str(x) for x in action['values']]
+                del action['httpMethod']
             elif 'httpHeader' in item:
                 action.update(item)
                 action['type'] = 'http_header'
@@ -785,6 +831,16 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
+    @property
+    def rule_order(self):
+        if self._values['rule_order'] is None:
+            return None
+        if 0 < self._values['rule_order'] > 4294967295:
+            raise F5ModuleError(
+                "Specified number is out of valid range, correct range is between 0 and 4294967295."
+            )
+        return self._values['rule_order']
+
     @property
     def actions(self):
         result = []
@@ -836,6 +892,8 @@ class ModuleParameters(Parameters):
                 action['name'] = str(idx)
             if item['type'] == 'http_uri':
                 self._handle_http_uri_condition(action, item)
+            elif item['type'] == 'http_method':
+                self._handle_http_method_condition(action, item)
             elif item['type'] == 'http_host':
                 self._handle_http_host_condition(action, item)
             elif item['type'] == 'http_header':
@@ -902,6 +960,37 @@ class ModuleParameters(Parameters):
                 'values': values
             })
 
+    def _handle_http_method_condition(self, action, item):
+        options = ['method_matches_with_any']
+        action['type'] = 'http_method'
+        event_map = dict(
+            proxy_connect='proxyConnect',
+            proxy_request='proxyRequest',
+            proxy_response='proxyResponse',
+            request='request',
+            response='response',
+        )
+
+        if not any(x for x in options if x in item):
+            raise F5ModuleError(
+                "A 'method_matches_with_any' must be specified when the 'http_method' type is used."
+            )
+
+        if 'event' in item and item['event'] is not None:
+            event = event_map.get(item['event'], None)
+            if event:
+                action[event] = True
+
+        if 'method_matches_with_any' in item and item['method_matches_with_any'] is not None:
+            if isinstance(item['method_matches_with_any'], list):
+                values = item['method_matches_with_any']
+            else:
+                values = [item['method_matches_with_any']]
+            action.update(dict(
+                startsWith=True,
+                values=values
+            ))
+
     def _handle_http_uri_condition(self, action, item):
         action['type'] = 'http_uri'
         options = ['path_begins_with_any', 'path_contains', 'path_is_any']
@@ -944,7 +1033,9 @@ class ModuleParameters(Parameters):
             ))
 
     def _handle_tcp_condition(self, action, item):
-        options = ['address_matches_with_any', 'address_matches_with_datagroup']
+        options = [
+            'address_matches_with_any', 'address_matches_with_datagroup', 'address_matches_with_external_datagroup'
+        ]
         event_map = dict(
             client_accepted='clientAccepted',
             proxy_connect='proxyConnect',
@@ -957,8 +1048,8 @@ class ModuleParameters(Parameters):
         action['type'] = 'tcp'
         if all(k not in item for k in options):
             raise F5ModuleError(
-                "A 'address_matches_with_any','address_matches_with_datagroup' must be specified "
-                "when the 'tcp' type is used."
+                "A 'address_matches_with_any','address_matches_with_datagroup' or"
+                "'address_matches_with_external_datagroup' must be specified when the 'tcp' type is used."
             )
         if 'address_matches_with_any' in item and item['address_matches_with_any'] is not None:
             if isinstance(item['address_matches_with_any'], list):
@@ -975,14 +1066,26 @@ class ModuleParameters(Parameters):
                 values = item['address_matches_with_datagroup']
             else:
                 values = [item['address_matches_with_datagroup']]
-            for x in values:
-                tmp = x.split('/')
+            for value in values:
                 action.update(dict(
                     address=True,
                     matches=True,
-                    datagroup=x,
-                    datagroupReference=dict(link='https://localhost/mgmt/tm/ltm/data-group/internal/~{0}~{1}'.format(tmp[1], tmp[2]))
-                ))
+                    datagroup=fq_name(self.partition, value)
+                )
+                )
+        if 'address_matches_with_external_datagroup' in item and \
+                item['address_matches_with_external_datagroup'] is not None:
+            if isinstance(item['address_matches_with_external_datagroup'], list):
+                values = item['address_matches_with_external_datagroup']
+            else:
+                values = [item['address_matches_with_external_datagroup']]
+            for value in values:
+                action.update(dict(
+                    address=True,
+                    matches=True,
+                    datagroup=fq_name(self.partition, value)
+                )
+                )
         if 'event' in item and item['event'] is not None:
             event = event_map.get(item['event'], None)
             if event:
@@ -1136,7 +1239,8 @@ class ModuleParameters(Parameters):
         """
 
         target_map = dict(
-            server_ssl='serverSsl'
+            server_ssl='serverSsl',
+            persist='persist'
         )
         event_map = dict(
             client_accepted='clientAccepted',
@@ -1788,6 +1892,9 @@ class ReportableChanges(Changes):
                 if 'serverSsl' in action and action['serverSsl']:
                     action['disable_target'] = 'server_ssl'
                     del action['serverSsl']
+                if 'persist' in action and action['persist']:
+                    action['disable_target'] = 'persist'
+                    del action['persist']
                 del action['enable']
             elif 'redirect' in item:
                 action.update(item)
@@ -1824,6 +1931,10 @@ class ReportableChanges(Changes):
                 action.update(item)
                 action['type'] = 'http_uri'
                 del action['httpUri']
+            elif 'httpMethod' in item:
+                action.update(item)
+                action['type'] = 'http_method'
+                del action['httpMethod']
             elif 'httpHost' in item:
                 action.update(item)
                 action['type'] = 'http_host'
@@ -1906,6 +2017,9 @@ class UsableChanges(Changes):
                 continue
             if condition['type'] == 'http_uri':
                 condition['httpUri'] = True
+                del condition['type']
+            elif condition['type'] == 'http_method':
+                condition['httpMethod'] = True
                 del condition['type']
             elif condition['type'] == 'http_host':
                 condition['httpHost'] = True
@@ -2338,7 +2452,7 @@ class ArgumentSpec(object):
                     expression=dict(),
                     variable_name=dict(),
                     disable_target=dict(
-                        choices=['server_ssl']
+                        choices=['server_ssl', 'persist']
                     ),
                     http_header=dict(
                         type='dict',
@@ -2439,6 +2553,7 @@ class ArgumentSpec(object):
                     type=dict(
                         choices=[
                             'http_uri',
+                            'http_method',
                             'http_host',
                             'http_header',
                             'ssl_extension',
@@ -2480,6 +2595,10 @@ class ArgumentSpec(object):
                         type='list',
                         elements='str',
                     ),
+                    method_matches_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
                     server_name_is_any=dict(
                         type='list',
                         elements='str',
@@ -2492,11 +2611,16 @@ class ArgumentSpec(object):
                         type='list',
                         elements='str',
                     ),
+                    address_matches_with_external_datagroup=dict(
+                        type='list',
+                        elements='str',
+                    ),
                     event=dict()
                 ),
             ),
             name=dict(required=True),
             policy=dict(required=True),
+            rule_order=dict(type='int'),
             state=dict(
                 default='present',
                 choices=['absent', 'present']

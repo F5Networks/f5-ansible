@@ -184,6 +184,8 @@ options:
       - rechunk
       - selective
       - preserve
+      - sustain
+      - unchunk
   response_chunking:
     description:
       - Specifies how to handle chunked and unchunked responses.
@@ -193,6 +195,8 @@ options:
       - rechunk
       - selective
       - preserve
+      - sustain
+      - unchunk
   enforcement:
     description:
       - Specifies protocol enforcement settings for the HTTP profile.
@@ -1636,7 +1640,7 @@ class ModuleManager(object):
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
-        self.chunk = ['rechunk', 'selective', 'preserve']
+        self.chunk = ['rechunk', 'selective', 'preserve', 'sustain', 'unchunk']
         self.choices = ['pass-through', 'reject']
         self.select = ['allow', 'pass-through', 'reject']
         argument_spec = dict(
