@@ -1362,7 +1362,7 @@ fasthttp_profiles:
       returned: queried
       type: int
       sample: 300
-    insert_x_forwarded_for:
+    insert_xforwarded_for:
       description:
         - Whether the system inserts the X-Forwarded-For header in an HTTP request with the
           client IP address, to use with connection pooling.
@@ -2863,7 +2863,7 @@ http_profiles:
       returned: queried
       type: bool
       sample: yes
-    insert_x_forwarded_for:
+    insert_xforwarded_for:
       description:
         - When C(yes), specifies the system inserts an X-Forwarded-For header in
           an HTTP request with the client IP address, to use with connection pooling.
@@ -9228,7 +9228,7 @@ class FastHttpProfilesParameters(BaseParameters):
         'headerInsert': 'request_header_insert',
         'http_11CloseWorkarounds': 'http_1_1_close_workarounds',
         'idleTimeout': 'idle_timeout',
-        'insertXforwardedFor': 'insert_x_forwarded_for',
+        'insertXforwardedFor': 'insert_xforwarded_for',
         'maxHeaderSize': 'maximum_header_size',
         'maxRequests': 'maximum_requests',
         'mssOverride': 'maximum_segment_size_override',
@@ -9256,7 +9256,7 @@ class FastHttpProfilesParameters(BaseParameters):
         'request_header_insert',
         'http_1_1_close_workarounds',
         'idle_timeout',
-        'insert_x_forwarded_for',
+        'insert_xforwarded_for',
         'maximum_header_size',
         'maximum_requests',
         'maximum_segment_size_override',
@@ -9287,8 +9287,8 @@ class FastHttpProfilesParameters(BaseParameters):
         return flatten_boolean(self._values['reset_on_timeout'])
 
     @property
-    def insert_x_forwarded_for(self):
-        return flatten_boolean(self._values['insert_x_forwarded_for'])
+    def insert_xforwarded_for(self):
+        return flatten_boolean(self._values['insert_xforwarded_for'])
 
     @property
     def http_1_1_close_workarounds(self):
@@ -11226,7 +11226,7 @@ class HttpProfilesParameters(BaseParameters):
         'defaultsFrom': 'parent',
         'acceptXff': 'accept_xff',
         'explicitProxy': 'explicit_proxy',
-        'insertXforwardedFor': 'insert_x_forwarded_for',
+        'insertXforwardedFor': 'insert_xforwarded_for',
         'lwsWidth': 'lws_max_columns',
         'oneconnectTransformations': 'onconnect_transformations',
         'proxyType': 'proxy_mode',
@@ -11259,7 +11259,7 @@ class HttpProfilesParameters(BaseParameters):
         'default_connect_handling',
         'hsts_include_subdomains',
         'hsts_enabled',
-        'insert_x_forwarded_for',
+        'insert_xforwarded_for',
         'lws_max_columns',
         'onconnect_transformations',
         'proxy_mode',
@@ -11396,10 +11396,10 @@ class HttpProfilesParameters(BaseParameters):
         return self._values['hsts']['maximumAge']
 
     @property
-    def insert_x_forwarded_for(self):
-        if self._values['insert_x_forwarded_for'] is None:
+    def insert_xforwarded_for(self):
+        if self._values['insert_xforwarded_for'] is None:
             return None
-        return flatten_boolean(self._values['insert_x_forwarded_for'])
+        return flatten_boolean(self._values['insert_xforwarded_for'])
 
     @property
     def onconnect_transformations(self):
