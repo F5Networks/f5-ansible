@@ -1078,7 +1078,7 @@ class ModuleParameters(Parameters):
             to_return = [method for method in known if method != 'default']
             to_return.extend(defaults)
             return to_return
-        result = [method for method in known]
+        result = list(known)
         return result
 
     @property
