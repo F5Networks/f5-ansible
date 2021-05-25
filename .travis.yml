@@ -29,12 +29,12 @@ jobs:
       script:
         - inv test.style
         - inv test.f5-sanity
-      python: "3.6"
-    - name: Ansible Sanity Tests - Py3.6
-      script:
-        - inv test.ansible-test -r -p 3.6
-      python: "3.6"
+      python: "3.7"
     - name: Ansible Sanity Tests - Py3.7
       script:
         - inv test.ansible-test -r -p 3.7
       python: "3.7"
+    - name: Ansible Sanity Tests - Py3.8
+      script:
+        - inv test.ansible-test -r -p 3.8
+      python: "3.8"
