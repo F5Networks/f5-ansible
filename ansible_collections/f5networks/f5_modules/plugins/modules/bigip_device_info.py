@@ -17203,6 +17203,10 @@ class ArgumentSpec(object):
                     # Negations of non-meta-choices
                     '!apm-access-profiles',
                     '!apm-access-policies',
+		    '!as3',
+                    '!do',
+                    '!ts',
+                    '!cfe',
                     '!asm-policy-stats',
                     '!asm-policies',
                     '!asm-server-technologies',
