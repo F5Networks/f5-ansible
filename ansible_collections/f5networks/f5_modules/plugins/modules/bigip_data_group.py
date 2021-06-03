@@ -1223,7 +1223,8 @@ class ExternalManager(BaseManager):
             params = dict(
                 name=name,
                 type=type,
-                sourcePath='file:{0}'.format(remote_path)
+                sourcePath='file:{0}'.format(remote_path),
+                partition=self.want.partition
             )
             resp = self.client.api.post(uri, json=params)
 

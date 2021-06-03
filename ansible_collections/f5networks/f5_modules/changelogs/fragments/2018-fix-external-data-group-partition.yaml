@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix ignoring of partition parameter when creating external datagroups
