@@ -14,7 +14,7 @@
       - result is changed
       - result is success
 
-- name: Import ASM policy, compact XML file  - Idempotent check
+- name: Import ASM policy, compact XML file - Idempotent check
   bigip_asm_policy_import:
     name: foo-policy
     source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
@@ -22,7 +22,7 @@
     F5_USER: 'asmadmin'
   register: result
 
-- name: Assert Import ASM policy, compact XML file  - Idempotent check
+- name: Assert Import ASM policy, compact XML file - Idempotent check
   assert:
     that:
       - result is not changed

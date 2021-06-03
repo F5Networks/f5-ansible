@@ -402,7 +402,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
+        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
@@ -489,7 +489,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
+        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         resp = self.client.api.get(uri + query)

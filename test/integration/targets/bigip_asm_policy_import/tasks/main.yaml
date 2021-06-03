@@ -21,4 +21,8 @@
   tags: fmfa-00608
   when: f.system_info.product_version >= "13.0.0"
 
+- import_tasks: issue-01978.yaml
+  tags: issue-01978
+  when: f.system_info.product_version >= "13.0.0"
+
 - import_tasks: teardown.yaml
