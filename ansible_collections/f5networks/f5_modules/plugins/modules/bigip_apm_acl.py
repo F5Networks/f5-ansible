@@ -48,6 +48,8 @@ options:
       - Access control entries that define the ACL matching and its respective behavior.
       - The order in which the rules are placed as arguments to this parameter determines their order in the ACL,
         in other words changing the order of the same elements will cause a change on the unit.
+      - Changes in the number of rules will always trigger device change. In other words user input will take
+        precedence over what is on device.
     type: list
     elements: dict
     suboptions:
@@ -473,8 +475,8 @@ class ModuleParameters(Parameters):
         if self._values['entries'] == 'none':
             return []
         result = []
-        element = dict()
         for x in self._values['entries']:
+            element = dict()
             element['action'] = x['action']
             if 'dst_port' in x and x['dst_port'] is not None:
                 if x['dst_port'] == '*':
@@ -609,8 +611,8 @@ class ReportableChanges(Changes):
         if not self._values['entries']:
             return 'none'
         result = []
-        to_filter = dict()
         for x in self._values['entries']:
+            to_filter = dict()
             to_filter['action'] = x['action']
             if 'dstStartPort' and 'dstEndPort' in x:
                 if x['dstStartPort'] == x['dstEndPort']:
@@ -690,6 +692,12 @@ class Difference(object):
 
         want = self.want.entries
         have = list()
+        # First we compare if both lists are equal, if want is bigger or smaller than have, we assume user change
+        if len(self.want.entries) > len(self.have.entries) or len(self.want.entries) < len(self.have.entries):
+            return self.want.entries
+
+        # If lists are equal then we compare items to verify change was made
+
         # First we remove extra keys in have
         for idx, item in enumerate(want):
             entry = self._filter_have(item, self.have.entries[idx])

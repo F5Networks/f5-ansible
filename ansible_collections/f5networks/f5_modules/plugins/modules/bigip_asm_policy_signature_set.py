@@ -561,7 +561,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,id".format(
+        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,id".format(
             self.want.policy_name, self.want.partition
         )
         resp = self.client.api.get(uri + query)

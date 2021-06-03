@@ -1,0 +1,68 @@
+---
+- name: Issue 02018 - Create Other partition
+  bigip_partition:
+    name: Other
+    state: present
+
+- name: Issue 02018 - Create external data group on 'Other' partition
+  bigip_data_group:
+    name: external-dg1-other
+    records_src: "{{ role_path }}/files/address1.txt"
+    type: address
+    partition: Other
+  register: result
+
+- name: Issue 02018 - Assert Create external data group on 'Other' partition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02018 - Create external data group on 'Other' partition - Idempotent check
+  bigip_data_group:
+    name: external-dg1-other
+    records_src: "{{ role_path }}/files/address1.txt"
+    type: address
+    partition: Other
+  register: result
+
+- name: Issue 02018 - Assert Create external data group on 'Other' partition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02018 - Remove created objects
+  bigip_data_group:
+    name: external-dg1-other
+    delete_data_group_file: yes
+    type: address
+    state: absent
+    partition: Other
+  register: result
+
+- name: Issue 02018 - Assert Create external data group on 'Other' partition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02018 - Remove created objects - Idempotent check
+  bigip_data_group:
+    name: external-dg1-other
+    delete_data_group_file: yes
+    type: address
+    state: absent
+    partition: Other
+  register: result
+
+- name: Issue 02018 - Assert Remove created objects - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02018 - Remove created partition
+  bigip_partition:
+    name: Other
+    state: absent
