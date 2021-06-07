@@ -104,6 +104,10 @@ options:
       - virtual-servers
       - vlans
       - "!all"
+      - "!as3"
+      - "!do"
+      - "!ts"
+      - "!cfe"
       - "!monitors"
       - "!profiles"
       - "!apm-access-profiles"
