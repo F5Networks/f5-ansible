@@ -372,7 +372,7 @@ asm_policies:
       sample: ['/Common/foo_VS/']
     manual_virtual_servers:
       description:
-        - virtual servers that have Manual Configuration (Advanced) LTM policy configuration which, in turn, 
+        - virtual servers that have Manual Configuration (Advanced) LTM policy configuration which, in turn,
           have rule(s) built with ASM control actions enabled.That config is in fact maintained under a field called manualVirtualServers.
       returned: queried
       type: list
@@ -7951,7 +7951,6 @@ class AsmPolicyFactParameters(BaseParameters):
             if self._values['manual_virtual_servers'] is None:
                 return None
             return self._values['manual_virtual_servers']
-
 
     @property
     def signature_staging(self):
