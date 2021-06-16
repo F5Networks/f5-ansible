@@ -232,7 +232,7 @@ class Parameters(AnsibleF5Parameters):
             self.client.provider['server_port'],
         )
 
-        query = "?$filter=contains(name,'{0}')".format(self.template.upper())
+        query = "?$filter=name+eq+{0}".format(self.template.upper())
         resp = self.client.api.get(uri + query)
 
         try:
@@ -611,7 +611,7 @@ class BaseManager(object):
             self.client.provider['server_port'],
         )
 
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
+        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
@@ -682,11 +682,10 @@ class BaseManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,id".format(
+        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,id".format(
             self.want.name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
-
         try:
             response = resp.json()
         except ValueError as ex:

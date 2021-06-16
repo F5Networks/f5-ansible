@@ -7395,7 +7395,7 @@ from ..module_utils.common import (
 )
 from ..module_utils.urls import parseStats
 from ..module_utils.icontrol import (
-    tmos_version, modules_provisioned
+    tmos_version, modules_provisioned, packages_installed
 )
 from ..module_utils.ipaddress import is_valid_ip
 from ..module_utils.teem import send_teem
@@ -7429,6 +7429,17 @@ class BaseManager(object):
         # This list is provided to the specific fact manager by the
         # master ModuleManager of this module.
         self.provisioned_modules = []
+
+        # A list of packages currently installed on the device.
+        #
+        # This list is used by different fact managers to check to see
+        # if they should even attempt to gather information. If the package is
+        # not provisioned, then it is likely that the REST API will not
+        # return valid data.
+        #
+        # This list is provided to the specific fact manager by the
+        # master ModuleManager of this module.
+        self.installed_packages = []
 
     def exec_module(self):
         start = datetime.datetime.now().isoformat()
@@ -7627,11 +7638,12 @@ class As3FactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'as3' not in self.installed_packages:
+            return []
         facts = self.read_facts()
         return facts
 
     def read_facts(self):
-        results = []
         collection = self.read_collection_from_device()
         return collection
 
@@ -7645,6 +7657,9 @@ class As3FactManager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
+
+        if resp.status == 204 or 'code' in response and response['code'] == 204:
+            return []
 
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
             raise F5ModuleError(resp.content)
@@ -8770,12 +8785,12 @@ class CFEFactManager(BaseManager):
         return result
 
     def _exec_module(self):
-        results = []
+        if 'cfe' not in self.installed_packages:
+            return []
         facts = self.read_facts()
         return facts
 
     def read_facts(self):
-        results = []
         collection = self.read_collection_from_device()
         return collection
 
@@ -9089,12 +9104,12 @@ class DOFactManager(BaseManager):
         return result
 
     def _exec_module(self):
-        results = []
+        if 'do' not in self.installed_packages:
+            return []
         facts = self.read_facts()
         return facts
 
     def read_facts(self):
-        results = []
         collection = self.read_collection_from_device()
         return collection
 
@@ -14545,12 +14560,12 @@ class TSFactManager(BaseManager):
         return result
 
     def _exec_module(self):
-        results = []
+        if 'ts' not in self.installed_packages:
+            return []
         facts = self.read_facts()
         return facts
 
     def read_facts(self):
-        results = []
         collection = self.read_collection_from_device()
         return collection
 
@@ -14570,7 +14585,7 @@ class TSFactManager(BaseManager):
 
         if 'message' not in response:
             return []
-        result = {}
+        result = dict()
         result['declaration'] = response['declaration']
         return result
 
@@ -17089,8 +17104,10 @@ class ModuleManager(object):
         results = dict()
         client = F5RestClient(**self.module.params)
         prov = modules_provisioned(client)
+        rpm = packages_installed(client)
         for manager in managers:
             manager.provisioned_modules = prov
+            manager.installed_packages = rpm
             result = manager.exec_module()
             results.update(result)
         return results

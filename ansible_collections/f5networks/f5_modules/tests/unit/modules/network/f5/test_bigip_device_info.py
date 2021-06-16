@@ -77,6 +77,9 @@ class TestManager(unittest.TestCase):
         self.m2.return_value = '14.1.0'
         self.m3 = self.p3.start()
         self.m3.return_value = True
+        self.p4 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info.packages_installed')
+        self.m4 = self.p4.start()
+        self.m4.return_value = []
 
     def tearDown(self):
         self.p1.stop()

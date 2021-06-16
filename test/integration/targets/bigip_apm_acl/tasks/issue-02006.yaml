@@ -1,0 +1,205 @@
+---
+- name: Issue 02006 - Create static ACL
+  bigip_apm_acl:
+    name: acltest-2006
+    acl_order: 0
+    type: static
+    entries:
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.1'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: reject
+        dst_port: '*'
+        dst_addr: '192.168.1.1'
+        src_port: '*'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+        log: packet
+  register: result
+
+- name: Issue 02006 - Assert Create static ACL
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.entries[0].dst_addr == "192.168.1.1"
+      - result.entries[1].action == "reject"
+
+- name: Issue 02006 - Create static ACL - Idempotent check
+  bigip_apm_acl:
+    name: acltest-2006
+    acl_order: 0
+    type: static
+    entries:
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.1'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: reject
+        dst_port: '*'
+        dst_addr: '192.168.1.1'
+        src_port: '*'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+        log: packet
+  register: result
+
+- name: Issue 02006 - Assert Create static ACL - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02006 - Update created ACL by adding some entries
+  bigip_apm_acl:
+    name: acltest-2006
+    entries:
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.1'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.2.3'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.18'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: reject
+        dst_port: '*'
+        dst_addr: '192.168.1.1'
+        src_port: '*'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+        log: packet
+  register: result
+
+- name: Issue 02006 - Assert Update created ACL by adding some entries
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.entries[0].dst_addr == "192.168.1.1"
+      - result.entries[1].dst_addr == "192.168.2.3"
+      - result.entries[2].dst_addr == "192.168.1.18"
+      - result.entries[3].action == "reject"
+
+- name: Issue 02006 - Update created ACL by adding some entries - Idempotent check
+  bigip_apm_acl:
+    name: acltest-2006
+    entries:
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.1'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.2.3'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.18'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: reject
+        dst_port: '*'
+        dst_addr: '192.168.1.1'
+        src_port: '*'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+        log: packet
+  register: result
+
+- name: Issue 02006 - Assert Update created ACL by adding some entries - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02006 - Update created ACL by removing some entries
+  bigip_apm_acl:
+    name: acltest-2006
+    entries:
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.1'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.2.3'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+  register: result
+
+- name: Issue 02006 - Assert Update created ACL by removing some entries
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.entries[0].dst_addr == "192.168.1.1"
+      - result.entries[1].dst_addr == "192.168.2.3"
+
+- name: Issue 02006 - Update created ACL by removing some entries - Idempotent check
+  bigip_apm_acl:
+    name: acltest-2006
+    entries:
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.1.1'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+      - action: allow
+        dst_port: '80'
+        dst_addr: '192.168.2.3'
+        src_port: '443'
+        src_addr: '10.10.10.0'
+        src_mask: '255.255.255.128'
+        protocol: tcp
+  register: result
+
+- name: Issue 02006 - Assert Update created ACL by removing some entries - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02006 - Remove created ACL
+  bigip_apm_acl:
+    name: acltest-2006
+    state: absent

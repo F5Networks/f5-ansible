@@ -430,7 +430,7 @@ class ModuleManager(object):
             self.client.provider['server_port'],
         )
 
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
+        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
@@ -439,6 +439,10 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
         if 'items' in response and response['items'] != []:
             return True
         return False
@@ -461,7 +465,7 @@ class ModuleManager(object):
             self.client.provider['server_port'],
         )
 
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
+        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
@@ -470,6 +474,9 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
 
         policy_link = response['items'][0]['selfLink']
         return policy_link

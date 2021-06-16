@@ -1,0 +1,56 @@
+---
+- name: Issue 01978 - Import ASM policy
+  bigip_asm_policy_import:
+    name: foo-policy-test
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 01978 - Assert Import ASM policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01978 - Import ASM policy - Idempotent check
+  bigip_asm_policy_import:
+    name: foo-policy-test
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 01978 - Assert Import ASM policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01978 - Import ASM policy, existing policy name subset
+  bigip_asm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 01978 - Assert Import ASM policy, existing policy name subset
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01978 - Import ASM policy, existing policy name subset - Idempotent check
+  bigip_asm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 01978 - Assert Import ASM policy, existing policy name subset - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01978 - Remove ASM policies
+  bigip_asm_policy_manage:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+      - "foo-policy"
+      - "foo-policy-test"
