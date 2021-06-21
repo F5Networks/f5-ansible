@@ -1,0 +1,4 @@
+---
+bugfixes:
+    - Fix index out of range error when comparing user and device's ACLs
+    - Fix incorrect duplication of entries when creating new ACLs
