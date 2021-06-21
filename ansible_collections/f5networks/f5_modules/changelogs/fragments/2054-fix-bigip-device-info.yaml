@@ -1,0 +1,4 @@
+---
+bugfixes:
+    - Fix ltm policy conditions to return complete data in bigip_device_info module
+    - Fix asm policy stats to return complete info in bigip_device_info module
