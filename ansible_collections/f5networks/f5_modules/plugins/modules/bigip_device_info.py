@@ -370,6 +370,13 @@ asm_policies:
       returned: queried
       type: list
       sample: ['/Common/foo_VS/']
+    manual_virtual_servers:
+      description:
+        - virtual servers that have Manual Configuration (Advanced) LTM policy configuration which, in turn,
+          have rule(s) built with ASM control actions enabled.That config is in fact maintained under a field called manualVirtualServers.
+      returned: queried
+      type: list
+      sample: ['/Common/test_VS/']
     allowed_response_codes:
       description:
         - Lists the response status codes between 400 and 599 that the security profile considers legal.
@@ -3887,6 +3894,48 @@ ltm_policies:
             http_uri:
               description:
                 - This condition matches on an HTTP URI.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            datagroup:
+              description:
+                - This condition matches on an HTTP URI.
+              returned: when defined in the condition.
+              type: str
+              sample: /Common/policy_using_datagroup
+            tcp:
+              description:
+                - This condition matches on an tcp parameters.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            address:
+              description:
+                - This condition matches on an tcp address.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            matches:
+              description:
+                - This condition matches on an address.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            proxy_connect:
+              description:
+                - Specifies the value matched on is proxyConnect.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            proxy_request:
+              description:
+                - Specifies the value matched on is proxyRequest.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            remote:
+              description:
+                - Specifies the value matched on is remote.
               returned: when defined in the condition.
               type: bool
               sample: no
@@ -7811,6 +7860,7 @@ class AsmPolicyFactParameters(BaseParameters):
         'hasParent': 'has_parent',
         'protocolIndependent': 'protocol_independent',
         'virtualServers': 'virtual_servers',
+        'manualVirtualServers': 'manual_virtual_servers',
         'allowedResponseCodes': 'allowed_response_codes',
         'learningMode': 'learning_mode',
         'enforcementMode': 'enforcement_mode',
@@ -7894,6 +7944,13 @@ class AsmPolicyFactParameters(BaseParameters):
         if self._values['id'] is None:
             return None
         return self._values['id']
+
+    @property
+    def manual_virtual_servers(self):
+        if 'manual_virtual_servers' in self._values:
+            if self._values['manual_virtual_servers'] is None:
+                return None
+            return self._values['manual_virtual_servers']
 
     @property
     def signature_staging(self):
@@ -12505,6 +12562,15 @@ class LtmPolicyParameters(BaseParameters):
             tmp['external'] = flatten_boolean(condition.pop('external', None))
             tmp['http_basic_auth'] = flatten_boolean(condition.pop('httpBasicAuth', None))
             tmp['http_host'] = flatten_boolean(condition.pop('httpHost', None))
+            tmp['datagroup'] = condition.pop('datagroup', None)
+            tmp['tcp'] = flatten_boolean(condition.pop('tcp', None))
+            tmp['remote'] = flatten_boolean(condition.pop('remote', None))
+            tmp['matches'] = flatten_boolean(condition.pop('matches', None))
+            tmp['address'] = flatten_boolean(condition.pop('address', None))
+            tmp['present'] = flatten_boolean(condition.pop('present', None))
+            tmp['proxy_connect'] = flatten_boolean(condition.pop('proxyConnect', None))
+            tmp['proxy_request'] = flatten_boolean(condition.pop('proxyRequest', None))
+            tmp['host'] = flatten_boolean(condition.pop('host', None))
             tmp['http_uri'] = flatten_boolean(condition.pop('httpUri', None))
             tmp['request'] = flatten_boolean(condition.pop('request', None))
             tmp['username'] = flatten_boolean(condition.pop('username', None))
