@@ -1,3 +1,0 @@
----
-minor_changes:
-    - Add address_matches_with_external_datagroup condition to bigip_policy_rule module

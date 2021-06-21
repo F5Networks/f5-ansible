@@ -560,6 +560,33 @@ releases:
       name: bigip_profile_persistence_universal
       namespace: ''
     release_date: '2020-01-07'
+  1.10.0:
+    changes:
+      bugfixes:
+      - Add negate as3,do,ts,cfe filter for bigip_device_info
+      - Fix asm policy stats to return complete info in bigip_device_info module
+      - Fix bigip_device_info with correct attribute "insert_xforwarded_for"
+      - Fix ignoring of partition parameter when creating external datagroups
+      - Fix incorrect duplication of entries when creating new ACLs
+      - Fix index out of range error when comparing user and device's ACLs
+      - Fix ltm policy conditions to return complete data in bigip_device_info module
+      - Fix query filters in bigip_asm_* modules to allow policy names subsets
+      minor_changes:
+      - Add address_matches_with_external_datagroup condition to bigip_policy_rule
+        module
+      - Add persistence target for disable action to bigip_policy_rule module
+      - Add rule_order parameter to bigip_policy_rule module
+    fragments:
+    - 1978-fix-asm-query-filters.yaml
+    - 1986-fix-add-negate-as3-filter.yaml
+    - 1993-allow-disable-persistence.yaml
+    - 1998-add-ltm-policy-rule-order.yaml
+    - 2002-add-external-datagroup-ltm-policy.yaml
+    - 2006-fix-apm-acl.yaml
+    - 2017-fix-bigip-device-info.yaml
+    - 2018-fix-external-data-group-partition.yaml
+    - 2054-fix-bigip-device-info.yaml
+    release_date: '2021-06-21'
   1.2.0:
     changes:
       bugfixes:
@@ -894,10 +921,10 @@ releases:
     changes:
       bugfixes:
       - Disable cert validaton for Teem
+      - Fix bigip_gtm_wide_ip to support wildcard type a wide ips
       - Fix bigiq non local provider backport from f5_bigip collection
       - Fix for bigip_data_group accepts address object without value
       - Fix for bigip_pool_member aggregate fails to member comparison
-      - Fix bigip_gtm_wide_ip to support wildcard type a wide ips
       - Fix imish config issue where last character is chopped off by adding extra
         space to commands
       - Fix issue in bigip_firewall_dos_policy where in TMOS v15 and above creating
@@ -928,9 +955,9 @@ releases:
     - 1964-fix-imish-config.yaml
     - 1965-fix-bigip-interface.yaml
     - 2015-v16-test-fixes.yaml
+    - 2026-fix-bigiq-provider.yaml
+    - 2027-fix-bigip-datagroup-key.yaml
     - 2029-fix-irules-param-wide-ip.yaml
     - fix-teem-version.yaml
     - fix-v15-v16-tests-http-profile.yaml
-    - 2026-fix-bigiq-provider.yaml
-    - 2027-fix-bigip-datagroup-key.yaml
     release_date: '2021-05-11'

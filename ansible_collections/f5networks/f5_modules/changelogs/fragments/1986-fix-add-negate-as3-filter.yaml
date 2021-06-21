@@ -1,3 +1,0 @@
----
-bugfixes:
-    - Add negate as3,do,ts,cfe filter for bigip_device_info

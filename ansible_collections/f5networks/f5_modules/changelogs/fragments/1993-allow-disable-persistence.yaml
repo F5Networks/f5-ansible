@@ -1,3 +1,0 @@
----
-minor_changes:
-    - Add persistence target for disable action to bigip_policy_rule module

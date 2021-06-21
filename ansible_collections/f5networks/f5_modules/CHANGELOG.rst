@@ -5,6 +5,28 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.10.0
+=======
+
+Minor Changes
+-------------
+
+- Add address_matches_with_external_datagroup condition to bigip_policy_rule module
+- Add persistence target for disable action to bigip_policy_rule module
+- Add rule_order parameter to bigip_policy_rule module
+
+Bugfixes
+--------
+
+- Add negate as3,do,ts,cfe filter for bigip_device_info
+- Fix asm policy stats to return complete info in bigip_device_info module
+- Fix bigip_device_info with correct attribute "insert_xforwarded_for"
+- Fix ignoring of partition parameter when creating external datagroups
+- Fix incorrect duplication of entries when creating new ACLs
+- Fix index out of range error when comparing user and device's ACLs
+- Fix ltm policy conditions to return complete data in bigip_device_info module
+- Fix query filters in bigip_asm_* modules to allow policy names subsets
+
 v1.9.1
 ======
 
@@ -12,23 +34,23 @@ Minor Changes
 -------------
 
 - Add ENV variable with better name, it should make it easier to understand when disabling F5 TEEM telemetry
-- Add new choices to request/response chunking parameter to accommodate TMOS v15 and above
+- Add new choices to request/response chunking parameter to accomodate TMOS v15 and above
 
 Bugfixes
 --------
 
-- Disable cert validation for Teem
+- Disable cert validaton for Teem
+- Fix bigip_gtm_wide_ip to support wildcard type a wide ips
 - Fix bigiq non local provider backport from f5_bigip collection
 - Fix for bigip_data_group accepts address object without value
 - Fix for bigip_pool_member aggregate fails to member comparison
-- Fix bigip_gtm_wide_ip to support wildcard type a wide ips
 - Fix imish config issue where last character is chopped off by adding extra space to commands
 - Fix issue in bigip_firewall_dos_policy where in TMOS v15 and above creating dos vector containers requires additional step in the API
 - Fix issue in bigip_gtm_topology_region where parameter region_members being set to empty list returned an error
 - Fix issue in bigip_pool_member with module idempotency when pool member status was fqdn-down
 - Fix issue where bigip_firewall_port_list was failing when removing objects (#1988)
 - Fix issue where empty irules property on device would throw exception during comparison
-- Fix issue where viprion platform interfaces interface naming scheme prevented the use of module
+- Fix issue where viprion platrform interfaces interface naming scheme prevented the use of module
 - Fix issue with new telemetry environment variable not populated in provider
 - Fix issue with send_teem function ignoring environment variable
 - Fix teem version in constants.py
