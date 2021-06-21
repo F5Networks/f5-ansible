@@ -1,3 +1,0 @@
----
-bugfixes:
-    - Fix query filters in bigip_asm_* modules to allow policy names subsets
