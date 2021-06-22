@@ -437,21 +437,21 @@ options:
         elements: str
       address_matches_with_any:
         description:
-          - A list of IP Subnet address strings the tcp should match.
+          - A list of IP Subnet address strings the IP address should match.
           - This parameter is only valid with the C(tcp) type.
         type: list
         elements: str
         version_added: "1.8.0"
       address_matches_with_datagroup:
         description:
-          - A list of internal datagroup strings the tcp should match.
+          - A list of internal datagroup strings the IP address should match.
           - This parameter is only valid with the C(tcp) type.
         type: list
         elements: str
         version_added: "1.8.0"
       address_matches_with_external_datagroup:
         description:
-          - A list of external datagroup strings the tcp should match.
+          - A list of external datagroup strings the IP address should match.
           - This parameter is only valid with the C(tcp) type.
         type: list
         elements: str
@@ -613,7 +613,7 @@ description:
   type: str
   sample: My rule
 rule_order:
-  description: Specifies a number that indicates the order of this rule relative to other rules in policy.
+  description: Specifies a number that indicates the order of this rule relative to other rules in the policy.
   returned: changed
   type: int
   sample: 10

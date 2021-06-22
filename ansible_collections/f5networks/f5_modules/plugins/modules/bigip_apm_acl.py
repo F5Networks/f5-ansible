@@ -48,7 +48,7 @@ options:
       - Access control entries that define the ACL matching and its respective behavior.
       - The order in which the rules are placed as arguments to this parameter determines their order in the ACL,
         in other words changing the order of the same elements will cause a change on the unit.
-      - Changes in the number of rules will always trigger device change. In other words user input will take
+      - Changes in the number of rules will always trigger device change. This means user input will take
         precedence over what is on device.
     type: list
     elements: dict
