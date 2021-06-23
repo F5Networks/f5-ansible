@@ -722,7 +722,7 @@ class ModuleManager(object):
 
             if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
                 response['key_checksum'] = response['checksum']
-                response['key_source_path'] = response['sourcePath']
+                response['key_source_path'] = response['fullPath']
                 final_response = merge_two_dicts(final_response, response)
             else:
                 raise F5ModuleError(resp.content)
@@ -744,7 +744,7 @@ class ModuleManager(object):
 
             if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
                 response['cert_checksum'] = response['checksum']
-                response['cert_source_path'] = response['sourcePath']
+                response['cert_source_path'] = response['fullPath']
                 final_response = merge_two_dicts(final_response, response)
             else:
                 raise F5ModuleError(resp.content)
