@@ -233,7 +233,6 @@ class BaseManager(object):
 
 class V1Manager(BaseManager):
     def exec_module(self):
-        start = datetime.datetime.now().isoformat()
         result = dict()
 
         changed = self.execute()
@@ -242,7 +241,6 @@ class V1Manager(BaseManager):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.module, None)
         return result
 
     def wait_for_device(self, start, end):
