@@ -578,7 +578,6 @@ class V1Manager(BaseManager):
         return False
 
     def exec_module(self):
-        start = datetime.now().isoformat()
         result = dict()
 
         changed = self.execute()
@@ -586,7 +585,6 @@ class V1Manager(BaseManager):
         result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
         self._announce_warnings(result)
-        send_teem(start, self.module, None)
         return result
 
     def execute(self):

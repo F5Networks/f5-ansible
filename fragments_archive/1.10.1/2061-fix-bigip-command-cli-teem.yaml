@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix teem call when bigip_command and bigip_wait modules are using CLI as transport
