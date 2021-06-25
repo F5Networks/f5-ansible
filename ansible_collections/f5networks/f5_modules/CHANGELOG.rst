@@ -5,6 +5,14 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.10.1
+=======
+
+Bugfixes
+--------
+
+- Fix teem call when bigip_command and bigip_wait modules are using CLI as transport
+
 v1.10.0
 =======
 

@@ -587,6 +587,13 @@ releases:
     - 2018-fix-external-data-group-partition.yaml
     - 2054-fix-bigip-device-info.yaml
     release_date: '2021-06-21'
+  1.10.1:
+    changes:
+      bugfixes:
+      - Fix teem call when bigip_command and bigip_wait modules are using CLI as transport
+    fragments:
+    - 2061-fix-bigip-command-cli-teem.yaml
+    release_date: '2021-06-25'
   1.2.0:
     changes:
       bugfixes:
