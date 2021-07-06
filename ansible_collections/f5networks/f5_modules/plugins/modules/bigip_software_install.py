@@ -518,9 +518,20 @@ class ModuleManager(object):
         # version key can be missing in the event that an existing volume has
         # no installed software in it.
         if self.want.version != response.get('version', None):
+            if (response.get('active') is None) and response.get('status') == "complete":
+                delresp = self.client.api.delete(self.volume_url)
+                if delresp.status == 200:
+                    time.sleep(40)
             return False
+
         if self.want.build != response.get('build', None):
             return False
+
+        if (response.get('active') is None) and (response.get('status') == "complete"):
+            delresp = self.client.api.delete(self.volume_url)
+            if delresp.status == 200:
+                time.sleep(40)
+                return False
 
         if self.want.state == 'installed':
             return True
