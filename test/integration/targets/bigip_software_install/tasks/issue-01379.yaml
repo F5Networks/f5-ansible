@@ -27,3 +27,29 @@
     that:
       - result is not changed
       - result is success
+
+- name: Issue 01992 - Install image on VPR platform in HD1.2
+  bigip_software_install:
+    image: "{{ viprion_image|basename }}"
+    state: activated
+    volume: HD1.2
+  register: result
+
+- name: Assert Issue 01992 - Install image on VPR platform in HD1.2
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01992 - Install image on VPR platform in HD1.1 inactive volume
+  bigip_software_install:
+    image: "{{ viprion_image|basename }}"
+    state: installed
+    volume: HD1.1
+  register: result
+
+- name: Assert Issue 01992 - Install image on VPR platform in HD1.1 inactive volume
+  assert:
+    that:
+      - result is not changed
+      - result is success
