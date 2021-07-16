@@ -13855,7 +13855,7 @@ class SslCertificatesParameters(BaseParameters):
         'expiration_timestamp',
         'create_time',
         'subject_alternative_name',
-	'serial_no',
+        'serial_no',
     ]
 
     @property
