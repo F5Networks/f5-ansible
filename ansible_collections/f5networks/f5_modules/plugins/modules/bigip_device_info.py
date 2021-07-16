@@ -5111,6 +5111,12 @@ ssl_certs:
       returned: queried
       type: str
       sample: "2018-05-15T21:11:15Z"
+    serial_no:
+      description:
+        - Specifies certificate’s serial number
+      returned: queried
+      type: str
+      sample: "1234567890"
     subject_alternative_name:
       description:
         - Displays the Subject Alternative Name for the certificate.
