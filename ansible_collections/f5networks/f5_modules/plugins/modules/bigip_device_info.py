@@ -13830,6 +13830,7 @@ class SslCertificatesParameters(BaseParameters):
         'expirationDate': 'expiration_timestamp',
         'createTime': 'create_time',
         'subjectAlternativeName': 'subject_alternative_name',
+        'serialNumber': 'serial_no',
     }
 
     returnables = [
@@ -13848,6 +13849,7 @@ class SslCertificatesParameters(BaseParameters):
         'expiration_timestamp',
         'create_time',
         'subject_alternative_name',
+	'serial_no',
     ]
 
     @property
