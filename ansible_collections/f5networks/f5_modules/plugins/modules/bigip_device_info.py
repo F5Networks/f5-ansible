@@ -5111,6 +5111,12 @@ ssl_certs:
       returned: queried
       type: str
       sample: "2018-05-15T21:11:15Z"
+    serial_no:
+      description:
+        - Specifies certificate's serial number
+      returned: queried
+      type: str
+      sample: "1234567890"
     subject_alternative_name:
       description:
         - Displays the Subject Alternative Name for the certificate.
@@ -13830,6 +13836,7 @@ class SslCertificatesParameters(BaseParameters):
         'expirationDate': 'expiration_timestamp',
         'createTime': 'create_time',
         'subjectAlternativeName': 'subject_alternative_name',
+        'serialNumber': 'serial_no',
     }
 
     returnables = [
@@ -13848,6 +13855,7 @@ class SslCertificatesParameters(BaseParameters):
         'expiration_timestamp',
         'create_time',
         'subject_alternative_name',
+        'serial_no',
     ]
 
     @property
