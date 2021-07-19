@@ -653,7 +653,8 @@ class ModuleParameters(Parameters):
             elif 'address_range' in x and x['address_range'] is not None:
                 result += [('address', x['address_range'])]
             elif 'address_list' in x and x['address_list'] is not None:
-                result += [('address_list', x['address_list'])]
+                result += [('address_list', fq_name(self.partition, x['address_list']))]
+                # result += [('address_list', x['address_list'])]
             elif 'country' in x and x['country'] is not None:
                 result += [('geo', x['country'])]
             elif 'vlan' in x and x['vlan'] is not None:
@@ -679,7 +680,8 @@ class ModuleParameters(Parameters):
             elif 'address_range' in x and x['address_range'] is not None:
                 result += [('address', x['address_range'])]
             elif 'address_list' in x and x['address_list'] is not None:
-                result += [('address_list', x['address_list'])]
+                result += [('address_list', fq_name(self.partition, x['address_list']))]
+                # result += [('address_list', x['address_list'])]
             elif 'country' in x and x['country'] is not None:
                 result += [('geo', x['country'])]
             elif 'port' in x and x['port'] is not None:
@@ -1027,7 +1029,6 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
@@ -1205,7 +1206,6 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             return ApiParameters(params=response)
         raise F5ModuleError(resp.content)
