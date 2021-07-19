@@ -5113,7 +5113,7 @@ ssl_certs:
       sample: "2018-05-15T21:11:15Z"
     serial_no:
       description:
-        - Specifies certificate’s serial number
+        - Specifies certificate's serial number
       returned: queried
       type: str
       sample: "1234567890"
