@@ -1,0 +1,53 @@
+---
+- name: Issue 01912 - Create fastl4 profile with syn cookie enable
+  bigip_profile_fastl4:
+    name: issue_01912
+    syn_cookie_enable: yes
+  register: result
+
+- name: Issue 01912 - Assert Create fastl4 profile with syn cookie enable
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01912 - Create fastl4 profile with syn cookie enable - Idempotent check
+  bigip_profile_fastl4:
+    name: issue_01912
+    syn_cookie_enable: yes
+  register: result
+
+- name: Issue 01912 - Assert Create fastl4 profile with syn cookie enable - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01912 - Change fastl4 profile syn_cookie_enable
+  bigip_profile_fastl4:
+    name: issue_01912
+    syn_cookie_enable: no
+  register: result
+
+- name: Issue 01912 - Assert Change fastl4 profile syn_cookie_enable
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01912 - Change fastl4 profile syn_cookie_enable - Idempotent check
+  bigip_profile_fastl4:
+    name: issue_01912
+    syn_cookie_enable: no
+  register: result
+
+- name: Issue 01912 - Assert Change fastl4 profile syn_cookie_enable - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01912 - Remove fastl4 profile
+  bigip_profile_fastl4:
+    name: issue_01912
+    state: absent
