@@ -288,6 +288,7 @@ options:
     description:
       - Specifies whether or not to use SYN Cookie.
     type: bool
+    version_added: "1.10.1"
   pva_acceleration:
     description:
       - Specifies the Packet Velocity ASIC acceleration policy.
