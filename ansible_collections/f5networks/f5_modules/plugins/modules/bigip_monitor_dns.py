@@ -371,7 +371,7 @@ from ..module_utils.common import (
 )
 from ..module_utils.compare import cmp_str_with_none
 from ..module_utils.ipaddress import (
-    is_valid_ip, validate_ip_v6_address, validate_ip_address
+    is_valid_ip, is_ipv6
 )
 from ..module_utils.icontrol import tmos_version
 from ..module_utils.teem import send_teem
@@ -821,11 +821,11 @@ class ModuleManager(object):
                 raise F5ModuleError(
                     "Monitors with the 'reverse' attribute are not currently compatible with 'time_until_up'."
                 )
-        if self._address_type_matches_query_type('a', validate_ip_v6_address):
+        if self._address_type_matches_query_type('a', is_ipv6):
             raise F5ModuleError(
                 "Monitor has a IPv6 address. Only a 'query_type' of 'aaaa' is supported for IPv6."
             )
-        elif self._address_type_matches_query_type('aaaa', validate_ip_address):
+        elif self._address_type_matches_query_type('aaaa', is_valid_ip):
             raise F5ModuleError(
                 "Monitor has a IPv4 address. Only a 'query_type' of 'a' is supported for IPv4."
             )
@@ -862,11 +862,11 @@ class ModuleManager(object):
                     "A 'receive' string must be specified when setting 'reverse'."
                 )
 
-        if self.want.receive is not None and validate_ip_v6_address(self.want.receive) and self.want.query_type == 'a':
+        if self.want.receive is not None and is_ipv6(self.want.receive) and self.want.query_type == 'a':
             raise F5ModuleError(
                 "Monitor has a IPv6 address. Only a 'query_type' of 'aaaa' is supported for IPv6."
             )
-        elif (self.want.receive is not None and validate_ip_address(self.want.receive) and
+        elif (self.want.receive is not None and is_valid_ipelif self._address_type_matches_query_type('aaaa', is_valid_ip(self.want.receive) and
               self.want.query_type == 'aaaa'):
             raise F5ModuleError(
                 "Monitor has a IPv4 address. Only a 'query_type' of 'a' is supported for IPv4."

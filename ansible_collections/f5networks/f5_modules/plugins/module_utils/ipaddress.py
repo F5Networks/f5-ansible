@@ -8,10 +8,6 @@ __metaclass__ = type
 
 import re
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    validate_ip_address, validate_ip_v6_address
-)
-
 from ipaddress import ip_interface, ip_network
 
 IPV4_REGEX = r'(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}' \
@@ -33,13 +29,26 @@ ID = re.compile(r'%[\w]+')
 def remove_ip_id(addr):
     if u'%' in addr:
         m = ID.search(addr)
-        return addr[:m.start()] + addr[m.end():]
+        address = addr[:m.start()] + addr[m.end():]
+        return address.encode('utf-8')
 
 
 def is_valid_ip(addr, type='all'):
-    if IPV4.match(addr):
+    if IPV4.match(addr.encode('utf-8')):
         return True
+    if IPV6.match(addr.encode('utf-8')):
+        return True
+    return False
+
+
+def is_ipv6(addr):
     if IPV6.match(addr):
+        return True
+    return False
+
+
+def is_ipv4(addr):
+    if IPV4.match(addr):
         return True
     return False
 
@@ -89,9 +98,11 @@ def is_valid_ip_network(address):
 
 def is_valid_ip_interface(address):
     address = remove_ip_id(address)
+    print(address)
     if is_valid_ip(address):
         try:
             ip_interface(address)
+            print("VALID IP ADDRESS")
             return True
         except ValueError:
             return False

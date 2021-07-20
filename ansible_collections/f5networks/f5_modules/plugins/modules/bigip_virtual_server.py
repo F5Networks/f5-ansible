@@ -910,7 +910,7 @@ from ..module_utils.icontrol import (
     modules_provisioned, tmos_version
 )
 from ..module_utils.ipaddress import (
-    is_valid_ip, is_valid_ip_interface, ip_interface, validate_ip_v6_address, get_netmask, compress_address
+    is_valid_ip, is_valid_ip_interface, ip_interface, get_netmask, compress_address, is_ipv6
 )
 from ..module_utils.teem import send_teem
 
@@ -1094,7 +1094,7 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     def _format_port_for_destination(self, ip, port):
-        if validate_ip_v6_address(ip):
+        if is_ipv6(ip):
             result = '.{0}'.format(port)
         else:
             result = ':{0}'.format(port)

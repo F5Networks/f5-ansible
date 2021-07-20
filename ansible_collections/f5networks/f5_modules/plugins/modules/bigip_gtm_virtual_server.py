@@ -276,7 +276,7 @@ from ..module_utils.icontrol import (
     module_provisioned, tmos_version
 )
 from ..module_utils.ipaddress import (
-    validate_ip_v6_address, is_valid_ip
+    is_ipv6, is_valid_ip
 )
 from ..module_utils.teem import send_teem
 
@@ -556,7 +556,7 @@ class ModuleParameters(Parameters):
             return None
         if self.port is None:
             return None
-        if validate_ip_v6_address(self.address):
+        if is_ipv6(self.address):
             result = '{0}.{1}'.format(self.address, self.port)
         else:
             result = '{0}:{1}'.format(self.address, self.port)

@@ -417,7 +417,7 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, fq_name, flatten_boolean, is_valid_hostname
 )
-from ..module_utils.ipaddress import is_valid_ip, validate_ip_v6_address
+from ..module_utils.ipaddress import is_valid_ip, is_ipv6
 from ..module_utils.compare import cmp_str_with_none
 from ..module_utils.icontrol import (
     TransactionContextManager, tmos_version
@@ -489,7 +489,7 @@ class ModuleParameters(Parameters):
     def full_name(self):
         delimiter = ':'
         try:
-            if validate_ip_v6_address(self.full_name_dict['name']):
+            if is_ipv6(self.full_name_dict['name']):
                 delimiter = '.'
         except TypeError:
             pass
@@ -1114,7 +1114,7 @@ class ModuleManager(object):
             )
         delimiter = ':'
         try:
-            if validate_ip_v6_address(item['address']):
+            if is_ipv6(item['address']):
                 delimiter = '.'
         except TypeError:
             pass
