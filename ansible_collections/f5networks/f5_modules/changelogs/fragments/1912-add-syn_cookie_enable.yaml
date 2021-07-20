@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Add syn_cookie_enable parameter to bigip_profile_fastl4 module

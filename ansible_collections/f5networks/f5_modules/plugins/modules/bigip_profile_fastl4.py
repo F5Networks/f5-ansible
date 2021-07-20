@@ -284,6 +284,10 @@ options:
     description:
       - Enables or disables hardware SYN cookie support when PVA10 is present on the system.
     type: bool
+  syn_cookie_enable:
+    description:
+      - Specifies whether or not to use SYN Cookie. 
+    type: bool
   pva_acceleration:
     description:
       - Specifies the Packet Velocity ASIC acceleration policy.
@@ -496,6 +500,11 @@ hardware_syn_cookie:
   returned: changed
   type: bool
   sample: no
+syn_cookie_enable:
+  description: Specifies whether or not to use SYN Cookie.
+  returned: changed
+  type: bool
+  sample: no  
 pva_acceleration:
   description: Specifies the Packet Velocity ASIC acceleration policy.
   returned: changed
@@ -552,6 +561,7 @@ class Parameters(AnsibleF5Parameters):
         'tcpWscaleMode': 'tcp_wscale_mode',
         'timeoutRecovery': 'timeout_recovery',
         'hardwareSynCookie': 'hardware_syn_cookie',
+        'synCookieEnable': 'syn_cookie_enable',
         'pvaAcceleration': 'pva_acceleration',
     }
 
@@ -591,6 +601,7 @@ class Parameters(AnsibleF5Parameters):
         'tcpWscaleMode',
         'timeoutRecovery',
         'hardwareSynCookie',
+        'synCookieEnable',
         'pvaAcceleration',
     ]
 
@@ -669,6 +680,7 @@ class Parameters(AnsibleF5Parameters):
         'tcp_wscale_mode',
         'timeout_recovery',
         'hardware_syn_cookie',
+        'syn_cookie_enable',
         'pva_acceleration',
     ]
 
@@ -921,6 +933,14 @@ class ModuleParameters(Parameters):
     @property
     def hardware_syn_cookie(self):
         result = flatten_boolean(self._values['hardware_syn_cookie'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
+    @property
+    def syn_cookie_enable(self):
+        result = flatten_boolean(self._values['syn_cookie_enable'])
         if result == 'yes':
             return 'enabled'
         if result == 'no':
@@ -1398,6 +1418,7 @@ class ArgumentSpec(object):
                 choices=['fallback', 'disconnect']
             ),
             hardware_syn_cookie=dict(type='bool'),
+            syn_cookie_enable=dict(type='bool'),
             pva_acceleration=dict(
                 choices=['full', 'dedicated', 'partial', 'none']
             ),
