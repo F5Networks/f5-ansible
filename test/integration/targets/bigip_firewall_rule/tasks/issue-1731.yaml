@@ -1,0 +1,72 @@
+---
+
+- name: Create an address list
+  bigip_firewall_address_list:
+    name: list_test
+    addresses:
+        - 3.3.3.3
+        - 4.4.4.4
+        - 5.5.5.5
+  register: result
+
+- name: 1731-Create a new rule with address_list in the issue_1731 firewall policy
+  bigip_firewall_rule:
+    name: issue_1731
+    parent_policy: 'policy_test'
+    protocol: tcp
+    source:
+      - address: 1.2.3.4
+      - address: "::1"
+      - address_list: list_test
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 22
+      - port_range: 80-443
+    destination:
+      - address: 1.2.3.4
+      - address: "::1"
+      - address_list: list_test
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 22
+      - port_range: 80-443
+    action: accept
+    logging: yes
+  register: result
+
+- name: 1731-Create a new rule with address_list in the issue_1731 firewall policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: 1731-Create a new rule with address_list in the issue_1731 firewall policy Idempotent
+  bigip_firewall_rule:
+    name: issue_1731
+    parent_policy: 'policy_test'
+    protocol: tcp
+    source:
+      - address: 1.2.3.4
+      - address: "::1"
+      - address_list: list_test
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 22
+      - port_range: 80-443
+    destination:
+      - address: 1.2.3.4
+      - address: "::1"
+      - address_list: list_test
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 22
+      - port_range: 80-443
+    action: accept
+    logging: yes
+  register: result
+
+- name: 1731-Create a new rule with address_list in the issue_1731 firewall policy
+  assert:
+    that:
+      - result is not changed
+      - result is success
