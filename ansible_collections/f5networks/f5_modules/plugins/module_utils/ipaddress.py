@@ -6,20 +6,41 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     validate_ip_address, validate_ip_v6_address
 )
 
 from ipaddress import ip_interface, ip_network
 
+IPV4_REGEX = r'(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}' \
+            + r'([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])' \
+            + r'(%[\w]+)?'
+
+IPV4 = re.compile(IPV4_REGEX)
+
+IPV6_REGEX = r'((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}' \
+            + r'((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|' \
+            + r'(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}' \
+            + r'(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))' \
+            + r'(%[\w]+)?'
+
+IPV6 = re.compile(IPV6_REGEX)
+
+ID = re.compile(r'%[\w]+')
+
+def remove_ip_id(addr):
+    if u'%' in addr:
+        m = ID.search(addr)
+        return addr[:m.start()] + addr[m.end():]
+
 
 def is_valid_ip(addr, type='all'):
-    if type in ['all', 'ipv4']:
-        if validate_ip_address(addr):
-            return True
-    if type in ['all', 'ipv6']:
-        if validate_ip_v6_address(addr):
-            return True
+    if IPV4.match(addr):
+        return True
+    if IPV6.match(addr):
+        return True
     return False
 
 
@@ -58,6 +79,7 @@ def ipv6_netmask_to_cidr(mask):
 
 
 def is_valid_ip_network(address):
+    address = remove_ip_id(address)
     try:
         ip_network(u'{0}'.format(address))
         return True
@@ -66,20 +88,24 @@ def is_valid_ip_network(address):
 
 
 def is_valid_ip_interface(address):
-    try:
-        ip_interface(u'{0}'.format(address))
-        return True
-    except ValueError:
-        return False
+    address = remove_ip_id(address)
+    if is_valid_ip(address):
+        try:
+            ip_interface(address)
+            return True
+        except ValueError:
+            return False
 
 
 def get_netmask(address):
+    address = remove_ip_id(address)
     addr = ip_network(u'{0}'.format(address))
     netmask = addr.netmask.compressed
     return netmask
 
 
 def compress_address(address):
+    address = remove_ip_id(address)
     addr = ip_network(u'{0}'.format(address))
     result = addr.compressed.split('/')[0]
     return result

@@ -1,5 +1,5 @@
 paramiko
-git+https://github.com/ansible/ansible.git@devel
+ansible
 pytest
 pytest-xdist
 flake8

@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ansible = ">=2.9.0"
+q = "*"
+invoke = "*"
+paramiko = "*"
+pytest = "*"
+pytest-xdist = "*"
+flake8 = "*"
+nose = "*"
+mock = "*"
+pycodestyle = "*"
+virtualenv = "*"
+antsibull-changelog = "*"
+ipaddress = "*"
+cryptography = "*"
+objectpath = "*"
+ordereddict = "*"
+simplejson = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
