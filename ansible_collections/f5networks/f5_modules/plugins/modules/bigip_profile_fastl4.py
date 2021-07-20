@@ -286,7 +286,7 @@ options:
     type: bool
   syn_cookie_enable:
     description:
-      - Specifies whether or not to use SYN Cookie. 
+      - Specifies whether or not to use SYN Cookie.
     type: bool
   pva_acceleration:
     description:
@@ -504,7 +504,7 @@ syn_cookie_enable:
   description: Specifies whether or not to use SYN Cookie.
   returned: changed
   type: bool
-  sample: no  
+  sample: no
 pva_acceleration:
   description: Specifies the Packet Velocity ASIC acceleration policy.
   returned: changed
