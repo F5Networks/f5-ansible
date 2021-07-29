@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix snat pool issue in device info module

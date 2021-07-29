@@ -16406,8 +16406,20 @@ class VirtualServersParameters(BaseParameters):
                 return 'automap'
             elif self._values['snat_type']['type'] == 'none':
                 return 'none'
-            elif self._values['snat_type']['type'] == 'pool':
+            elif self._values['snat_type']['type'] == 'snat':
                 return 'snat'
+
+    @property
+    def snat_pool(self):
+        if self._values['snat_type'] is None:
+            return None
+        if 'type' in self._values['snat_type']:
+            if self._values['snat_type']['type'] == 'automap':
+                return 'none'
+            elif self._values['snat_type']['type'] == 'none':
+                return 'none'
+            elif self._values['snat_type']['type'] == 'snat':
+                return self._values['snat_type']["pool"]
 
     @property
     def connection_mirror_enabled(self):
