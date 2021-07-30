@@ -47,6 +47,18 @@ def update_galaxy_file(version, collection):
     fh.close()
 
 
+def update_version_file(version, collection):
+    # updates version.py file for collection update
+    version_file = '{0}/ansible_collections/f5networks/{1}/plugins/module_utils/version.py'.format(BASE_DIR, collection)
+
+    template = JINJA_ENV.get_template('version_stub.py')
+    content = template.render(version=version)
+
+    fh = open(version_file, 'w')
+    fh.write(content)
+    fh.close()
+
+
 def validate_version(version):
     try:
         semver.parse_version_info(version)
@@ -64,6 +76,8 @@ def change_galaxy_version(c, version, collection='f5_modules'):
     validate_version(version)
     update_galaxy_file(version, collection)
     print("File galaxy.yml updated.")
+    update_version_file(version, collection)
+    print("File version.py updated.")
 
 
 @task(optional=['collection'], help=dict(
@@ -105,6 +119,8 @@ def changelog(c, version):
     """Build changelog and update galaxy.yml file version number."""
     collection = '{0}/ansible_collections/f5networks/f5_modules'.format(BASE_DIR)
     validate_version(version)
+    print('Updating version.py file.')
+    update_version_file(version, 'f5_modules')
     print('Updating galaxy.yaml file.')
     update_galaxy_file(version, 'f5_modules')
     with c.cd(collection):
