@@ -1,3 +1,0 @@
----
-bugfixes:
-    - Fix for bigip_firewall_rule not idempotent when using address_list as source or destination

@@ -1,3 +1,0 @@
----
-bugfixes:
-    - Include serialNumber for ssl-certs gather_subset 

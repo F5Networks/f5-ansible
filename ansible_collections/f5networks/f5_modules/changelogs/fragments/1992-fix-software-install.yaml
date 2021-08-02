@@ -1,4 +1,0 @@
----
-bugfixes:
-    - Fix for inactive volume handling issue for bigip_software_install module
-    - Fix for bigip_software_install module with state activated
