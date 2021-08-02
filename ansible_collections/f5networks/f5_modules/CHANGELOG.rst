@@ -5,6 +5,19 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.11.0
+=======
+
+Bugfixes
+--------
+
+- Add syn_cookie_enable parameter to bigip_profile_fastl4 module
+- Fix for bigip_firewall_rule not idempotent when using address_list as source or destination
+- Fix for bigip_software_install module with state activated
+- Fix for inactive volume handling issue for bigip_software_install module
+- Fix snat pool issue in device info module
+- Include serialNumber for ssl-certs gather_subset
+
 v1.10.1
 =======
 
