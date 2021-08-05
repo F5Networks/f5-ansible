@@ -752,6 +752,8 @@ class ModuleManager(object):
         self.want = ModuleParameters(params=self.module.params)
         self.have = ApiParameters()
         self.changes = UsableChanges()
+        self.before = dict()
+        self.after = dict()
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -764,8 +766,12 @@ class ModuleManager(object):
             else:
                 if isinstance(change, dict):
                     changed.update(change)
+                    self.before[k] = getattr(self.have, k)
+                    self.after[k] = getattr(self.want, k)
                 else:
                     changed[k] = change
+                    self.before[k] = getattr(self.have, k)
+                    self.after[k] = getattr(self.want, k)
         if changed:
             self.changes = UsableChanges(params=changed)
             return True
@@ -795,6 +801,8 @@ class ModuleManager(object):
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
         send_teem(start, self.client, self.module, version)
+        diff = dict(before=self.before, after=self.after)
+        result.update(dict(diff=diff))
         return result
 
     def _announce_deprecations(self, result):
