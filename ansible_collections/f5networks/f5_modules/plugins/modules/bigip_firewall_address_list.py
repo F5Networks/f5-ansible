@@ -766,12 +766,10 @@ class ModuleManager(object):
             else:
                 if isinstance(change, dict):
                     changed.update(change)
-                    self.before[k] = getattr(self.have, k)
-                    self.after[k] = getattr(self.want, k)
                 else:
                     changed[k] = change
-                    self.before[k] = getattr(self.have, k)
-                    self.after[k] = getattr(self.want, k)
+                self.before[k] = getattr(self.have, k)
+                self.after[k] = getattr(self.want, k)
         if changed:
             self.changes = UsableChanges(params=changed)
             return True
