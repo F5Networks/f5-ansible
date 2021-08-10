@@ -801,6 +801,7 @@ class ModuleManager(object):
         send_teem(start, self.client, self.module, version)
         self.before['name'] = getattr(self.have, 'name')
         self.after['name'] = getattr(self.want, 'name')
+        self.after['state'] = state
         diff = dict(before=self.before, after=self.after)
         result.update(dict(diff=diff))
         return result
