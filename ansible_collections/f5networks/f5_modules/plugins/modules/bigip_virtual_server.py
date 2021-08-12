@@ -1391,8 +1391,8 @@ class ApiParameters(Parameters):
             result = 'performance-http'
         elif self.has_fastl4_profiles:
             result = 'performance-l4'
-        elif self.has_message_routing_profiles:
-            result = 'message-routing'
+        # elif self.has_message_routing_profiles:
+        #     result = 'message-routing'
         else:
             result = 'standard'
         self._values['type'] = result
@@ -2827,8 +2827,8 @@ class VirtualServerValidator(object):
                 raise F5ModuleError("A 'standard' type may not have 'fasthttp' profiles.")
             if self.want.has_fastl4_profiles:
                 raise F5ModuleError("A 'standard' type may not have 'fastl4' profiles.")
-            if self.want.has_message_routing_profiles:
-                raise F5ModuleError("A 'standard' type may not have 'message-routing' profiles.")
+            # if self.want.has_message_routing_profiles:
+            #     raise F5ModuleError("A 'standard' type may not have 'message-routing' profiles.")
         elif self.want.type == 'performance-http':
             if not self.want.has_fasthttp_profiles:
                 raise F5ModuleError("A 'fasthttp' type must have at least one 'fasthttp' profile.")
@@ -2994,7 +2994,8 @@ class VirtualServerValidator(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-        result = [fq_name(self.want.partition, x['name']) for x in response['items']]
+        # result = [fq_name(self.want.partition, x['name']) for x in response['items']]
+        result = [x['fullPath'] for x in response['items']]
         return result
 
     def read_fasthttp_profiles_from_device(self):
