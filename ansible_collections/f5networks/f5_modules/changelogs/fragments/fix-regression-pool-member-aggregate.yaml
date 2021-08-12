@@ -1,0 +1,4 @@
+---
+bugfixes:
+    - Fix a regression introduced to aggregate component of bigip_pool_member
+    - Fix a name/address comparison logic when using aggregates in bigip_pool_member
