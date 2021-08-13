@@ -348,7 +348,7 @@ options:
           - "When C(type) is C(http_uri), the valid choices are: C(path_begins_with_any), C(path_contains) or
             C(path_is_any)."
           - "When C(type) is C(http_host), the valid choices are: C(host_is_any), C(host_is_not_any),
-            C(host_begins_with_any) or C(host_ends_with_any)."
+            C(host_begins_with_any), C(host_begins_not_with_any), or C(host_ends_with_any)."
           - "When C(type) is C(http_header), the C(header_name) parameter is mandatory and the valid choice is:
             C(header_is_any)."
           - "When C(type) is C(http_method), the valid choices are: C(method_matches_with_any)."
@@ -399,6 +399,12 @@ options:
       host_begins_with_any:
         description:
           - A list of strings of characters the HTTP Host should start with.
+          - This parameter is only valid with the C(http_host) type.
+        type: list
+        elements: str
+      host_begins_not_with_any:
+        description:
+          - A list of strings of characters the HTTP Host should not start with.
           - This parameter is only valid with the C(http_host) type.
         type: list
         elements: str
@@ -909,12 +915,12 @@ class ModuleParameters(Parameters):
         return result
 
     def _handle_http_host_condition(self, action, item):
-        options = ['host_begins_with_any', 'host_ends_with_any', 'host_is_any', 'host_is_not_any']
+        options = ['host_begins_with_any', 'host_begins_not_with_any', 'host_ends_with_any', 'host_is_any', 'host_is_not_any']
         action['type'] = 'http_host'
 
         if not any(x for x in options if x in item):
             raise F5ModuleError(
-                "A 'host_begins_with_any', 'host_ends_with_any', host_is_any, or 'host_is_not_any' must be specified "
+                "A 'host_begins_with_any', 'host_begins_not_with_any', 'host_ends_with_any', host_is_any, or 'host_is_not_any' must be specified "
                 "when the 'http_uri' type is used."
             )
 
@@ -928,6 +934,17 @@ class ModuleParameters(Parameters):
                 startsWith=True,
                 values=values
             ))
+        if 'host_begins_not_with_any' in item and item['host_begins_not_with_any'] is not None:
+            if isinstance(item['host_begins_not_with_any'], list):
+                values = item['host_begins_not_with_any']
+            else:
+                values = [item['host_begins_not_with_any']]
+            action.update({
+                'host': True,
+                'startsWith': True,
+                'not': True,
+                'values': values
+                })
         elif 'host_ends_with_any' in item and item['host_ends_with_any'] is not None:
             if isinstance(item['host_ends_with_any'], list):
                 values = item['host_ends_with_any']
@@ -2575,6 +2592,10 @@ class ArgumentSpec(object):
                         elements='str',
                     ),
                     host_begins_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    host_begins_not_with_any=dict(
                         type='list',
                         elements='str',
                     ),
