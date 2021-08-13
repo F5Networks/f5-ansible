@@ -944,7 +944,7 @@ class ModuleParameters(Parameters):
                 'startsWith': True,
                 'not': True,
                 'values': values
-                })
+            })
         elif 'host_ends_with_any' in item and item['host_ends_with_any'] is not None:
             if isinstance(item['host_ends_with_any'], list):
                 values = item['host_ends_with_any']
