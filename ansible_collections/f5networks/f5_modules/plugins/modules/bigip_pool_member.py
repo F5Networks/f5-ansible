@@ -920,7 +920,6 @@ class Difference(object):
     def state(self):
         if self.want.state == self.have.state:
             return None
-        self.want.f
         if self.want.state == 'forced_offline':
             return {
                 'state': 'user-down',
@@ -1113,6 +1112,10 @@ class ModuleManager(object):
                 "Aggregates must be provided with both address and port."
             )
         delimiter = ':'
+        # If user provides us a name for the aggregate element, we use its name with port, this is
+        # how F5 BIG-IP behaves as well.
+        if 'name' in item and item['name']:
+            return '{0}{1}{2}'.format(item['name'], delimiter, item['port'])
         try:
             if validate_ip_v6_address(item['address']):
                 delimiter = '.'
@@ -1126,7 +1129,7 @@ class ModuleManager(object):
             collection = [member['name'] for member in self.on_device]
             diff = set(collection) - set(aggregates)
             if diff:
-                addresses = [item['selfLink'] for item in self.on_device if item['address'] in diff]
+                addresses = [item['selfLink'] for item in self.on_device if item['name'] in diff]
                 self.purge_links.extend(addresses)
                 return True
             return False
