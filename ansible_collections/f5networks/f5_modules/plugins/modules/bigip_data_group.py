@@ -39,7 +39,6 @@ options:
       - addr
       - ip
       - string
-      - str
       - integer
       - int
     default: string
@@ -184,7 +183,7 @@ EXAMPLES = r'''
         value: ""
       - key: cactus
         value: ""
-    type: str
+    type: string
     provider:
       password: secret
       server: lb.mydomain.com
