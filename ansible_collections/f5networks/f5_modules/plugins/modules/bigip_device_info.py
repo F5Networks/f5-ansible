@@ -16511,7 +16511,7 @@ class VirtualServersParameters(BaseParameters):
         if self._values['destination'] is None:
             result = Destination(ip=None, port=None, route_domain=None, mask=None)
             return result
-        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
+        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/([a-zA-Z0-9_.-]+\/)?', '', self._values['destination'])
         # Covers the following examples
         #
         # /Common/2700:bc00:1f10:101::6%2.80
@@ -16519,6 +16519,7 @@ class VirtualServersParameters(BaseParameters):
         # 1.1.1.1%2:80
         # /Common/1.1.1.1%2:80
         # /Common/2700:bc00:1f10:101::6%2.any
+        # /Common/Shared/1.1.1.1:80
         #
         pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+|any)'
         matches = re.search(pattern, destination)
