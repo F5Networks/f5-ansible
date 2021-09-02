@@ -1391,8 +1391,8 @@ class ApiParameters(Parameters):
             result = 'performance-http'
         elif self.has_fastl4_profiles:
             result = 'performance-l4'
-        elif self.has_message_routing_profiles:
-            result = 'message-routing'
+        # elif self.has_message_routing_profiles:
+        #     result = 'message-routing'
         else:
             result = 'standard'
         self._values['type'] = result
@@ -1971,11 +1971,18 @@ class ModuleParameters(Parameters):
                 self._handle_profile_context(tmp)
                 if 'name' not in profile:
                     tmp['name'] = profile
-                tmp['fullPath'] = fq_name(self.partition, tmp['name'])
+                if 'partition' not in profile:
+                    tmp['partition'] = "Common"
+                tmp['fullPath'] = fq_name(tmp['partition'], tmp['name'])
                 if not self.bypass_module_checks:
                     self._handle_ssl_profile_nuances(tmp)
             else:
-                full_path = fq_name(self.partition, profile)
+                if len(profile.split("/")) > 1:
+                    full_path = profile
+                    tmp["partition"] = profile.split("/")[1]
+                else:
+                    full_path = fq_name("Common", profile)
+                    tmp["partition"] = "Common"
                 tmp['name'] = os.path.basename(profile)
                 tmp['context'] = 'all'
                 tmp['fullPath'] = full_path
@@ -2827,8 +2834,8 @@ class VirtualServerValidator(object):
                 raise F5ModuleError("A 'standard' type may not have 'fasthttp' profiles.")
             if self.want.has_fastl4_profiles:
                 raise F5ModuleError("A 'standard' type may not have 'fastl4' profiles.")
-            if self.want.has_message_routing_profiles:
-                raise F5ModuleError("A 'standard' type may not have 'message-routing' profiles.")
+            # if self.want.has_message_routing_profiles:
+            #     raise F5ModuleError("A 'standard' type may not have 'message-routing' profiles.")
         elif self.want.type == 'performance-http':
             if not self.want.has_fasthttp_profiles:
                 raise F5ModuleError("A 'fasthttp' type must have at least one 'fasthttp' profile.")
@@ -2994,7 +3001,8 @@ class VirtualServerValidator(object):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
-        result = [fq_name(self.want.partition, x['name']) for x in response['items']]
+        # result = [fq_name(self.want.partition, x['name']) for x in response['items']]
+        result = [x['fullPath'] for x in response['items']]
         return result
 
     def read_fasthttp_profiles_from_device(self):

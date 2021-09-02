@@ -1,0 +1,4 @@
+---
+bugfixes:
+    - Fix for adding sip profile to Virtual server
+    - Fix for Virtual server idempotency with non-common partition.
