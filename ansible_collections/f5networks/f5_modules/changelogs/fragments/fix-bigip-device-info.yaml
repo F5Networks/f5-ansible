@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - fix: destination re in bigip_device_info misses /Common/Shared 
