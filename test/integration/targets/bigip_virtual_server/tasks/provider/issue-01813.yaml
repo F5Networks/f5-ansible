@@ -1,0 +1,204 @@
+---
+# This playbook example test for: SR-1-7617462751,SR-1-7590258461 and
+# https://github.com/F5Networks/f5-ansible/issues/1813
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 with partition name
+  bigip_virtual_server:
+    name: ANSIBLE_CREATED_THIS_VIRTUAL_SERVER
+    state: present
+    description: "Born out of a playbook"
+    partition: TEST
+    provider: "{{ provider }}"
+    destination: "0.0.0.0/0"
+    port: "443"
+    type: "performance-l4"
+    profiles: ['/Common/fastL4']
+#        profiles:
+#          - {name: fastL4, partition: Common}
+    source: "0.0.0.0/0"
+    snat: none
+    address_translation: True
+    port_translation: True
+    register: result
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 with partition name
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 with partition name - Idempotent check
+  bigip_virtual_server:
+    name: ANSIBLE_CREATED_THIS_VIRTUAL_SERVER
+    state: present
+    description: "Born out of a playbook"
+    partition: TEST
+    provider: "{{ provider }}"
+    destination: "0.0.0.0/0"
+    port: "443"
+    type: "performance-l4"
+    profiles: ['/Common/fastL4']
+#        profiles:
+#          - {name: fastL4, partition: Common}
+    source: "0.0.0.0/0"
+    snat: none
+    address_translation: True
+    port_translation: True
+    register: result
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 with partition name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+- name: Issue 01813 - Remove bigip_virtual_server - Idempotent check
+  bigip_virtual_server:
+    name: ANSIBLE_CREATED_THIS_VIRTUAL_SERVER
+    state: absent
+    description: "Born out of a playbook"
+    partition: TEST
+    provider: "{{ provider }}"
+    destination: "0.0.0.0/0"
+    port: "443"
+    type: "performance-l4"
+    profiles: ['/Common/fastL4']
+    source: "0.0.0.0/0"
+    snat: none
+    address_translation: True
+    port_translation: True
+    register: result
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 with partition name as dict
+  bigip_virtual_server:
+    name: ANSIBLE_CREATED_THIS_VIRTUAL_SERVER
+    state: present
+    description: "Born out of a playbook"
+    partition: TEST
+    provider: "{{ provider }}"
+    destination: "0.0.0.0/0"
+    port: "443"
+    type: "performance-l4"
+#    profiles: ['/Common/fastL4']
+    profiles:
+        - {name: fastL4, partition: Common}
+    source: "0.0.0.0/0"
+    snat: none
+    address_translation: True
+    port_translation: True
+    register: result
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 with partition name as dict
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 with partition name as dict - Idempotent check
+  bigip_virtual_server:
+    name: ANSIBLE_CREATED_THIS_VIRTUAL_SERVER
+    state: present
+    description: "Born out of a playbook"
+    partition: TEST
+    provider: "{{ provider }}"
+    destination: "0.0.0.0/0"
+    port: "443"
+    type: "performance-l4"
+    profiles:
+        - {name: fastL4, partition: Common}
+#    profiles: ['/Common/fastL4']
+    source: "0.0.0.0/0"
+    snat: none
+    address_translation: True
+    port_translation: True
+    register: result
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 with partition name as dict - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+- name: Issue 01813 - Remove bigip_virtual_server - Idempotent check
+  bigip_virtual_server:
+    name: ANSIBLE_CREATED_THIS_VIRTUAL_SERVER
+    state: absent
+    description: "Born out of a playbook"
+    partition: TEST
+    provider: "{{ provider }}"
+    destination: "0.0.0.0/0"
+    port: "443"
+    type: "performance-l4"
+    profiles:
+        - {name: fastL4, partition: Common}
+    source: "0.0.0.0/0"
+    snat: none
+    address_translation: True
+    port_translation: True
+    register: result
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 without partition name
+  bigip_virtual_server:
+    name: ANSIBLE_CREATED_THIS_VIRTUAL_SERVER
+    state: present
+    description: "Born out of a playbook"
+    partition: TEST
+    provider: "{{ provider }}"
+    destination: "0.0.0.0/0"
+    port: "443"
+    type: "performance-l4"
+    profiles: ['fastL4']
+    source: "0.0.0.0/0"
+    snat: none
+    address_translation: True
+    port_translation: True
+    register: result
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 without partition name
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 without partition name - Idempotent check
+  bigip_virtual_server:
+    name: ANSIBLE_CREATED_THIS_VIRTUAL_SERVER
+    state: present
+    description: "Born out of a playbook"
+    partition: TEST
+    provider: "{{ provider }}"
+    destination: "0.0.0.0/0"
+    port: "443"
+    type: "performance-l4"
+    profiles: ['fastL4']
+    source: "0.0.0.0/0"
+    snat: none
+    address_translation: True
+    port_translation: True
+    register: result
+
+- name: Issue 01813 - Test bigip_virtual_server using profile fastL4 without partition name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+- name: Issue 01813 - Remove bigip_virtual_server - Idempotent check
+  bigip_virtual_server:
+    name: ANSIBLE_CREATED_THIS_VIRTUAL_SERVER
+    state: absent
+    description: "Born out of a playbook"
+    partition: TEST
+    provider: "{{ provider }}"
+    destination: "0.0.0.0/0"
+    port: "443"
+    type: "performance-l4"
+    profiles: ['fastL4']
+    source: "0.0.0.0/0"
+    snat: none
+    address_translation: True
+    port_translation: True
+    register: result
