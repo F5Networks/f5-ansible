@@ -39,7 +39,6 @@ options:
       - addr
       - ip
       - string
-      - str
       - integer
       - int
     default: string
@@ -184,7 +183,7 @@ EXAMPLES = r'''
         value: ""
       - key: cactus
         value: ""
-    type: str
+    type: string
     provider:
       password: secret
       server: lb.mydomain.com
@@ -1425,7 +1424,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             type=dict(
-                choices=['address', 'addr', 'ip', 'string', 'str', 'integer', 'int'],
+                choices=['address', 'addr', 'ip', 'string', 'integer', 'int'],
                 default='string'
             ),
             delete_data_group_file=dict(

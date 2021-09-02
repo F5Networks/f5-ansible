@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Remove type str for datagroups as we are not supporting it.
