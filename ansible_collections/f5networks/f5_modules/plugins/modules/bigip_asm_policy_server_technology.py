@@ -310,7 +310,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,id".format(
+        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,id".format(
             self.want.policy_name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
@@ -324,11 +324,16 @@ class ModuleManager(object):
             raise F5ModuleError(resp.content)
 
         if 'items' in response and response['items'] != []:
-            policy_id = response['items'][0]['id']
+            if len(response['items']) == 1:
+                policy_id = response['items'][0]['id']
+            else:
+                for item in response['items']:
+                    if item['name'] == self.want.policy_name and item['partition'] == self.want.partition:
+                        policy_id = item['id']
 
         if not policy_id:
             raise F5ModuleError(
-                "The policy with the name {0} does not exist".format(self.want.policy_name)
+                "The policy with the name {0} was not found.".format(self.want.policy_name)
             )
         return policy_id
 
