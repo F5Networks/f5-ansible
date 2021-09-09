@@ -83,10 +83,3 @@
     - "{{ policy_1 }}"
     - "{{ policy_2 }}"
 
-- name: Issue 01036 - De-provision AFM
-  bigip_provision:
-    name: afm
-    state: absent
-  tags:
-    - module-provisioning
-    - deprovision-module

@@ -1,0 +1,4 @@
+---
+policy_1: foo1_02010
+route_domain_id: 22
+route_domain_name: afm_foo_02010

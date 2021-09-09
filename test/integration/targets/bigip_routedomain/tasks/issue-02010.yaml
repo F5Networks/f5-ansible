@@ -1,0 +1,77 @@
+---
+
+- name: Issue 02010 - Include issue variables
+  include_vars:
+    file: issue-02010.yaml
+
+- name: Issue 02010 - Provision AFM
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: Issue 02010 - Create AFM policy
+  bigip_firewall_policy:
+    name: "{{ policy_1 }}"
+  register: result
+
+- name: Issue 02010 - Create route domain, attach FW policy
+  bigip_routedomain:
+    id: "{{ route_domain_id }}"
+    name: "{{ route_domain_name }}"
+    fw_enforced_policy: "{{ policy_1 }}"
+  register: result
+
+- name: Issue 02010 - Assert Create route domain, attach FW policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02010 - Create route domain, attach FW policy - Idempotent check
+  bigip_routedomain:
+    id: "{{ route_domain_id }}"
+    name: "{{ route_domain_name }}"
+    fw_enforced_policy: "{{ policy_1 }}"
+  register: result
+
+- name: Issue 02010 - Assert Create route domain, attach FW policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02010 - Remove attached FW policy on a route domain
+  bigip_routedomain:
+    name: "{{ route_domain_name }}"
+    fw_enforced_policy: "none"
+  register: result
+
+- name: Issue 02010 - Assert Remove attached FW policy on a route domain
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02010 - Remove attached FW policy on a route domain - Idempotent check
+  bigip_routedomain:
+    name: "{{ route_domain_name }}"
+    fw_enforced_policy: "none"
+  register: result
+
+- name: Issue 02010 - Assert Remove attached FW policy on a route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02010 - Delete a route domain
+  bigip_routedomain:
+    name: "{{ route_domain_name }}"
+    state: absent
+
+- name: Issue 02010 - Remove AFM policy
+  bigip_firewall_policy:
+    name: "{{ policy_1 }}"
+    state: absent
+
