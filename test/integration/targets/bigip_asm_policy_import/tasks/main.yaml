@@ -25,4 +25,8 @@
   tags: issue-01978
   when: f.system_info.product_version >= "13.0.0"
 
+- import_tasks: issue-02067.yaml
+  tags: issue-02067
+#  when: f.system_info.product_version >= "13.0.0"
+
 - import_tasks: teardown.yaml

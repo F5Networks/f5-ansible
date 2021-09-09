@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix API filters not returning correct results when policy names ending with numbers
