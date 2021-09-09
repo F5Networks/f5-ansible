@@ -99,6 +99,7 @@ options:
   fw_enforced_policy:
     description:
       - Specifies an AFM policy to be attached to route domain.
+      - To remove attached AFM policy use C("") or C(none) as values.
     type: str
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
@@ -355,17 +356,18 @@ class ModuleParameters(Parameters):
 
     @property
     def fw_enforced_policy(self):
-        if self._values['fw_enforced_policy'] is None:
+        policy = self._values['fw_enforced_policy']
+        if policy is None:
             return None
-        if self._values['fw_enforced_policy'] in ['none', '']:
-            return None
+        if policy.lower() in ['none', '']:
+            return ''
         name = self._values['fw_enforced_policy']
         return fq_name(self.partition, name)
 
     @property
     def fw_policy_link(self):
         policy = self.fw_enforced_policy
-        if policy is None:
+        if not policy:
             return None
         tmp = policy.split('/')
         link = dict(link='https://localhost/mgmt/tm/security/firewall/policy/~{0}~{1}'.format(tmp[1], tmp[2]))
@@ -437,10 +439,21 @@ class Difference(object):
     def fw_policy_link(self):
         if self.want.fw_enforced_policy is None:
             return None
+        if self.want.fw_enforced_policy == '' and self.have.fw_enforced_policy is None:
+            return None
         if self.want.fw_enforced_policy == self.have.fw_enforced_policy:
             return None
         if self.want.fw_policy_link != self.have.fw_policy_link:
             return self.want.fw_policy_link
+
+    @property
+    def fw_enforced_policy(self):
+        if self.want.fw_enforced_policy is None:
+            return None
+        if self.want.fw_enforced_policy == '' and self.have.fw_enforced_policy is None:
+            return None
+        if self.want.fw_enforced_policy != self.have.fw_enforced_policy:
+            return self.want.fw_enforced_policy
 
 
 class ModuleManager(object):

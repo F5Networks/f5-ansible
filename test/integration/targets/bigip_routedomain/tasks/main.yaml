@@ -536,3 +536,6 @@
 
 - import_tasks: issue-01064.yaml
   tags: issue-01064
+
+- import_tasks: issue-02010.yaml
+  tags: issue-02010
