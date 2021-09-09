@@ -1,50 +1,50 @@
 ---
 
-- name: Set a single routing protocol, valid
+- name: Issue 00775 - Set a single routing protocol, valid
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     routing_protocol: BGP
   register: result
 
-- name: Assert Set a single routing protocol, valid
+- name: Issue 00775 - Assert Set a single routing protocol, valid
   assert:
     that:
       - result is changed
 
-- name: Set a single routing protocol, valid - Idempotent check
+- name: Issue 00775 - Set a single routing protocol, valid - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     routing_protocol: BGP
   register: result
 
-- name: Assert Set a single routing protocol, valid - Idempotent check
+- name: Issue 00775 - Assert Set a single routing protocol, valid - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set routing protocol, none
+- name: Issue 00775 - Set routing protocol, none
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     routing_protocol: none
   register: result
 
-- name: Assert Set routing protocol, none
+- name: Issue 00775 - Assert Set routing protocol, none
   assert:
     that:
       - result is changed
 
-- name: Set routing protocol, none - Idempotent check
+- name: Issue 00775 - Set routing protocol, none - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     routing_protocol: none
   register: result
 
-- name: Assert Set routing protocol, none - Idempotent check
+- name: Issue 00775 - Assert Set routing protocol, none - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set routing protocol, empty - Idempotent check
+- name: Issue 00775 - Set routing protocol, empty - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     routing_protocol: ''
@@ -55,7 +55,7 @@
     that:
       - result is not changed
 
-- name: Remove routing protocol
+- name: Issue 00775 - Remove routing protocol
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     state: absent

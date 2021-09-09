@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix detaching of attached AFM policy to created route domain
