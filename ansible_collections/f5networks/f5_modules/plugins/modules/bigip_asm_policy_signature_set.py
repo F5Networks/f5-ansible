@@ -41,7 +41,7 @@ options:
         that produce few false positives when identifying evasion attacks. Only available in version 13.x and later.
       - When C(High Accuracy Signatures), configures signatures with a high level of accuracy
         that produce few false positives when identifying evasion attacks.
-      - When C(IIS and Windows Signatures), configures signatures that target attacks against IIS
+      - When C(IIS and Windows Signatures), configures signatures that target attacks against Microsoft IIS
         and Windows-based systems. Only available in version 13.x and later.
       - When C(Information Leakage Signatures), configures signatures targeting attacks that are looking for system data
         or debugging information that shows where the system is vulnerable to attack.
@@ -146,7 +146,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 policy_name:
-  description: The name of the ASM policy
+  description: The name of the ASM policy.
   returned: changed
   type: str
   sample: FooPolicy

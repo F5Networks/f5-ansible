@@ -21,8 +21,8 @@ options:
         if it exists. If C(present), creates the virtual server and enables it.
         If C(enabled), enables the virtual server if it exists. If C(disabled),
         creates the virtual server if needed, and sets the state to C(disabled).
-      - Attempting to change C(state) on Virtual Server that belongs to an iAPP with strict updates enabled will result
-        in error message returned by device, unless C(insert_metadata) parameter is set to C(no).
+      - Attempting to change C(state) on a virtual server that belongs to an iAPP with strict updates enabled will result
+        in an error message returned by device, unless C(insert_metadata) parameter is set to C(no).
     type: str
     choices:
       - present
