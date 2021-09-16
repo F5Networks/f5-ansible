@@ -82,7 +82,7 @@ options:
     type: str
     default: Common
 notes:
-  - This module is primarily used as a component of configuring an ASM policy in Ansible Galaxy ASM Policy Role.
+  - This module is primarily used as a component of configuring an ASM policy in the Ansible Galaxy ASM Policy Role.
   - Requires BIG-IP >= 13.0.0
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
@@ -118,7 +118,7 @@ policy_name:
   type: str
   sample: FooPolicy
 name:
-  description: The name of Server Technology added/removed on the ASM policy
+  description: The name of Server Technology added/removed on the ASM policy.
   returned: changed
   type: str
   sample: Joomla

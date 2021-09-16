@@ -28,7 +28,7 @@ options:
   type:
     description:
       - The type of records in this data group.
-      - This parameter is especially important because it causes BIG-IP to store your data
+      - This parameter is important because it causes the BIG-IP to store your data
         in different ways to optimize access to it. For example, it would be wrong
         to specify a list of records containing IP addresses, but label them as a C(string)
         type.
@@ -73,8 +73,8 @@ options:
       - Specifies the records you want to add to a data group.
       - If you have a large number of records, we recommend you use C(records_src)
         instead of typing all those records here.
-      - The technical limit of either 1. the number of records, or 2. the total size of all
-        records, varies with the size of the total resources on your system; in particular,
+      - The technical limit of either the number of records, or the total size of all
+        records. Varies with the size of the total resources on your system; in particular,
         RAM.
       - When C(internal) is C(no), at least one record must be specified in either C(records)
         or C(records_src).
@@ -97,7 +97,7 @@ options:
   records_src:
     description:
       - Path to a file with records in it.
-      - The file should be well-formed. This means that it includes records, one per line,
+      - The file should be well-formed. This means it includes records, one per line,
         that resemble the following format "key separator value". For example, C(foo := bar).
       - BIG-IP is strict about this format, but this module is a bit more lax. It will allow
         you to include arbitrary amounts (including none) of empty space on either side of
@@ -125,7 +125,7 @@ options:
     default: ":="
   delete_data_group_file:
     description:
-      - When C(yes), will ensure the remote data group file is deleted.
+      - When C(yes), ensures the remote data group file is deleted.
       - This parameter is only relevant when C(state) is C(absent) and C(internal) is C(no).
     type: bool
     default: no
@@ -147,7 +147,7 @@ options:
 notes:
   - This module does NOT support atomic updates of data group members in a type C(internal) data group.
   - Addition/Deletion of data group members in a type C(external) data group should be done through Ansible modules only,
-    if changes are made manually ansible module will not detect those changes.
+    if changes are made manually, the Ansible module will not detect those changes.
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

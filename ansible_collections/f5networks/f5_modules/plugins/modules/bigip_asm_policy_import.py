@@ -36,7 +36,7 @@ options:
       - parent
   retain_inheritance_settings:
     description:
-      - Indicate if an imported security type policy should retain settings when attached to parent policy.
+      - Indicates if an imported security type policy should retain settings when attached to parent policy.
       - This parameter is available on TMOS version 13.x and later and only takes effect when the C(inline) import method
         is used.
     type: bool
@@ -50,7 +50,7 @@ options:
   base64:
     description:
       - Indicates if the imported policy string is encoded in Base64.
-      - Parameter only takes effect when using the C(inline) method of import.
+      - This parameter only takes effect when using the C(inline) method of import.
     type: bool
   inline:
     description:
@@ -103,14 +103,14 @@ options:
     description:
       - Full path to a policy file to be imported into the BIG-IP ASM.
       - Policy files exported from newer versions of BIG-IP cannot be imported into older
-        versions of BIG-IP. The opposite, however, is true; you can import older into
-        newer.
+        versions of BIG-IP. However, policy files from older versions of BIG-IP can be
+        imported into newer versions of BIG-IP.
       - The file format can be binary or XML.
     type: path
   force:
     description:
-      - When set to C(yes) any existing policy with the same name will be overwritten by the new import.
-      - Works for both inline and file imports, if the policy does not exist this setting is ignored.
+      - When set to C(yes), any existing policy with the same name will be overwritten by the new import.
+      - This works for both inline and file imports, if the policy does not exist this setting is ignored.
     default: no
     type: bool
   partition:

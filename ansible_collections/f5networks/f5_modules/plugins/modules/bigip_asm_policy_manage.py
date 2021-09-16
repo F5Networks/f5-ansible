@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_asm_policy_manage
 short_description: Manage BIG-IP ASM policies
 description:
-   - Manage BIG-IP ASM policies, create from templates, and manage global policy settings.
+   - Manage BIG-IP ASM policies, create policies from templates, and manage global policy settings.
 version_added: "1.0.0"
 options:
   active:
@@ -26,7 +26,7 @@ options:
   apply:
     description:
       - If C(yes) will apply the policy if the policy has pending changes.
-      - Parameter supported on TMOS C(v14.x) and above.
+      - This parameter supported on TMOS C(v14.x) and above.
     type: bool
     version_added: "1.4.0"
   name:
@@ -158,12 +158,12 @@ EXAMPLES = r'''
 
 RETURN = r'''
 active:
-  description: Set when activating/deactivating an ASM policy
+  description: Set when activating/deactivating an ASM policy.
   returned: changed
   type: bool
   sample: yes
 apply:
-  description: Set when applying pending changes to an ASM policy
+  description: Set when applying pending changes to an ASM policy.
   returned: changed when target policy has changes pending
   type: bool
   sample: yes
