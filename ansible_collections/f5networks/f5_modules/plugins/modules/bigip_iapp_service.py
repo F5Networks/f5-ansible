@@ -784,7 +784,7 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        if params:
+        if params or self.want.force:
             params['execute-action'] = 'definition'
             base_uri = "https://{0}:{1}/mgmt/tm/sys/application/service/".format(
                 self.client.provider['server'],
