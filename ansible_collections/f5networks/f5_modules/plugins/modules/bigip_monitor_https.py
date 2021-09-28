@@ -215,7 +215,6 @@ cipher_list:
   sample: +3DES:+kEDH
 '''
 from datetime import datetime
-import q
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -699,7 +698,6 @@ class ModuleManager(object):
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.name)
         )
-        q("params:{}".format(params))
         resp = self.client.api.patch(uri, json=params)
         try:
             response = resp.json()
