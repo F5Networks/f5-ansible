@@ -101,6 +101,7 @@ options:
         C(time_until_up) is specified, it must be C(0). Or, if it already exists, it
         must be C(0).
     type: bool
+    version_added: "1.12.0"
   ssl_profile:
     description:
       - Specifies the SSL profile to use for the HTTPS monitor.
