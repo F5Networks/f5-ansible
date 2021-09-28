@@ -100,6 +100,7 @@ options:
         C(time_until_up) is specified, it must be C(0). Or, if it already exists, it
         must be C(0).
     type: bool
+    version_added: "1.12.0"
   partition:
     description:
       - Device partition to manage resources on.
