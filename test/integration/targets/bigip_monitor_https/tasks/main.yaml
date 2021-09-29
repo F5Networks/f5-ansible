@@ -249,3 +249,6 @@
 
 - import_tasks: issue-01620.yaml
   tags: issue-01620
+
+- import_tasks: issue-02020.yaml
+  tags: issue-02020

@@ -1,0 +1,94 @@
+---
+
+- name: Issue 02020 - Create HTTPS Monitor
+  bigip_monitor_https:
+    name: i2020
+    receive: foo
+
+- name: Issue 02020 - Change reverse - yes
+  bigip_monitor_https:
+    name: i2020
+    reverse: yes
+    receive: foo
+  register: result
+
+- name: Issue 02020 - Assert Change reverse - yes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02020 - Change reverse - yes - Idempotent check
+  bigip_monitor_https:
+    name: i2020
+    reverse: yes
+    receive: foo
+  register: result
+
+- name: Issue 02020 - Assert Change reverse - yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02020 - Change reverse - no
+  bigip_monitor_https:
+    name: i2020
+    reverse: no
+  register: result
+
+- name: Issue 02020 - Assert Change reverse - no
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02020 - Change reverse - no - Idempotent check
+  bigip_monitor_https:
+    name: i2020
+    reverse: no
+  register: result
+
+- name: Issue 02020 - Assert Change reverse - no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02020 - Remove monitor
+  bigip_monitor_https:
+    name: i2020
+    state: absent
+
+- name: Issue 02020 - Create HTTPS Monitor, reverse yes, no receive - Expected failure
+  bigip_monitor_https:
+    name: i2020
+    reverse: yes
+  register: result
+  failed_when: result is success
+
+- name: Issue 02020 - Create HTTPS Monitor, reverse yes, no receive - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02020 - Create HTTPS Monitor, reverse yes, time_until_up non-zero - Expected failure
+  bigip_monitor_https:
+    name: i2020
+    reverse: yes
+    time_until_up: 20
+
+  register: result
+  failed_when: result is success
+
+- name: Issue 02020 - Create HTTPS Monitor, reverse yes, time_until_up non-zero - Expected failure
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02020 - Remove HTTPS Monitor
+  bigip_monitor_https:
+    name: i2020
+    state: absent

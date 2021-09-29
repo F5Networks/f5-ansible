@@ -5,6 +5,7 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -90,6 +91,17 @@ options:
     description:
       - Specifies the password, if the monitored target requires authentication.
     type: str
+  reverse:
+    description:
+      - Specifies whether the monitor operates in reverse mode.
+      - When the monitor is in reverse mode, a successful receive string match
+        marks the monitored object down instead of up. You can use the
+        this mode only if you configure the C(receive) option.
+      - This parameter is not compatible with the C(time_until_up) parameter. If
+        C(time_until_up) is specified, it must be C(0). Or, if it already exists, it
+        must be C(0).
+    type: bool
+    version_added: "1.12.0"
   ssl_profile:
     description:
       - Specifies the SSL profile to use for the HTTPS monitor.
@@ -188,6 +200,11 @@ time_until_up:
   returned: changed
   type: int
   sample: 2
+reverse:
+  description: Whether the monitor operates in reverse mode.
+  returned: changed
+  type: bool
+  sample: yes
 up_interval:
   description: Interval for the system to use to perform the health check when a resource is up.
   returned: changed
@@ -207,7 +224,7 @@ from ansible.module_utils.basic import (
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, fq_name
+    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean, fq_name
 )
 from ..module_utils.compare import cmp_str_with_none
 from ..module_utils.ipaddress import is_valid_ip
@@ -238,6 +255,7 @@ class Parameters(AnsibleF5Parameters):
         'password',
         'recvDisable',
         'description',
+        'reverse',
         'sslProfile',
         'upInterval',
         'cipherlist',
@@ -254,6 +272,7 @@ class Parameters(AnsibleF5Parameters):
         'time_until_up',
         'receive_disable',
         'description',
+        'reverse',
         'ssl_profile',
         'up_interval',
         'cipher_list',
@@ -270,6 +289,7 @@ class Parameters(AnsibleF5Parameters):
         'target_password',
         'receive_disable',
         'description',
+        'reverse',
         'ssl_profile',
         'up_interval',
         'cipher_list',
@@ -352,6 +372,10 @@ class Parameters(AnsibleF5Parameters):
     def type(self):
         return 'https'
 
+    @property
+    def reverse(self):
+        return flatten_boolean(self._values['reverse'])
+
 
 class ApiParameters(Parameters):
     @property
@@ -393,11 +417,19 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def reverse(self):
+        if self._values['reverse'] is None:
+            return None
+        elif self._values['reverse'] == 'yes':
+            return 'enabled'
+        return 'disabled'
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def reverse(self):
+        return flatten_boolean(self._values['reverse'])
 
 
 class Difference(object):
@@ -591,6 +623,15 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
+        if self.want.reverse == 'enabled':
+            if not self.want.receive and not self.have.receive:
+                raise F5ModuleError(
+                    "A 'receive' string must be specified when setting 'reverse'."
+                )
+            if self.want.time_until_up != 0 and self.have.time_until_up != 0:
+                raise F5ModuleError(
+                    "Monitors with the 'reverse' attribute are not currently compatible with 'time_until_up'."
+                )
         if self.module.check_mode:
             return True
         self.update_on_device()
@@ -606,6 +647,15 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+        if self.want.reverse == 'enabled':
+            if self.want.time_until_up != 0:
+                raise F5ModuleError(
+                    "Monitors with the 'reverse' attribute are not currently compatible with 'time_until_up'."
+                )
+            if not self.want.receive:
+                raise F5ModuleError(
+                    "A 'receive' string must be specified when setting 'reverse'."
+                )
         self._set_default_creation_values()
         if self.module.check_mode:
             return True
@@ -707,6 +757,7 @@ class ArgumentSpec(object):
             up_interval=dict(type='int'),
             port=dict(),
             interval=dict(type='int'),
+            reverse=dict(type='bool'),
             timeout=dict(type='int'),
             time_until_up=dict(type='int'),
             target_username=dict(),
