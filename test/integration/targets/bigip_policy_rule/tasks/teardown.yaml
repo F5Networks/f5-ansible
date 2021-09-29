@@ -3,7 +3,7 @@
 - name: Remove policies
   bigip_policy:
     name: "{{ item }}"
-    state: present
+    state: absent
   loop:
     - "{{ policy_name1 }}"
     - "{{ policy_name2 }}"
