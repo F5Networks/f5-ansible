@@ -1,0 +1,95 @@
+---
+
+- name: Issue 02067 - Import ASM policy use name subset
+  bigip_asm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 02067 - Assert Import ASM policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02067 - Import ASM policy use name subset - Idempotent check
+  bigip_asm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 02067 - Assert Import ASM policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02067 - Import ASM policy use name subset and number
+  bigip_asm_policy_import:
+    name: foo-policy_1
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 02067 - Assert Import ASM policy use name subset and number
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02067 - Import ASM policy use name subset and number - Idempotent check
+  bigip_asm_policy_import:
+    name: foo-policy_1
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 02067 - Assert Import ASM policy use name subset and number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02067 - Import ASM policy
+  bigip_asm_policy_import:
+    name: foo-policy_1.0.1
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 02067 - Assert Import ASM policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02067 - Import ASM policy - Idempotent check
+  bigip_asm_policy_import:
+    name: foo-policy_1.0.1
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 02067 - Assert Import ASM policy - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02067 - Import ASM policy, force overwrite
+  bigip_asm_policy_import:
+    name: foo-policy_1.0.1
+    force: yes
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
+
+- name: Issue 02067 - Assert Import ASM policy, force overwrite
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02067 - Remove ASM policies
+  bigip_asm_policy_manage:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+      - "foo-policy"
+      - "foo-policy_1"
+      - "foo-policy_1.0.1"

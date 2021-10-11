@@ -5,6 +5,21 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.11.1
+=======
+
+Bugfixes
+--------
+
+- Fix API filters not returning correct results when policy names ending with numbers
+- Fix a name/address comparison logic when using aggregates in bigip_pool_member
+- Fix a regression introduced to aggregate component of bigip_pool_member
+- Fix detaching of attached AFM policy to created route domain
+- Fix for Virtual server idempotency with non-common partition.
+- Fix for adding sip profile to Virtual server
+- Remove type str for datagroups as we are not supporting it.
+- fix destination re in bigip_device_info misses shared partition.
+
 v1.11.0
 =======
 

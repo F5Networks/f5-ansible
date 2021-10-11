@@ -227,13 +227,13 @@ apm_access_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/foo_policy
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: foo_policy
@@ -250,13 +250,13 @@ apm_access_policies:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/foo_policy
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: foo_policy
@@ -669,7 +669,7 @@ client_ssl_profiles:
       sample: /Common/bigip02.internal
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: bigip02.internal
@@ -922,13 +922,13 @@ devices:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/bigip02.internal
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: bigip02.internal
@@ -1187,7 +1187,7 @@ external_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/external
@@ -1449,13 +1449,13 @@ fastl4_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/fastl4
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: fastl4
@@ -1826,13 +1826,13 @@ gateway_icmp_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/gateway_icmp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: gateway_icmp
@@ -1942,13 +1942,13 @@ gtm_pools:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/pool1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: pool1
@@ -2084,13 +2084,13 @@ gtm_servers:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/server1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: server1
@@ -2251,13 +2251,13 @@ gtm_wide_ips:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/wide1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: wide1
@@ -2340,13 +2340,13 @@ gtm_topology_regions:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/region1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: region1
@@ -2426,13 +2426,13 @@ http_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/http
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: http
@@ -2582,13 +2582,13 @@ https_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/http
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: http
@@ -2744,13 +2744,13 @@ http_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/http
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: http
@@ -2960,13 +2960,13 @@ iapp_services:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/service1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: service1
@@ -3045,13 +3045,13 @@ icmp_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/icmp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: icmp
@@ -3157,13 +3157,13 @@ interfaces:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/interface1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: interface1
@@ -3286,13 +3286,13 @@ irules:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
-      sample: /Common/irul1
+      sample: /Common/irule1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: irule1
@@ -3428,7 +3428,7 @@ ltm_pools:
       sample: enabled
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/pool1
@@ -3484,7 +3484,7 @@ ltm_pools:
       sample: no
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: pool1
@@ -3687,7 +3687,7 @@ ltm_pools:
           sample: yes
         full_path:
           description:
-            - Full name of the resource as known to BIG-IP.
+            - Full name of the resource as known to the BIG-IP.
             - Includes the port in the name.
           returned: queried
           type: str
@@ -3712,7 +3712,7 @@ ltm_pools:
           sample: ['/Common/http']
         name:
           description:
-            - Relative name of the resource in BIG-IP.
+            - Relative name of the resource in the BIG-IP.
           returned: queried
           type: str
           sample: "member:80"
@@ -3772,13 +3772,13 @@ ltm_policies:
   contains:
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: policy1
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/policy1
@@ -3973,13 +3973,13 @@ management_routes:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/default
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: default
@@ -4015,13 +4015,13 @@ nodes:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/5.6.7.8
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: 5.6.7.8
@@ -4119,13 +4119,13 @@ oneconnect_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/oneconnect
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: oneconnect
@@ -4206,13 +4206,13 @@ partitions:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: Common
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: Common
@@ -4237,13 +4237,13 @@ provision_info:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: asm
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: asm
@@ -4319,13 +4319,13 @@ route_domains:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/rd1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: rd1
@@ -4397,13 +4397,13 @@ self_ips:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/self1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: self1
@@ -4472,13 +4472,13 @@ server_ssl_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: serverssl
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: serverssl
@@ -4830,7 +4830,7 @@ software_hotfixes:
       sample: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso
@@ -4895,7 +4895,7 @@ software_images:
       sample: BIGIP-13.1.0.7-0.0.1.iso
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: BIGIP-13.1.0.7-0.0.1.iso
@@ -4980,7 +4980,7 @@ software_volumes:
       sample: 0.0.6
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: HD1.1
@@ -4992,7 +4992,7 @@ software_volumes:
       sample: yes
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
         - This usually matches the C(full_name).
       returned: queried
       type: str
@@ -5025,13 +5025,13 @@ ssl_certs:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/cert1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: cert1
@@ -5132,13 +5132,13 @@ ssl_keys:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/key1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: key1
@@ -5237,13 +5237,13 @@ system_db:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: vendor.wwwurl
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: vendor.wwwurl
@@ -5473,13 +5473,13 @@ tcp_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/tcp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: tcp
@@ -5600,13 +5600,13 @@ tcp_half_open_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/tcp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: tcp
@@ -5679,13 +5679,13 @@ tcp_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: tcp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: /Common/tcp
@@ -6253,13 +6253,13 @@ traffic_groups:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/tg1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: tg1
@@ -6318,13 +6318,13 @@ trunks:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/trunk1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: trunk1
@@ -6411,13 +6411,13 @@ udp_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: udp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: /Common/udp
@@ -6549,13 +6549,13 @@ users:
       sample: Admin user
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: admin
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: admin
@@ -6590,13 +6590,13 @@ vcmp_guests:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: guest1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: guest1
@@ -6707,13 +6707,13 @@ virtual_addresses:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/2.3.4.5
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: 2.3.4.5
@@ -6813,13 +6813,13 @@ virtual_servers:
       sample: offline
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/2.3.4.5
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: 2.3.4.5
@@ -7278,13 +7278,13 @@ virtual_servers:
           sample: client-side
         full_path:
           description:
-            - Full name of the resource as known to BIG-IP.
+            - Full name of the resource as known to the BIG-IP.
           returned: queried
           type: str
           sample: /Common/tcp
         name:
           description:
-            - Relative name of the resource in BIG-IP.
+            - Relative name of the resource in the BIG-IP.
           returned: queried
           type: str
           sample: tcp
@@ -7360,13 +7360,13 @@ vlans:
       contains:
         full_path:
           description:
-            - Full name of the resource as known to BIG-IP.
+            - Full name of the resource as known to the BIG-IP.
           returned: queried
           type: str
           sample: 1.3
         name:
           description:
-            - Relative name of the resource in BIG-IP.
+            - Relative name of the resource in the BIG-IP.
           returned: queried
           type: str
           sample: 1.3
@@ -16511,7 +16511,7 @@ class VirtualServersParameters(BaseParameters):
         if self._values['destination'] is None:
             result = Destination(ip=None, port=None, route_domain=None, mask=None)
             return result
-        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
+        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/([a-zA-Z0-9_.-]+\/)?', '', self._values['destination'])
         # Covers the following examples
         #
         # /Common/2700:bc00:1f10:101::6%2.80
@@ -16519,6 +16519,7 @@ class VirtualServersParameters(BaseParameters):
         # 1.1.1.1%2:80
         # /Common/1.1.1.1%2:80
         # /Common/2700:bc00:1f10:101::6%2.any
+        # /Common/Shared/1.1.1.1:80
         #
         pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+|any)'
         matches = re.search(pattern, destination)

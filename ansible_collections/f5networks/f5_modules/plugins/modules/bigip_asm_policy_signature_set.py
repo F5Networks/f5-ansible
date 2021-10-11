@@ -41,7 +41,7 @@ options:
         that produce few false positives when identifying evasion attacks. Only available in version 13.x and later.
       - When C(High Accuracy Signatures), configures signatures with a high level of accuracy
         that produce few false positives when identifying evasion attacks.
-      - When C(IIS and Windows Signatures), configures signatures that target attacks against IIS
+      - When C(IIS and Windows Signatures), configures signatures that target attacks against Microsoft IIS
         and Windows-based systems. Only available in version 13.x and later.
       - When C(Information Leakage Signatures), configures signatures targeting attacks that are looking for system data
         or debugging information that shows where the system is vulnerable to attack.
@@ -146,7 +146,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 policy_name:
-  description: The name of the ASM policy
+  description: The name of the ASM policy.
   returned: changed
   type: str
   sample: FooPolicy
@@ -561,7 +561,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,id".format(
+        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,id".format(
             self.want.policy_name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
@@ -575,11 +575,17 @@ class ModuleManager(object):
             raise F5ModuleError(resp.content)
 
         if 'items' in response and response['items'] != []:
-            policy_id = response['items'][0]['id']
+            # because api filter on ASM is broken when names that contain numbers at the end we need to work around it
+            if len(response['items']) == 1:
+                policy_id = response['items'][0]['id']
+            else:
+                for item in response['items']:
+                    if item['name'] == self.want.policy_name and item['partition'] == self.want.partition:
+                        policy_id = item['id']
 
         if not policy_id:
             raise F5ModuleError(
-                "The policy with the name {0} does not exist".format(self.want.policy_name)
+                "The policy with the name {0} was not found.".format(self.want.policy_name)
             )
         return policy_id
 

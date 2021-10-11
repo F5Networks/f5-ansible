@@ -1,0 +1,88 @@
+---
+- name: Issue 02040 - Create a server SSL profile with cipher groups
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_02040
+    ciphers: ""
+    cipher_group: "f5-aes"
+  register: result
+
+- name: Issue 02040 - Assert Create a server SSL profile with cipher groups
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.cipher_group == "/Common/f5-aes"
+
+- name: Issue 02040 - Create a server SSL profile with cipher groups - Idempotent check
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_02040
+    ciphers: ""
+    cipher_group: "f5-aes"
+  register: result
+
+- name: Issue 02040 - Assert Create a server SSL profile with cipher groups - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02040 - Modify a server SSL profile cipher group set to none
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_02040
+    cipher_group: "none"
+    ciphers: "ecdhe:!3des:!tlsv1:!tlsv1_1"
+  register: result
+
+- name: Issue 02040 - Assert Create a server SSL profile with cipher groups
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.cipher_group == "none"
+      - result.ciphers == "ecdhe:!3des:!tlsv1:!tlsv1_1"
+
+- name: Issue 02040 - Modify a server SSL profile cipher group set to none - Idempotent check
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_02040
+    cipher_group: "none"
+    ciphers: "ecdhe:!3des:!tlsv1:!tlsv1_1"
+  register: result
+
+- name: Issue 02040 - Assert Create a server SSL profile with cipher groups - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02040 - Modify a server SSL profile removing ciphers
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_02040
+    cipher_group: "f5-aes"
+    ciphers: ""
+  register: result
+
+- name: Issue 02040 - Assert Modify a server SSL profile removing ciphers
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.cipher_group == "/Common/f5-aes"
+      - result.ciphers == "none"
+
+- name: Issue 02040 - Modify a server SSL profile removing ciphers - Idempotent check
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_02040
+    cipher_group: "f5-aes"
+    ciphers: ""
+  register: result
+
+- name: Issue 02040 - Assert Modify a server SSL profile removing ciphers - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02040 - Remove a server SSL profile with cipher groups
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_02040
+    state: absent

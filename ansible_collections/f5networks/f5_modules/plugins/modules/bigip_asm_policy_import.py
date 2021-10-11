@@ -36,7 +36,7 @@ options:
       - parent
   retain_inheritance_settings:
     description:
-      - Indicate if an imported security type policy should retain settings when attached to parent policy.
+      - Indicates if an imported security type policy should retain settings when attached to parent policy.
       - This parameter is available on TMOS version 13.x and later and only takes effect when the C(inline) import method
         is used.
     type: bool
@@ -50,7 +50,7 @@ options:
   base64:
     description:
       - Indicates if the imported policy string is encoded in Base64.
-      - Parameter only takes effect when using the C(inline) method of import.
+      - This parameter only takes effect when using the C(inline) method of import.
     type: bool
   inline:
     description:
@@ -103,14 +103,14 @@ options:
     description:
       - Full path to a policy file to be imported into the BIG-IP ASM.
       - Policy files exported from newer versions of BIG-IP cannot be imported into older
-        versions of BIG-IP. The opposite, however, is true; you can import older into
-        newer.
+        versions of BIG-IP. However, policy files from older versions of BIG-IP can be
+        imported into newer versions of BIG-IP.
       - The file format can be binary or XML.
     type: path
   force:
     description:
-      - When set to C(yes) any existing policy with the same name will be overwritten by the new import.
-      - Works for both inline and file imports, if the policy does not exist this setting is ignored.
+      - When set to C(yes), any existing policy with the same name will be overwritten by the new import.
+      - This works for both inline and file imports, if the policy does not exist this setting is ignored.
     default: no
     type: bool
   partition:
@@ -430,7 +430,7 @@ class ModuleManager(object):
             self.client.provider['server_port'],
         )
 
-        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
+        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
@@ -442,9 +442,11 @@ class ModuleManager(object):
 
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
             raise F5ModuleError(resp.content)
-
         if 'items' in response and response['items'] != []:
-            return True
+            # because api filter on ASM is broken when names that contain numbers at the end we need to work around it
+            for policy in response['items']:
+                if policy['name'] == self.want.name and policy['partition'] == self.want.partition:
+                    return True
         return False
 
     def upload_file_to_device(self, content, name):
@@ -465,7 +467,7 @@ class ModuleManager(object):
             self.client.provider['server_port'],
         )
 
-        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
+        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
@@ -474,12 +476,18 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
             raise F5ModuleError(resp.content)
 
-        policy_link = response['items'][0]['selfLink']
-        return policy_link
+        if 'items' in response and response['items'] != []:
+            # because api filter on ASM is broken when names that contain numbers at the end we need to work around it
+            for policy in response['items']:
+                if policy['name'] == self.want.name and policy['partition'] == self.want.partition:
+                    policy_link = policy['selfLink']
+                    return policy_link
+        raise F5ModuleError(
+            'Unable to retrieve policy link for policy {0}.'.format(self.want.name)
+        )
 
     def inline_import(self):
         params = self.changes.api_params()

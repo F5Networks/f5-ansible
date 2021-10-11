@@ -34,8 +34,8 @@ options:
   dest:
     description:
       - A directory to save the UCS file into.
+      - This option is mandatory when C(only_create_file) is set to C(no)
     type: path
-    required: True
   encryption_password:
     description:
       - Password to use to encrypt the UCS file if desired.
@@ -53,7 +53,9 @@ options:
     default: yes
   src:
     description:
-      - The name of the UCS file to create on the remote server for downloading. The file will be retrieved or created in /var/local/ucs/.
+      - The name of the UCS file to create on the remote server for downloading.
+      - The file will be retrieved or created in /var/local/ucs/.
+      - This option is mandatory when C(only_create_file) is set to C(yes)
     type: str
   async_timeout:
     description:
@@ -62,6 +64,15 @@ options:
       - The accepted value range is between C(150) and C(1800) seconds.
     type: int
     default: 150
+  only_create_file:
+    description:
+      - If C(yes), the file will be created on device and not downloaded. If the UCS archive exists on device,
+        no change will be made and file will not be downloaded.
+      - To recreate UCS files left on device remove them with C(bigip_ucs) module before running this module with
+        C(only_create_file) set to C(yes).
+    type: bool
+    default: no
+    version_added: "1.12.0"
 notes:
   - BIG-IP provides no way to get a checksum of the UCS files on the system
     via any interface with the possible exception of logging in directly to the box (which
@@ -84,6 +95,36 @@ EXAMPLES = r'''
   bigip_ucs_fetch:
     src: cs_backup.ucs
     dest: /tmp/cs_backup.ucs
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Only create new UCS, no download
+  bigip_ucs_fetch:
+    src: cs_backup.ucs
+    only_create_file: yes
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Recreate UCS file left on device - remove file first
+  bigip_ucs:
+    ucs: cs_backup.ucs
+    state: absent
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Recreate UCS file left on device - create new file
+  bigip_ucs_fetch:
+    src: cs_backup.ucs
+    only_create_file: yes
     provider:
       server: lb.mydomain.com
       user: admin
@@ -322,7 +363,8 @@ class BaseManager(object):
 
     def present(self):
         if self.exists():
-            self.update()
+            if not self.want.only_create_file:
+                self.update()
         else:
             self.create()
 
@@ -382,7 +424,8 @@ class BaseManager(object):
             return True
         if self.want.create_on_missing:
             self.create_on_device()
-        self.execute()
+        if not self.want.only_create_file:
+            self.execute()
         return True
 
     def create_on_device(self):
@@ -456,10 +499,13 @@ class BaseManager(object):
                     return True
 
             time.sleep(delay)
-        raise F5ModuleError(
-            "Module timeout reached, state change is unknown, "
-            "please increase the async_timeout parameter for long lived actions."
-        )
+        # at times we time out waiting on task as sometimes task is gone from async queue after services reboot
+        # we are adding existence check here to catch where the file is created but async task is removed.
+        if not self.exists():
+            raise F5ModuleError(
+                "Module timeout reached, state change is unknown, "
+                "please increase the async_timeout parameter for long lived actions."
+            )
 
     def download(self):
         self.download_from_device(self.want.dest)
@@ -635,7 +681,6 @@ class ArgumentSpec(object):
             ),
             encryption_password=dict(no_log=True),
             dest=dict(
-                required=True,
                 type='path'
             ),
             force=dict(
@@ -647,11 +692,19 @@ class ArgumentSpec(object):
                 type='bool'
             ),
             src=dict(),
+            only_create_file=dict(
+                default='no',
+                type='bool'
+            ),
             async_timeout=dict(
                 type='int',
                 default=150
             ),
         )
+        self.required_if = [
+            ['only_create_file', 'no', ['dest']],
+            ['only_create_file', 'yes', ['src']]
+        ]
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
@@ -664,6 +717,7 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
+        required_if=spec.required_if,
         add_file_common_args=spec.add_file_common_args
     )
 

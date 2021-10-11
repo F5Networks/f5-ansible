@@ -1,0 +1,43 @@
+---
+- name: Issue 01519 - Create standard virtual server with sip profile
+  bigip_virtual_server:
+    name: sip-profile-test
+    destination: '10.1.1.1%0'
+    port: 5060
+    type: standard
+    provider: "{{ provider }}"
+    profiles: ['/Common/foo2','/Common/tcp']
+    register: result
+
+- name: Issue 01519 - Create standard virtual server with sip profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01519 - Create standard virtual server with sip profile - Idempotent check
+  bigip_virtual_server:
+    name: sip-profile-test
+    destination: '10.1.1.1%0'
+    port: 5060
+    type: standard
+    provider: "{{ provider }}"
+    profiles: ['/Common/foo2','/Common/tcp']
+    register: result
+
+- name: Issue 01519 - Create standard virtual server with sip profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01813 - Remove bigip_virtual_server with sip profile- Idempotent check
+  bigip_virtual_server:
+    name: sip-profile-test
+    destination: '10.1.1.1%0'
+    state: absent
+    port: 5060
+    type: standard
+    provider: "{{ provider }}"
+    profiles: ['/Common/foo2','/Common/tcp']
+    register: result

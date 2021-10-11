@@ -1,0 +1,36 @@
+---
+- name: Issue 01502 - Only create new UCS, no download
+  bigip_ucs_fetch:
+    src: 01502_backup.ucs
+    only_create_file: yes
+  register: result
+
+- name: Issue 01502 - Assert Only create new UCS, no download
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01502 - Recreate UCS file left on device - remove file first
+  bigip_ucs:
+    ucs: 01502_backup.ucs
+    state: absent
+
+- name: Issue 01502 - Assert Recreate UCS file left on device - remove file first
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01502 - Recreate UCS file left on device - create new file
+  bigip_ucs_fetch:
+    src: 01502_backup.ucs
+    only_create_file: yes
+
+- name: Issue 01502 - Assert Recreate UCS file left on device - create new file
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01502 - Cleanup
+  bigip_ucs:
+    ucs: 01502_backup.ucs
+    state: absent
