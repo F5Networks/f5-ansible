@@ -499,10 +499,13 @@ class BaseManager(object):
                     return True
 
             time.sleep(delay)
-        raise F5ModuleError(
-            "Module timeout reached, state change is unknown, "
-            "please increase the async_timeout parameter for long lived actions."
-        )
+        # at times we time out waiting on task as sometimes task is gone from async queue after services reboot
+        # we are adding existence check here to catch where the file is created but async task is removed.
+        if not self.exists():
+            raise F5ModuleError(
+                "Module timeout reached, state change is unknown, "
+                "please increase the async_timeout parameter for long lived actions."
+            )
 
     def download(self):
         self.download_from_device(self.want.dest)
