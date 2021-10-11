@@ -108,3 +108,6 @@
     - "/tmp/{{ ucs_missing }}"
     - "/tmp/{{ ucs_name_1 }}"
     - "/tmp/{{ ucs_name }}"
+
+- import_tasks: issue-01502.yaml
+  tags: issue-01502
