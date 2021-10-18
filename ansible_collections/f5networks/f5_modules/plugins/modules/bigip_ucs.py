@@ -619,6 +619,9 @@ class V1Manager(BaseManager):
             elif 'TimeoutException' in str(ex):
                 # Timeouts appear to be able to happen in 12.1.2
                 pass
+            elif 'remoteSender' in str(ex):
+                # catching some edge cases where API becomes unstable after installation
+                pass
             else:
                 raise F5ModuleError(str(ex))
         self.wait_for_rest_api_restart()
