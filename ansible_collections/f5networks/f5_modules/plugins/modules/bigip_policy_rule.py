@@ -2147,7 +2147,7 @@ class Difference(object):
             conditions = self._diff_complex_items(self.want.conditions, self.have.conditions)
             if conditions is None:
                 return False
-            if any(y for y in conditions if y['type'] not in ['all_traffic', 'http_uri', 'http_host', 'tcp']):
+            if any(y for y in conditions if y['type'] not in ['all_traffic', 'http_uri', 'http_host']):
                 return True
         return False
 
