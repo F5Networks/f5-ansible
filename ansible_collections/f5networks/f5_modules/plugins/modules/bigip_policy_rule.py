@@ -2101,9 +2101,9 @@ class Difference(object):
         w = self.to_tuple(want)
         h = self.to_tuple(have)
         if set(w) == set(h):
-             return None
+            return None
         else:
-             return want
+            return want
 
     def _diff_complex_items_actions(self, want, have):
         if want == [] and have is None:
@@ -2116,7 +2116,6 @@ class Difference(object):
             return None
         else:
             return want
-
 
     @property
     def actions(self):
