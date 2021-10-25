@@ -679,8 +679,22 @@ class Parameters(AnsibleF5Parameters):
 class ApiParameters(Parameters):
     def _remove_internal_keywords(self, resource):
         items = [
-            'kind', 'generation', 'selfLink', 'poolReference', 'offset', 'datagroupReference'
+            'kind',
+            'generation',
+            'selfLink',
+            'poolReference',
+            'offset',
+            'datagroupReference',
+            'caseInsensitive',
+            'external',
+            'index',
+            'present',
+            'remote',
+            'request',
+            'fullPath',
+            'all'
         ]
+
         for item in items:
             try:
                 del resource[item]
@@ -699,6 +713,8 @@ class ApiParameters(Parameters):
                 action.update(item)
                 action['type'] = 'forward'
                 del action['forward']
+                if 'request' not in action:
+                    action['request'] = 'True'
             elif 'enable' in item:
                 action.update(item)
                 action['type'] = 'enable'
@@ -707,6 +723,8 @@ class ApiParameters(Parameters):
                 action.update(item)
                 action['type'] = 'disable'
                 del action['disable']
+                if 'request' not in action:
+                    action['request'] = 'True'
             elif 'redirect' in item:
                 action.update(item)
                 action['type'] = 'redirect'
@@ -714,7 +732,8 @@ class ApiParameters(Parameters):
             elif 'setVariable' in item:
                 action.update(item)
                 action['type'] = 'set_variable'
-                del action['fullPath']
+                if 'fullPath' in action.keys():
+                    del action['fullPath']
                 del action['code']
                 del action['expirySecs']
                 del action['length']
@@ -722,10 +741,14 @@ class ApiParameters(Parameters):
                 del action['status']
                 del action['vlanId']
                 del action['timeout']
+                if 'request' not in action:
+                    action['request'] = 'True'
             elif 'shutdown' in item:
                 action.update(item)
                 action['type'] = 'reset'
                 del action['shutdown']
+                if 'request' not in action:
+                    action['request'] = 'True'
             elif 'persist' in item:
                 action.update(item)
                 action['type'] = 'persist'
@@ -733,7 +756,8 @@ class ApiParameters(Parameters):
             elif 'remove' in item:
                 action.update(item)
                 action['type'] = 'remove'
-                action.pop('fullPath', None)
+                if 'fullPath' in action.keys():
+                    action.pop('fullPath', None)
                 action.pop('code', None)
                 action.pop('expirySecs', None)
                 action.pop('length', None)
@@ -746,7 +770,8 @@ class ApiParameters(Parameters):
             elif 'insert' in item:
                 action.update(item)
                 action['type'] = 'insert'
-                action.pop('fullPath', None)
+                if 'fullPath' in action.keys():
+                    action.pop('fullPath', None)
                 action.pop('code', None)
                 action.pop('expirySecs', None)
                 action.pop('length', None)
@@ -759,7 +784,10 @@ class ApiParameters(Parameters):
             elif 'replace' in item:
                 action.update(item)
                 action['type'] = 'replace'
-                action.pop('fullPath', None)
+                if 'fullPath' in action.keys():
+                    action.pop('fullPath', None)
+                if 'request' not in action:
+                    action['request'] = 'True'
                 action.pop('code', None)
                 action.pop('expirySecs', None)
                 action.pop('length', None)
@@ -824,9 +852,11 @@ class ApiParameters(Parameters):
                 action['type'] = 'tcp'
                 if 'values' in action:
                     action['values'] = [str(x) for x in action['values']]
+                del action['tcp']
             result.append(action)
         # Names contains the index in which the rule is at.
-        result = sorted(result, key=lambda x: x['name'])
+        if 'name' in result:
+            result = sorted(result, key=lambda x: x['name'])
         return result
 
 
@@ -1203,8 +1233,7 @@ class ModuleParameters(Parameters):
 
         if 'event' in item and item['event'] is not None:
             action[item['event']] = True
-        else:
-            action['request'] = True
+
         action.update(dict(
             type='set_variable',
             expression=item['expression'],
@@ -1365,13 +1394,11 @@ class ModuleParameters(Parameters):
                 action.update(
                     httpHeader=True,
                     tmName=item['http_header']['name'],
-                    request=True
                 )
             elif item['http_header']['event'] == 'response':
                 action.update(
                     httpHeader=True,
                     tmName=item['http_header']['name'],
-                    response=True
                 )
             else:
                 action.update(
@@ -1382,7 +1409,6 @@ class ModuleParameters(Parameters):
             if item['http_referer']['event'] == 'request':
                 action.update(
                     httpReferer=True,
-                    request=True
                 )
             if item['http_referer']['event'] == 'proxy_connect':
                 action.update(
@@ -1399,7 +1425,6 @@ class ModuleParameters(Parameters):
                 action.update(
                     httpCookie=True,
                     tmName=item['http_cookie']['name'],
-                    request=True
                 )
             elif item['http_cookie']['event'] == 'proxy_connect':
                 action.update(
@@ -1451,7 +1476,6 @@ class ModuleParameters(Parameters):
                     httpHeader=True,
                     tmName=item['http_header']['name'],
                     value=item['http_header']['value'],
-                    request=True
                 )
             elif item['http_header']['event'] == 'response':
                 action.update(
@@ -1475,7 +1499,6 @@ class ModuleParameters(Parameters):
                 action.update(
                     httpReferer=True,
                     value=item['http_referer']['value'],
-                    request=True
                 )
             if item['http_referer']['event'] == 'proxy_connect':
                 action.update(
@@ -1499,7 +1522,6 @@ class ModuleParameters(Parameters):
                     httpCookie=True,
                     tmName=item['http_cookie']['name'],
                     value=item['http_cookie']['value'],
-                    request=True
                 )
             elif item['http_cookie']['event'] == 'proxy_connect':
                 action.update(
@@ -2078,6 +2100,18 @@ class Difference(object):
             return None
         w = self.to_tuple(want)
         h = self.to_tuple(have)
+        if set(w) == set(h):
+            return None
+        else:
+            return want
+
+    def _diff_complex_items_actions(self, want, have):
+        if want == [] and have is None:
+            return None
+        if want is None:
+            return None
+        w = self.to_tuple(want)
+        h = self.to_tuple(have)
         if set(w).issubset(set(h)):
             return None
         else:
@@ -2085,7 +2119,7 @@ class Difference(object):
 
     @property
     def actions(self):
-        result = self._diff_complex_items(self.want.actions, self.have.actions)
+        result = self._diff_complex_items_actions(self.want.actions, self.have.actions)
         actioned = self._compare_complex_actions()
         if self._conditions_missing_default_rule_for_asm(result):
             raise F5ModuleError(
