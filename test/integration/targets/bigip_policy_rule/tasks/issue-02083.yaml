@@ -138,7 +138,7 @@
     state: absent
 
 - name: Issue 02083 - Remove ASM policy
-  bigip_policy:
+  bigip_asm_policy_manage:
     name: foo-policy
     state: absent
 
