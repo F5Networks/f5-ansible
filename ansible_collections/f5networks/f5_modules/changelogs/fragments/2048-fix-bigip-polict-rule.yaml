@@ -1,3 +1,0 @@
----
-bugfixes:
-    - fix to detect module changes when there is removal of multiple conditions in rules
