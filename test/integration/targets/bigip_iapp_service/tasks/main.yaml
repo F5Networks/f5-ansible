@@ -19,6 +19,7 @@
     name: foo-service
     template: f5.http.v1.2.0rc4
     parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4.parameters.json') }}"
+  tags: bigip_iapp_service_configure
   register: result
 
 - name: Assert Create HTTP iApp service from iApp template
@@ -42,6 +43,7 @@
   bigip_iapp_service:
     name: foo-service
     state: absent
+  tags: bigip_iapp_service_delete
   register: result
 
 - name: Assert Delete HTTP iApp service
@@ -64,7 +66,8 @@
   bigip_iapp_service:
     name: foo-app-service
     template: appsvcs_integration_v2.0.002
-    parameters: "{{ lookup('file', 'appsvcs_myhttps_w_asm_from_url_payload.json') }}"
+    parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4_myhttps_w_asm_payload.json') }}"
+  tags: foo-app-service-configure
   register: result
 
 - name: Assert Create AppSvcs iApp service from iApp template
@@ -76,7 +79,7 @@
   bigip_iapp_service:
     name: foo-app-service
     template: appsvcs_integration_v2.0.002
-    parameters: "{{ lookup('file', 'appsvcs_myhttps_w_asm_from_url_payload.json') }}"
+    parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4_myhttps_w_asm_payload.json') }}"
   register: result
 
 - name: Assert Create AppSvcs iApp service from iApp template - Idempotent check
@@ -88,6 +91,7 @@
   bigip_iapp_service:
     name: foo-app-service
     state: absent
+  tags: foo-app-service-delete
   register: result
 
 - name: Assert Delete AppSvcs iApp service from iApp template
