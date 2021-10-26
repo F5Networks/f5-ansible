@@ -8,6 +8,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+
 DOCUMENTATION = r'''
 ---
 module: bigip_policy_rule
@@ -26,6 +27,14 @@ options:
       - The name of the policy you want to associate this rule with.
     type: str
     required: True
+  replace_with:
+    description:
+      - Specifies if the conditions given by the user should overwrite what exists on device.
+      - The option is useful when a subset of conditions need to be removed. The option is similar to replace-all-with
+        flag available in TMSH commands.
+      - Using this option is not idempotent.
+    type: bool
+    default: no
   rule_order:
     description:
       - Specifies a number that indicates the order of this rule relative to other rules in policy.
@@ -2098,6 +2107,8 @@ class Difference(object):
 
     @property
     def conditions(self):
+        if self.want.replace_with is True:
+            return self.want.conditions
         result = self._diff_complex_items(self.want.conditions, self.have.conditions)
         return result
 
@@ -2621,6 +2632,10 @@ class ArgumentSpec(object):
             name=dict(required=True),
             policy=dict(required=True),
             rule_order=dict(type='int'),
+            replace_with=dict(
+                type='bool',
+                default='no'
+            ),
             state=dict(
                 default='present',
                 choices=['absent', 'present']

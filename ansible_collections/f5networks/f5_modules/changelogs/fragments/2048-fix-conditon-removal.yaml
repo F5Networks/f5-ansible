@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - Add option to overwrite existing conditons with the ones provided by user in bigip_policy_rule
