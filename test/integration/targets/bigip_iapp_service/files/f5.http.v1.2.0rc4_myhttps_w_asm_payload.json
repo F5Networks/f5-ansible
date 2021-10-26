@@ -131,6 +131,26 @@
       "value": "no"
     },
     {
+		"name": "iapp__routeDomain",
+		"value": "auto"
+	},
+    {
+		"name": "iapp__mode",
+		"value": "auto"
+	},
+    {
+		"name": "pool__mask",
+		"value": "255.255.255.255"
+	},
+    {
+		"name": "pool__port",
+		"value": "80"
+	},
+    {
+		"name": "vs__ProfileClientProtocol",
+		"value": "/Common/tcp-wan-optimized"
+	},
+    {
       "encrypted": "no",
       "name": "ssl_encryption_questions__help",
       "value": "hide"
