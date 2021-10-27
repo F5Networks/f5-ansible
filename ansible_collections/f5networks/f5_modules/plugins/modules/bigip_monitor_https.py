@@ -61,7 +61,7 @@ options:
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
-        template will run. If this parameter is not provided when creating
+        template runs. If this parameter is not provided when creating
         a new monitor, the default value is 5. This value B(must)
         be less than the C(timeout) value.
     type: int
@@ -78,10 +78,10 @@ options:
   time_until_up:
     description:
       - Specifies the amount of time in seconds after the first successful
-        response before a node will be marked up. A value of 0 causes a
+        response before a node is marked up. A value of 0 causes a
         node to be marked up immediately after a valid response is received
         from the node. If this parameter is not provided when creating
-        a new monitor, then the default value will be 0.
+        a new monitor, then the default value is 0.
     type: int
   target_username:
     description:
@@ -121,7 +121,7 @@ options:
   cipher_list:
     description:
       - Specifies the list of ciphers for this monitor.
-      - The items in the cipher list are separated with the colon C(:) symbol.
+      - The items in the cipher list are separated with a colon C(:).
     type: str
     version_added: "1.3.0"
   partition:

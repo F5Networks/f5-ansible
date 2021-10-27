@@ -110,8 +110,8 @@ options:
     type: str
   update_password:
     description:
-      - C(always) will allow users to update passwords if they choose to do so.
-        C(on_create) will only set the password for newly created profiles.
+      - C(always) allows users to update passwords if they choose to do so.
+        C(on_create) only sets the password for newly created profiles.
     type: str
     choices:
       - always
@@ -119,7 +119,7 @@ options:
     default: always
   ocsp_profile:
     description:
-      - Specifies the name of the OCSP profile for purpose of validating status
+      - Specifies the name of the OCSP profile for purpose of validating the status
         of server certificate.
     type: str
   partition:
