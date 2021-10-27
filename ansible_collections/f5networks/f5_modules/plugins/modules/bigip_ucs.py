@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_ucs
 short_description: Manage upload, installation, and removal of UCS files
 description:
-   - Manage upload, installation, and removal of UCS files on a BIG-IP system.
+   - Manage the upload, installation, and removal of UCS files on a BIG-IP system.
      A user configuration set (UCS) is a backup file that contains BIG-IP configuration
      data that can be used to fully restore a BIG-IP system in the event of a
      failure or RMA replacement.
