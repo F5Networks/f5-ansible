@@ -5,6 +5,24 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.12.0
+=======
+
+Minor Changes
+-------------
+
+- Add cipher_groups option to bigip_server_ssl module
+- Add only_create_file option to bigip_ucs_fetch module
+- Add option to overwrite existing conditons with the ones provided by user in bigip_policy_rule
+- Add reverse flag support to bigip_monitor_https
+
+Bugfixes
+--------
+
+- Add fix to iapp service update module
+- Add fix to ucs module to cover more scenarios of API instability
+- fix to allow tcp condition with asm_enable action
+
 v1.11.1
 =======
 
