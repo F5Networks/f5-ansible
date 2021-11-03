@@ -14,15 +14,15 @@ short_description: Fetches a UCS file from remote nodes
 description:
    - This module is used for fetching UCS files from remote machines and
      storing them locally in a file tree, organized by hostname. This module
-     is written to create and transfer UCS files that might not be present,
+     was written to create and transfer UCS files that might not be present,
      it does not require UCS file to be pre-created. So a missing remote UCS
      is not an error unless C(fail_on_missing) is set to 'yes'.
 version_added: "1.0.0"
 options:
   backup:
     description:
-      - Create a backup file including the timestamp information so you can
-        get the original file back if you somehow overwrote it incorrectly.
+      - Creates a backup file including the timestamp information so you can
+        get the original file back if you overwrote it incorrectly.
     type: bool
     default: no
   create_on_missing:
@@ -34,7 +34,7 @@ options:
   dest:
     description:
       - A directory to save the UCS file into.
-      - This option is mandatory when C(only_create_file) is set to C(no)
+      - This option is mandatory when C(only_create_file) is set to C(no).
     type: path
   encryption_password:
     description:
@@ -47,28 +47,28 @@ options:
     default: no
   force:
     description:
-      - If C(no), the file will only be transferred if the destination does not
+      - If C(no), the file is only transferred if the destination does not
         exist.
     type: bool
     default: yes
   src:
     description:
       - The name of the UCS file to create on the remote server for downloading.
-      - The file will be retrieved or created in /var/local/ucs/.
-      - This option is mandatory when C(only_create_file) is set to C(yes)
+      - The file is retrieved or created in /var/local/ucs/.
+      - This option is mandatory when C(only_create_file) is set to C(yes).
     type: str
   async_timeout:
     description:
-      - Parameter used when creating new UCS file on device.
-      - The amount of time in seconds to wait for the API async interface to complete its task.
+      - Parameter used when creating new UCS file on a device.
+      - The amount of time to wait for the API async interface to complete its task, in seconds.
       - The accepted value range is between C(150) and C(1800) seconds.
     type: int
     default: 150
   only_create_file:
     description:
-      - If C(yes), the file will be created on device and not downloaded. If the UCS archive exists on device,
-        no change will be made and file will not be downloaded.
-      - To recreate UCS files left on device remove them with C(bigip_ucs) module before running this module with
+      - If C(yes), the file is created on device and not downloaded. If the UCS archive exists on device,
+        no change is made and file is not be downloaded.
+      - To recreate UCS files left on the device, remove them with C(bigip_ucs) module before running this module with
         C(only_create_file) set to C(yes).
     type: bool
     default: no
@@ -146,12 +146,12 @@ dest:
 src:
   description:
     - Name of the UCS file on the remote BIG-IP to download. If not
-      specified, this will be a randomly generated filename.
+      specified, this is a randomly generated filename.
   returned: changed
   type: str
   sample: cs_backup.ucs
 backup_file:
-  description: Name of backup file.
+  description: Name of the backup file.
   returned: changed and if backup=yes
   type: str
   sample: /path/to/file.txt.2015-02-12@22:09~

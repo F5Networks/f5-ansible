@@ -8,12 +8,13 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+
 DOCUMENTATION = r'''
 ---
 module: bigip_policy_rule
 short_description: Manage LTM policy rules on a BIG-IP
 description:
-  - This module will manage LTM policy rules on a BIG-IP.
+  - This module manages LTM policy rules on a BIG-IP.
 version_added: "1.0.0"
 options:
   name:
@@ -26,13 +27,21 @@ options:
       - The name of the policy you want to associate this rule with.
     type: str
     required: True
+  replace_with:
+    description:
+      - Specifies if the conditions given by the user should overwrite what exists on the device.
+      - The option is useful when a subset of conditions needs to be removed. This option is similar to the
+        replace-all-with flag available in TMSH commands.
+      - Using this option is not idempotent.
+    type: bool
+    default: no
   rule_order:
     description:
-      - Specifies a number that indicates the order of this rule relative to other rules in policy.
-      - When not set, the device will set the parameter to 0.
-      - If there are rules with the same rule order number the device uses rule names as a tie-breaker
+      - Specifies a number that indicates the order of this rule relative to other rules in the policy.
+      - When not set, the device sets the parameter to 0.
+      - If there are rules with the same rule order number, the device uses rule names
         to determine how the rules are ordered.
-      - The lower the number, the lower the rule will be in the general order, with the lowest number C(0) being the
+      - The lower the number, the lower the rule is in the general order, with the lowest number C(0) being the
         topmost one.
       - Valid range of values is between C(0) and C(4294967295) inclusive.
     type: int
@@ -89,7 +98,7 @@ options:
         type: str
       virtual:
         description:
-          - Virtual Server to which you want to forward traffic.
+          - Virtual server to which you want to forward traffic.
           - This parameter is only valid with the C(forward) type.
         type: str
       node:
@@ -114,12 +123,12 @@ options:
         type: str
       location:
         description:
-          - The new URL for which a redirect response will be sent.
+          - The new URL for which a redirect response is sent.
           - A Tcl command substitution can be used for this field.
         type: str
       event:
         description:
-          - Events on which actions, such as reset, forward can be triggered.
+          - Events on which actions, such as reset and forward, can be triggered.
           - With the C(set_variable) action, it is used for specifying
             an action event, such as request or response.
           - "Valid event choices for C(forward) action type are: client_accepted, proxy_request
@@ -133,7 +142,7 @@ options:
         type: str
       expression:
         description:
-          - A tcl expression used with the C(set_variable) action.
+          - A Tcl expression used with the C(set_variable) action.
         type: str
       variable_name:
         description:
@@ -147,7 +156,7 @@ options:
         version_added: "1.1.0"
       cookie_expiry:
         description:
-          - Optional argument, specifying the time for which the session will be persisted.
+          - Optional argument, specifying the time for which the session is persisted.
           - This parameter is only valid with the C(persist) type.
         type: int
         version_added: "1.1.0"
@@ -159,7 +168,7 @@ options:
         suboptions:
           event:
             description:
-              - Type of event when the C(http_header) is removed, replaced or inserted.
+              - Type of event when the C(http_header) is removed, replaced, or inserted.
               - The C(request) and C(response) events are only choices with C(remove) and C(insert) type.
               - All of events are valid with C(replace) type action.
             type: str
@@ -183,13 +192,13 @@ options:
         version_added: "1.8.0"
       http_referer:
         description:
-          - HTTP Referer header that you want to remove, replace or insert.
+          - HTTP Referer header you want to remove, replace, or insert.
           - This parameter is only valid with the C(remove), C(insert) and C(replace) type.
         type: dict
         suboptions:
           event:
             description:
-              - Type of event when the c(http_referer) is removed, replaced or inserted.
+              - Type of event when the c(http_referer) is removed, replaced, or inserted.
             required: True
             type: str
             choices:
@@ -199,14 +208,14 @@ options:
           value:
             description:
               - The value of C(http_referer).
-              - Mandatory parameter when configured with C(insert) type action.
-              - Parameter is ignored for C(remove) type.
-              - Parameter is optional for C(replace) type.
+              - This is a mandatory parameter when configured with C(insert) type action.
+              - This parameter is ignored for the C(remove) type.
+              - This parameter is optional for the C(replace) type.
             type: str
         version_added: "1.8.0"
       http_set_cookie:
         description:
-          - HTTP Set-Cookie header that you want to remove or insert.
+          - HTTP Set-Cookie header you want to remove or insert.
           - This parameter is only valid with the C(remove) or c(insert) type.
         type: dict
         suboptions:
@@ -218,12 +227,12 @@ options:
           value:
             description:
               - The value of C(http_set_cookie).
-              - Mandatory parameter when configured with C(insert) type action.
+              - This is a mandatory parameter when configured with C(insert) type action.
             type: str
         version_added: "1.8.0"
       http_cookie:
         description:
-          - HTTP Cookie header that you want to remove or insert.
+          - HTTP Cookie header you want to remove or insert.
           - This parameter is only valid with the C(remove) and C(insert) type.
         type: dict
         suboptions:
@@ -244,7 +253,7 @@ options:
           value:
             description:
               - The value of C(http_cookie).
-              - Mandatory parameter when configured with C(insert) type action.
+              - This is a mandatory parameter when configured with C(insert) type action.
             type: str
         version_added: "1.8.0"
       http_connect:
@@ -274,13 +283,13 @@ options:
           port:
             description:
               - The port number.
-              - If port number is not provided the value is set to 0 by default.
-              - To avoid overriding desired port values be explicit when defining rules.
+              - If a port number is not provided, the value is set to 0 by default.
+              - Be explicit when defining rules, so the system does not override port values.
             type: int
         version_added: "1.8.0"
       http_host:
         description:
-          - HTTP Host header that you want to replace.
+          - HTTP Host header you want to replace.
           - This parameter is only valid with the C(replace) type.
         type: dict
         suboptions:
@@ -333,9 +342,9 @@ options:
     description:
       - A list of attributes that describe the condition.
       - See suboptions for details on how to construct each list entry.
-      - The ordering of this list is important, the module will ensure the order is
+      - The ordering of this list is important, the module ensures the order is
         kept when modifying the task.
-      - The suboption options listed below are not required for all condition types,
+      - The suboption options below are not required for all condition types,
         read the description for more details.
       - These conditions can be specified in any order. Despite the fact they are in a list,
         the order in the list does not matter to the BIG-IP.
@@ -614,7 +623,7 @@ conditions:
       type: str
       sample: http_uri
     path_begins_with_any:
-      description: List of strings that the URI begins with.
+      description: List of strings the URI begins with.
       returned: changed
       type: list
       sample: [foo, bar]
@@ -2132,6 +2141,8 @@ class Difference(object):
 
     @property
     def conditions(self):
+        if self.want.replace_with is True:
+            return self.want.conditions
         result = self._diff_complex_items(self.want.conditions, self.have.conditions)
         return result
 
@@ -2663,6 +2674,10 @@ class ArgumentSpec(object):
             name=dict(required=True),
             policy=dict(required=True),
             rule_order=dict(type='int'),
+            replace_with=dict(
+                type='bool',
+                default='no'
+            ),
             state=dict(
                 default='present',
                 choices=['absent', 'present']

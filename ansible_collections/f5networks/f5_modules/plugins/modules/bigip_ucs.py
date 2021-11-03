@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_ucs
 short_description: Manage upload, installation, and removal of UCS files
 description:
-   - Manage upload, installation, and removal of UCS files on a BIG-IP system.
+   - Manage the upload, installation, and removal of UCS files on a BIG-IP system.
      A user configuration set (UCS) is a backup file that contains BIG-IP configuration
      data that can be used to fully restore a BIG-IP system in the event of a
      failure or RMA replacement.
@@ -618,6 +618,9 @@ class V1Manager(BaseManager):
                 pass
             elif 'TimeoutException' in str(ex):
                 # Timeouts appear to be able to happen in 12.1.2
+                pass
+            elif 'remoteSender' in str(ex):
+                # catching some edge cases where API becomes unstable after installation
                 pass
             else:
                 raise F5ModuleError(str(ex))
