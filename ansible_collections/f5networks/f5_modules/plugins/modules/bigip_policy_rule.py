@@ -935,8 +935,8 @@ class ModuleParameters(Parameters):
 
         if not any(x for x in options if x in item):
             raise F5ModuleError(
-                "A 'host_begins_with_any', 'host_begins_not_with_any', 'host_ends_with_any', 'host_ends_not_with_any', 'host_is_any', or 'host_is_not_any' must be specified "
-                "when the 'http_uri' type is used."
+                "A 'host_begins_with_any', 'host_begins_not_with_any', 'host_ends_with_any', 'host_ends_not_with_any',"
+                "'host_is_any', or 'host_is_not_any' must be specified when the 'http_uri' type is used."
             )
 
         if 'host_begins_with_any' in item and item['host_begins_with_any'] is not None:
