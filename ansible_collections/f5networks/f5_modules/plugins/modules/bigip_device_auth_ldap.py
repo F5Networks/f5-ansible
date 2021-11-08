@@ -5,6 +5,7 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -238,6 +239,7 @@ fallback_to_local:
   type: bool
   sample: yes
 '''
+
 from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
 
@@ -394,7 +396,7 @@ class ModuleParameters(Parameters):
         if self._values['use_for_auth'] is None:
             return None
         if self.use_for_auth == 'yes':
-            return 'ldap'
+            return self._values['source_type']
         if self.use_for_auth == 'no':
             return 'local'
 
@@ -819,6 +821,10 @@ class ArgumentSpec(object):
                 choices=['sub', 'one', 'base']
             ),
             bind_dn=dict(),
+            source_type=dict(
+                default='ldap',
+                choices=['ldap', 'active-directory']
+            ),
             bind_password=dict(no_log=True),
             user_template=dict(),
             check_member_attr=dict(type='bool'),
