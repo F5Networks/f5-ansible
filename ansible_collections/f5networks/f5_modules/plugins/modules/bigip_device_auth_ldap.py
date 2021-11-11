@@ -150,6 +150,14 @@ options:
       - If C(no), the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
         without removing the configured LDAP resource.
     type: bool
+  source_type:
+    description:
+      - Specifies auth source to be used for user authentication,should be used with C(use_for_auth)
+    type: str
+    choices:
+      - ldap
+      - active-directory
+    default: ldap
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
