@@ -320,7 +320,7 @@ options:
       - default
       - enabled
       - disabled
-    default: default
+    version_added: "1.13.0"
   mask:
    description:
       - Specifies the destination address network mask. This parameter works with IPv4 and IPv6 addresses.
@@ -2323,13 +2323,6 @@ class ModuleParameters(Parameters):
             result.append(tmp)
         return result
 
-    @property
-    def auto_last_hop(self):
-        if self._values['auto_last_hop'] is None:
-            return None
-        if self._values['auto_last_hop'] in ['default', 'enabled', 'disabled']:
-            return self._values['auto_last_hop']
-
 
 class Changes(Parameters):
     def to_return(self):
@@ -3703,7 +3696,6 @@ class ArgumentSpec(object):
             ),
             mirror=dict(type='bool'),
             auto_last_hop=dict(
-                default='default',
                 choices=['enabled', 'disabled', 'default']
             ),
             mask=dict(),
