@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Add auto_last_hop parameter to bigip_virtual_server module

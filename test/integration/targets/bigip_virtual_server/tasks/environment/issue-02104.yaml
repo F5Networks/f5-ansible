@@ -1,0 +1,99 @@
+---
+
+- name: Issue 02104 - Add virtual server
+  bigip_virtual_server:
+      name: issue-02104
+      destination: 1.1.1.1
+      port: 80
+  register: result
+
+- name: Issue 02104 - Assert Add virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02104 - Add virtual server - Idempotent Check
+  bigip_virtual_server:
+      name: issue-02104
+      destination: 1.1.1.1
+      port: 80
+  register: result
+
+- name: Issue 02104 - Assert Add virtual server - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02104 - Change auto last hop to enabled
+  bigip_virtual_server:
+      name: issue-02104
+      destination: 1.1.1.1
+      port: 80
+      auto_last_hop: enabled
+  register: result
+
+- name: Issue 02104 - Assert Change auto last hop to enabled
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02104 - Change auto last hop to enabled - Idempotent Check
+  bigip_virtual_server:
+      name: issue-02104
+      destination: 1.1.1.1
+      port: 80
+      auto_last_hop: enabled
+  register: result
+
+- name: Issue 02104 - Assert Change auto last hop to enabled - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02104 - Change auto last hop to disabled
+  bigip_virtual_server:
+      name: issue-02104
+      destination: 1.1.1.1
+      port: 80
+      auto_last_hop: disabled
+  register: result
+
+- name: Issue 02104 - Assert Change auto last hop to disabled
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02104 - Change auto last hop to disabled - Idempotent Check
+  bigip_virtual_server:
+      name: issue-02104
+      destination: 1.1.1.1
+      port: 80
+      auto_last_hop: disabled
+  register: result
+
+- name: Issue 02104 - Assert Change auto last hop to disabled - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02104 - Remove virtual server
+  bigip_virtual_server:
+      name: issue-02104
+      state: absent
+  register: result
+
+- name: Issue 02104 - Assert Remove virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02104 - Remove virtual server - Idempotent Check
+  bigip_virtual_server:
+      name: issue-02104
+      state: absent
+  register: result
+
+- name: Issue 02104 - Assert Remove virtual server - Idempotent Check
+  assert:
+    that:
+      - result is not changed
