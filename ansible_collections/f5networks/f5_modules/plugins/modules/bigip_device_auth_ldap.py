@@ -158,6 +158,7 @@ options:
       - ldap
       - active-directory
     default: ldap
+    version_added: "1.13.0"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
