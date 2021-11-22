@@ -311,6 +311,16 @@ options:
       - Specifies the system mirrors connections on each member of a redundant pair.
       - When creating a new virtual server, if this parameter is not specified, the default is C(disabled).
     type: bool
+  auto_last_hop:
+    description:
+      - Allows the BIG-IP system to track the source MAC address of incoming connections and return traffic from
+        pools to the source MAC address, regardless of the routing table.
+    type: str
+    choices:
+      - default
+      - enabled
+      - disabled
+    version_added: "1.13.0"
   mask:
    description:
       - Specifies the destination address network mask. This parameter works with IPv4 and IPv6 addresses.
@@ -835,6 +845,11 @@ mirror:
   returned: changed
   type: bool
   sample: True
+auto_last_hop:
+  description: Specifies the autoLasthop value of the virtual server
+  returned: changed
+  type: str
+  sample: enabled
 ip_protocol:
   description: The new value of the IP protocol.
   returned: changed
@@ -939,6 +954,7 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitDstMask': 'rate_limit_dst_mask',
         'rateLimitSrcMask': 'rate_limit_src_mask',
         'clonePools': 'clone_pools',
+        'autoLasthop': 'auto_last_hop',
     }
 
     api_attributes = [
@@ -980,6 +996,7 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitDstMask',
         'rateLimitSrcMask',
         'clonePools',
+        'autoLasthop',
     ]
 
     updatables = [
@@ -1015,6 +1032,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_src_mask',
         'rate_limit_dst_mask',
         'clone_pools',
+        'auto_last_hop',
     ]
 
     returnables = [
@@ -1054,6 +1072,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_src_mask',
         'rate_limit_dst_mask',
         'clone_pools',
+        'auto_last_hop',
     ]
 
     profiles_mutex = [
@@ -3676,6 +3695,9 @@ class ArgumentSpec(object):
                 ]
             ),
             mirror=dict(type='bool'),
+            auto_last_hop=dict(
+                choices=['enabled', 'disabled', 'default']
+            ),
             mask=dict(),
             firewall_staged_policy=dict(),
             firewall_enforced_policy=dict(),
