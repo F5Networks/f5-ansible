@@ -29,8 +29,8 @@ options:
     required: True
   replace_with:
     description:
-      - Specifies if the conditions given by the user should overwrite what exists on the device.
-      - The option is useful when a subset of conditions needs to be removed. This option is similar to the
+      - Specifies if the C(conditions)/C(actions) given by the user should overwrite what exists on the device.
+      - The option is useful when a subset of C(conditions)/C(actions) needs to be removed. This option is similar to the
         replace-all-with flag available in TMSH commands.
       - Using this option is not idempotent.
     type: bool
@@ -627,6 +627,7 @@ rule_order:
   type: int
   sample: 10
 '''
+
 from datetime import datetime
 
 from ansible.module_utils.basic import (
@@ -2094,6 +2095,8 @@ class Difference(object):
 
     @property
     def actions(self):
+        if self.want.replace_with is True:
+            return self.want.actions
         result = self._diff_complex_items(self.want.actions, self.have.actions)
         actioned = self._compare_complex_actions()
         if self._conditions_missing_default_rule_for_asm(result):
