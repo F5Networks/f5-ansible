@@ -1,0 +1,52 @@
+---
+
+- name: Issue 02103 - Add virtual server with profiles having client/server context
+  bigip_virtual_server:
+      name: issue-02103
+      destination: 1.2.3.4
+      port: 80
+      partition: out_ssl
+      state: present
+      profiles:
+      - context: serverside
+        name: /out_ssl/serverssl
+      - context: clientside
+        name: /out_ssl/clientssl
+  register: result
+
+- name: Issue 02103 - Assert Add virtual server with profiles having client/server context
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02103 - Add virtual server with profiles having client/server context - Idempotent Check
+  bigip_virtual_server:
+      name: issue-02103
+      destination: 1.2.3.4
+      port: 80
+      partition: out_ssl
+      state: present
+      profiles:
+      - context: serverside
+        name: /out_ssl/serverssl
+      - context: clientside
+        name: /out_ssl/clientssl
+  register: result
+
+- name: Issue 02103 - Assert Add virtual server with profiles having client/server context - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove virtual server with profiles having client/server context
+  bigip_virtual_server:
+    name: issue-02103
+    destination: 1.2.3.4
+    partition: out_ssl
+    state: absent
+  register: result
+
+- name: Issue 02103 - Assert Remove virtual server having profiles with client/server context
+  assert:
+    that:
+      - result is changed

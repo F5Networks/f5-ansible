@@ -1991,7 +1991,10 @@ class ModuleParameters(Parameters):
                 if 'name' not in profile:
                     tmp['name'] = profile
                 if 'partition' not in profile:
-                    tmp['partition'] = "Common"
+                    if len(profile["name"].split("/")) > 1:
+                        tmp["partition"] = profile["name"].split("/")[1]
+                    else:
+                        tmp['partition'] = "Common"
                 tmp['fullPath'] = fq_name(tmp['partition'], tmp['name'])
                 if not self.bypass_module_checks:
                     self._handle_ssl_profile_nuances(tmp)
