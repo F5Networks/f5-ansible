@@ -1988,10 +1988,15 @@ class ModuleParameters(Parameters):
             if isinstance(profile, dict):
                 tmp.update(profile)
                 self._handle_profile_context(tmp)
-                if 'name' not in profile:
-                    tmp['name'] = profile
+                tmp['name'] = profile
+                if 'name' in profile:
+                    tmp['name'] = profile['name']
                 if 'partition' not in profile:
-                    tmp['partition'] = "Common"
+                    if isinstance(tmp['name'], str) and len(tmp["name"].split("/")) > 1:
+                        tmp["partition"] = tmp["name"].split("/")[1]
+                        tmp['name'] = os.path.basename(tmp['name'])
+                    else:
+                        tmp['partition'] = "Common"
                 tmp['fullPath'] = fq_name(tmp['partition'], tmp['name'])
                 if not self.bypass_module_checks:
                     self._handle_ssl_profile_nuances(tmp)

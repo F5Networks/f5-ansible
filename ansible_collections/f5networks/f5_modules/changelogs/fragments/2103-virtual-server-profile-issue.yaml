@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Fix an issue in bigip_virtual_server module that wrongly sets the partition name for profile.
