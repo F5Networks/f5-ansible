@@ -219,10 +219,13 @@ class Parameters(AnsibleF5Parameters):
         'src',
         'md5sum',
         'checksum',
-        'backup_file']
+        'backup_file'
+    ]
     api_attributes = []
     api_map = {}
 
+
+class ModuleParameters(Parameters):
     @property
     def options(self):
         result = []
@@ -254,14 +257,14 @@ class Parameters(AnsibleF5Parameters):
                     # circumstances where the directory does not have
                     # the execute bit for the current user set, in
                     # which case the stat() call will raise an OSError
-                    os.stat(os.path.dirname(result))
+                    os.stat(os.path.dirname(self.dest))
                 except OSError as e:
                     if "permission denied" in str(e).lower():
                         raise F5ModuleError(
-                            "Destination directory {0} is not accessible".format(os.path.dirname(result))
+                            "Destination directory {0} is not accessible".format(os.path.dirname(self.dest))
                         )
                     raise F5ModuleError(
-                        "Destination directory {0} does not exist".format(os.path.dirname(result))
+                        "Destination directory {0} does not exist".format(os.path.dirname(self.dest))
                     )
 
         if not os.access(os.path.dirname(result), os.W_OK):
@@ -344,7 +347,7 @@ class BaseManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = F5RestClient(**self.module.params)
-        self.want = Parameters(params=self.module.params)
+        self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
 
     def exec_module(self):
@@ -392,6 +395,9 @@ class BaseManager(object):
             )
         self._set_checksum()
         self._set_md5sum()
+        self.changes.update({'src': self.want.src})
+        self.changes.update({'md5sum': self.want.md5sum})
+        self.changes.update({'checksum': self.want.checksum})
         file_args = self.module.load_file_common_arguments(self.module.params)
         return self.module.set_fs_attributes_if_different(file_args, True)
 
