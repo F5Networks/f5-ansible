@@ -102,7 +102,6 @@ from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, is_cli, f5_argument_spec
 )
-from ..module_utils.icontrol import tmos_version
 from ..module_utils.teem import send_teem
 
 try:
@@ -308,7 +307,7 @@ class V1Manager(BaseManager):
 class V2Manager(BaseManager):
     def exec_module(self):
         start = datetime.datetime.now().isoformat()
-        version = tmos_version(self.client)
+
         result = dict()
 
         changed = self.execute()
@@ -317,7 +316,7 @@ class V2Manager(BaseManager):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.client, self.module, version)
+        send_teem(start, self.client, self.module, None)
         return result
 
     def wait_for_device(self, start, end):

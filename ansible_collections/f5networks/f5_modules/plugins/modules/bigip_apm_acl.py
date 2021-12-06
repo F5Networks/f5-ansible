@@ -614,7 +614,7 @@ class ReportableChanges(Changes):
         for x in self._values['entries']:
             to_filter = dict()
             to_filter['action'] = x['action']
-            if 'dstStartPort' and 'dstEndPort' in x:
+            if 'dstStartPort' in x and 'dstEndPort' in x:
                 if x['dstStartPort'] == x['dstEndPort']:
                     if x['dstStartPort'] == 0:
                         to_filter['dst_port'] = '*'
@@ -622,7 +622,7 @@ class ReportableChanges(Changes):
                         to_filter['dst_port'] = str(x['dstStartPort'])
                 else:
                     to_filter['dst_port_range'] = '{0}-{1}'.format(x['dstStartPort'], x['dstEndPort'])
-            if 'srcStartPort' and 'srcEndPort' in x:
+            if 'srcStartPort' in x and 'srcEndPort' in x:
                 if x['srcStartPort'] == x['srcEndPort']:
                     if x['srcStartPort'] == 0:
                         to_filter['src_port'] = '*'

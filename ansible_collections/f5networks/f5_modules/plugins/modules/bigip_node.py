@@ -391,7 +391,7 @@ class UsableChanges(Changes):
         monitor_string = self._values['monitors']
         if monitor_string is None:
             return None
-        if '{' in monitor_string and '}':
+        if '{' in monitor_string and '}' in monitor_string:
             tmp = monitor_string.strip('}').split('{')
             monitor = ''.join(tmp).rstrip()
             return monitor

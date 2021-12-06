@@ -94,9 +94,9 @@ class TestParameters(unittest.TestCase):
         assert p.port_range_low == 1080
         assert p.port_range_high == 1090
         assert p.egress_intf_enabled == 'yes'
-        assert '/Common/tunnel1' and '/Common/tunnel2' in p.egress_interfaces
-        assert '12.12.10.0/25' and '12.12.12.128/25' in p.backup_members
-        assert '10.10.10.0/25' and '10.10.10.128/25' in p.members
+        assert '/Common/tunnel1' in p.egress_interfaces and '/Common/tunnel2' in p.egress_interfaces
+        assert '12.12.12.0/25' in p.backup_members and '12.12.12.128/25' in p.backup_members
+        assert '10.10.10.0/25' in p.members and '10.10.10.128/25' in p.members
         assert p.log_profile == '/Common/foo_profile'
         assert p.log_publisher == '/Common/baz_publisher'
 
@@ -206,9 +206,9 @@ class TestManager(unittest.TestCase):
         assert results['port_range_low'] == 1080
         assert results['port_range_high'] == 1090
         assert results['egress_intf_enabled'] == 'yes'
-        assert '/Common/tunnel1' and '/Common/tunnel2' in results['egress_interfaces']
-        assert '12.12.10.0/25' and '12.12.12.128/25' in results['backup_members']
-        assert '10.10.10.0/25' and '10.10.10.128/25' in results['members']
+        assert '/Common/tunnel1' in results['egress_interfaces'] and '/Common/tunnel2' in results['egress_interfaces']
+        assert '12.12.12.0/25' in results['backup_members'] and '12.12.12.128/25' in results['backup_members']
+        assert '10.10.10.0/25' in results['members'] and '10.10.10.128/25' in results['members']
         assert results['log_profile'] == '/Common/foo_profile'
         assert results['log_publisher'] == '/Common/baz_publisher'
 
