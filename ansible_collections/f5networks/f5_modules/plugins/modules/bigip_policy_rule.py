@@ -109,7 +109,7 @@ options:
         version_added: "1.2.0"
       disable_target:
         description:
-          - Target which you want to disable.
+          - Target you want to disable.
           - This parameter is only valid with the C(disable) type.
         type: str
         version_added: "1.8.0"
@@ -258,7 +258,7 @@ options:
         version_added: "1.8.0"
       http_connect:
         description:
-          - HTTP Connect header that you want to replace.
+          - HTTP Connect header you want to replace.
           - This parameter is only valid with the C(replace) type.
         type: dict
         suboptions:
