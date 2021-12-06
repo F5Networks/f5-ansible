@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix issue with teem data collection where device was not ready and was returning 404 error when queried for tmos version

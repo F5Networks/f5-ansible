@@ -58,7 +58,7 @@ class TestParameters(unittest.TestCase):
         )
         p = ModuleParameters(params=args)
 
-        assert '/Common/foo1' and '/Common/foo2' in p.servers
+        assert '/Common/foo1' in p.servers and '/Common/foo2' in p.servers
         assert p.retries == 5
         assert p.use_for_auth == 'yes'
         assert p.accounting_bug == 'disabled'
@@ -120,7 +120,7 @@ class TestManager(unittest.TestCase):
 
         results = mm.exec_module()
         assert results['changed'] is True
-        assert '/Common/foo1' and '/Common/foo2' in results['servers']
+        assert '/Common/foo1' in results['servers'] and '/Common/foo2' in results['servers']
         assert results['retries'] == 5
         assert results['accounting_bug'] == 'disabled'
         assert results['service_type'] == 'login'
