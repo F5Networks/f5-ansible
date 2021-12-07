@@ -152,7 +152,7 @@ options:
     type: bool
   source_type:
     description:
-      - Specifies auth source to be used for user authentication,should be used with C(use_for_auth)
+      - Specifies the auth source for user authentication, should be used with C(use_for_auth).
     type: str
     choices:
       - ldap
