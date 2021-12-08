@@ -5,6 +5,18 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.13.0
+=======
+
+Bugfixes
+--------
+
+- Add auto_last_hop parameter to bigip_virtual_server module
+- Fix an issue in bigip_virtual_server module that wrongly sets the partition name for profile.
+- Fix issue with teem data collection where device was not ready and was returning 404 error when queried for tmos version
+- fix for displaying src, checksum and other parameters when running ucs_fetch module
+- fix for source capability for bigip_device_auth_ldap module
+
 v1.12.0
 =======
 
