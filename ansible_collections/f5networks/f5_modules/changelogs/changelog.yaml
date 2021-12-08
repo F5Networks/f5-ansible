@@ -651,6 +651,24 @@ releases:
     - 2083-fix-bigip-policy.yaml
     - bigip-v1fix.yaml
     release_date: '2021-10-27'
+  1.13.0:
+    changes:
+      bugfixes:
+      - Add auto_last_hop parameter to bigip_virtual_server module
+      - Fix an issue in bigip_virtual_server module that wrongly sets the partition
+        name for profile.
+      - Fix issue with teem data collection where device was not ready and was returning
+        404 error when queried for tmos version
+      - fix for displaying src, checksum and other parameters when running ucs_fetch
+        module
+      - fix for source capability for bigip_device_auth_ldap module
+    fragments:
+    - 2001-ldap-fixes.yaml
+    - 2103-virtual-server-profile-issue.yaml
+    - 2104-add-auto-last-hop.yaml
+    - 2134-ucs-src-report.yaml
+    - fix-bigip-wait-send-teem-error.yaml
+    release_date: '2021-12-08'
   1.2.0:
     changes:
       bugfixes:
