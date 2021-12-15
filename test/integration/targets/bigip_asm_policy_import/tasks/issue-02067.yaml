@@ -48,38 +48,38 @@
       - result is not changed
       - result is success
 
-- name: Issue 02067 - Import ASM policy
+- name: Issue 02067 - Import ASM policy with version number
   bigip_asm_policy_import:
     name: foo-policy_1.0.1
     source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
   register: result
 
-- name: Issue 02067 - Assert Import ASM policy
+- name: Issue 02067 - Assert Import ASM policy with version number
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Issue 02067 - Import ASM policy - Idempotent check
+- name: Issue 02067 - Import ASM policy with version number - Idempotent check
   bigip_asm_policy_import:
     name: foo-policy_1.0.1
     source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
   register: result
 
-- name: Issue 02067 - Assert Import ASM policy - Idempotent check
+- name: Issue 02067 - Assert Import ASM policy with version number - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Issue 02067 - Import ASM policy, force overwrite
+- name: Issue 02067 - Import ASM policy with version number, force overwrite
   bigip_asm_policy_import:
     name: foo-policy_1.0.1
     force: yes
     source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
   register: result
 
-- name: Issue 02067 - Assert Import ASM policy, force overwrite
+- name: Issue 02067 - Assert Import ASM policy with version number, force overwrite
   assert:
     that:
       - result is changed
