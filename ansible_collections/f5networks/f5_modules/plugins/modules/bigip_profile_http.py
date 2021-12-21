@@ -1684,7 +1684,8 @@ class ArgumentSpec(object):
             encrypt_cookie_secret=dict(no_log=True),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             header_erase=dict(),
             header_insert=dict(),

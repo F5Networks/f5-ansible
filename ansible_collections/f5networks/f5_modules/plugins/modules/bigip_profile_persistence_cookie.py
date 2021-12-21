@@ -909,7 +909,8 @@ class ArgumentSpec(object):
             encryption_passphrase=dict(no_log=True),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             expiration=dict(
                 type='dict',

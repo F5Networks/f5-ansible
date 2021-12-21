@@ -235,6 +235,7 @@ base:
   type: str
   sample: base
 '''
+
 from datetime import datetime
 
 from ansible.module_utils.basic import (
@@ -344,12 +345,6 @@ class Parameters(AnsibleF5Parameters):
     def manual_resume(self):
         return flatten_boolean(self._values['manual_resume'])
 
-    @property
-    def security(self):
-        if self._values['security'] in ['none', None]:
-            return ''
-        return self._values['security']
-
 
 class ApiParameters(Parameters):
     @property
@@ -370,6 +365,12 @@ class ApiParameters(Parameters):
         if self._values['description'] in [None, 'none']:
             return None
         return self._values['description']
+
+    @property
+    def security(self):
+        if self._values['security'] in ['none', None]:
+            return ''
+        return self._values['security']
 
 
 class ModuleParameters(Parameters):
@@ -435,6 +436,12 @@ class ModuleParameters(Parameters):
         elif self._values['description'] in ['none', '']:
             return ''
         return self._values['description']
+
+    @property
+    def security(self):
+        if self._values['security'] in ['none', None]:
+            return ''
+        return self._values['security']
 
 
 class Changes(Parameters):
@@ -777,7 +784,8 @@ class ArgumentSpec(object):
             chase_referrals=dict(type='bool'),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             state=dict(
                 default='present',
