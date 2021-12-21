@@ -1079,7 +1079,8 @@ class ArgumentSpec(object):
             ),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             state=dict(default='present', choices=['absent', 'present']),
             partition=dict(
