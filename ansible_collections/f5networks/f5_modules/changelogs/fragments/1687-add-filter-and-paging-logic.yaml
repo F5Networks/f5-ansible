@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Add filter and pagination logic to bigip_device_info module.
