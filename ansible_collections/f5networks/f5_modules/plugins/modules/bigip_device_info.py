@@ -18,6 +18,12 @@ description:
   - This module was called C(bigip_device_facts) before Ansible 2.9. The usage did not change.
 version_added: "1.0.0"
 options:
+  partition:
+    description:
+      - Device partition from which the module will gather resources from.
+    type: str
+    default: Common
+    version_added: "1.13.0"
   gather_subset:
     description:
       - When supplied, this argument will restrict the information returned to a given subset.
