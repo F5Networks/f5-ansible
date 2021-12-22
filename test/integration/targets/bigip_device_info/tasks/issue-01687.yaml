@@ -10,7 +10,7 @@
   assert:
     that:
       - result is success
-      - result.management_routes | json_query("[?starts_with(full_path, '/Common')]")
+      - result.management_routes == [] or result.management_routes | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Client SSL Profiles From The Common Partition
   bigip_device_info:
@@ -23,7 +23,7 @@
   assert:
     that:
       - result is success
-      - result.client_ssl_profiles | json_query("[?starts_with(full_path, '/Common')]")
+      - result.client_ssl_profiles == [] or result.client_ssl_profiles | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Device Groups From The Common Partition
   bigip_device_info:
@@ -36,7 +36,7 @@
   assert:
     that:
       - result is success
-      - result.device_groups | json_query("[?starts_with(full_path, '/Common')]")
+      - result.device_groups == [] or result.device_groups | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Devices From The Common Partition
   bigip_device_info:
@@ -49,7 +49,7 @@
   assert:
     that:
       - result is success
-      - result.devices | json_query("[?starts_with(full_path, '/Common')]")
+      - result.devices == [] or result.devices | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather External Monitors From The Common Partition
   bigip_device_info:
@@ -62,7 +62,7 @@
   assert:
     that:
       - result is success
-      - result.external_monitors | json_query("[?starts_with(full_path, '/Common')]")
+      - result.external_monitors == [] or result.external_monitors | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather FastHTTP Profiles From The Common Partition
   bigip_device_info:
@@ -75,7 +75,7 @@
   assert:
     that:
       - result is success
-      - result.fasthttp_profiles | json_query("[?starts_with(full_path, '/Common')]")
+      - result.fasthttp_profiles == [] or result.fasthttp_profiles | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather FastL4 Profiles From The Common Partition
   bigip_device_info:
@@ -88,7 +88,7 @@
   assert:
     that:
       - result is success
-      - result.fastl4_profiles | json_query("[?starts_with(full_path, '/Common')]")
+      - result.fastl4_profiles == [] or result.fastl4_profiles | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Gateway ICMP Monitors From The Common Partition
   bigip_device_info:
@@ -101,7 +101,7 @@
   assert:
     that:
       - result is success
-      - result.gateway_icmp_monitors | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gateway_icmp_monitors == [] or result.gateway_icmp_monitors | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM A Pool From The Common Partition
   bigip_device_info:
@@ -114,7 +114,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_a_pools | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_a_pools == [] or result.gtm_a_pools | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM AAAA Pool From The Common Partition
   bigip_device_info:
@@ -127,7 +127,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_aaaa_pools | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_aaaa_pools == [] or result.gtm_aaaa_pools | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM CNAME Pool From The Common Partition
   bigip_device_info:
@@ -140,7 +140,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_cname_pools | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_cname_pools == [] or result.gtm_cname_pools | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM MX Pool From The Common Partition
   bigip_device_info:
@@ -153,7 +153,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_mx_pools | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_mx_pools == [] or result.gtm_mx_pools | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM NAPTR Pool From The Common Partition
   bigip_device_info:
@@ -166,7 +166,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_naptr_pools | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_naptr_pools == [] or result.gtm_naptr_pools | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM SRV Pool From The Common Partition
   bigip_device_info:
@@ -179,7 +179,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_srv_pools | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_srv_pools == [] or result.gtm_srv_pools | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM Server From The Common Partition
   bigip_device_info:
@@ -192,7 +192,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_servers | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_servers == [] or result.gtm_servers | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM A Wide-IPS From The Common Partition
   bigip_device_info:
@@ -205,7 +205,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_a_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_a_wide_ips == [] or result.gtm_a_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM AAAA Wide-IPS From The Common Partition
   bigip_device_info:
@@ -218,7 +218,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_aaaa_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_aaaa_wide_ips == [] or result.gtm_aaaa_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM CNAME Wide-IPS From The Common Partition
   bigip_device_info:
@@ -231,7 +231,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_cname_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_cname_wide_ips == [] or result.gtm_cname_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM MX Wide-IPS From The Common Partition
   bigip_device_info:
@@ -244,7 +244,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_mx_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_mx_wide_ips == [] or result.gtm_mx_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM NAPTR Wide-IPS From The Common Partition
   bigip_device_info:
@@ -257,7 +257,7 @@
   assert:
     that:
       - result is success
-      - result.gtm_naptr_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_naptr_wide_ips == [] or result.gtm_naptr_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM SRV Wide-IPS From The Common Partition
   bigip_device_info:
@@ -270,20 +270,20 @@
   assert:
     that:
       - result is success
-      - result.gtm_srv_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_srv_wide_ips == [] or result.gtm_srv_wide_ips | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather GTM Topology Regions From The Common Partition
   bigip_device_info:
     partition: Common
     include:
-      - gtm_topology_regions
+      - gtm-topology-regions
   register: result
 
 - name: Issue 01687 - Assert Gather GTM Topology Regions From The Common Partition
   assert:
     that:
       - result is success
-      - result.gtm_topology_regions | json_query("[?starts_with(full_path, '/Common')]")
+      - result.gtm_topology_regions == [] or result.gtm_topology_regions | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Http Monitors From The Common Partition
   bigip_device_info:
@@ -296,7 +296,7 @@
   assert:
     that:
       - result is success
-      - result.http_monitors | json_query("[?starts_with(full_path, '/Common')]")
+      - result.http_monitors == [] or result.http_monitors | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Https Monitors From The Common Partition
   bigip_device_info:
@@ -309,7 +309,7 @@
   assert:
     that:
       - result is success
-      - result.https_monitors | json_query("[?starts_with(full_path, '/Common')]")
+      - result.https_monitors == [] or result.https_monitors | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Http Profiles From The Common Partition
   bigip_device_info:
@@ -322,7 +322,7 @@
   assert:
     that:
       - result is success
-      - result.http_profiles | json_query("[?starts_with(full_path, '/Common')]")
+      - result.http_profiles == [] or result.http_profiles | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather IApp Services From The Common Partition
   bigip_device_info:
@@ -335,7 +335,7 @@
   assert:
     that:
       - result is success
-      - result.iapp_services | json_query("[?starts_with(full_path, '/Common')]")
+      - result.iapp_services == [] or result.iapp_services | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather IAppLX Packages From The Common Partition
   bigip_device_info:
@@ -348,7 +348,7 @@
   assert:
     that:
       - result is success
-      - result.iapplx_packages | json_query("[?starts_with(full_path, '/Common')]")
+      - result.iapplx_packages == [] or result.iapplx_packages | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather ICMP Monitors From The Common Partition
   bigip_device_info:
@@ -361,7 +361,7 @@
   assert:
     that:
       - result is success
-      - result.icmp_monitors | json_query("[?starts_with(full_path, '/Common')]")
+      - result.icmp_monitors == [] or result.icmp_monitors | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Interfaces From The Common Partition
   bigip_device_info:
@@ -374,7 +374,6 @@
   assert:
     that:
       - result is success
-      # - result.interfaces | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Internal Date Groups From The Common Partition
   bigip_device_info:
@@ -387,7 +386,7 @@
   assert:
     that:
       - result is success
-      - result.internal_data_groups | json_query("[?starts_with(full_path, '/Common')]")
+      - result.internal_data_groups == [] or result.internal_data_groups | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Irules From The Common Partition
   bigip_device_info:
@@ -400,7 +399,7 @@
   assert:
     that:
       - result is success
-      - result.irules | json_query("[?starts_with(full_path, '/Common')]")
+      - result.irules == [] or result.irules | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather LTM Pools From The Common Partition
   bigip_device_info:
@@ -413,7 +412,7 @@
   assert:
     that:
       - result is success
-      - result.ltm_pools | json_query("[?starts_with(full_path, '/Common')]")
+      - result.ltm_pools == [] or result.ltm_pools | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather LTM Policies From The Common Partition
   bigip_device_info:
@@ -426,7 +425,7 @@
   assert:
     that:
       - result is success
-      - result.ltm_policies | json_query("[?starts_with(full_path, '/Common')]")
+      - result.ltm_policies == [] or result.ltm_policies | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Nodes From The Common Partition
   bigip_device_info:
@@ -439,7 +438,7 @@
   assert:
     that:
       - result is success
-      - result.nodes | json_query("[?starts_with(full_path, '/Common')]")
+      - result.nodes == [] or result.nodes | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Oneconnect Profiles From The Common Partition
   bigip_device_info:
@@ -452,7 +451,7 @@
   assert:
     that:
       - result is success
-      - result.oneconnect_profiles | json_query("[?starts_with(full_path, '/Common')]")
+      - result.oneconnect_profiles == [] or result.oneconnect_profiles | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Route Domains From The Common Partition
   bigip_device_info:
@@ -465,7 +464,7 @@
   assert:
     that:
       - result is success
-      - result.route_domains | json_query("[?starts_with(full_path, '/Common')]")
+      - result.route_domains == [] or result.route_domains | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather SelfIPs From The Common Partition
   bigip_device_info:
@@ -478,7 +477,7 @@
   assert:
     that:
       - result is success
-      - result.self_ips | json_query("[?starts_with(full_path, '/Common')]")
+      - result.self_ips == [] or result.self_ips | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Server SSL Profiles From The Common Partition
   bigip_device_info:
@@ -491,7 +490,7 @@
   assert:
     that:
       - result is success
-      - result.server_ssl_profiles | json_query("[?starts_with(full_path, '/Common')]")
+      - result.server_ssl_profiles == [] or result.server_ssl_profiles | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather SSL Certs From The Common Partition
   bigip_device_info:
@@ -504,7 +503,7 @@
   assert:
     that:
       - result is success
-      - result.ssl_certs | json_query("[?starts_with(full_path, '/Common')]")
+      - result.ssl_certs == [] or result.ssl_certs | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather SSL Keys From The Common Partition
   bigip_device_info:
@@ -517,7 +516,7 @@
   assert:
     that:
       - result is success
-      - result.ssl_keys | json_query("[?starts_with(full_path, '/Common')]")
+      - result.ssl_keys == [] or result.ssl_keys | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather TCP Monitors From The Common Partition
   bigip_device_info:
@@ -530,7 +529,7 @@
   assert:
     that:
       - result is success
-      - result.tcp_monitors | json_query("[?starts_with(full_path, '/Common')]")
+      - result.tcp_monitors == [] or result.tcp_monitors | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather TCP Half Open Monitors From The Common Partition
   bigip_device_info:
@@ -543,7 +542,7 @@
   assert:
     that:
       - result is success
-      - result.tcp_half_open_monitors | json_query("[?starts_with(full_path, '/Common')]")
+      - result.tcp_half_open_monitors == [] or result.tcp_half_open_monitors | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather TCP Monitors From The Common Partition
   bigip_device_info:
@@ -556,7 +555,7 @@
   assert:
     that:
       - result is success
-      - result.tcp_monitors | json_query("[?starts_with(full_path, '/Common')]")
+      - result.tcp_monitors == [] or result.tcp_monitors | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Traffic Groups From The Common Partition
   bigip_device_info:
@@ -569,7 +568,7 @@
   assert:
     that:
       - result is success
-      - result.traffic_groups" | json_query("[?starts_with(full_path, '/Common')]")
+      - result.traffic_groups == [] or result.traffic_groups | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Trunks From The Common Partition
   bigip_device_info:
@@ -582,7 +581,6 @@
   assert:
     that:
       - result is success
-      # - result.trunks" | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather UDP Profiles From The Common Partition
   bigip_device_info:
@@ -595,7 +593,7 @@
   assert:
     that:
       - result is success
-      - result.udp_profiles" | json_query("[?starts_with(full_path, '/Common')]")
+      - result.udp_profiles == [] or result.udp_profiles | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Virtual Addresses From The Common Partition
   bigip_device_info:
@@ -608,7 +606,7 @@
   assert:
     that:
       - result is success
-      - result.virtual_addresses" | json_query("[?starts_with(full_path, '/Common')]")
+      - result.virtual_addresses == [] or result.virtual_addresses | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Virtual Servers From The Common Partition
   bigip_device_info:
@@ -621,7 +619,7 @@
   assert:
     that:
       - result is success
-      - result.virtual_servers" | json_query("[?starts_with(full_path, '/Common')]")
+      - result.virtual_servers == [] or result.virtual_servers | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather Vlans From The Common Partition
   bigip_device_info:
@@ -634,7 +632,7 @@
   assert:
     that:
       - result is success
-      - result.vlans" | json_query("[?starts_with(full_path, '/Common')]")
+      - result.vlans == [] or result.vlans | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather APM Access Profiles From The Common Partition
   bigip_device_info:
@@ -647,7 +645,7 @@
   assert:
     that:
       - result is success
-      - result.apm_access_profiles" | json_query("[?starts_with(full_path, '/Common')]")
+      - result.apm_access_profiles == [] or result.apm_access_profiles | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather APM Access Policies From The Common Partition
   bigip_device_info:
@@ -660,7 +658,7 @@
   assert:
     that:
       - result is success
-      - result.apm_access_policies" | json_query("[?starts_with(full_path, '/Common')]")
+      - result.apm_access_policies == [] or result.apm_access_policies | json_query("[?starts_with(full_path, '/Common')]")
 
 - name: Issue 01687 - Gather ASM Policies From The Common Partition
   bigip_device_info:
@@ -673,5 +671,5 @@
   assert:
     that:
       - result is success
-      - result.asm_policies" | json_query("[?starts_with(full_path, '/Common')]")
+      - result.asm_policies == [] or result.asm_policies | json_query("[?starts_with(full_path, '/Common')]")
 ...
