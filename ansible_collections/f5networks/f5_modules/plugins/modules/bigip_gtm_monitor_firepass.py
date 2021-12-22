@@ -748,7 +748,8 @@ class ArgumentSpec(object):
             cipher_list=dict(),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             max_load_average=dict(type='int'),
             concurrency_limit=dict(type='int'),

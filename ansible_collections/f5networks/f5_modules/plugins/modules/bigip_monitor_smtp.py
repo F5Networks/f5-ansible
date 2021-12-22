@@ -492,13 +492,6 @@ class Difference(object):
             return self.want.destination
 
     @property
-    def target_password(self):
-        if self.want.target_password != self.have.target_password:
-            if self.want.update_password == 'always':
-                result = self.want.target_password
-                return result
-
-    @property
     def description(self):
         return cmp_str_with_none(self.want.description, self.have.description)
 

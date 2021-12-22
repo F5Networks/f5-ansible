@@ -773,7 +773,8 @@ class ArgumentSpec(object):
             phase1_verify_peer_cert=dict(type='bool'),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             description=dict(),
             state=dict(default='present', choices=['absent', 'present']),

@@ -530,7 +530,8 @@ class ArgumentSpec(object):
             encryption=dict(choices=['none', 'ssl', 'tls']),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             from_address=dict(),
             authentication=dict(type='bool'),
