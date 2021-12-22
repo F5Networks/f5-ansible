@@ -20,10 +20,11 @@ version_added: "1.0.0"
 options:
   partition:
     description:
-      - Device partition from which the module will gather resources from.
+      - Specifies the partition to gather the resource information from.
+      - The default value for the partition is taken as Common.
     type: str
     default: Common
-    version_added: "1.13.0"
+    version_added: "1.14.0"
   gather_subset:
     description:
       - When supplied, this argument will restrict the information returned to a given subset.
