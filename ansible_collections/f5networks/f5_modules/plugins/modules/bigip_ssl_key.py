@@ -499,7 +499,8 @@ class ArgumentSpec(object):
                 required=True
             ),
             content=dict(
-                aliases=['key_content']
+                aliases=['key_content'],
+                no_log=True
             ),
             passphrase=dict(
                 no_log=True
