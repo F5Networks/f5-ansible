@@ -1,0 +1,5 @@
+---
+major_changes:
+    - This change will stabalize the module by gathering resources only from the given partition. 
+    - This will prevent the module from gathering way too much information that might result in crashing.
+    - Pagination logic has also been added.
