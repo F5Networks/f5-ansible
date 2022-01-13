@@ -7448,6 +7448,7 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import (
     iteritems, string_types
 )
+from ansible.module_utils.urls import urlparse
 
 from ipaddress import ip_interface
 
@@ -8761,8 +8762,10 @@ class ClientSslProfilesParameters(BaseParameters):
 
     @property
     def ciphers(self):
-        if self._values['ciphers'] in [None, 'none']:
+        if self._values['ciphers'] is None:
             return None
+        if self._values['ciphers'] == 'none':
+            return 'none'
         return self._values['ciphers'].split(' ')
 
     @property
@@ -10619,6 +10622,57 @@ class GtmServersParameters(BaseParameters):
         'virtual_servers',
     ]
 
+    def _remove_internal_keywords(self, resource, stats=False):
+        if stats:
+            resource.pop('kind', None)
+            resource.pop('generation', None)
+            resource.pop('isSubcollection', None)
+            resource.pop('fullPath', None)
+        else:
+            resource.pop('kind', None)
+            resource.pop('generation', None)
+            resource.pop('selfLink', None)
+            resource.pop('isSubcollection', None)
+            resource.pop('fullPath', None)
+
+    def _read_virtual_stats_from_device(self, url):
+        uri = "https://{0}:{1}{2}/stats".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            url
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+        result = parseStats(response)
+        try:
+            return result['stats']
+        except KeyError:
+            return {}
+
+    def _process_vs_stats(self, link):
+        result = dict()
+        item = self._read_virtual_stats_from_device(urlparse(link).path)
+        if not item:
+            return result
+        result['status'] = item['status']['availabilityState']
+        result['status_reason'] = item['status']['statusReason']
+        result['state'] = item['status']['enabledState']
+        result['bits_per_sec_in'] = item['metrics']['bitsPerSecIn']
+        result['bits_per_sec_in'] = item['metrics']['bitsPerSecOut']
+        result['pkts_per_sec_in'] = item['metrics']['pktsPerSecIn']
+        result['pkts_per_sec_out'] = item['metrics']['pktsPerSecOut']
+        result['connections'] = item['metrics']['connections']
+        result['picks'] = item['picks']
+        result['virtual_server_score'] = item['metrics']['vsScore']
+        result['uptime'] = item['uptime']
+        return result
+
     @property
     def monitors(self):
         if self._values['monitors'] is None:
@@ -10702,7 +10756,10 @@ class GtmServersParameters(BaseParameters):
         if self._values['virtual_servers'] is None or 'items' not in self._values['virtual_servers']:
             return result
         for item in self._values['virtual_servers']['items']:
+            self._remove_internal_keywords(item, stats=True)
+            stats = self._process_vs_stats(item['selfLink'])
             self._remove_internal_keywords(item)
+            item['stats'] = stats
             if 'disabled' in item:
                 if item['disabled'] in BOOLEANS_TRUE:
                     item['disabled'] = flatten_boolean(item['disabled'])
@@ -10789,7 +10846,7 @@ class GtmServersFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
-            params = GtmServersParameters(params=resource)
+            params = GtmServersParameters(client=self.client, params=resource)
             results.append(params)
         return results
 
@@ -10809,7 +10866,10 @@ class GtmServersFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -13845,8 +13905,10 @@ class ServerSslProfilesParameters(BaseParameters):
 
     @property
     def cipher_group(self):
-        if self._values['cipher_group'] in [None, 'none']:
+        if self._values['cipher_group'] is None:
             return None
+        if self._values['cipher_group'] == 'none':
+            return 'none'
         return self._values['cipher_group']
 
     @property
