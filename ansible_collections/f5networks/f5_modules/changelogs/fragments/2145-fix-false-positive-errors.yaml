@@ -1,3 +1,3 @@
 ---
 bugfixes:
-    - Add no_log=False setting to update_password parameter in multiple modules to avoid false positive security warnings.
+    - multiple modules - Add no_log=False setting to update_password parameter in respective modules avoid false positive security warnings.

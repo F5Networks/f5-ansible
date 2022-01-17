@@ -1,0 +1,58 @@
+---
+- name: Issue Infraano449 - Provision GTM
+  bigip_provision:
+    name: gtm
+  tags:
+    - module-provisioning
+
+- name: Issue Infraano449 - Create datacenter
+  bigip_gtm_datacenter:
+    name: "infraano-dc"
+
+- name: Issue Infraano449 - Create GTM server
+  bigip_gtm_server:
+    name: "fake_server"
+    devices:
+      - name: foo
+        address: 6.5.7.4
+        translation: 2.2.2.2
+    datacenter: "infraano-dc"
+    state: present
+
+- name: Issue Infraano449 - Create first GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "my_vs"
+    server_name: "fake_server"
+    address: "5.6.7.8"
+    port: 80
+    state: disabled
+
+- name: Issue Infraano449 - Create second GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "my_vs_2"
+    server_name: "fake_server"
+    address: "5.6.7.9"
+    port: 80
+    state: enabled
+
+- name: Issue Infraano449 - Select GTM server facts
+  bigip_device_info:
+    gather_subset:
+      - gtm-servers
+  register: result
+
+- name: Issue Infraano449 - Assert Gather Information about the status of the GTM VS
+  assert:
+    that:
+      - result is success
+      - result.gtm_servers | json_query("[?name=='fake_server'].virtual_servers | [*][?name=='my_vs'].stats | [].state") | first == "disabled"
+
+- name: Issue Infraano449 - Remove GTM server
+  bigip_gtm_server:
+    name: "fake_server"
+    state: absent
+
+- name: Issue Infraano449 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: "infraano-dc"
+    state: absent
