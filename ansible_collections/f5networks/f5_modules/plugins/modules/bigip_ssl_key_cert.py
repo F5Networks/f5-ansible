@@ -757,12 +757,16 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             key_name=dict(),
-            key_content=dict(),
+            key_content=dict(
+                no_log=True
+            ),
             passphrase=dict(
                 no_log=True
             ),
             cert_name=dict(),
-            cert_content=dict(),
+            cert_content=dict(
+                no_log=True
+            ),
             issuer_cert=dict(),
             state=dict(
                 required=False,
