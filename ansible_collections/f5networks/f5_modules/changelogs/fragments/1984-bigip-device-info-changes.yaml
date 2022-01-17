@@ -1,0 +1,6 @@
+---
+bugfixes:
+    - bigip_device_info - changes cipher and cipher_group parameters to register when the actual value is 'none'.
+
+minor_changes:
+    - bigip_device_info - added stats parameter for each virtual_server resource attached to a gtm_server
