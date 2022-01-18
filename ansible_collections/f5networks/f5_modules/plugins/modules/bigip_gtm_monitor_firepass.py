@@ -30,23 +30,23 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value will be
+        provided when creating a new monitor, the default value is
         '*'.
       - If this value is an IP address, a C(port) number must be specified.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value will be
+        provided when creating a new monitor, the default value is
         '*'. Note that if specifying an IP address, a value between 1 and 65535
         must be specified.
     type: str
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
-        template will run.
+        template runs.
       - If this parameter is not provided when creating a new monitor, then
-        the default value will be 30.
+        the default value is 30.
       - This value B(must) be less than the C(timeout) value.
     type: int
   timeout:
@@ -58,7 +58,7 @@ options:
         to any number, however, it should be 3 times the
         interval number of seconds plus 1 second.
       - If this parameter is not provided when creating a new monitor,
-        the default value will be 90.
+        the default value is 90.
     type: int
   partition:
     description:
