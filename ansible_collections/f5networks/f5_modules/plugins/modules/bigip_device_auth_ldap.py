@@ -127,7 +127,7 @@ options:
       - When C(absent), ensures the device authentication method does not exist.
       - When C(state) equal to (absent), before you can delete the LDAP configuration, the system must set auth to
         some alternative. The system ships with a system auth called C(local), therefore the system authentication type
-        will be set to that value on the device upon removal of LDAP configuration.
+        is set to that value on the device upon removal of LDAP configuration.
     type: str
     choices:
       - present
@@ -135,8 +135,8 @@ options:
     default: present
   update_password:
     description:
-      - C(always) will always update the C(bind_password).
-      - C(on_create) will only set the C(bind_password) for newly created authentication
+      - C(always) always updates the C(bind_password).
+      - C(on_create) only sets the C(bind_password) for newly created authentication
         mechanisms.
     type: str
     choices:
