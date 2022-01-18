@@ -366,6 +366,7 @@ user_log_to:
   type: str
   sample: alert
 '''
+import re
 from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
 
@@ -490,7 +491,8 @@ class ModuleParameters(Parameters):
             return None
         if self._values['include'] in ['', 'none']:
             return ''
-        return self._values['include'].replace('"', "'")
+        unescaped_dquote = r'(?<!\\)"'
+        return re.sub(unescaped_dquote, "'", self._values['include'])
 
 
 class Changes(Parameters):
