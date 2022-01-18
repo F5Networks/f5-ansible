@@ -79,7 +79,7 @@ options:
       - Specifies the number of seconds after which the system times out the probe request
         to the system.
       - When creating a new monitor, if this parameter is not provided, the default
-        value will be C(5).
+        value is C(5).
     type: int
   ignore_down_response:
     description:
@@ -90,7 +90,7 @@ options:
       - When C(no), specifies the monitor immediately marks an object down when it
         receives a down response.
       - When creating a new monitor, if this parameter is not provided, the default
-        value will be C(no).
+        value is C(no).
     type: bool
   target_username:
     description:
@@ -102,8 +102,8 @@ options:
     type: str
   update_password:
     description:
-      - C(always) will update passwords if the C(target_password) is specified.
-      - C(on_create) will only set the password for newly created monitors.
+      - C(always) updates passwords if the C(target_password) is specified.
+      - C(on_create) only sets the password for newly created monitors.
     type: str
     choices:
       - always
