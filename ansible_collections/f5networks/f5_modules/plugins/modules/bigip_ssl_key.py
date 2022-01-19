@@ -49,11 +49,11 @@ options:
     type: str
     default: Common
 notes:
-  - This module does not behave like other modules that you might include in
+  - This module does not behave like other modules you might include in
     roles, where referencing files or templates first looks in the role's
-    files or templates directory. To have it behave that way, use the Ansible
-    file or template lookup (see Examples). The lookups behave as expected in
-    a role context.
+    files or templates directory. To have the module behave that way, use
+    the Ansible file or template lookup (see Examples). The lookups behave
+    as expected in a role context.
 extends_documentation_fragment: f5networks.f5_modules.f5
 requirements:
   - BIG-IP >= v12

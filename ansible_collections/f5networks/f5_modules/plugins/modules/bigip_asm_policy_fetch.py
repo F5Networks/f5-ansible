@@ -28,26 +28,26 @@ options:
   file:
     description:
       - The name of the file to be created on the remote device for downloading.
-      - When C(binary) is set to C(no) the ASM policy will be in XML format.
+      - When C(binary) is set to C(no) the ASM policy is in XML format.
     type: str
   inline:
     description:
-      - If C(yes), the ASM policy will be exported C(inline) as a string instead of a file.
+      - If C(yes), the ASM policy is exported C(inline) as a string instead of a file.
       - The policy can be be retrieved in the playbook C(result) dictionary under the C(inline_policy) key.
     type: bool
   compact:
     description:
-      - If C(yes), only the ASM policy custom settings will be exported.
+      - If C(yes), only the ASM policy custom settings is exported.
       - Only applies to XML type ASM policy exports.
     type: bool
   base64:
     description:
-      - If C(yes), the returned C(inline) ASM policy content will be Base64 encoded.
+      - If C(yes), the returned C(inline) ASM policy content is Base64 encoded.
       - Only applies to C(inline) ASM policy exports.
     type: bool
   binary:
     description:
-      - If C(yes), the exported ASM policy will be in binary format.
+      - If C(yes), the exported ASM policy is in binary format.
       - Only applies to C(file) ASM policy exports.
     type: bool
   force:
@@ -139,7 +139,7 @@ dest:
 file:
   description:
     - Name of the policy file on the remote BIG-IP to download. If not
-      specified, then this will be a randomly generated filename.
+      specified, then this is a randomly generated filename.
   returned: changed
   type: str
   sample: foobar.xml

@@ -31,7 +31,7 @@ options:
     description:
       - The send string for the monitor call.
       - When creating a new monitor, if this parameter is not provided, the
-        default of C(GET /\r\n) will be used.
+        default of C(GET /\r\n) is used.
     type: str
   receive:
     description:
@@ -40,14 +40,14 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value will be
+        provided when creating a new monitor, the default value is
         '*'.
       - If this value is an IP address, a C(port) number must be specified.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value will be
+        provided when creating a new monitor, the default value is
         '*'. If specifying an IP address, you must specify a value between 1 and 65535.
     type: str
   interval:
@@ -55,7 +55,7 @@ options:
       - The interval specifying how frequently the monitor instance of this
         template will run.
       - If this parameter is not provided when creating a new monitor,
-        the default value will be 30.
+        the default value is 30.
       - This value B(must) be less than the C(timeout) value.
     type: int
   timeout:
@@ -67,7 +67,7 @@ options:
         to any number, however, it should be 3 times the
         interval number of seconds plus 1 second.
       - If this parameter is not provided when creating a new monitor, the
-        default value will be 120.
+        default value is 120.
     type: int
   partition:
     description:
@@ -88,7 +88,7 @@ options:
       - Specifies the number of seconds after which the system times out the probe request
         to the system.
       - When creating a new monitor, if this parameter is not provided, then the default
-        value will be C(5).
+        value is C(5).
     type: int
   ignore_down_response:
     description:
@@ -99,7 +99,7 @@ options:
       - When C(no), specifies the monitor immediately marks an object down when it
         receives a down response.
       - When creating a new monitor, if this parameter is not provided, the default
-        value will be C(no).
+        value is C(no).
     type: bool
   transparent:
     description:
@@ -110,7 +110,7 @@ options:
       - If the monitor cannot successfully reach the aliased destination, the pool member
         or node through which the monitor traffic was sent is marked down.
       - When creating a new monitor, if this parameter is not provided, the default
-        value will be C(no).
+        value is C(no).
     type: bool
   reverse:
     description:
@@ -131,8 +131,8 @@ options:
     type: str
   update_password:
     description:
-      - C(always) will update passwords if the C(target_password) is specified.
-      - C(on_create) will only set the password for newly created monitors.
+      - C(always) updates passwords if the C(target_password) is specified.
+      - C(on_create) only sets the password for newly created monitors.
     type: str
     choices:
       - always
