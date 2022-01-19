@@ -51,7 +51,7 @@ options:
     type: str
   cert_name:
     description:
-      - SSL Certificate Name. This is the cert name used when importing a certificate
+      - SSL certificate name. This is the cert name used when importing a certificate
         into the BIG-IP. It also determines the filenames of the objects on the LTM.
     type: str
   issuer_cert:

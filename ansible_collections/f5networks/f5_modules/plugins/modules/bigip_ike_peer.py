@@ -26,7 +26,7 @@ options:
     type: str
   version:
     description:
-      - Specifies which version of IKE is used.
+      - Specifies which version of IKE (Internet Key Exchange) is used.
       - If the system you are configuring is the IPsec initiator, and you select
         both versions, the system tries using IKEv2 for negotiation. If the remote
         peer does not support IKEv2, the IPsec tunnel fails. To use IKEv1 in this
@@ -59,7 +59,7 @@ options:
     type: str
   verified_id_type:
     description:
-      - Specifies the identifier type that the local system uses to identify
+      - Specifies the identifier type the local system uses to identify
         the peer during IKE Phase 1 negotiation.
       - This is a required value when C(version) includes (Cv2).
       - When C(user-fqdn), value of C(verified_id_value) must be in the form of
@@ -175,8 +175,8 @@ options:
       - modp8192
   update_password:
     description:
-      - C(always) will allow updating passwords if the user chooses to do so.
-        C(on_create) will only set the password for newly created IKE peers.
+      - C(always) allows updating passwords if the user chooses to do so.
+        C(on_create) only sets the password for newly created IKE peers.
     type: str
     choices:
       - always

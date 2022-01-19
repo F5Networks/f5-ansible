@@ -30,23 +30,23 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value will be
+        provided when creating a new monitor, the default value is
         '*'.
       - If this value is an IP address, a C(port) number must be specified.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value will be
+        provided when creating a new monitor, the default value is
         '*'. Note that if specifying an IP address, a value between 1 and 65535
         must be specified.
     type: str
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
-        template will run.
+        template runs.
       - If this parameter is not provided when creating a new monitor, then
-        the default value will be 30.
+        the default value is 30.
       - This value B(must) be less than the C(timeout) value.
     type: int
   timeout:
@@ -58,7 +58,7 @@ options:
         to any number, however, it should be 3 times the
         interval number of seconds plus 1 second.
       - If this parameter is not provided when creating a new monitor,
-        the default value will be 90.
+        the default value is 90.
     type: int
   partition:
     description:
@@ -79,7 +79,7 @@ options:
       - Specifies the number of seconds after which the system times out the probe request
         to the system.
       - When creating a new monitor, if this parameter is not provided, the default
-        value will be C(5).
+        value is C(5).
     type: int
   ignore_down_response:
     description:
@@ -90,7 +90,7 @@ options:
       - When C(no), specifies the monitor immediately marks an object down when it
         receives a down response.
       - When creating a new monitor, if this parameter is not provided, the default
-        value will be C(no).
+        value is C(no).
     type: bool
   target_username:
     description:
@@ -102,8 +102,8 @@ options:
     type: str
   update_password:
     description:
-      - C(always) will update passwords if the C(target_password) is specified.
-      - C(on_create) will only set the password for newly created monitors.
+      - C(always) updates passwords if the C(target_password) is specified.
+      - C(on_create) only sets the password for newly created monitors.
     type: str
     choices:
       - always

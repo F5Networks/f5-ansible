@@ -17,15 +17,15 @@ version_added: "1.0.0"
 options:
   active:
     description:
-      - If C(yes), will apply and activate the existing inactive policy. If C(no), it will
-        deactivate the existing active policy. Generally should be C(yes) only in cases where
+      - If C(yes), applies and activates the existing inactive policy. If C(no), it
+        deactivates the existing active policy. Generally should be C(yes) only in cases where
         you want to activate new or existing policy.
-      - In TMOS v14 and later, deactivating the policy will cause it to be detached from any other associated objects,
+      - In TMOS v14 and later, deactivating the policy causes it to be detached from any other associated objects,
         hence the default option of C(no) has been removed in order to prevent accidental disassociation.
     type: bool
   apply:
     description:
-      - If C(yes) will apply the policy if the policy has pending changes.
+      - If C(yes) applies the policy if the policy has pending changes.
       - This parameter supported on TMOS C(v14.x) and above.
     type: bool
     version_added: "1.4.0"
