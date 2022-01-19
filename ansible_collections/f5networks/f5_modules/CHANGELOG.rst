@@ -5,6 +5,30 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.14.0
+=======
+
+Major Changes
+-------------
+
+- bigip_device_info - pagination logic has also been added to help with api stability.
+- bigip_device_info - the module no longer gathers information from all partitions on device. This change will stabalize the module by gathering resources only from the given partition and prevent the module from gathering way too much information that might result in crashing.
+
+Minor Changes
+-------------
+
+- Added no_log=True to content parameters in bigip_ssl_key and bigip_ssl_key_cert module to stop key and cert content fomr being logged.
+- bigip_device_info - added stats parameter for each virtual_server resource attached to a gtm_server
+
+Bugfixes
+--------
+
+- asm_policy_* - fixed partition filter in asm modules.
+- bigip_device_info - changes cipher and cipher_group parameters to register when the actual value is 'none'.
+- bigip_device_syslog - this change is done so that only unescaped " is replaced with ' in the value of include parameter.
+- bigip_monitor_ldap - fixed idempotency issue with security parameter in module.
+- multiple modules - Add no_log=False setting to update_password parameter in respective modules avoid false positive security warnings.
+
 v1.13.0
 =======
 
