@@ -1,0 +1,39 @@
+---
+
+- name: Create an empty ucs file in local filesystem
+  file:
+    path: "{{ role_path }}/files/backup.ucs"
+    state: touch
+
+- name: Add content to local ucs file
+  copy:
+    dest: "{{ role_path }}/files/backup.ucs"
+    content: |
+      backup
+
+- name: Upload UCS file to bigip
+  bigip_ucs:
+    ucs: "{{ role_path }}/files/backup.ucs"
+    state: present
+
+- name: Gather UCS info
+  bigip_device_info:
+    gather_subset:
+      - ucs
+  register: result
+
+- name: Assert Gather UCS info
+  assert:
+    that:
+      - result is success
+      - result != []
+
+- name: Remove UCS file from bigip
+  bigip_ucs:
+    ucs: "{{ role_path }}/files/backup.ucs"
+    state: absent
+
+- name: Delete ucs file from local filesystem
+  file:
+    path: "{{ role_path }}/files/backup.ucs"
+    state: absent

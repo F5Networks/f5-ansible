@@ -106,6 +106,7 @@ options:
       - trunks
       - udp-profiles
       - users
+      - ucs
       - vcmp-guests
       - virtual-addresses
       - virtual-servers
@@ -181,6 +182,7 @@ options:
       - "!trunks"
       - "!udp-profiles"
       - "!users"
+      - "!ucs"
       - "!vcmp-guests"
       - "!virtual-addresses"
       - "!virtual-servers"
@@ -6411,6 +6413,33 @@ trunks:
       type: int
       sample: 1
   sample: hash/dictionary of values
+
+ucs:
+  description: UCS backups related information
+  returned: When C(ucs) is specified in C(gather_subset)
+  type: complex
+  contains:
+    file_name:
+      description:
+        - Name of the ucs backup file.
+      returned: queried
+      type: str
+      sample: backup.ucs
+    encrypted:
+      description:
+        - Whether file is encrypted or not
+      returned: queried
+      type: bool
+      sample: no
+    file_size:
+      description:
+        - Size of the ucs file in bytes.
+      returned: queried
+      type: int
+      sample: "3"
+  sample: hash/dictionary of values
+  version_added: "1.15.0"
+
 udp_profiles:
   description: UDP profile related information.
   returned: When C(udp-profiles) is specified in C(gather_subset).
@@ -16150,6 +16179,97 @@ class TrunksFactManager(BaseManager):
             return {}
 
 
+class UCSParameters(BaseParameters):
+    api_map = {
+        'filename': 'file_name',
+        'encrypted': 'encrypted',
+        'file_size': 'file_size',
+        'apiRawValues': 'variables'
+    }
+
+    returnables = [
+        'file_name',
+        'encrypted',
+        'file_size'
+    ]
+
+    @property
+    def file_name(self):
+        name = self._values['variables']['filename'].split("/")[-1]
+        return name
+
+    @property
+    def encrypted(self):
+        return self._values['variables']['encrypted']
+
+    @property
+    def file_size(self):
+        val = self._values['variables']['file_size']
+        size = re.findall(r'\d+', val)[0]
+        return size
+
+
+class UCSFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(UCSFactManager, self).__init__(**kwargs)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(ucs_files=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['file_name'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.increment_read()
+        for resource in collection:
+            attrs = resource
+            params = UCSParameters(params=attrs)
+            results.append(params)
+        return results
+
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
+        uri = "https://{0}:{1}/mgmt/tm/sys/ucs".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        query = "?$top=5&$skip={0}".format(skip)
+        resp = self.client.api.get(uri + query)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
 class UsersParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -17771,6 +17891,7 @@ class ModuleManager(object):
             'tcp-profiles': TcpProfilesFactManager,
             'traffic-groups': TrafficGroupsFactManager,
             'trunks': TrunksFactManager,
+            'ucs': UCSFactManager,
             'udp-profiles': UdpProfilesFactManager,
             'users': UsersFactManager,
             'vcmp-guests': VcmpGuestsFactManager,
@@ -17991,6 +18112,7 @@ class ArgumentSpec(object):
                     'trunks',
                     'udp-profiles',
                     'users',
+                    'ucs',
                     'vcmp-guests',
                     'virtual-addresses',
                     'virtual-servers',
@@ -18070,6 +18192,7 @@ class ArgumentSpec(object):
                     '!trunks',
                     '!udp-profiles',
                     '!users',
+                    '!ucs',
                     '!vcmp-guests',
                     '!virtual-addresses',
                     '!virtual-servers',
