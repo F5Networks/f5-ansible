@@ -155,6 +155,36 @@
       - result is not changed
       - result is success
 
+- name: Add content type
+  bigip_profile_http_compression:
+    name: profile1
+    content_type_include:
+      - text
+      - pdf
+      - jpg
+  register: result
+
+- name: Assert Add content type
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Add content type - Idempotent Check
+  bigip_profile_http_compression:
+    name: profile1
+    content_type_include:
+      - text
+      - pdf
+      - jpg
+  register: result
+
+- name: Add content type - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
 - name: Remove HTTP compression profile
   bigip_profile_http_compression:
     name: profile1
