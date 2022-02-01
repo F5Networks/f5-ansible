@@ -97,6 +97,11 @@ options:
       - present
       - absent
     default: present
+  content_type_include:
+    description: Specifies the list of the content types that are allowed.
+    type: list
+    elements: str
+    version_added: "1.15.0"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
@@ -166,6 +171,7 @@ class Parameters(AnsibleF5Parameters):
         'gzipMemoryLevel': 'gzip_memory_level',
         'gzipLevel': 'gzip_level',
         'gzipWindowSize': 'gzip_window_size',
+        'contentTypeInclude': 'content_type_include',
     }
 
     api_attributes = [
@@ -175,6 +181,7 @@ class Parameters(AnsibleF5Parameters):
         'gzipMemoryLevel',
         'gzipLevel',
         'gzipWindowSize',
+        'contentTypeInclude',
     ]
 
     returnables = [
@@ -183,6 +190,7 @@ class Parameters(AnsibleF5Parameters):
         'gzip_memory_level',
         'gzip_level',
         'gzip_window_size',
+        'content_type_include',
     ]
 
     updatables = [
@@ -192,6 +200,7 @@ class Parameters(AnsibleF5Parameters):
         'gzip_level',
         'gzip_window_size',
         'parent',
+        'content_type_include'
     ]
 
 
@@ -511,6 +520,10 @@ class ArgumentSpec(object):
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
+            ),
+            content_type_include=dict(
+                elements='str',
+                type='list'
             )
         )
         self.argument_spec = {}
