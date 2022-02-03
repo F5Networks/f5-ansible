@@ -2,7 +2,7 @@ authors:
   - Wojciech Wypior (@wojtek0806)
 dependencies:
   ansible.netcommon: ">=2.0.0"
-description: F5 Modules for Ansible
+description: F5 Imperative Collection for Ansible
 documentation: https://clouddocs.f5.com/products/orchestration/ansible/devel/modules/module_index.html
 homepage: https://clouddocs.f5.com/products/orchestration/ansible/devel/
 issues: https://github.com/F5Networks/f5-ansible/issues
