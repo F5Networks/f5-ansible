@@ -1271,6 +1271,8 @@ class ModuleManager(object):
                 raise F5ModuleError(resp.content)
 
     def pool_exist(self):
+        if self.module.check_mode:
+            return True
         if self.replace_all_with:
             pool_name = transform_name(name=fq_name(self.module.params['partition'], self.module.params['pool']))
         else:
