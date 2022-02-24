@@ -16,4 +16,4 @@ cryptography
 objectpath
 ordereddict
 simplejson
-
+markupsafe
