@@ -28,3 +28,6 @@
 
 - import_tasks: issue-persistence.yaml
   tags: issue-persistence
+
+- import_tasks: issue-disabled.yaml
+  tags: issue-disabled

@@ -835,6 +835,9 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
+        params['disabled'] = self.want.disabled
+        params['enabled'] = self.want.enabled
+
         uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/{2}/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
