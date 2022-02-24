@@ -1,0 +1,313 @@
+---
+
+- name: Create wide_ip A with disabled state
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-a.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: a
+  register: result
+
+- name: Assert Create wide_ip A with disabled state
+  assert:
+    that:
+      - result is changed
+
+- name: Create wide_ip A with disabled state - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-a.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: a
+  register: result
+
+- name: Assert Create wide_ip A with disabled state - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create wide_ip AAAA with disabled state
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-aaaa.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: aaaa
+  register: result
+
+- name: Assert Create wide_ip AAAA with disabled state
+  assert:
+    that:
+      - result is changed
+
+- name: Create wide_ip AAAA with disabled state - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-aaaa.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: aaaa
+  register: result
+
+- name: Assert Create wide_ip AAAA with disabled state - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create wide_ip cname with disabled state
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-cname.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: cname
+  register: result
+
+- name: Assert Create wide_ip cname with disabled state
+  assert:
+    that:
+      - result is changed
+
+- name: Create wide_ip cname with disabled state - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-cname.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: cname
+  register: result
+
+- name: Assert Create wide_ip cname with disabled state - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create wide_ip mx with disabled state
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-mx.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: mx
+  register: result
+
+- name: Assert Create wide_ip mx with disabled state
+  assert:
+    that:
+      - result is changed
+
+- name: Create wide_ip mx with disabled state - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-mx.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: mx
+  register: result
+
+- name: Assert Create wide_ip mx with disabled state - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create wide_ip naptr with disabled state
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-naptr.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: naptr
+  register: result
+
+- name: Assert Create wide_ip naptr with disabled state
+  assert:
+    that:
+      - result is changed
+
+- name: Create wide_ip naptr with disabled state - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-naptr.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: naptr
+  register: result
+
+- name: Assert Create wide_ip naptr with disabled state - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create wide_ip srv with disabled state
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-srv.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: srv
+  register: result
+
+- name: Assert Create wide_ip srv with disabled state
+  assert:
+    that:
+      - result is changed
+
+- name: Create wide_ip srv with disabled state - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-srv.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: disabled
+    type: srv
+  register: result
+
+- name: Assert Create wide_ip srv with disabled state - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete wide_ip A 
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-a.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: a
+  register: result
+
+- name: Assert Delete wide_ip A 
+  assert:
+    that:
+      - result is changed
+
+- name: Delete wide_ip A  - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-a.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: a
+  register: result
+
+- name: Assert Delete wide_ip A  - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete wide_ip AAAA
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-aaaa.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: aaaa
+  register: result
+
+- name: Assert Delete wide_ip AAAA 
+  assert:
+    that:
+      - result is changed
+
+- name: Delete wide_ip AAAA  - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-aaaa.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: aaaa
+  register: result
+
+- name: Assert Delete wide_ip AAAA  - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete wide_ip cname 
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-cname.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: cname
+  register: result
+
+- name: Assert Delete wide_ip cname 
+  assert:
+    that:
+      - result is changed
+
+- name: Delete wide_ip cname  - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-cname.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: cname
+  register: result
+
+- name: Assert Delete wide_ip cname  - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete wide_ip mx
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-mx.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: mx
+  register: result
+
+- name: Assert Delete wide_ip mx 
+  assert:
+    that:
+      - result is changed
+
+- name: Delete wide_ip mx  - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-mx.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: mx
+  register: result
+
+- name: Assert Delete wide_ip mx  - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete wide_ip naptr 
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-naptr.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: naptr
+  register: result
+
+- name: Assert Delete wide_ip naptr 
+  assert:
+    that:
+      - result is changed
+
+- name: Delete wide_ip naptr  - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-naptr.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: naptr
+  register: result
+
+- name: Assert Delete wide_ip naptr  - Idempotence Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete wide_ip srv 
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-srv.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: srv
+  register: result
+
+- name: Assert Delete wide_ip srv 
+  assert:
+    that:
+      - result is changed
+
+- name: Delete wide_ip srv  - Idempotence Check
+  bigip_gtm_wide_ip:
+    wide_ip: wide-ip-srv.example.com
+    lb_method: "{{ valid_lb_method1 }}"
+    state: absent
+    type: srv
+  register: result
+
+- name: Assert Delete wide_ip srv  - Idempotence Check
+  assert:
+    that:
+      - result is not changed
