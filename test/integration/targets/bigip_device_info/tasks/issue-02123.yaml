@@ -1,0 +1,29 @@
+---
+
+- name: Get packages info
+  bigip_device_info:
+    include:
+      - "packages"
+  register: result
+
+- name: Assert result is success
+  assert:
+    that:
+      result is success
+
+- name: Get info with negated meta options
+  bigip_device_info:
+    include:
+      - "all"
+      - "!packages"
+      - "!monitors"
+      - "!profiles"
+      - "!gtm-pools"
+      - "!gtm-wide-ips"
+      - "!ltm-pools"
+  register: result
+
+- name: Assert Get info with negated meta options
+  assert:
+    that:
+      result is success
