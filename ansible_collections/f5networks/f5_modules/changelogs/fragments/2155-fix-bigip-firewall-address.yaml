@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_firewall_address_list - fixed issue where addresses that contained RD would cause an error.
