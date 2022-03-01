@@ -19,8 +19,9 @@ options:
   name:
     description:
       - Name of the node to create, or re-use, when creating a new pool member.
-      - This parameter is optional. If not specified, a node name will be
-        created automatically from either the specified C(address) or C(fqdn).
+      - While parameter is optional, it is recommended to specify this parameter at all times to mitigate any 
+        unexpected behavior. 
+      - If not specified, a node name will be created automatically from either the specified C(address) or C(fqdn).
       - The C(enabled) state is an alias of C(present).
     type: str
   state:
@@ -203,6 +204,7 @@ EXAMPLES = r'''
   bigip_pool_member:
     pool: my-pool
     partition: Common
+    name: my-member
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     description: web server
@@ -219,6 +221,7 @@ EXAMPLES = r'''
   bigip_pool_member:
     pool: my-pool
     partition: Common
+    name: my-member
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     ratio: 1
@@ -234,6 +237,7 @@ EXAMPLES = r'''
     state: absent
     pool: my-pool
     partition: Common
+    name: my-member
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     provider:
@@ -247,6 +251,7 @@ EXAMPLES = r'''
     state: forced_offline
     pool: my-pool
     partition: Common
+    name: my-member
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     provider:
