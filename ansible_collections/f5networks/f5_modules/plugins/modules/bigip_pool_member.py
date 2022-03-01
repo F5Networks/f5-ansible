@@ -19,8 +19,8 @@ options:
   name:
     description:
       - Name of the node to create, or re-use, when creating a new pool member.
-      - While parameter is optional, it is recommended to specify this parameter at all times to mitigate any 
-        unexpected behavior. 
+      - While parameter is optional, it is recommended to specify this parameter at all times to mitigate any
+        unexpected behavior.
       - If not specified, a node name will be created automatically from either the specified C(address) or C(fqdn).
       - The C(enabled) state is an alias of C(present).
     type: str
