@@ -6417,25 +6417,25 @@ trunks:
   sample: hash/dictionary of values
 
 ucs:
-  description: UCS backups related information
+  description: UCS backup related information
   returned: When C(ucs) is specified in C(gather_subset)
   type: complex
   contains:
     file_name:
       description:
-        - Name of the ucs backup file.
+        - Name of the UCS backup file.
       returned: queried
       type: str
       sample: backup.ucs
     encrypted:
       description:
-        - Whether file is encrypted or not
+        - Whether the file is encrypted or not.
       returned: queried
       type: bool
       sample: no
     file_size:
       description:
-        - Size of the ucs file in bytes.
+        - Size of the UCS file in bytes.
       returned: queried
       type: int
       sample: "3"
