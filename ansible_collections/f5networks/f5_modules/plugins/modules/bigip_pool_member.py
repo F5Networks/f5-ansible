@@ -18,10 +18,10 @@ version_added: "1.0.0"
 options:
   name:
     description:
-      - Name of the node to create, or re-use, when creating a new pool member.
-      - While parameter is optional, it is recommended to specify this parameter at all times to mitigate any
-        unexpected behavior.
-      - If not specified, a node name will be created automatically from either the specified C(address) or C(fqdn).
+      - Name of the node to create or re-use when creating a new pool member.
+      - While this parameter is optional, we recommend specifying this parameter
+        at all times to mitigate anyunexpected behavior.
+      - If not specified, a node name is created automatically from either the specified C(address) or C(fqdn).
       - The C(enabled) state is an alias of C(present).
     type: str
   state:
@@ -57,7 +57,7 @@ options:
   fqdn:
     description:
       - FQDN name of the pool member. This can be any name that is a valid RFC 1123 DNS
-        name. Therefore, the only characters that can be used are "A" to "Z",
+        name. Therefore, the only usable characters are "A" to "Z",
         "a" to "z", "0" to "9", the hyphen ("-") and the period (".").
       - FQDN names must include at least one period; delineating the host from
         the domain. For example, C(host.domain).
