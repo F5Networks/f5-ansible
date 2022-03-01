@@ -519,20 +519,41 @@ class ModuleParameters(Parameters):
         allowed = re.compile(r'(?!-)[A-Z0-9-]{1,63}(?<!-)$', re.IGNORECASE)
         return all(allowed.match(x) for x in host.split("."))
 
+    def _get_rd(self, address):
+        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)'
+        matches = re.search(pattern, address)
+        if matches:
+            addr = matches.group('ip')
+            rd = matches.group('route_domain')
+            return addr, rd
+        return None, None
+
     @property
     def addresses(self):
         if self._values['addresses'] is None:
             return None
         result = []
         for x in self._values['addresses']:
-            if is_valid_ip(x):
-                result.append(str(ip_address(u'{0}'.format(x))))
-            elif is_valid_ip_interface(x):
-                result.append(str(ip_interface(u'{0}'.format(x))))
+            addr, rd = self._get_rd(x)
+            if addr and rd:
+                if is_valid_ip(addr):
+                    result.append(str(ip_address(u'{0}'.format(addr))) + '%' + rd)
+                elif is_valid_ip_interface(addr):
+                    result.append(str(ip_interface(u'{0}'.format(x))) + '%' + rd)
+                else:
+                    raise F5ModuleError(
+                        "Address {0} must be either an IPv4 or IPv6 address or network appended"
+                        "by a '%' and a route domain number e.g. 1.2.3.4%1 .".format(x)
+                    )
             else:
-                raise F5ModuleError(
-                    "Address {0} must be either an IPv4 or IPv6 address or network.".format(x)
-                )
+                if is_valid_ip(x):
+                    result.append(str(ip_address(u'{0}'.format(x))))
+                elif is_valid_ip_interface(x):
+                    result.append(str(ip_interface(u'{0}'.format(x))))
+                else:
+                    raise F5ModuleError(
+                        "Address {0} must be either an IPv4 or IPv6 address or network.".format(x)
+                    )
         result = sorted(result)
         return result
 
