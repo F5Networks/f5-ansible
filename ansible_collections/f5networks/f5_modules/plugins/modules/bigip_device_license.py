@@ -319,7 +319,7 @@ class ModuleParameters(Parameters):
             return None
         if self._values['addon_keys'] is None or is_empty_list(self._values['addon_keys']):
             return None
-        result = ' '.join(self._values['addon_keys'])
+        result = ','.join(self._values['addon_keys'])
         return result
 
 
