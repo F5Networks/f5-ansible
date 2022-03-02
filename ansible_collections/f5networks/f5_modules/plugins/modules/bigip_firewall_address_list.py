@@ -38,7 +38,7 @@ options:
     suboptions:
       country:
         description:
-          - The country name, or code, of the geolocation to use.
+          - The country name or code of the geolocation to use.
           - In addition to the country full names, you may also specify their abbreviated
             form, such as C(US) instead of C(United States).
           - Valid country codes can be found here https://countrycode.org/.
@@ -64,7 +64,7 @@ options:
       - A list of address ranges where the range starts with a port number, is followed
         by a dash (-), and then a second number.
       - If the first address is greater than the second number, the numbers will be
-        reversed so-as to be properly formatted. For example, C(2.2.2.2-1.1.1). would become
+        reversed so they are properly formatted. For example, C(2.2.2.2-1.1.1). would become
         C(1.1.1.1-2.2.2.2).
     type: list
     elements: str
@@ -81,7 +81,7 @@ options:
       - A list of fully qualified domain names (FQDNs).
       - An FQDN has at least one decimal point in it, separating the host from the domain.
       - To add FQDNs to a list requires that a global FQDN resolver is configured.
-        This must either be done via C(bigip_command), or in the GUI
+        This must be done using C(bigip_command) or from the GUI
         of the BIG-IP. If using C(bigip_command), you can do this with C(tmsh modify security
         firewall global-fqdn-policy FOO) where C(FOO) is a DNS resolver configured
         at C(tmsh create net dns-resolver FOO).

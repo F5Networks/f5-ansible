@@ -1,6 +1,6 @@
 # F5 Imperative Collection for Ansible
 
-This collection includes imperative ansible modules for BIG-IP and BIG-IQ from F5Networks.
+This collection includes imperative Ansible modules for BIG-IP and BIG-IQ from F5Networks.
 This collection packages and distributes modules, and plugins.
 
 ## Requirements
