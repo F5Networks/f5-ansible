@@ -701,6 +701,36 @@ releases:
     - no_log_key_and_cert_content.yaml
     - syslog_include_support_escaped_quotes.yaml
     release_date: '2022-01-19'
+  1.15.0:
+    changes:
+      bugfixes:
+      - bigip_device_info - fixed bug regarding handling of negated meta options.
+      - bigip_device_license - fixed issue that resulted in only first of the multiple
+        add-on keys getting added to the device.
+      - bigip_firewall_address_list - fixed issue where addresses that contained RD
+        would cause an error.
+      - bigip_gtm_wide_ip - fixed a bug that prevented creation of gtm wide ips in
+        disabled state.
+      minor_changes:
+      - bigip_device_info - Added a new meta choice, packages, which groups information
+        about as3, do, cfe and ts. This change was done to ensure users with non admin
+        access can use this module to get information that does not require admin
+        access.
+      - bigip_device_info - this module can gather information about ucs backup files.
+      - bigip_pool_member - add checkmode bypass so that existence checks for pool
+        is always returns true when using check mode
+      - bigip_profile_http_compression - Add content_type_include parameter to bigip_profile_fastl4
+        module
+    fragments:
+    - 2155-fix-bigip-firewall-address.yaml
+    - add-checkmode-bypass-bigip-pool-member.yaml
+    - add-meta-choice-packages.yaml
+    - add_content_type_include.yaml
+    - bigip-device-info-ucs.yaml
+    - bugfix-bigip-device-info.yaml
+    - bugfix-gtm-wide-ip.yaml
+    - bugfix-multiple-add-on-keys.yaml
+    release_date: '2022-03-03'
   1.2.0:
     changes:
       bugfixes:

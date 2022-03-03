@@ -5,6 +5,25 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.15.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_device_info - Added a new meta choice, packages, which groups information about as3, do, cfe and ts. This change was done to ensure users with non admin access can use this module to get information that does not require admin access.
+- bigip_device_info - this module can gather information about ucs backup files.
+- bigip_pool_member - add checkmode bypass so that existence checks for pool is always returns true when using check mode
+- bigip_profile_http_compression - Add content_type_include parameter to bigip_profile_fastl4 module
+
+Bugfixes
+--------
+
+- bigip_device_info - fixed bug regarding handling of negated meta options.
+- bigip_device_license - fixed issue that resulted in only first of the multiple add-on keys getting added to the device.
+- bigip_firewall_address_list - fixed issue where addresses that contained RD would cause an error.
+- bigip_gtm_wide_ip - fixed a bug that prevented creation of gtm wide ips in disabled state.
+
 v1.14.0
 =======
 
