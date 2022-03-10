@@ -6437,8 +6437,14 @@ ucs:
       description:
         - Size of the UCS file in bytes.
       returned: queried
-      type: int
+      type: str
       sample: "3"
+    file_created_date:
+      description:
+        - Date and time when the ucs file was created.
+      returned: queried
+      type: str
+      sample: "2022-03-10T09:30:19Z"
   sample: hash/dictionary of values
   version_added: "1.15.0"
 
