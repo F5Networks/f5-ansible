@@ -16196,7 +16196,8 @@ class UCSParameters(BaseParameters):
     returnables = [
         'file_name',
         'encrypted',
-        'file_size'
+        'file_size',
+        'file_created_date'
     ]
 
     @property
@@ -16214,6 +16215,10 @@ class UCSParameters(BaseParameters):
         size = re.findall(r'\d+', val)[0]
         return size
 
+    @property
+    def file_created_date(self):
+        date = self._values['variables']['file_created_date']
+        return date
 
 class UCSFactManager(BaseManager):
     def __init__(self, *args, **kwargs):
