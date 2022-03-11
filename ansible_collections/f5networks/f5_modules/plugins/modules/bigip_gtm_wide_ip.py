@@ -312,6 +312,7 @@ class Parameters(AnsibleF5Parameters):
         'disabled',
         'aliases',
         'last_resort_pool',
+        'persistence',
         'persist_cidr_ipv4',
         'persist_cidr_ipv6',
         'persistence_ttl',
