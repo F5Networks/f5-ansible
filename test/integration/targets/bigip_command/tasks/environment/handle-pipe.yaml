@@ -1,0 +1,38 @@
+---
+
+- name: Create http-compression profile
+  bigip_profile_http_compression:
+    name: Xcompression
+    state: present
+  register: result
+
+- name: Assert - Create http-compression profile
+  assert:
+    that:
+      result is success
+
+- name: Test command that has a pipe
+  bigip_command:
+    commands:
+      - modify ltm profile http-compression Xcompression content-type-include add { "image/(photoshop\|psd\|x-photoshop\|x-vsd)" }
+      - show ltm profile http-compression Xcompression | nl
+      - show ltm profile http-compression Xcompression | wc -l
+  register: result
+
+- name: Assert - Test command that has a pipe
+  assert:
+    that:
+      - result is success
+      - "'Error' not in result.stdout"
+
+- name: Delete http-compression profile
+  bigip_profile_http_compression:
+    name: Xcompression
+    state: absent
+
+- name: Assert - Delete http-compression profile
+  assert:
+    that:
+      result is success
+
+...

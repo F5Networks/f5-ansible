@@ -205,6 +205,7 @@ warn:
 
 import copy
 import re
+import shlex
 import time
 from datetime import datetime
 
@@ -284,6 +285,12 @@ class Parameters(AnsibleF5Parameters):
             result = self._values['commands']
         return result
 
+    def cmd_has_pipe(self, cmd):
+        lex = shlex.shlex(cmd, posix=True)
+        lex.whitespace = '|'
+        lex.whitespace_split = True
+        return len(list(lex)) > 1
+
     def convert_commands(self, commands):
         result = []
         for command in commands:
@@ -293,7 +300,7 @@ class Parameters(AnsibleF5Parameters):
             )
 
             command = command.replace("'", "\\'")
-            pipeline = command.split('|', 1)
+            pipeline = command.split('|', 1) if self.cmd_has_pipe(command) else [command]
             tmp['command'] = pipeline[0]
             try:
                 tmp['pipeline'] = pipeline[1]
@@ -310,7 +317,7 @@ class Parameters(AnsibleF5Parameters):
                 pipeline=''
             )
 
-            pipeline = command.split('|', 1)
+            pipeline = command.split('|', 1) if self.cmd_has_pipe(command) else [command]
             tmp['command'] = pipeline[0]
             try:
                 tmp['pipeline'] = pipeline[1]
