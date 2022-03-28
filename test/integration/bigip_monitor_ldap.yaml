@@ -34,7 +34,7 @@
         - NA
 
 - name: Test the bigip_monitor_ldap module
-  hosts: "f5-test[0]"
+  hosts: "f5test"
   connection: local
   any_errors_fatal: true
 
