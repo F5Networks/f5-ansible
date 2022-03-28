@@ -276,7 +276,6 @@ persistence_ttl:
   sample: 3600
 '''
 from datetime import datetime
-from distutils.version import LooseVersion
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -314,6 +313,7 @@ class Parameters(AnsibleF5Parameters):
         'last_resort_pool',
         'persist_cidr_ipv4',
         'persist_cidr_ipv6',
+        'persistence',
         'persistence_ttl',
     ]
 
