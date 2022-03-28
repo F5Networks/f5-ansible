@@ -34,7 +34,7 @@
         - NA
 
 - name: Test the bigip_wait module - Environment
-  hosts: "f5-test[0]"
+  hosts: "f5test"
   connection: local
   any_errors_fatal: true
 
@@ -55,7 +55,7 @@
         - environment
 
 - name: Test the bigip_wait module - Provider-cli
-  hosts: "f5-test[0]"
+  hosts: "f5test"
   connection: local
   any_errors_fatal: true
 
@@ -69,7 +69,7 @@
         - provider-cli
 
 - name: Test the bigip_wait module - Provider-rest
-  hosts: "f5-test[0]"
+  hosts: "f5test"
   connection: local
   any_errors_fatal: true
 

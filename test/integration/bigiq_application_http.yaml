@@ -34,7 +34,7 @@
         - NA
 
 - name: Test the bigiq_application_http module - Environment
-  hosts: "f5-bigiq[0]"
+  hosts: "f5bigiq"
   connection: local
   any_errors_fatal: true
 
@@ -55,7 +55,7 @@
         - environment
 
 - name: Test the bigiq_application_http module - Provider-rest
-  hosts: "f5-bigiq[0]"
+  hosts: "f5bigiq"
   connection: local
   any_errors_fatal: true
 

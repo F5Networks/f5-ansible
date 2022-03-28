@@ -481,6 +481,17 @@ options:
         choices:
          - clientside
          - serverside
+  service_down_immediate_action:
+    description:
+      - Specifies the immediate action to take upon the receipt of the initial SYN packet if the
+        availability status of the virtual server is Offline or Unavailable.
+      - Supported for the virtual server of C(standard) type and C(TCP) protocol.
+    type: str
+    choices:
+      - none
+      - reset
+      - drop
+    version_added: "1.16.0"
   check_profiles:
     description:
       - Specifies whether the client and server SSL profiles specified by the user should be verified to be
@@ -900,6 +911,11 @@ clone_pools:
   returned: changed
   type: list
   sample: [{'pool_name':'/Common/Pool1', 'context': 'clientside'}]
+service_down_immediate_action:
+  description: Action to take upon the receipt of the initial SYN packet if server is Offline or Unavailable.
+  returned: changed
+  type: str
+  sample: drop
 '''
 import os
 import re
@@ -955,6 +971,7 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitSrcMask': 'rate_limit_src_mask',
         'clonePools': 'clone_pools',
         'autoLasthop': 'auto_last_hop',
+        'serviceDownImmediateAction': 'service_down_immediate_action'
     }
 
     api_attributes = [
@@ -972,6 +989,7 @@ class Parameters(AnsibleF5Parameters):
         'rules',
         'source',
         'sourceAddressTranslation',
+        'serviceDownImmediateAction',
         'vlans',
         'vlansEnabled',
         'vlansDisabled',
@@ -1016,6 +1034,7 @@ class Parameters(AnsibleF5Parameters):
         'port',
         'port_translation',
         'profiles',
+        'service_down_immediate_action',
         'snat',
         'source',
         'type',
@@ -1053,6 +1072,7 @@ class Parameters(AnsibleF5Parameters):
         'port',
         'port_translation',
         'profiles',
+        'service_down_immediate_action',
         'snat',
         'source',
         'vlans',
@@ -3707,6 +3727,9 @@ class ArgumentSpec(object):
             firewall_staged_policy=dict(),
             firewall_enforced_policy=dict(),
             ip_intelligence_policy=dict(),
+            service_down_immediate_action=dict(
+                choices=['drop', 'none', 'reset']
+            ),
             security_log_profiles=dict(
                 type='list',
                 elements='str',
