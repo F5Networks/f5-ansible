@@ -124,3 +124,6 @@
 
 - import_tasks: issue-00785.yaml
   tags: issue-00785
+
+- import_tasks: handle-pipe.yaml
+  tags: handle-pipe.yaml
