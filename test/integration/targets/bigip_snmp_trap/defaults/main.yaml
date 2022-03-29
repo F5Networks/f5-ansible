@@ -11,3 +11,8 @@ community1: foo
 community2: bar
 port1: 1000
 port2: 2000
+trap_name3: my-trap3
+version3: 3
+destination3: 10.30.30.10
+port3: 2300
+

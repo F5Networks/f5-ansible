@@ -1,0 +1,65 @@
+---
+
+- name: Create snmp v3 trap
+  bigip_snmp_trap:
+    community: "{{ community1 }}"
+    destination: "{{ destination3 }}"
+    name: "{{ trap_name3 }}"
+    network: "{{ network1 }}"
+    port: "{{ port3 }}"
+    snmp_version: "{{ version3 }}"
+    security_name: "testsec3"
+    security_level: "auth-privacy"
+    auth_protocol: 'sha'
+    auth_password: 'test123456'
+    privacy_protocol: "des"
+    privacy_password: 'test@12345'
+  register: result
+
+- name: Create snmp v3 trap
+  assert:
+    that:
+      - result is changed
+
+- name: Create snmp v3 trap - Idempotent check
+  bigip_snmp_trap:
+    community: "{{ community1 }}"
+    destination: "{{ destination3 }}"
+    name: "{{ trap_name3 }}"
+    network: "{{ network1 }}"
+    port: "{{ port3 }}"
+    snmp_version: "{{ version3 }}"
+    security_name: "testsec3"
+    security_level: "auth-privacy"
+    auth_protocol: 'sha'
+    auth_password: 'test123456'
+    privacy_protocol: "des"
+    privacy_password: 'test@12345'
+  register: result
+
+- name: Create snmp v3 trap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete an snmp trap
+  bigip_snmp_trap:
+    community: "{{ community1 }}"
+    destination: "{{ destination3 }}"
+    name: "{{ trap_name3 }}"
+    network: "{{ network1 }}"
+    port: "{{ port3 }}"
+    snmp_version: "{{ version3 }}"
+    security_name: "testsec3"
+    security_level: "auth-privacy"
+    auth_protocol: 'sha'
+    auth_password: 'test123456'
+    privacy_protocol: "des"
+    privacy_password: 'test@12345'
+    state: absent
+  register: result
+
+- name: Assert Delete an snmp trap
+  assert:
+    that:
+      - result is changed

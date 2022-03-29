@@ -28,6 +28,7 @@ options:
     choices:
       - '1'
       - '2c'
+      - '3'
   community:
     description:
       - Specifies the community name for the trap destination.
@@ -54,6 +55,51 @@ options:
       - other
       - management
       - default
+  security_name:
+    description:
+      - Specifies the security name to used for v3 snmp trap
+      - Required for the C(snmp_version) matches C(v3).
+    type: str
+    version_added: "1.16.0"
+  security_level:
+    description:
+      - Specifies the port for the trap destination.
+      - Required for the C(snmp_version) matches C(v3).
+    type: str
+    choices:
+      - auth-no-privacy
+      - auth-privacy
+    version_added: "1.16.0"
+  auth_protocol:
+    description:
+      - Specifies the Authentication protocol to be used for snmp v3 traps
+      - Required for the C(security_level)
+    type: str
+    choices:
+      - sha
+      - md5
+    version_added: "1.16.0"
+  auth_password:
+    description:
+      - Specifies the Authentication protocol password to be used for snmp v3 traps
+      - Required for the C(snmp_version) matches C(v3) and for the C(security_level)
+    type: str
+    version_added: "1.16.0"
+  privacy_protocol:
+    description:
+      - Specifies the Privacy protocol to be used for snmp v3 traps
+      - Required for the C(security_level) matches c(auth-privacy)
+    type: str
+    choices:
+      - aes
+      - des
+    version_added: "1.16.0"
+  privacy_password:
+    description:
+      - Specifies the Privacy protocol password to be used for snmp v3 traps
+      - Required for the C(security_level) matches c(auth-privacy)
+    type: str
+    version_added: "1.16.0"
   state:
     description:
       - When C(present), ensures the resource exists.
@@ -107,6 +153,46 @@ EXAMPLES = r'''
       user: admin
       password: secret
   delegate_to: localhost
+
+- name: Create snmp v3 trap
+  bigip_snmp_trap:
+    community: general
+    destination: 5.6.7.9
+    name: my-trap3
+    network: management
+    port: 7001
+    snmp_version: 3
+    auth_protocol: 'sha'
+    auth_password: 'test12345'
+    security_name: "testsec2"
+    security_level: "auth-no-privacy"
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+    state: absent
+  delegate_to: localhost
+
+- name: Create snmp v3 trap-2
+  bigip_snmp_trap:
+    community: general
+    destination: 5.6.7.10
+    name: my-trap4
+    network: management
+    port: 7002
+    snmp_version: 3
+    auth_protocol: 'sha'
+    auth_password: 'test123456'
+    security_name: "testsec3"
+    security_level: "auth-privacy"
+    privacy_protocol: "des"
+    privacy_password: 'test@12345'
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+    state: absent
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -156,6 +242,12 @@ class Parameters(AnsibleF5Parameters):
         'version': 'snmp_version',
         'community': 'community',
         'host': 'destination',
+        'securityName': 'security_name',
+        'authProtocol': 'auth_protocol',
+        'authPassword': 'auth_password',
+        'securityLevel': 'security_level',
+        'privacyProtocol': 'privacy_protocol',
+        'privacyPassword': 'privacy_password',
     }
 
     @property
@@ -185,6 +277,10 @@ class V3Parameters(Parameters):
         'destination',
         'port',
         'network',
+        'security_name',
+        'auth_protocol',
+        'security_level',
+        'privacy_protocol',
     ]
 
     returnables = [
@@ -193,6 +289,12 @@ class V3Parameters(Parameters):
         'destination',
         'port',
         'network',
+        'security_name',
+        'auth_protocol',
+        'auth_password',
+        'security_level',
+        'privacy_protocol',
+        'privacy_password',
     ]
 
     api_attributes = [
@@ -201,6 +303,12 @@ class V3Parameters(Parameters):
         'host',
         'port',
         'network',
+        'securityName',
+        'authProtocol',
+        'authPassword',
+        'securityLevel',
+        'privacyProtocol',
+        'privacyPassword',
     ]
 
     @property
@@ -474,7 +582,8 @@ class V3Manager(BaseManager):
     def __init__(self, *args, **kwargs):
         super(V3Manager, self).__init__(**kwargs)
         self.required_resources = [
-            'version', 'community', 'destination', 'port', 'network'
+            'version', 'community', 'destination', 'port', 'network', 'security_name', 'auth_protocol', 'auth_password',
+            'security_level', 'privacy_protocol', 'privacy_password'
         ]
         self.want = V3Parameters(params=self.module.params)
         self.changes = V3Parameters()
@@ -639,10 +748,22 @@ class ArgumentSpec(object):
                 required=True
             ),
             snmp_version=dict(
-                choices=['1', '2c']
+                choices=['1', '2c', '3']
             ),
             community=dict(no_log=True),
             destination=dict(),
+            security_name=dict(),
+            security_level=dict(
+                choices=['auth-no-privacy', 'auth-privacy']
+            ),
+            auth_protocol=dict(
+                choices=['sha', 'md5']
+            ),
+            auth_password=dict(no_log=True),
+            privacy_protocol=dict(
+                choices=['aes', 'des']
+            ),
+            privacy_password=dict(no_log=True),
             port=dict(),
             network=dict(
                 choices=['other', 'management', 'default']
@@ -656,9 +777,20 @@ class ArgumentSpec(object):
                 fallback=(env_fallback, ['F5_PARTITION'])
             )
         )
+
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
+        self.required_if = [
+            ['snmp_version', '3', ['security_name']],
+            ['snmp_version', '3', ['security_level']],
+            ['security_level', 'auth-no-privacy', ['auth_protocol']],
+            ['security_level', 'auth-no-privacy', ['auth_password']],
+            ['security_level', 'auth-privacy', ['auth_protocol']],
+            ['security_level', 'auth-privacy', ['auth_password']],
+            ['security_level', 'auth-privacy', ['privacy_protocol']],
+            ['security_level', 'auth-privacy', ['privacy_password']]
+        ]
 
 
 def main():
@@ -666,7 +798,8 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode
+        supports_check_mode=spec.supports_check_mode,
+        required_if=spec.required_if
     )
 
     try:
