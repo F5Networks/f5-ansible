@@ -10,3 +10,7 @@
 
 - import_tasks: post-v12.yaml
   when: f.system_info.product_version >= "12.1.0"
+
+# tests for fixes logged in jira
+- import_tasks: infraano-00086.yaml
+  tags: infraano-00086
