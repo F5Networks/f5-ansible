@@ -1,25 +1,25 @@
 ---
 
-# Test the {{ module }} module
+# Test the bigip_ltm_global module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
 # This module will run tests against a BIG-IP host to verify that the
-# {{ module }} module behaves as expected.
+# bigip_ltm_global module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, test/integration/{{ module }}.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_ltm_global.yaml
 #
 # Examples:
 #
-#    Run all tests on the {{module}} module
+#    Run all tests on the bigip_ltm_global module
 #
-#    ansible-playbook -i notahost, test/integration/{{ module }}.yaml
+#    ansible-playbook -i notahost, test/integration/bigip_ltm_global.yaml
 #
 
-- name: Metadata of {{ module }}
+- name: Metadata of bigip_ltm_global
   hosts: localhost
   connection: local
   gather_facts: false
@@ -33,7 +33,7 @@
       tested_platforms:
         - NA
 
-- name: Test the {{ module }} module
+- name: Test the bigip_ltm_global module
   hosts: "f5test"
   connection: local
   any_errors_fatal: true
@@ -41,12 +41,12 @@
   vars:
     limit_to: '*'
 
-{% raw %}  environment:
+  environment:
     F5_SERVER: "{{ ansible_host }}"
     F5_USER: "{{ bigip_username }}"
     F5_PASSWORD: "{{ bigip_password }}"
     F5_SERVER_PORT: "{{ bigip_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
-{% endraw %}
+
   roles:
-    - {{ module }}
+    - bigip_ltm_global
