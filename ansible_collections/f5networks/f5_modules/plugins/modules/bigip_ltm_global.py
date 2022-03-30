@@ -30,7 +30,7 @@ options:
       global_syn_challenge_tresh:
         description:
           -  Specifies the default value of the global SYN Cookie activation threshold.
-          - "The valid range is 128 - 4194304, or infinite (encoded as 0)."
+          - "The valid range is 2048 - 4194304, or infinite (encoded as 0)."
         type: int
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
