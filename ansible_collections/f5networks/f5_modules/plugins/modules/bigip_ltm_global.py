@@ -296,6 +296,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             connection=dict(
                 type='dict',
+                required=True,
                 options=dict(
                     default_vs_syn_challenge_tresh=dict(type='int'),
                     global_syn_challenge_tresh=dict(type='int')
@@ -305,9 +306,6 @@ class ArgumentSpec(object):
                 ]
             )
         )
-        self.required_one_of = [
-            ['connection']
-        ]
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
@@ -319,7 +317,6 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        required_one_of=spec.required_one_of
     )
 
     try:
