@@ -1,0 +1,16 @@
+{
+    "kind": "tm:ltm:global-settings:connection:connectionstate",
+    "selfLink": "https://localhost/mgmt/tm/ltm/global-settings/connection?ver=15.1.1",
+    "adaptiveReaperHiwater": 95,
+    "adaptiveReaperLowater": 85,
+    "autoLastHop": "enabled",
+    "defaultVsSynChallengeThreshold": "infinite",
+    "globalFlowEvictionPolicy": "/Common/default-eviction-policy",
+    "globalFlowEvictionPolicyReference": {
+        "link": "https://localhost/mgmt/tm/ltm/eviction-policy/~Common~default-eviction-policy?ver=15.1.1"
+    },
+    "globalSynChallengeThreshold": "64000",
+    "syncookiesThreshold": 16384,
+    "vlanKeyedConn": "enabled",
+    "vlanSynCookie": "enabled"
+}
