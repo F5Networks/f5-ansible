@@ -20,6 +20,7 @@ options:
     description:
       - Specifies the connection related general LTM settings.
     type: dict
+    required: True
     suboptions:
       default_vs_syn_challenge_tresh:
         description:
