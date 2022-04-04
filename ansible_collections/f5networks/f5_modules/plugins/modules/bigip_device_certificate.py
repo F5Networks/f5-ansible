@@ -484,7 +484,7 @@ class ModuleManager(object):
             raise F5ModuleError(err)
 
     def configure_new_cert(self):
-        cmd1 = 'tmsh modify sys httpd ssl-certkeyfile /config/httpd/conf/ssl.key/{1}' \
+        cmd1 = 'tmsh modify sys httpd ssl-certkeyfile /config/httpd/conf/ssl.key/{1} ' \
                'ssl-certfile /config/httpd/conf/ssl.crt/{0}'.format(self.want.cert_name, self.want.key_name)
 
         cmd2 = 'tmsh save /sys config partitions all'
