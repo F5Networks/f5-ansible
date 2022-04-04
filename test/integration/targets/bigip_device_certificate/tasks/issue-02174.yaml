@@ -1,0 +1,30 @@
+---
+
+## this test requires upload of custom.crt and custom/key and placing them inside /config/httpd/conf/ssl.key/
+## and /config/httpd/conf/ssl.crt/ folders
+
+- name: Issue 02174 - Add bigip_device_certificate with custom files
+  bigip_device_certificate:
+    add_to_trusted: yes
+    days_valid: 365
+    cert_name: custom.crt
+    key_name: custom.key
+    new_cert: yes
+    force: yes
+    issuer:
+      country: US
+      state: WA
+      locality: "Seattle"
+      organization: "Testing Department"
+      division: "Testing"
+      common_name: "foo.testing.local"
+      email: "admin@testing.local"
+    provider: "{{ cli_provider }}"
+  register: result
+
+- name: Assert Add bigip_device_certificate with custom files
+  assert:
+    that:
+      - result is changed
+      - result is success
+
