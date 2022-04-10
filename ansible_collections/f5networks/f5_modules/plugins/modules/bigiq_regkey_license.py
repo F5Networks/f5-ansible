@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2017, F5 Networks Inc.
+# Copyright: (c) 2022, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -29,6 +29,12 @@ options:
       - The license key to put in the pool.
     type: str
     required: True
+  addon_keys:
+    description:
+      - The addon keys to put in the pool.
+    type: list
+    elements: str
+    version_added: "1.16.0"
   description:
     description:
       - Description of the license.
@@ -54,6 +60,7 @@ requirements:
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)
+  - Wojciech Wypior(@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -61,6 +68,20 @@ EXAMPLES = r'''
   bigiq_regkey_license:
     regkey_pool: foo-pool
     license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    accept_eula: yes
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Add a registration key license with addon keys to a pool
+  bigiq_regkey_license:
+    regkey_pool: foo-pool
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    addon_keys:
+      - YYYY-YYY-YYY
+      - ZZZZ-ZZZ-ZZZ
     accept_eula: yes
     provider:
       password: secret
@@ -103,11 +124,12 @@ from ..module_utils.teem import send_teem
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'regKey': 'license_key'
+        'regKey': 'license_key',
+        'addOnKeys': 'addon_keys'
     }
 
     api_attributes = [
-        'regKey', 'description'
+        'regKey', 'description', 'addOnKeys'
     ]
 
     returnables = [
@@ -175,7 +197,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -441,6 +463,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             regkey_pool=dict(required=True),
             license_key=dict(required=True, no_log=True),
+            addon_keys=dict(type='list', elements='str', no_log=True),
             description=dict(),
             accept_eula=dict(type='bool'),
             state=dict(
