@@ -731,6 +731,30 @@ releases:
     - bugfix-gtm-wide-ip.yaml
     - bugfix-multiple-add-on-keys.yaml
     release_date: '2022-03-03'
+  1.16.0:
+    changes:
+      bugfixes:
+      - bigip_command - fixed a bug that interpreted a pipe symbol inside an input
+        string as pipe used to combine commands
+      - bigip_device_certificate - adds missing space to tmsh command
+      - bigip_gtm_wide_ip - fixed inability to change persistence setting on existing
+        wide ip objects
+      minor_changes:
+      - bigip_device_info - add UCS creation date to the data gathered
+      - bigip_virtual_server - add service_down_immediate_action parameter
+      - bigiq_regkey_license - add addon_keys parameter to the module
+    fragments:
+    - 2013-add-addon-bigiq-license.yaml
+    - 2177-add-ucs-date.yaml
+    - 2179-fix-persistence-parameter-update.yaml
+    - add-service-down-action-vs.yaml
+    - bugfix-bigip-command.yaml
+    - fix-missing-space-device_cert.yaml
+    modules:
+    - description: Manages global LTM settings
+      name: bigip_ltm_global
+      namespace: ''
+    release_date: '2022-04-13'
   1.2.0:
     changes:
       bugfixes:

@@ -5,6 +5,28 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.16.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_device_info - add UCS creation date to the data gathered
+- bigip_virtual_server - add service_down_immediate_action parameter
+- bigiq_regkey_license - add addon_keys parameter to the module
+
+Bugfixes
+--------
+
+- bigip_command - fixed a bug that interpreted a pipe symbol inside an input string as pipe used to combine commands
+- bigip_device_certificate - adds missing space to tmsh command
+- bigip_gtm_wide_ip - fixed inability to change persistence setting on existing wide ip objects
+
+New Modules
+-----------
+
+- bigip_ltm_global - Manages global LTM settings
+
 v1.15.0
 =======
 
