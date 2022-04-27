@@ -1,0 +1,115 @@
+---
+- name: Issue 02163 - Create HTTPS Monitor
+  bigip_monitor_https:
+    name: issue_02163
+  register: result
+
+- name: Issue 02163 - Assert Create HTTPS Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Create HTTPS Monitor - Idempotent Check
+  bigip_monitor_https:
+    name: issue_02163
+  register: result
+
+- name: Issue 02163 - Assert Create HTTPS Monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Uptade HTTPS Monitor with IPv4
+  bigip_monitor_https:
+    name: issue_02163
+    ip: '10.10.10.10'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade HTTPS Monitor with IPv4
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Uptade HTTPS Monitor with IPv4 - Idempotent Check
+  bigip_monitor_https:
+    name: issue_02163
+    ip: '10.10.10.10'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade HTTPS Monitor with IPv4 - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+# - name: Issue 02163 - Update HTTPS Monitor with IPv6
+#   bigip_monitor_https:
+#     name: issue_02163
+#     ip: '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+#     port: 4016
+#   register: result
+
+# - name: Issue 02163 - Assert Uptade HTTPS Monitor with IPv6
+#   assert:
+#     that:
+#       - result is changed
+
+# - name: Issue 02163 - Update HTTPS Monitor with IPv6 - Idempotent Check
+#   bigip_monitor_https:
+#     name: issue_02163
+#     ip: '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+#     port: 4016
+#   register: result
+
+# - name: Issue 02163 - Assert Uptade HTTPS Monitor with IPv6 - Idempotent Check
+#   assert:
+#     that:
+#       - result is not changed
+
+- name: Issue 02163 - Update HTTPS Monitor with IP as *
+  bigip_monitor_https:
+    name: issue_02163
+    ip: '*'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade HTTPS Monitor with IP as *
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Update HTTPS Monitor with IP as * - Idempotent Check
+  bigip_monitor_https:
+    name: issue_02163
+    ip: '*'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade HTTPS Monitor with IP as * - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Delete HTTPS Monitor
+  bigip_monitor_https:
+    name: issue_02163
+    state: absent
+  register: result
+
+- name: Issue 02163 - Assert Delete HTTPS monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Delete HTTPS Monitor - Idempotent Check
+  bigip_monitor_https:
+    name: issue_02163
+    state: absent
+  register: result
+
+- name: Issue 02163 - Assert Delete HTTPS monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+...

@@ -1,0 +1,4 @@
+---
+bugfixes:
+    - bigip_monitor_http - fixed extraction of ip from the destination value 
+    - bigip_monitor_https - fixed extraction of ip from the destination value
