@@ -13233,6 +13233,7 @@ class NodesParameters(BaseParameters):
         'monitor_rule',
         'monitors',
         'monitor_type',
+        'fqdn_name',
         'fqdn_auto_populate',
         'fqdn_address_type',
         'fqdn_up_interval',
