@@ -23,3 +23,6 @@
 
 - import_tasks: issue-01381.yaml
   tags: issue-01381
+
+- import_tasks: infraano-00712.yaml
+  tags: infraano-00712
