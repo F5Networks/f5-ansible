@@ -1,0 +1,133 @@
+---
+
+- name: Issue 02031 - Create GTM Wide IP A
+  bigip_gtm_wide_ip:
+    name: "{{ wide_ip1 }}"
+    type: a
+    lb_method: "{{ valid_lb_method1 }}"
+  register: result
+
+- name: Issue 02031 - Assert Create GTM Wide IP A
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02031 - Create irule
+  bigip_irule:
+    name: "{{ irule_name }}"
+    module: gtm
+    src: "{{ role_path }}/files/issue-02031.tcl"
+  register: result
+
+- name: Issue 02031 - Assert Create irule
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02031 - Add irule to GTM Wide IP A
+  bigip_gtm_wide_ip:
+    name: "{{ wide_ip1 }}"
+    type: a
+    lb_method: "{{ valid_lb_method1 }}"
+    irules:
+      - "{{ irule_name }}"
+  register: result
+
+- name: Issue 02031 - Assert Add irule to GTM Wide IP A
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02031 - Create GTM Wide IP A - Idempotent Check
+  bigip_gtm_wide_ip:
+    name: "{{ wide_ip1 }}"
+    type: a
+    lb_method: "{{ valid_lb_method1 }}"
+  register: result
+
+- name: Issue 02031 - Assert Create GTM Wide IP A - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02031 - Create irule - Idempotent Check
+  bigip_irule:
+    name: "{{ irule_name }}"
+    module: gtm
+    src: "{{ role_path }}/files/issue-02031.tcl"
+  register: result
+
+- name: Issue 02031 - Assert Create irule - Idempotent Check
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02031 - Add irule to GTM Wide IP A - Idempotent Check
+  bigip_gtm_wide_ip:
+    name: "{{ wide_ip1 }}"
+    type: a
+    lb_method: "{{ valid_lb_method1 }}"
+    irules:
+      - "{{ irule_name }}"
+  register: result
+
+- name: Issue 02031 - Assert Add irule to GTM Wide IP A - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02031 - Remove GTM Wide IP A
+  bigip_gtm_wide_ip:
+    name: "{{ wide_ip1 }}"
+    type: a
+    state: absent
+  register: result
+
+- name: Issue 02031 - Assert Remove GTM Wide IP A
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02031 - Remove GTM Wide IP A - Idempotent Check
+  bigip_gtm_wide_ip:
+    name: "{{ wide_ip1 }}"
+    type: a
+    state: absent
+  register: result
+
+- name: Issue 02031 - Assert Remove GTM Wide IP A - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02031 - Delete irule
+  bigip_irule:
+    name: "{{ irule_name }}"
+    module: gtm
+    state: absent
+  register: result
+
+- name: Issue 02031 - Assert Delete irule
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02031 - Delete irule - Idempotent Check
+  bigip_irule:
+    name: "{{ irule_name }}"
+    module: gtm
+    state: absent
+  register: result
+
+- name: Issue 02031 - Assert Delete irule - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02031 - Deprovision GTM on the device
+  bigip_provision:
+    module: gtm
+  tags:
+    - module-provisioning
+    - deprovision-module
+

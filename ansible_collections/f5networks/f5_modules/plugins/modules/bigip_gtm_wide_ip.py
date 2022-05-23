@@ -636,8 +636,8 @@ class Difference(object):
     def irules(self):
         if self.want.irules is None:
             return None
-        if self.have.rules is None:
-            return self.want.rules
+        if self.have.irules is None:
+            return self.want.irules
         if self.want.irules == '' and self.have.irules is None:
             return None
         if self.want.irules == '' and len(self.have.irules) > 0:

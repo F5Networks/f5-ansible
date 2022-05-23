@@ -2,6 +2,7 @@
 
 wide_ip1: my-wide-ip.example.com
 pool_name: pool1
+irule_name: test_irule1
 
 valid_lb_method1: round-robin
 valid_lb_method2: ratio
