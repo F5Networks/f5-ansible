@@ -96,11 +96,10 @@ author:
 EXAMPLES = r'''
 - name: Create a remote role
   bigip_remote_role:
-    name: foo
-    group_name: ldap_group
+    name: ldap_group
     line_order: 1
     attribute_string: memberOf=cn=ldap_group,cn=ldap.group,ou=ldap
-    remote_access: enabled
+    remote_access: yes
     assigned_role: administrator
     partition_access: all
     terminal_access: none
