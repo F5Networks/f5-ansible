@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_gtm_wide_ip - fix idempotency bugs encountered when adding/removing irules, pools and last_resort_pool
