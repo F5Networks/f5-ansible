@@ -755,6 +755,25 @@ releases:
       name: bigip_ltm_global
       namespace: ''
     release_date: '2022-04-13'
+  1.17.0:
+    changes:
+      bugfixes:
+      - bigip_gtm_wide_ip - fix idempotency bugs encountered when adding/removing
+        irules, pools and last_resort_pool
+      - bigip_gtm_wide_ip - irules can be added to existing gtm wide ips
+      - bigip_monitor_http - fixed extraction of ip from the destination value
+      - bigip_monitor_https - fixed extraction of ip from the destination value
+      - bigip_node - the fqdn_autopopulate is now only enabled when fqdn is specified.
+      minor_changes:
+      - bigip_device_info - add fqdn related parameters to be gathered on nodes
+      - bigip_device_info - add parent to the data gathered for ServerSSL Profiles
+    fragments:
+    - 2031-fix-wideip-irule-update.yaml
+    - 2163-fix-getting-ip-from-destination.yaml
+    - 2170-add-parent-in-serversslprofile.yaml
+    - fix-autopopulate-node.yaml
+    - fix-idempotency-gtm-wide-ip.yaml
+    release_date: '2022-05-26'
   1.2.0:
     changes:
       bugfixes:
