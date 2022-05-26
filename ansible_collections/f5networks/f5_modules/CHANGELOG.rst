@@ -5,6 +5,24 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.17.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_device_info - add fqdn related parameters to be gathered on nodes
+- bigip_device_info - add parent to the data gathered for ServerSSL Profiles
+
+Bugfixes
+--------
+
+- bigip_gtm_wide_ip - fix idempotency bugs encountered when adding/removing irules, pools and last_resort_pool
+- bigip_gtm_wide_ip - irules can be added to existing gtm wide ips
+- bigip_monitor_http - fixed extraction of ip from the destination value
+- bigip_monitor_https - fixed extraction of ip from the destination value
+- bigip_node - the fqdn_autopopulate is now only enabled when fqdn is specified.
+
 v1.16.0
 =======
 
