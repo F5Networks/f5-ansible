@@ -386,8 +386,10 @@ class ApiParameters(Parameters):
 class ModuleParameters(Parameters):
     @property
     def last_resort_pool(self):
-        if self._values['last_resort_pool'] in [None, '', 'none']:
+        if self._values['last_resort_pool'] is None:
             return None
+        if self._values['last_resort_pool'] in ['', 'none']:
+            return 'none'
         return '{0} {1}'.format(
             self.type, fq_name(self.partition, self._values['last_resort_pool'])
         )
@@ -604,8 +606,8 @@ class Difference(object):
             return None
         if want is None:
             return None
-        w = self.to_tuple(want)
-        h = self.to_tuple(have)
+        w = self.to_tuple(want) if isinstance(want, list) else list()
+        h = self.to_tuple(have) if isinstance(have, list) else list()
         if set(w).issubset(set(h)):
             return None
         else:
@@ -615,7 +617,7 @@ class Difference(object):
     def last_resort_pool(self):
         if self.want.last_resort_pool is None:
             return None
-        if self.want.last_resort_pool == '' and self.have.last_resort_pool == '':
+        if self.want.last_resort_pool == 'none' and self.have.last_resort_pool == '':
             return None
         if self.want.last_resort_pool != self.have.last_resort_pool:
             return self.want.last_resort_pool
@@ -636,12 +638,12 @@ class Difference(object):
     def irules(self):
         if self.want.irules is None:
             return None
-        if self.have.irules is None:
-            return self.want.irules
         if self.want.irules == '' and self.have.irules is None:
             return None
         if self.want.irules == '' and len(self.have.irules) > 0:
             return []
+        if self.have.irules is None:
+            return self.want.irules
         if sorted(set(self.want.irules)) != sorted(set(self.have.irules)):
             return self.want.irules
 
