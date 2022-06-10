@@ -1,0 +1,35 @@
+---
+- name: Create 15 VLANS
+  bigip_vlan:
+    name: "vlan_issue_02209{{ item }}"
+  with_sequence: start=1 end=15
+
+- name: Gather Vlans Data
+  bigip_device_info:
+    include:
+      - "vlans"
+  register: device_facts
+
+- name: Fetch vlans with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/net/vlan
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: uri_result
+
+- name: "Set Device facts"
+  set_fact:
+    device_info_vlans: "{{ device_facts.vlans | length }}"
+    uri_vlans: "{{ uri_result.json['items'] | length }}" 
+
+- name: Assert length of VLANS
+  assert:
+    that:
+      - device_info_vlans == uri_vlans
+
+- name: Delete 15 VLANS
+  bigip_vlan:
+    name: "vlan_issue_02209{{ item }}"
+    state: absent
+  with_sequence: start=1 end=15
