@@ -1,0 +1,104 @@
+---
+
+- name: sr-1-8210113510
+  include_vars:
+    file: sr-1-8210113510.yaml
+
+- name: sr-1-8210113510 - Create pool with min-up-members
+  bigip_pool:
+    name: "{{ pool_name }}"
+    partition: Common
+    lb_method: "{{ pool_lb_method }}"
+    min_up_members: "{{ min_up_members1 }}"
+    state: present
+
+- name: sr-1-8210113510 - Create pool with min-up-members
+  assert:
+    that:
+      - result is changed
+
+- name: sr-1-8210113510 - Create pool with min-up-members - Idempotent check
+  bigip_pool:
+    name: "{{ pool_name }}"
+    partition: Common
+    lb_method: "{{ pool_lb_method }}"
+    min_up_members: "{{ min_up_members1 }}"
+    state: present
+
+- name: sr-1-8210113510 - Create pool with min-up-members - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: sr-1-8210113510 - Create pool with min_up_members_action
+  bigip_pool:
+    name: "{{ pool_name }}"
+    partition: Common
+    lb_method: "{{ pool_lb_method }}"
+    min_up_members: "{{ min_up_members1 }}"
+    min_up_members_action: "{{ min_up_members_action1 }}"
+    state: present
+
+- name: sr-1-8210113510 - Create pool with min_up_members_action
+  assert:
+    that:
+      - result is changed
+
+- name: sr-1-8210113510 - Create pool with min_up_members_action - Idempotent check
+  bigip_pool:
+    name: "{{ pool_name }}"
+    partition: Common
+    lb_method: "{{ pool_lb_method }}"
+    min_up_members: "{{ min_up_members1 }}"
+    min_up_members_action: "{{ min_up_members_action1 }}"
+    state: present
+
+- name: sr-1-8210113510 - Create pool with min_up_members_action - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: sr-1-8210113510 - Create pool with min_up_members_checking
+  bigip_pool:
+    name: "{{ pool_name }}"
+    partition: Common
+    lb_method: "{{ pool_lb_method }}"
+    min_up_members: "{{ min_up_members1 }}"
+    min_up_members_action: "{{ min_up_members_action1 }}"
+    min_up_members_checking: "{{ min_up_members_checking1 }}"
+    state: present
+
+- name: sr-1-8210113510 - Create pool with min_up_members_checking
+  assert:
+    that:
+      - result is changed
+
+- name: sr-1-8210113510 - Create pool with min_up_members_checking - Idempotent check
+  bigip_pool:
+    name: "{{ pool_name }}"
+    partition: Common
+    lb_method: "{{ pool_lb_method }}"
+    min_up_members: "{{ min_up_members1 }}"
+    min_up_members_action: "{{ min_up_members_action1 }}"
+    min_up_members_checking: "{{ min_up_members_checking1 }}"
+    state: present
+
+- name: sr-1-8210113510 - Create pool with min_up_members_checking - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: sr-1-8210113510 - Remove Create pool with min_up_members_checking
+  bigip_pool:
+    name: "{{ pool_name }}"
+    partition: Common
+    lb_method: "{{ pool_lb_method }}"
+    min_up_members: "{{ min_up_members1 }}"
+    min_up_members_action: "{{ min_up_members_action1 }}"
+    min_up_members_checking: "{{ min_up_members_checking1 }}"
+    state: absent
+
+- name: sr-1-8210113510 - Remmove Create pool with min_up_members_checking
+  assert:
+    that:
+      - result is changed

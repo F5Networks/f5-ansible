@@ -1,0 +1,10 @@
+---
+pool_name: issue_01158_dummy_pool
+pool_lb_method: least-connections-member
+min_up_members1: 2
+min_up_members2: 3
+min_up_members_action1: failover
+min_up_members_action2: reboot
+min_up_members_action3: restart-all
+min_up_members_checking1: enabled
+min_up_members_checking2: disabled

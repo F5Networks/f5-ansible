@@ -66,6 +66,9 @@ class F5RestClient(F5BaseClient):
 
         self.retries = 0
         session.request.headers['X-F5-Auth-Token'] = response.json()['token']['token']
+        if 'timeout' in self.provider and self.provider['timeout'] is not None:
+            token_value = response.json()['token']['token']
+            self.modify_token_timeout(session, token_value, self.provider['timeout'])
         return session, None
 
     def connect_via_basic_auth(self):
@@ -93,3 +96,18 @@ class F5RestClient(F5BaseClient):
                 return None, response.content
         self.retries = 0
         return session, None
+
+    def modify_token_timeout(self, client_session, token_value, token_timeout):
+        url = "https://{0}:{1}/mgmt/shared/authz/tokens/{2}".format(
+            self.provider['server'], self.provider['server_port'], token_value
+        )
+        payload = {
+            'timeout': token_timeout
+        }
+        response = client_session.patch(
+            url,
+            json=payload
+        )
+        if response.status not in [200]:
+            raise F5ModuleError(response.content)
+        return None
