@@ -4,6 +4,35 @@
   include_vars:
     file: sr-1-8210113510.yaml
 
+- name: sr-1-8210113510 - Create basic pool with members
+  bigip_pool:
+    name: "{{ pool_name }}"
+    partition: Common
+    lb_method: "{{ pool_lb_method }}"
+    state: present
+  register: result
+
+- name: sr-1-8210113510 - Add pool member by address1
+  bigip_pool_member:
+    address: 2.2.2.2
+    pool: "{{ pool_name }}"
+    port: 8443
+    state: present
+  register: result
+
+- name: sr-1-8210113510 - Add pool member by address2
+  bigip_pool_member:
+    address: 2.2.3.2
+    pool: "{{ pool_name }}"
+    port: 8443
+    state: present
+  register: result
+
+- name: sr-1-8210113510 - Create pool
+  assert:
+    that:
+      - result is changed
+
 - name: sr-1-8210113510 - Create pool with min-up-members
   bigip_pool:
     name: "{{ pool_name }}"
@@ -11,6 +40,7 @@
     lb_method: "{{ pool_lb_method }}"
     min_up_members: "{{ min_up_members1 }}"
     state: present
+  register: result
 
 - name: sr-1-8210113510 - Create pool with min-up-members
   assert:
@@ -24,6 +54,7 @@
     lb_method: "{{ pool_lb_method }}"
     min_up_members: "{{ min_up_members1 }}"
     state: present
+  register: result
 
 - name: sr-1-8210113510 - Create pool with min-up-members - Idempotent check
   assert:
@@ -36,8 +67,9 @@
     partition: Common
     lb_method: "{{ pool_lb_method }}"
     min_up_members: "{{ min_up_members1 }}"
-    min_up_members_action: "{{ min_up_members_action1 }}"
+    min_up_members_action: "{{ min_up_members_action2 }}"
     state: present
+  register: result
 
 - name: sr-1-8210113510 - Create pool with min_up_members_action
   assert:
@@ -50,8 +82,9 @@
     partition: Common
     lb_method: "{{ pool_lb_method }}"
     min_up_members: "{{ min_up_members1 }}"
-    min_up_members_action: "{{ min_up_members_action1 }}"
+    min_up_members_action: "{{ min_up_members_action2 }}"
     state: present
+  register: result
 
 - name: sr-1-8210113510 - Create pool with min_up_members_action - Idempotent check
   assert:
@@ -64,9 +97,10 @@
     partition: Common
     lb_method: "{{ pool_lb_method }}"
     min_up_members: "{{ min_up_members1 }}"
-    min_up_members_action: "{{ min_up_members_action1 }}"
+    min_up_members_action: "{{ min_up_members_action2 }}"
     min_up_members_checking: "{{ min_up_members_checking1 }}"
     state: present
+  register: result
 
 - name: sr-1-8210113510 - Create pool with min_up_members_checking
   assert:
@@ -79,14 +113,47 @@
     partition: Common
     lb_method: "{{ pool_lb_method }}"
     min_up_members: "{{ min_up_members1 }}"
-    min_up_members_action: "{{ min_up_members_action1 }}"
+    min_up_members_action: "{{ min_up_members_action2 }}"
     min_up_members_checking: "{{ min_up_members_checking1 }}"
     state: present
+  register: result
 
 - name: sr-1-8210113510 - Create pool with min_up_members_checking - Idempotent check
   assert:
     that:
       - result is not changed
+
+- name: sr-1-8210113510 - Create pool with by default setting
+  bigip_pool:
+    name: "{{ pool_name }}"
+    partition: Common
+    lb_method: "{{ pool_lb_method }}"
+    min_up_members: "{{ min_up_members3 }}"
+    min_up_members_action: "{{ min_up_members_action1 }}"
+    min_up_members_checking: "{{ min_up_members_checking2 }}"
+    state: present
+  register: result
+
+- name: sr-1-8210113510 - Create pool with by default setting
+  assert:
+    that:
+      - result is changed
+
+- name: sr-1-8210113510 - Remove pool member address1 from pool
+  bigip_pool_member:
+    address: 2.2.2.2
+    pool: "{{ pool_name }}"
+    port: 8443
+    state: absent
+  register: result
+
+- name: sr-1-8210113510 - Remove pool member address2 from pool
+  bigip_pool_member:
+    address: 2.2.3.2
+    pool: "{{ pool_name }}"
+    port: 8443
+    state: absent
+  register: result
 
 - name: sr-1-8210113510 - Remove Create pool with min_up_members_checking
   bigip_pool:
@@ -97,6 +164,7 @@
     min_up_members_action: "{{ min_up_members_action1 }}"
     min_up_members_checking: "{{ min_up_members_checking1 }}"
     state: absent
+  register: result
 
 - name: sr-1-8210113510 - Remmove Create pool with min_up_members_checking
   assert:
