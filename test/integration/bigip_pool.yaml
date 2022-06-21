@@ -35,6 +35,7 @@
 
 - name: Test the bigip_pool module
   hosts: "f5test"
+  tags: pool-role
   connection: local
   any_errors_fatal: true
 

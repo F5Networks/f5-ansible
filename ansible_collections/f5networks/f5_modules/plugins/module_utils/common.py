@@ -436,6 +436,7 @@ class F5BaseClient(object):
         self.merge_provider_validate_certs_param(result, provider)
         self.merge_provider_auth_provider_param(result, provider)
         self.merge_provider_user_param(result, provider)
+        self.merge_provider_timeout_param(result, provider)
         self.merge_provider_password_param(result, provider)
         self.merge_provider_no_f5_teem_param(result, provider)
         return result
@@ -500,6 +501,12 @@ class F5BaseClient(object):
             result['user'] = os.environ.get('ANSIBLE_NET_USERNAME')
         else:
             result['user'] = None
+
+    def merge_provider_timeout_param(self, result, provider):
+        if self.validate_params('timeout', provider):
+            result['timeout'] = provider['timeout']
+        else:
+            result['timeout'] = None
 
     def merge_provider_password_param(self, result, provider):
         if self.validate_params('password', provider):
