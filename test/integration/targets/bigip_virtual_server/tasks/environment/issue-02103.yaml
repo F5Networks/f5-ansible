@@ -1,5 +1,19 @@
 ---
 
+- name: Issue 02103 - Create partition
+  bigip_partition:
+    name: out_ssl
+
+- name: Issue 02103 - Create a server SSL profile
+  bigip_profile_server_ssl:
+    name: out_server
+    partition: out_ssl
+
+- name: Issue 02103 - Create a client SSL profile
+  bigip_profile_client_ssl:
+    name: out_client
+    partition: out_ssl
+
 - name: Issue 02103 - Add virtual server with profiles having client/server context
   bigip_virtual_server:
       name: issue-02103
@@ -9,9 +23,9 @@
       state: present
       profiles:
       - context: serverside
-        name: /out_ssl/serverssl
+        name: /out_ssl/out_server
       - context: clientside
-        name: /out_ssl/clientssl
+        name: /out_ssl/out_client
   register: result
 
 - name: Issue 02103 - Assert Add virtual server with profiles having client/server context
@@ -28,9 +42,9 @@
       state: present
       profiles:
       - context: serverside
-        name: /out_ssl/serverssl
+        name: /out_ssl/out_server
       - context: clientside
-        name: /out_ssl/clientssl
+        name: /out_ssl/out_client
   register: result
 
 - name: Issue 02103 - Assert Add virtual server with profiles having client/server context - Idempotent Check
@@ -50,3 +64,20 @@
   assert:
     that:
       - result is changed
+
+- name: Issue 02103 - Delete a server SSL profile
+  bigip_profile_server_ssl:
+    name: out_server
+    partition: out_ssl
+    state: absent
+
+- name: Issue 02103 - Delete a client SSL profile
+  bigip_profile_client_ssl:
+    name: out_client
+    partition: out_ssl
+    state: absent
+
+- name: Issue 02103 - Delete partition
+  bigip_partition:
+    name: out_ssl
+    state: absent

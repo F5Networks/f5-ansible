@@ -1430,8 +1430,8 @@ class ApiParameters(Parameters):
             result = 'performance-http'
         elif self.has_fastl4_profiles:
             result = 'performance-l4'
-        # elif self.has_message_routing_profiles:
-        #     result = 'message-routing'
+        elif self.has_message_routing_profiles:
+            result = 'message-routing'
         else:
             result = 'standard'
         self._values['type'] = result
