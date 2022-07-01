@@ -224,7 +224,9 @@ class Parameters(AnsibleF5Parameters):
 
     @destination.setter
     def destination(self, value):
-        ip, port = value.split(':')
+        ip, d, port = value.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = value.rpartition(':')
         self._values['ip'] = ip
         self._values['port'] = port
 

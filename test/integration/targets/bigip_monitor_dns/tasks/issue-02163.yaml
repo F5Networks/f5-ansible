@@ -1,0 +1,124 @@
+---
+- name: Issue 02163 - Create DNS Monitor
+  bigip_monitor_dns:
+    name: infra_791
+    query_name: "{{ query_name1 }}"
+  register: result
+
+- name: Issue 02163 - Assert Create DNS Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Create DNS Monitor - Idempotent Check
+  bigip_monitor_dns:
+    name: infra_791
+    query_name: "{{ query_name1 }}"
+  register: result
+
+- name: Issue 02163 - Assert Create DNS Monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Uptade DNS Monitor with IPv4
+  bigip_monitor_dns:
+    name: infra_791
+    query_name: "{{ query_name1 }}"
+    ip: '10.10.10.10'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade DNS Monitor with IPv4
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Uptade DNS Monitor with IPv4 - Idempotent Check
+  bigip_monitor_dns:
+    name: infra_791
+    query_name: "{{ query_name1 }}"
+    ip: '10.10.10.10'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade DNS Monitor with IPv4 - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Update DNS Monitor with IPv6
+  bigip_monitor_dns:
+    name: infra_791
+    query_name: "{{ query_name1 }}"
+    ip: '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade DNS Monitor with IPv6
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Update DNS Monitor with IPv6 - Idempotent Check
+  bigip_monitor_dns:
+    name: infra_791
+    query_name: "{{ query_name1 }}"
+    ip: '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade DNS Monitor with IPv6 - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  ignore_errors: true
+
+- name: Issue 02163 - Update DNS Monitor with IP as *
+  bigip_monitor_dns:
+    name: infra_791
+    query_name: "{{ query_name1 }}"
+    ip: '*'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade DNS Monitor with IP as *
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Update DNS Monitor with IP as * - Idempotent Check
+  bigip_monitor_dns:
+    name: infra_791
+    query_name: "{{ query_name1 }}"
+    ip: '*'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade DNS Monitor with IP as * - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Delete DNS Monitor
+  bigip_monitor_dns:
+    name: infra_791
+    state: absent
+  register: result
+
+- name: Issue 02163 - Assert Delete DNS monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Delete DNS Monitor - Idempotent Check
+  bigip_monitor_dns:
+    name: infra_791
+    state: absent
+  register: result
+
+- name: Issue 02163 - Assert Delete DNS monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+...

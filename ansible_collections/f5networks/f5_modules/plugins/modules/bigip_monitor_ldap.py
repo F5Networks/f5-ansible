@@ -349,16 +349,19 @@ class Parameters(AnsibleF5Parameters):
 class ApiParameters(Parameters):
     @property
     def ip(self):
-        ip, port = self._values['destination'].split(':')
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
         return ip
 
     @property
     def port(self):
-        ip, port = self._values['destination'].split(':')
-        try:
-            return int(port)
-        except ValueError:
-            return port
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
+        return int(port) if port.isnumeric() else port
 
     @property
     def description(self):
@@ -473,15 +476,19 @@ class ReportableChanges(Changes):
 
     @property
     def ip(self):
-        ip, port = self._values['destination'].split(':')
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
         return ip
 
     @property
     def port(self):
-        ip, port = self._values['destination'].split(':')
-        if port == '*':
-            return port
-        return int(port)
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
+        return int(port) if port.isnumeric() else port
 
 
 class Difference(object):
