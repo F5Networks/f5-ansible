@@ -156,6 +156,7 @@
   bigip_device_info:
     gather_subset:
       - virtual-servers
+    partition: "ansible"
     provider: "{{ provider }}"
   register: f
 
@@ -184,6 +185,7 @@
   bigip_device_info:
     gather_subset:
       - virtual-servers
+    partition: "ansible"
     provider: "{{ provider }}"
   register: f
 

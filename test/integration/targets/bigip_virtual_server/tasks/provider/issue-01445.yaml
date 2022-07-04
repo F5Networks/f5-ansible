@@ -50,7 +50,7 @@
 - name: Issue 01445 - Assert Create Virtual with source RD - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 01445 - Create Second Virtual with source RD
@@ -88,7 +88,7 @@
 - name: Issue 01445 - Assert Create Second Virtual with source RD  - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 01445 - Create Third Virtual with source RD IPV6
@@ -126,7 +126,7 @@
 - name: Issue 01445 - Assert Create Third Virtual with source RD IPV6  - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
       - result is success
 
 - name: Issue 01445 - Delete Virtuals
