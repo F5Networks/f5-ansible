@@ -1,0 +1,118 @@
+---
+- name: Issue 02163 - Create TCP Half Open Monitor
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+  register: result
+
+- name: Issue 02163 - Assert Create TCP Half Open Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Create TCP Half Open Monitor - Idempotent Check
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+  register: result
+
+- name: Issue 02163 - Assert Create TCP Half Open Monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Uptade TCP Half Open Monitor with IPv4
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+    ip: '10.10.10.10'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade TCP Half Open Monitor with IPv4
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Uptade TCP Half Open Monitor with IPv4 - Idempotent Check
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+    ip: '10.10.10.10'
+    port: 4016
+    state: present
+  register: result
+
+- name: Issue 02163 - Assert Uptade TCP Half Open Monitor with IPv4 - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Update TCP Half Open Monitor with IPv6
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+    ip: '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade TCP Half Open Monitor with IPv6
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Update TCP Half Open Monitor with IPv6 - Idempotent Check
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+    ip: '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade TCP Half Open Monitor with IPv6 - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  ignore_errors: true
+
+- name: Issue 02163 - Update TCP Half Open Monitor with IP as *
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+    ip: '*'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade TCP Half Open Monitor with IP as *
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Update TCP Half Open Monitor with IP as * - Idempotent Check
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+    ip: '*'
+    port: 4016
+    state: present
+  register: result
+
+- name: Issue 02163 - Assert Uptade TCP Half Open Monitor with IP as * - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Delete TCP Half Open Monitor
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+    state: absent
+  register: result
+
+- name: Issue 02163 - Assert Delete TCP Half Open monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Delete TCP Half Open Monitor - Idempotent Check
+  bigip_monitor_tcp_half_open:
+    name: issue_02163
+    state: absent
+  register: result
+
+- name: Issue 02163 - Assert Delete TCP Half Open monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+...

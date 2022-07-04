@@ -1,0 +1,118 @@
+---
+- name: Issue 02163 - Create ORACLE Monitor
+  bigip_monitor_oracle:
+    name: issue_02163
+  register: result
+
+- name: Issue 02163 - Assert Create ORACLE Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Create ORACLE Monitor - Idempotent Check
+  bigip_monitor_oracle:
+    name: issue_02163
+  register: result
+
+- name: Issue 02163 - Assert Create ORACLE Monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Uptade ORACLE Monitor with IPv4
+  bigip_monitor_oracle:
+    name: issue_02163
+    ip: '10.10.10.10'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade ORACLE Monitor with IPv4
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Uptade ORACLE Monitor with IPv4 - Idempotent Check
+  bigip_monitor_oracle:
+    name: issue_02163
+    ip: '10.10.10.10'
+    port: 4016
+    state: present
+  register: result
+
+- name: Issue 02163 - Assert Uptade ORACLE Monitor with IPv4 - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Update ORACLE Monitor with IPv6
+  bigip_monitor_oracle:
+    name: issue_02163
+    ip: '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade ORACLE Monitor with IPv6
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Update ORACLE Monitor with IPv6 - Idempotent Check
+  bigip_monitor_oracle:
+    name: issue_02163
+    ip: '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade ORACLE Monitor with IPv6 - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  ignore_errors: true
+
+- name: Issue 02163 - Update ORACLE Monitor with IP as *
+  bigip_monitor_oracle:
+    name: issue_02163
+    ip: '*'
+    port: 4016
+  register: result
+
+- name: Issue 02163 - Assert Uptade ORACLE Monitor with IP as *
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Update ORACLE Monitor with IP as * - Idempotent Check
+  bigip_monitor_oracle:
+    name: issue_02163
+    ip: '*'
+    port: 4016
+    state: present
+  register: result
+
+- name: Issue 02163 - Assert Uptade ORACLE Monitor with IP as * - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02163 - Delete ORACLE Monitor
+  bigip_monitor_oracle:
+    name: issue_02163
+    state: absent
+  register: result
+
+- name: Issue 02163 - Assert Delete ORACLE monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02163 - Delete ORACLE Monitor - Idempotent Check
+  bigip_monitor_oracle:
+    name: issue_02163
+    state: absent
+  register: result
+
+- name: Issue 02163 - Assert Delete ORACLE monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+...

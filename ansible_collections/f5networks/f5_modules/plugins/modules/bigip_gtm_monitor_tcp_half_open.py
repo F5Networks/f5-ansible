@@ -275,13 +275,25 @@ class Parameters(AnsibleF5Parameters):
 class ApiParameters(Parameters):
     @property
     def ip(self):
-        ip, port = self._values['destination'].split(':')
+        try:
+            ip, d, port = self._values['destination'].rpartition(':')
+        except ValueError:
+            try:
+                ip, d, port = self._values['destination'].rpartition('.')
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
         return ip
 
     @property
     def port(self):
-        ip, port = self._values['destination'].split(':')
-        return int(port)
+        try:
+            ip, d, port = self._values['destination'].rpartition(':')
+        except ValueError:
+            try:
+                ip, d, port = self._values['destination'].rpartition('.')
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+        return int(port) if port.isnumeric() else port
 
     @property
     def ignore_down_response(self):

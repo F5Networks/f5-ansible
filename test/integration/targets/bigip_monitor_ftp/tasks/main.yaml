@@ -186,4 +186,8 @@
     name: "{{ monitor_name2 }}"
     state: absent
 
+- import_tasks: issue-02163.yaml
+  tags:
+    - issue-02163
+
 - import_tasks: teardown.yaml
