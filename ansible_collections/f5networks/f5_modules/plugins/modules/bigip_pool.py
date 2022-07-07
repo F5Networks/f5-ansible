@@ -145,18 +145,17 @@ options:
       - minimum_active_members
   min_up_members:
     description:
-      - Specifies the minimum number of pool members that must be up.
-      - otherwise,the system takes the action specified in the min-up-members-action option.
+      - Specifies the minimum number of pool members that must be up,
+      - otherwise, the system takes the action specified in the C(min-up-members-action) option.
       - Use this option for gateway pools in a redundant system where a unit number is applied to the pool.
-      - This indicates that the pool is configured only on the specified unit
-      - When creating a new pool, if this parameter is not specified, the default of
-        C(0) is used.
+      - This indicates the pool is configured only on the specified unit.
+      - When creating a new pool, if this parameter is not specified, the default is C(0).
     type: int
   min_up_members_action:
     description:
       - Specifies the action to take if C(min_up_members_checking) is C(enabled) and the number of active pool members
         falls below the number specified in the C(min_up_members) option.
-      - When creating a new pool, if this parameter is not specified, the default of C(failover) is used.
+      - When creating a new pool, if this parameter is not specified, the default is C(failover).
     type: str
     choices:
       - failover
@@ -167,7 +166,7 @@ options:
       - Enables or disables the C(min_up_members) feature.
       - If you enable this feature, you must also specify a value for both the C(min_up_members) and
         C(min_up_members_action) options.
-      - When creating a new pool, if this parameter is not specified, the default of C(disabled) is used.
+      - When creating a new pool, if this parameter is not specified, the default is C(disabled).
     type: str
     choices:
       - enabled
