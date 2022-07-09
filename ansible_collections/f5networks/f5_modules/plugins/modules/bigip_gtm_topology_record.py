@@ -718,7 +718,7 @@ class ModuleParameters(Parameters):
     def _format_options(self, options):
         negate = None
         cleaned = dict((k, v) for k, v in iteritems(options) if v is not None)
-        if 'country' and 'state' in cleaned.keys():
+        if 'country' in cleaned.keys() and 'state' in cleaned.keys():
             del cleaned['country']
         if 'negate' in cleaned.keys():
             negate = cleaned['negate']

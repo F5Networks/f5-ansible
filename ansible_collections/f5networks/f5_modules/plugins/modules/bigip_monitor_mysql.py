@@ -399,26 +399,18 @@ class Parameters(AnsibleF5Parameters):
 class ApiParameters(Parameters):
     @property
     def ip(self):
-        try:
-            ip, port = self._values['destination'].split(':')
-        except ValueError:
-            # in version 15 wildcard changed this to have . instead of : as separator for wildcard
-            try:
-                ip, port = self._values['destination'].split('.')
-            except ValueError as ex:
-                raise F5ModuleError(str(ex))
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
         return ip
 
     @property
     def port(self):
-        try:
-            ip, port = self._values['destination'].split(':')
-        except ValueError:
-            # in version 15 wildcard changed this to have . instead of : as separator for wildcard
-            try:
-                ip, port = self._values['destination'].split('.')
-            except ValueError as ex:
-                raise F5ModuleError(str(ex))
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
         return port
 
     @property
@@ -549,12 +541,18 @@ class UsableChanges(Changes):
 class ReportableChanges(Changes):
     @property
     def ip(self):
-        ip, port = self._values['destination'].split(':')
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
         return ip
 
     @property
     def port(self):
-        ip, port = self._values['destination'].split(':')
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
         return int(port)
 
     @property
@@ -857,7 +855,8 @@ class ArgumentSpec(object):
             recv_column=dict(),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             state=dict(
                 default='present',

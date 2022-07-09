@@ -24,10 +24,10 @@ Ansible F5
 Introduction
 ------------
 
-This repository provides the foundation for working with the F5 Modules for Ansible.
+This repository is the source for F5 Imperative Collection for Ansible.
 The architecture of the modules makes inherent use of the BIG-IP REST APIs as well as the tmsh API where required.
 
-This repository is an **incubator** for Ansible modules. The modules in this repository **may be
+This repository is an **incubator** for Ansible imperative modules. The modules in this repository **may be
 broken due to experimentation or refactoring**.
 
 The F5 Modules for Ansible are freely provided to the open source community for automating BIG-IP device configurations.
@@ -57,7 +57,7 @@ Installing the Daily Build
 
 Support
 -------
-F5 supports the F5 modules delivered in |ansible_distro|. Please refer to the |support_policy| for details.
+F5 supports the F5 Imperative Collection for Ansible delivered in |ansible_galaxy|. Please refer to the |support_policy| for details.
 
 Community Support
 ~~~~~~~~~~~~~~~~~
@@ -94,7 +94,7 @@ If you've got the time, consider sending an email that introduces yourself and w
 Copyright
 ---------
 
-Copyright 2017-2019 F5 Networks Inc.
+Copyright 2017-2022 F5 Networks Inc.
 
 
 License
@@ -131,9 +131,9 @@ See `License`_.
 
    <a href="https://galaxy.ansible.com/f5networks/f5_modules" target="_blank">F5 Ansible Modules Collection</a>
 
-.. |ansible_distro| raw:: html
+.. |ansible_galaxy| raw:: html
 
-   <a href="https://pypi.org/project/ansible/" target="_blank">Red Hat Ansible distributions</a>
+   <a href="https://galaxy.ansible.com/f5networks/f5_modules" target="_blank">Ansible Galaxy</a>
 
 .. |support_policy| raw:: html
 

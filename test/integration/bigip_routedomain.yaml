@@ -43,7 +43,7 @@
         - NA
 
 - name: Test the bigip_routedomain module
-  hosts: "f5-test[0]"
+  hosts: "f5test"
   connection: local
   any_errors_fatal: true
 
@@ -62,7 +62,7 @@
     - bigip_routedomain
 
 - name: Test the bigip_routedomain module with a provider
-  hosts: "f5-test[0]"
+  hosts: "f5test"
   connection: local
   any_errors_fatal: true
 

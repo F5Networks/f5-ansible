@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - bigip_pool - add three new parameters named, min_up_members, min_up_members_action and min_up_members_checking

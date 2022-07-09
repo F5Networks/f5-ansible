@@ -1,0 +1,51 @@
+- name: Get a license
+  set_fact:
+    license_key: "{{ lookup('license_hopper', filename='bigiq-regkey-licenses.txt', remove=True) }}"
+
+- name: Get an addon key
+  set_fact:
+    addon_keys:
+      - "{{ lookup('license_hopper', filename='bigiq-regkey-addons.txt', remove=True) }}"
+
+- name: Issue 02013 - Create regkey pool
+  bigiq_regkey_pool:
+    name: regkey-pool-2013
+
+- name: Issue 02013 - Add a license with addon keys to the license pool
+  bigiq_regkey_license:
+    regkey_pool: regkey-pool-2013
+    license_key: "{{ license_key }}"
+    addon_keys: "{{ addon_keys }}"
+    accept_eula: yes
+    description: my license with addon
+  register: result
+
+- name: Issue 02013 - Assert Add a license with addon keys to the license pool
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02013 - Add a license with addon keys to the license pool - Idempotent check
+  bigiq_regkey_license:
+    regkey_pool: regkey-pool-2013
+    license_key: "{{ license_key }}"
+    addon_keys: "{{ addon_keys }}"
+    accept_eula: yes
+    description: my license with addon
+  register: result
+
+- name: Issue 02013 - Assert Add a license with addon keys to the license pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02013 - Remove a license from the license pool - Cleanup
+  bigiq_regkey_license:
+    regkey_pool: regkey-pool-2013
+    license_key: "{{ license_key }}"
+    state: absent
+
+- name: Issue 02013 - Remove regkey pool
+  bigiq_regkey_pool:
+    name: regkey-pool-2013
+    state: absent

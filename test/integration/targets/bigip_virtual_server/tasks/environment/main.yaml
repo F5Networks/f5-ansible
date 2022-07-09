@@ -111,6 +111,16 @@
 - import_tasks: issue-00805.yaml
   tags: issue-00805
 
+- import_tasks: issue-02103.yaml
+  tags: issue-02103
+
+- import_tasks: issue-02104.yaml
+  tags: issue-02104
+
 # Tests for different pull requests filed on Github
 - import_tasks: pr-03158.yaml
   tags: pr-03158
+
+# tests for fixes logged in jira
+- import_tasks: infraano-00653.yaml
+  tags: infraano-00653

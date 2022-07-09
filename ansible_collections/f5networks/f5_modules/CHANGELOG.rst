@@ -5,6 +5,101 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.17.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_device_info - add fqdn related parameters to be gathered on nodes
+- bigip_device_info - add parent to the data gathered for ServerSSL Profiles
+
+Bugfixes
+--------
+
+- bigip_gtm_wide_ip - fix idempotency bugs encountered when adding/removing irules, pools and last_resort_pool
+- bigip_gtm_wide_ip - irules can be added to existing gtm wide ips
+- bigip_monitor_http - fixed extraction of ip from the destination value
+- bigip_monitor_https - fixed extraction of ip from the destination value
+- bigip_node - the fqdn_autopopulate is now only enabled when fqdn is specified.
+
+v1.16.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_device_info - add UCS creation date to the data gathered
+- bigip_virtual_server - add service_down_immediate_action parameter
+- bigiq_regkey_license - add addon_keys parameter to the module
+
+Bugfixes
+--------
+
+- bigip_command - fixed a bug that interpreted a pipe symbol inside an input string as pipe used to combine commands
+- bigip_device_certificate - adds missing space to tmsh command
+- bigip_gtm_wide_ip - fixed inability to change persistence setting on existing wide ip objects
+
+New Modules
+-----------
+
+- bigip_ltm_global - Manages global LTM settings
+
+v1.15.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_device_info - Added a new meta choice, packages, which groups information about as3, do, cfe and ts. This change was done to ensure users with non admin access can use this module to get information that does not require admin access.
+- bigip_device_info - this module can gather information about ucs backup files.
+- bigip_pool_member - add checkmode bypass so that existence checks for pool is always returns true when using check mode
+- bigip_profile_http_compression - Add content_type_include parameter to bigip_profile_fastl4 module
+
+Bugfixes
+--------
+
+- bigip_device_info - fixed bug regarding handling of negated meta options.
+- bigip_device_license - fixed issue that resulted in only first of the multiple add-on keys getting added to the device.
+- bigip_firewall_address_list - fixed issue where addresses that contained RD would cause an error.
+- bigip_gtm_wide_ip - fixed a bug that prevented creation of gtm wide ips in disabled state.
+
+v1.14.0
+=======
+
+Major Changes
+-------------
+
+- bigip_device_info - pagination logic has also been added to help with api stability.
+- bigip_device_info - the module no longer gathers information from all partitions on device. This change will stabalize the module by gathering resources only from the given partition and prevent the module from gathering way too much information that might result in crashing.
+
+Minor Changes
+-------------
+
+- Added no_log=True to content parameters in bigip_ssl_key and bigip_ssl_key_cert module to stop key and cert content fomr being logged.
+- bigip_device_info - added stats parameter for each virtual_server resource attached to a gtm_server
+
+Bugfixes
+--------
+
+- asm_policy_* - fixed partition filter in asm modules.
+- bigip_device_info - changes cipher and cipher_group parameters to register when the actual value is 'none'.
+- bigip_device_syslog - this change is done so that only unescaped " is replaced with ' in the value of include parameter.
+- bigip_monitor_ldap - fixed idempotency issue with security parameter in module.
+- multiple modules - Add no_log=False setting to update_password parameter in respective modules avoid false positive security warnings.
+
+v1.13.0
+=======
+
+Bugfixes
+--------
+
+- Add auto_last_hop parameter to bigip_virtual_server module
+- Fix an issue in bigip_virtual_server module that wrongly sets the partition name for profile.
+- Fix issue with teem data collection where device was not ready and was returning 404 error when queried for tmos version
+- fix for displaying src, checksum and other parameters when running ucs_fetch module
+- fix for source capability for bigip_device_auth_ldap module
+
 v1.12.0
 =======
 

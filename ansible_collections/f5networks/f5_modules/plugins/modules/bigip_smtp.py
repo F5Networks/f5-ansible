@@ -44,7 +44,7 @@ options:
     type: str
   from_address:
     description:
-      - Email address the email is being sent from. This is the "Reply-to"
+      - Email address from which the email is being sent. This is the "Reply-to"
         address the recipient sees.
     type: str
   encryption:
@@ -530,7 +530,8 @@ class ArgumentSpec(object):
             encryption=dict(choices=['none', 'ssl', 'tls']),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             from_address=dict(),
             authentication=dict(type='bool'),

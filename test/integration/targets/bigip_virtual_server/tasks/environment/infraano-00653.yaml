@@ -1,0 +1,101 @@
+---
+
+- name: Infraano 00653 - Add virtual server with service down action
+  bigip_virtual_server:
+      name: infraano-00653
+      destination: 1.1.1.1
+      port: 80
+      service_down_immediate_action: "drop"
+  register: result
+
+- name: Infraano 00653 - Assert Add virtual server with service down action
+  assert:
+    that:
+      - result is changed
+
+- name: Infraano 00653 - Add virtual server with service down action - Idempotent Check
+  bigip_virtual_server:
+      name: infraano-00653
+      destination: 1.1.1.1
+      port: 80
+      service_down_immediate_action: "drop"
+  register: result
+
+- name: Infraano 00653 - Assert Add virtual server with service down action - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Infraano 00653 - Change service down action to reset
+  bigip_virtual_server:
+      name: infraano-00653
+      destination: 1.1.1.1
+      port: 80
+      service_down_immediate_action: "reset"
+  register: result
+
+- name: Infraano 00653 - Assert Change service down action to reset
+  assert:
+    that:
+      - result is changed
+
+- name: Infraano 00653 - Change service down action to reset - Idempotent Check
+  bigip_virtual_server:
+      name: infraano-00653
+      destination: 1.1.1.1
+      port: 80
+      service_down_immediate_action: "reset"
+  register: result
+
+- name: Infraano 00653 - Assert Change service down action to reset - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Infraano 00653 - Change service down action to none
+  bigip_virtual_server:
+      name: infraano-00653
+      destination: 1.1.1.1
+      port: 80
+      service_down_immediate_action: "none"
+  register: result
+
+- name: Infraano 00653 - Assert Change service down action to none
+  assert:
+    that:
+      - result is changed
+
+- name: Infraano 00653 - Change service down action to none - Idempotent Check
+  bigip_virtual_server:
+      name: infraano-00653
+      destination: 1.1.1.1
+      port: 80
+      service_down_immediate_action: "none"
+  register: result
+
+- name: Infraano 00653 - Assert Change service down action to none - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Infraano 00653 - Remove virtual server
+  bigip_virtual_server:
+      name: infraano-00653
+      state: absent
+  register: result
+
+- name: Infraano 00653 - Assert Remove virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Infraano 00653 - Remove virtual server - Idempotent Check
+  bigip_virtual_server:
+      name: infraano-00653
+      state: absent
+  register: result
+
+- name: Infraano 00653 - Assert Remove virtual server - Idempotent Check
+  assert:
+    that:
+      - result is not changed

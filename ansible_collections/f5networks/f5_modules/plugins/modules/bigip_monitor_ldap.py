@@ -235,6 +235,7 @@ base:
   type: str
   sample: base
 '''
+
 from datetime import datetime
 
 from ansible.module_utils.basic import (
@@ -344,32 +345,35 @@ class Parameters(AnsibleF5Parameters):
     def manual_resume(self):
         return flatten_boolean(self._values['manual_resume'])
 
-    @property
-    def security(self):
-        if self._values['security'] in ['none', None]:
-            return ''
-        return self._values['security']
-
 
 class ApiParameters(Parameters):
     @property
     def ip(self):
-        ip, port = self._values['destination'].split(':')
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
         return ip
 
     @property
     def port(self):
-        ip, port = self._values['destination'].split(':')
-        try:
-            return int(port)
-        except ValueError:
-            return port
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
+        return int(port) if port.isnumeric() else port
 
     @property
     def description(self):
         if self._values['description'] in [None, 'none']:
             return None
         return self._values['description']
+
+    @property
+    def security(self):
+        if self._values['security'] in ['none', None]:
+            return ''
+        return self._values['security']
 
 
 class ModuleParameters(Parameters):
@@ -436,6 +440,12 @@ class ModuleParameters(Parameters):
             return ''
         return self._values['description']
 
+    @property
+    def security(self):
+        if self._values['security'] in ['none', None]:
+            return ''
+        return self._values['security']
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -466,15 +476,19 @@ class ReportableChanges(Changes):
 
     @property
     def ip(self):
-        ip, port = self._values['destination'].split(':')
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
         return ip
 
     @property
     def port(self):
-        ip, port = self._values['destination'].split(':')
-        if port == '*':
-            return port
-        return int(port)
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
+        return int(port) if port.isnumeric() else port
 
 
 class Difference(object):
@@ -777,7 +791,8 @@ class ArgumentSpec(object):
             chase_referrals=dict(type='bool'),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             state=dict(
                 default='present',

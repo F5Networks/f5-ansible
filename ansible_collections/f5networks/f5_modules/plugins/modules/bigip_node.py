@@ -391,7 +391,7 @@ class UsableChanges(Changes):
         monitor_string = self._values['monitors']
         if monitor_string is None:
             return None
-        if '{' in monitor_string and '}':
+        if '{' in monitor_string and '}' in monitor_string:
             tmp = monitor_string.strip('}').split('{')
             monitor = ''.join(tmp).rstrip()
             return monitor
@@ -838,14 +838,15 @@ class ModuleManager(object):
         self._check_required_creation_vars()
         self._munge_creation_state_for_device()
 
-        if self.want.fqdn_auto_populate is None:
-            self.want.update({'fqdn_auto_populate': True})
-        if self.want.fqdn_address_type is None:
-            self.want.update({'fqdn_address_type': 'ipv4'})
-        if self.want.fqdn_up_interval is None:
-            self.want.update({'fqdn_up_interval': 3600})
-        if self.want.fqdn_down_interval is None:
-            self.want.update({'fqdn_down_interval': 5})
+        if self.want.fqdn_name:
+            if self.want.fqdn_auto_populate is None:
+                self.want.update({'fqdn_auto_populate': True})
+            if self.want.fqdn_address_type is None:
+                self.want.update({'fqdn_address_type': 'ipv4'})
+            if self.want.fqdn_up_interval is None:
+                self.want.update({'fqdn_up_interval': 3600})
+            if self.want.fqdn_down_interval is None:
+                self.want.update({'fqdn_down_interval': 5})
         if self.want.ratio is None:
             self.want.update({'ratio': 1})
         if self.want.dynamic_ratio is None:

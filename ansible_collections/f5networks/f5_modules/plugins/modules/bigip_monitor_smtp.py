@@ -295,16 +295,19 @@ class Parameters(AnsibleF5Parameters):
 class ApiParameters(Parameters):
     @property
     def ip(self):
-        ip, port = self._values['destination'].split(':')
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
         return ip
 
     @property
     def port(self):
-        ip, port = self._values['destination'].split(':')
-        try:
-            return int(port)
-        except ValueError:
-            return port
+        des = self._values['destination']
+        ip, d, port = des.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = des.rpartition(':')
+        return int(port) if port.isnumeric() else port
 
     @property
     def description(self):
@@ -490,13 +493,6 @@ class Difference(object):
             )
         if self.want.destination != self.have.destination:
             return self.want.destination
-
-    @property
-    def target_password(self):
-        if self.want.target_password != self.have.target_password:
-            if self.want.update_password == 'always':
-                result = self.want.target_password
-                return result
 
     @property
     def description(self):

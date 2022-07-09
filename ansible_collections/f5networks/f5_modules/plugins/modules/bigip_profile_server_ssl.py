@@ -50,7 +50,7 @@ options:
     description:
       - Specifies the method of secure renegotiations for SSL connections. When
         creating a new profile, the setting is provided by the parent profile.
-      - When C(request) is set, the system requests secure renegotation of SSL
+      - When C(request) is set, the system requests secure renegotiation of SSL
         connections.
       - C(require) is a default setting and when set, the system permits initial SSL
         handshakes from clients but terminates renegotiations from unpatched clients.
@@ -703,7 +703,8 @@ class ArgumentSpec(object):
             ),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             sni_default=dict(type='bool'),
             sni_require=dict(type='bool'),

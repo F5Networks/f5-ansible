@@ -33,7 +33,6 @@ plugins/modules/bigip_ike_peer.py validate-modules:no-log-needed
 plugins/modules/bigip_password_policy.py validate-modules:no-log-needed
 plugins/modules/bigip_profile_client_ssl.py validate-modules:no-log-needed
 plugins/modules/bigip_profile_server_ssl.py validate-modules:no-log-needed
-plugins/modules/bigip_ssl_key_cert.py validate-modules:no-log-needed
 plugins/modules/bigip_ssl_ocsp.py validate-modules:no-log-needed
 plugins/modules/bigip_sys_db.py validate-modules:no-log-needed
 plugins/modules/bigip_tunnel.py validate-modules:no-log-needed

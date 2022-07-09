@@ -1,0 +1,44 @@
+---
+- name: Issue 02143 - Import ASM policy
+  bigip_asm_policy_import:
+    name: test_policy_name_02143
+    source: "{{ role_path }}/files/test_policy.xml"
+
+- name: Issue 02143 - Import ASM policy with name subset
+  bigip_asm_policy_import:
+    name: test_policy
+    source: "{{ role_path }}/files/test_policy.xml"
+
+- name: Issue 02143 - Activate ASM policy with name subset
+  bigip_asm_policy_manage:
+    name: test_policy
+    active: yes
+    state: present
+  register: result
+
+- name: Issue 02143 - Assert Activate ASM policy with name subset
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02143 - Activate ASM policy with name subset - Idempotent check
+  bigip_asm_policy_manage:
+    name: test_policy
+    active: yes
+    state: present
+  register: result
+
+- name: Issue 02143 - Assert Activate ASM policy with name subset - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02143 - Remove ASM policies
+  bigip_asm_policy_manage:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "test_policy"
+    - "test_policy_name_02143"

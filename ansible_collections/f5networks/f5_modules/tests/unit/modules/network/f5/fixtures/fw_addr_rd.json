@@ -1,0 +1,22 @@
+{
+    "kind": "tm:security:firewall:address-list:address-liststate",
+    "name": "test",
+    "partition": "Common",
+    "fullPath": "/Common/test",
+    "generation": 6309,
+    "selfLink": "https://localhost/mgmt/tm/security/firewall/address-list/~Common~test?ver=15.1.1",
+    "addresses": [
+        {
+            "name": "1.2.3.4"
+        },
+        {
+            "name": "1.2.3.4%124"
+        },
+        {
+            "name": "2700:bc00:1f10:101::6"
+        },
+        {
+            "name": "2700:bc00:1f10:101::6%123"
+        }
+    ]
+}

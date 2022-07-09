@@ -34,7 +34,7 @@ options:
       - name
   password_credential:
     description:
-      - Set the users password to this unencrypted value.
+      - Set the user's password to this unencrypted value.
         C(password_credential) is required when creating a new account.
     type: str
   shell:
@@ -190,8 +190,8 @@ full_name:
   sample: John Doe
 partition_access:
   description:
-    - List of strings containing the user's roles and which partitions they
-      are applied to. They are specified in the form "partition:role".
+    - List of strings containing the user's roles and to which partitions they
+      are applied. They are specified in the form "partition:role".
   returned: changed and success
   type: list
   sample: ['all:admin']
@@ -1079,7 +1079,8 @@ class ArgumentSpec(object):
             ),
             update_password=dict(
                 default='always',
-                choices=['always', 'on_create']
+                choices=['always', 'on_create'],
+                no_log=False
             ),
             state=dict(default='present', choices=['absent', 'present']),
             partition=dict(

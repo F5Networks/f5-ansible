@@ -17,15 +17,15 @@ version_added: "1.0.0"
 options:
   active:
     description:
-      - If C(yes), will apply and activate the existing inactive policy. If C(no), it will
-        deactivate the existing active policy. Generally should be C(yes) only in cases where
+      - If C(yes), applies and activates the existing inactive policy. If C(no), it
+        deactivates the existing active policy. Generally should be C(yes) only in cases where
         you want to activate new or existing policy.
-      - In TMOS v14 and later, deactivating the policy will cause it to be detached from any other associated objects,
+      - In TMOS v14 and later, deactivating the policy causes it to be detached from any other associated objects,
         hence the default option of C(no) has been removed in order to prevent accidental disassociation.
     type: bool
   apply:
     description:
-      - If C(yes) will apply the policy if the policy has pending changes.
+      - If C(yes) applies the policy if the policy has pending changes.
       - This parameter supported on TMOS C(v14.x) and above.
     type: bool
     version_added: "1.4.0"
@@ -684,7 +684,7 @@ class BaseManager(object):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,id".format(
+        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,id,partition".format(
             self.want.name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
@@ -698,12 +698,9 @@ class BaseManager(object):
 
         if 'items' in response and response['items'] != []:
             # because api filter on ASM is broken when names that contain numbers at the end we need to work around it
-            if len(response['items']) == 1:
-                policy_id = response['items'][0]['id']
-            else:
-                for item in response['items']:
-                    if item['name'] == self.want.name and item['partition'] == self.want.partition:
-                        policy_id = item['id']
+            for policy in response['items']:
+                if policy['name'] == self.want.name and policy['partition'] == self.want.partition:
+                    policy_id = policy['id']
 
         if not policy_id:
             raise F5ModuleError(

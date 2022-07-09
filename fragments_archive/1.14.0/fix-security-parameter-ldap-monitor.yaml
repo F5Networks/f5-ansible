@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_monitor_ldap - fixed idempotency issue with security parameter in module.

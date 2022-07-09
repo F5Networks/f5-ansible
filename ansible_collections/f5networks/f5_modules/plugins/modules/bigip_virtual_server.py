@@ -311,6 +311,16 @@ options:
       - Specifies the system mirrors connections on each member of a redundant pair.
       - When creating a new virtual server, if this parameter is not specified, the default is C(disabled).
     type: bool
+  auto_last_hop:
+    description:
+      - Allows the BIG-IP system to track the source MAC address of incoming connections and return traffic from
+        pools to the source MAC address, regardless of the routing table.
+    type: str
+    choices:
+      - default
+      - enabled
+      - disabled
+    version_added: "1.13.0"
   mask:
    description:
       - Specifies the destination address network mask. This parameter works with IPv4 and IPv6 addresses.
@@ -471,6 +481,17 @@ options:
         choices:
          - clientside
          - serverside
+  service_down_immediate_action:
+    description:
+      - Specifies the immediate action to take upon the receipt of the initial SYN packet if the
+        availability status of the virtual server is Offline or Unavailable.
+      - Supported for virtual servers with a Type of C(standard) and Protocol of C(TCP).
+    type: str
+    choices:
+      - none
+      - reset
+      - drop
+    version_added: "1.16.0"
   check_profiles:
     description:
       - Specifies whether the client and server SSL profiles specified by the user should be verified to be
@@ -835,6 +856,11 @@ mirror:
   returned: changed
   type: bool
   sample: True
+auto_last_hop:
+  description: Specifies the autoLasthop value of the virtual server
+  returned: changed
+  type: str
+  sample: enabled
 ip_protocol:
   description: The new value of the IP protocol.
   returned: changed
@@ -885,6 +911,11 @@ clone_pools:
   returned: changed
   type: list
   sample: [{'pool_name':'/Common/Pool1', 'context': 'clientside'}]
+service_down_immediate_action:
+  description: Action to take upon the receipt of the initial SYN packet if server is Offline or Unavailable.
+  returned: changed
+  type: str
+  sample: drop
 '''
 import os
 import re
@@ -939,6 +970,8 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitDstMask': 'rate_limit_dst_mask',
         'rateLimitSrcMask': 'rate_limit_src_mask',
         'clonePools': 'clone_pools',
+        'autoLasthop': 'auto_last_hop',
+        'serviceDownImmediateAction': 'service_down_immediate_action'
     }
 
     api_attributes = [
@@ -956,6 +989,7 @@ class Parameters(AnsibleF5Parameters):
         'rules',
         'source',
         'sourceAddressTranslation',
+        'serviceDownImmediateAction',
         'vlans',
         'vlansEnabled',
         'vlansDisabled',
@@ -980,6 +1014,7 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitDstMask',
         'rateLimitSrcMask',
         'clonePools',
+        'autoLasthop',
     ]
 
     updatables = [
@@ -999,6 +1034,7 @@ class Parameters(AnsibleF5Parameters):
         'port',
         'port_translation',
         'profiles',
+        'service_down_immediate_action',
         'snat',
         'source',
         'type',
@@ -1015,6 +1051,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_src_mask',
         'rate_limit_dst_mask',
         'clone_pools',
+        'auto_last_hop',
     ]
 
     returnables = [
@@ -1035,6 +1072,7 @@ class Parameters(AnsibleF5Parameters):
         'port',
         'port_translation',
         'profiles',
+        'service_down_immediate_action',
         'snat',
         'source',
         'vlans',
@@ -1054,6 +1092,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_src_mask',
         'rate_limit_dst_mask',
         'clone_pools',
+        'auto_last_hop',
     ]
 
     profiles_mutex = [
@@ -1391,8 +1430,8 @@ class ApiParameters(Parameters):
             result = 'performance-http'
         elif self.has_fastl4_profiles:
             result = 'performance-l4'
-        # elif self.has_message_routing_profiles:
-        #     result = 'message-routing'
+        elif self.has_message_routing_profiles:
+            result = 'message-routing'
         else:
             result = 'standard'
         self._values['type'] = result
@@ -1969,10 +2008,15 @@ class ModuleParameters(Parameters):
             if isinstance(profile, dict):
                 tmp.update(profile)
                 self._handle_profile_context(tmp)
-                if 'name' not in profile:
-                    tmp['name'] = profile
+                tmp['name'] = profile
+                if 'name' in profile:
+                    tmp['name'] = profile['name']
                 if 'partition' not in profile:
-                    tmp['partition'] = "Common"
+                    if isinstance(tmp['name'], str) and len(tmp["name"].split("/")) > 1:
+                        tmp["partition"] = tmp["name"].split("/")[1]
+                        tmp['name'] = os.path.basename(tmp['name'])
+                    else:
+                        tmp['partition'] = "Common"
                 tmp['fullPath'] = fq_name(tmp['partition'], tmp['name'])
                 if not self.bypass_module_checks:
                     self._handle_ssl_profile_nuances(tmp)
@@ -3676,10 +3720,16 @@ class ArgumentSpec(object):
                 ]
             ),
             mirror=dict(type='bool'),
+            auto_last_hop=dict(
+                choices=['enabled', 'disabled', 'default']
+            ),
             mask=dict(),
             firewall_staged_policy=dict(),
             firewall_enforced_policy=dict(),
             ip_intelligence_policy=dict(),
+            service_down_immediate_action=dict(
+                choices=['drop', 'none', 'reset']
+            ),
             security_log_profiles=dict(
                 type='list',
                 elements='str',

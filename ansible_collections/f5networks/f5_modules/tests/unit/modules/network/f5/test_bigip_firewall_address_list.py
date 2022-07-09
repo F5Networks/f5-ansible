@@ -76,6 +76,25 @@ class TestParameters(unittest.TestCase):
         assert sorted(p.address_ranges) == ['2.2.2.2-3.3.3.3', '5.5.5.5-6.6.6.6']
         assert p.address_lists[0] == '/Common/foo'
 
+    def test_mixed_rd_non_rd_addresses(self):
+        args = dict(
+            addresses=['1.1.1.1', '2.2.2.2%123', '2700:bc00:1f10:101::6', '2700:bc00:1f10:101::6%123'],
+        )
+        p = ModuleParameters(params=args)
+        assert '2.2.2.2%123' in p.addresses
+        assert '1.1.1.1' in p.addresses
+        assert '2700:bc00:1f10:101::6' in p.addresses
+        assert '2700:bc00:1f10:101::6%123' in p.addresses
+
+    def test_mixed_rd_non_rd_addresses_from_device(self):
+        args = load_fixture('fw_addr_rd.json')
+
+        p = ApiParameters(params=args)
+        assert '1.2.3.4' in p.addresses
+        assert '2700:bc00:1f10:101::6' in p.addresses
+        assert '2700:bc00:1f10:101::6%123' in p.addresses
+        assert '1.2.3.4%124' in p.addresses
+
 
 class TestManager(unittest.TestCase):
 

@@ -51,7 +51,7 @@ options:
     type: str
   cert_name:
     description:
-      - SSL Certificate Name. This is the cert name used when importing a certificate
+      - SSL certificate name. This is the cert name used when importing a certificate
         into the BIG-IP. It also determines the filenames of the objects on the LTM.
     type: str
   issuer_cert:
@@ -757,12 +757,16 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             key_name=dict(),
-            key_content=dict(),
+            key_content=dict(
+                no_log=True
+            ),
             passphrase=dict(
                 no_log=True
             ),
             cert_name=dict(),
-            cert_content=dict(),
+            cert_content=dict(
+                no_log=True
+            ),
             issuer_cert=dict(),
             state=dict(
                 required=False,

@@ -34,7 +34,7 @@
         - NA
 
 - name: Test the bigiq_application_fastl4_tcp module
-  hosts: "f5-bigiq[0]"
+  hosts: "f5bigiq"
   connection: local
   any_errors_fatal: true
 

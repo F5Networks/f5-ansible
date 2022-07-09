@@ -1,0 +1,53 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Modify ltm global settings
+  bigip_ltm_global:
+    connection:
+      default_vs_syn_challenge_tresh: 9123
+      global_syn_challenge_tresh: 20000
+  register: result
+
+- name: Assert Modify ltm global settings
+  assert:
+    that:
+      - result is changed
+
+- name: Modify ltm global settings - Idempotent check
+  bigip_ltm_global:
+    connection:
+      default_vs_syn_challenge_tresh: 9123
+      global_syn_challenge_tresh: 20000
+  register: result
+
+- name: Assert Modify ltm global settings - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Modify ltm global settings revert to defaults
+  bigip_ltm_global:
+    connection:
+      default_vs_syn_challenge_tresh: 0
+      global_syn_challenge_tresh: 64000
+  register: result
+
+- name: Assert Modify ltm global settings revert to defaults
+  assert:
+    that:
+      - result is changed
+
+- name: Modify ltm global settings revert to defaults - Idempotent check
+  bigip_ltm_global:
+    connection:
+      default_vs_syn_challenge_tresh: 0
+      global_syn_challenge_tresh: 64000
+  register: result
+
+- name: Assert Modify ltm global settings revert to defaults - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- import_tasks: teardown.yaml

@@ -72,6 +72,78 @@
       - result is not changed
       - result is success
 
+- name: Set include value with escaped quotes
+  bigip_device_syslog:
+    include: |
+        filter f_remote_syslog {
+            not (facility(local6)
+            and level(info)
+            and match('[ssl_acc]'))
+            and not (facility(local6)
+            and level(info)
+            and match('[ssl_req]'))
+            and not match (create_if)
+            and not match (system_check)
+            and not match (diskmonitor)
+            and not match ('01060111');
+        };
+        destination d_remote_loghost {
+            udp(\"syslog-ng.pncint.net\" port(514));
+        };
+        log {
+            source (local);
+            filter(f_remote_syslog);
+            destination(d_remote_loghost);
+        };
+        filter _audit {
+            facility(local0)
+            and match(AUDIT)
+            and not match (create_if);
+        };
+  register: result
+
+- name: Assert Set include value with escaped quotes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set include value with escaped quotes - Idempotent check
+  bigip_device_syslog:
+    include: |
+        filter f_remote_syslog {
+            not (facility(local6)
+            and level(info)
+            and match('[ssl_acc]'))
+            and not (facility(local6)
+            and level(info)
+            and match('[ssl_req]'))
+            and not match (create_if)
+            and not match (system_check)
+            and not match (diskmonitor)
+            and not match ('01060111');
+        };
+        destination d_remote_loghost {
+            udp(\"syslog-ng.pncint.net\" port(514));
+        };
+        log {
+            source (local);
+            filter(f_remote_syslog);
+            destination(d_remote_loghost);
+        };
+        filter _audit {
+            facility(local0)
+            and match(AUDIT)
+            and not match (create_if);
+        };
+  register: result
+
+- name: Assert Set include value with escaped quotes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
 - name: Set include value - none
   bigip_device_syslog:
     include: none

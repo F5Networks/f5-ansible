@@ -54,6 +54,31 @@
     that:
       - result is not changed
 
+- name: Issue Persistence - Change wide IP persistence
+  bigip_gtm_wide_ip:
+    state: present
+    type: a
+    name: "{{ wide_ip1 }}"
+    persistence: no
+  register: result
+
+- name: Issue Persistence - Assert Change wide IP persistence
+  assert:
+    that:
+      - result is changed
+
+- name: Issue Persistence - Change wide IP persistence - Idempotent check
+  bigip_gtm_wide_ip:
+    state: present
+    type: a
+    name: "{{ wide_ip1 }}"
+    persistence: no
+  register: result
+
+- name: Issue Persistence - Assert Change wide IP persistence - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - name: Issue Persistence - Create wide IP without persistence
   bigip_gtm_wide_ip:
@@ -98,11 +123,3 @@
     type: a
     wide_ip: "{{ wide_ip2 }}"
   register: result
-
-- name: Issue Persistence - Deprovision GTM
-  bigip_provision:
-    module: gtm
-    state: absent
-  tags:
-    - module-provisioning
-    - deprovision-module

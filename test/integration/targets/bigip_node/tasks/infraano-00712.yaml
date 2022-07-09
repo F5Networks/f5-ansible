@@ -1,0 +1,22 @@
+- name: Infraano 00712 - Create node
+  bigip_node:
+    host: "{{ node_host_ipv4 }}"
+    name: "{{ node_name }}"
+    state: present
+
+- name: Infraano 00712 - Gather Node Information
+  bigip_device_info:
+    partition: Common
+    include:
+      - nodes
+  register: result
+
+- name: Infraano 00712 - Assert Gather Node Information
+  assert:
+    that:
+      - result.nodes | json_query("[?address=='10.10.10.10'] | [0].fqdn_auto_populate") == "no"
+
+- name: Infraano 00712 - Delete node
+  bigip_node:
+    name: "{{ node_name }}"
+    state: absent

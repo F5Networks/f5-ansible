@@ -1,11 +1,20 @@
 ---
-- name: Issue 01175 - Create user
+- name: Issue 01175 - Create user - Provider
   bigip_user:
     partition_access:
       - Common:manager
     username_credential: ansible
     password_credential: ansible
     update_password: on_create
+    provider: "{{ provider }}"
+
+- name: Issue 01175 - Update password for user (required step) - Provider
+  bigip_user:
+    partition_access:
+      - Common:manager
+    username_credential: ansible
+    password_credential: ansible
+    update_password: always
     provider: "{{ provider }}"
 
 - name: Issue 01175 - Add virtual server, non-admin user - Provider

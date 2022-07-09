@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - Added no_log=True to content parameters in bigip_ssl_key and bigip_ssl_key_cert module to stop key and cert content fomr being logged.

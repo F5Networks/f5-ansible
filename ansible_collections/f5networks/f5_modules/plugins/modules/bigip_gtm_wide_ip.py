@@ -276,7 +276,6 @@ persistence_ttl:
   sample: 3600
 '''
 from datetime import datetime
-from distutils.version import LooseVersion
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -314,6 +313,7 @@ class Parameters(AnsibleF5Parameters):
         'last_resort_pool',
         'persist_cidr_ipv4',
         'persist_cidr_ipv6',
+        'persistence',
         'persistence_ttl',
     ]
 
@@ -386,8 +386,10 @@ class ApiParameters(Parameters):
 class ModuleParameters(Parameters):
     @property
     def last_resort_pool(self):
-        if self._values['last_resort_pool'] in [None, '', 'none']:
+        if self._values['last_resort_pool'] is None:
             return None
+        if self._values['last_resort_pool'] in ['', 'none']:
+            return 'none'
         return '{0} {1}'.format(
             self.type, fq_name(self.partition, self._values['last_resort_pool'])
         )
@@ -604,8 +606,8 @@ class Difference(object):
             return None
         if want is None:
             return None
-        w = self.to_tuple(want)
-        h = self.to_tuple(have)
+        w = self.to_tuple(want) if isinstance(want, list) else list()
+        h = self.to_tuple(have) if isinstance(have, list) else list()
         if set(w).issubset(set(h)):
             return None
         else:
@@ -615,7 +617,7 @@ class Difference(object):
     def last_resort_pool(self):
         if self.want.last_resort_pool is None:
             return None
-        if self.want.last_resort_pool == '' and self.have.last_resort_pool == '':
+        if self.want.last_resort_pool == 'none' and self.have.last_resort_pool == '':
             return None
         if self.want.last_resort_pool != self.have.last_resort_pool:
             return self.want.last_resort_pool
@@ -636,12 +638,12 @@ class Difference(object):
     def irules(self):
         if self.want.irules is None:
             return None
-        if self.have.rules is None:
-            return self.want.rules
         if self.want.irules == '' and self.have.irules is None:
             return None
         if self.want.irules == '' and len(self.have.irules) > 0:
             return []
+        if self.have.irules is None:
+            return self.want.irules
         if sorted(set(self.want.irules)) != sorted(set(self.have.irules)):
             return self.want.irules
 
@@ -835,6 +837,9 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
+        params['disabled'] = self.want.disabled
+        params['enabled'] = self.want.enabled
+
         uri = "https://{0}:{1}/mgmt/tm/gtm/wideip/{2}/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],

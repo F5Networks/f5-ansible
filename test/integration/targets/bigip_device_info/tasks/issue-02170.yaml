@@ -1,0 +1,11 @@
+---
+- name: Gather ServerSSL Profile Info
+  bigip_device_info:
+    gather_subset:
+      - "server-ssl-profiles"
+  register: result
+
+- name: Check parent profile
+  assert:
+    that:
+      - '"parent" in {{ result.ansible_facts.ansible_net_server_ssl_profiles[0] }}'

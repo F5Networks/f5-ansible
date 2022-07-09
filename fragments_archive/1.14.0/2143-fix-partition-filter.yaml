@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - asm_policy_* - fixed partition filter in asm modules.

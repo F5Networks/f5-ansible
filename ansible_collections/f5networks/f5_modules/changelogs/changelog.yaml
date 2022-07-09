@@ -651,6 +651,129 @@ releases:
     - 2083-fix-bigip-policy.yaml
     - bigip-v1fix.yaml
     release_date: '2021-10-27'
+  1.13.0:
+    changes:
+      bugfixes:
+      - Add auto_last_hop parameter to bigip_virtual_server module
+      - Fix an issue in bigip_virtual_server module that wrongly sets the partition
+        name for profile.
+      - Fix issue with teem data collection where device was not ready and was returning
+        404 error when queried for tmos version
+      - fix for displaying src, checksum and other parameters when running ucs_fetch
+        module
+      - fix for source capability for bigip_device_auth_ldap module
+    fragments:
+    - 2001-ldap-fixes.yaml
+    - 2103-virtual-server-profile-issue.yaml
+    - 2104-add-auto-last-hop.yaml
+    - 2134-ucs-src-report.yaml
+    - fix-bigip-wait-send-teem-error.yaml
+    release_date: '2021-12-08'
+  1.14.0:
+    changes:
+      bugfixes:
+      - asm_policy_* - fixed partition filter in asm modules.
+      - bigip_device_info - changes cipher and cipher_group parameters to register
+        when the actual value is 'none'.
+      - bigip_device_syslog - this change is done so that only unescaped " is replaced
+        with ' in the value of include parameter.
+      - bigip_monitor_ldap - fixed idempotency issue with security parameter in module.
+      - multiple modules - Add no_log=False setting to update_password parameter in
+        respective modules avoid false positive security warnings.
+      major_changes:
+      - bigip_device_info - pagination logic has also been added to help with api
+        stability.
+      - bigip_device_info - the module no longer gathers information from all partitions
+        on device. This change will stabalize the module by gathering resources only
+        from the given partition and prevent the module from gathering way too much
+        information that might result in crashing.
+      minor_changes:
+      - Added no_log=True to content parameters in bigip_ssl_key and bigip_ssl_key_cert
+        module to stop key and cert content fomr being logged.
+      - bigip_device_info - added stats parameter for each virtual_server resource
+        attached to a gtm_server
+    fragments:
+    - 1687-add-filter-and-paging-logic.yaml
+    - 1984-bigip-device-info-changes.yaml
+    - 2143-fix-partition-filter.yaml
+    - 2145-fix-false-positive-errors.yaml
+    - fix-security-parameter-ldap-monitor.yaml
+    - no_log_key_and_cert_content.yaml
+    - syslog_include_support_escaped_quotes.yaml
+    release_date: '2022-01-19'
+  1.15.0:
+    changes:
+      bugfixes:
+      - bigip_device_info - fixed bug regarding handling of negated meta options.
+      - bigip_device_license - fixed issue that resulted in only first of the multiple
+        add-on keys getting added to the device.
+      - bigip_firewall_address_list - fixed issue where addresses that contained RD
+        would cause an error.
+      - bigip_gtm_wide_ip - fixed a bug that prevented creation of gtm wide ips in
+        disabled state.
+      minor_changes:
+      - bigip_device_info - Added a new meta choice, packages, which groups information
+        about as3, do, cfe and ts. This change was done to ensure users with non admin
+        access can use this module to get information that does not require admin
+        access.
+      - bigip_device_info - this module can gather information about ucs backup files.
+      - bigip_pool_member - add checkmode bypass so that existence checks for pool
+        is always returns true when using check mode
+      - bigip_profile_http_compression - Add content_type_include parameter to bigip_profile_fastl4
+        module
+    fragments:
+    - 2155-fix-bigip-firewall-address.yaml
+    - add-checkmode-bypass-bigip-pool-member.yaml
+    - add-meta-choice-packages.yaml
+    - add_content_type_include.yaml
+    - bigip-device-info-ucs.yaml
+    - bugfix-bigip-device-info.yaml
+    - bugfix-gtm-wide-ip.yaml
+    - bugfix-multiple-add-on-keys.yaml
+    release_date: '2022-03-03'
+  1.16.0:
+    changes:
+      bugfixes:
+      - bigip_command - fixed a bug that interpreted a pipe symbol inside an input
+        string as pipe used to combine commands
+      - bigip_device_certificate - adds missing space to tmsh command
+      - bigip_gtm_wide_ip - fixed inability to change persistence setting on existing
+        wide ip objects
+      minor_changes:
+      - bigip_device_info - add UCS creation date to the data gathered
+      - bigip_virtual_server - add service_down_immediate_action parameter
+      - bigiq_regkey_license - add addon_keys parameter to the module
+    fragments:
+    - 2013-add-addon-bigiq-license.yaml
+    - 2177-add-ucs-date.yaml
+    - 2179-fix-persistence-parameter-update.yaml
+    - add-service-down-action-vs.yaml
+    - bugfix-bigip-command.yaml
+    - fix-missing-space-device_cert.yaml
+    modules:
+    - description: Manages global LTM settings
+      name: bigip_ltm_global
+      namespace: ''
+    release_date: '2022-04-13'
+  1.17.0:
+    changes:
+      bugfixes:
+      - bigip_gtm_wide_ip - fix idempotency bugs encountered when adding/removing
+        irules, pools and last_resort_pool
+      - bigip_gtm_wide_ip - irules can be added to existing gtm wide ips
+      - bigip_monitor_http - fixed extraction of ip from the destination value
+      - bigip_monitor_https - fixed extraction of ip from the destination value
+      - bigip_node - the fqdn_autopopulate is now only enabled when fqdn is specified.
+      minor_changes:
+      - bigip_device_info - add fqdn related parameters to be gathered on nodes
+      - bigip_device_info - add parent to the data gathered for ServerSSL Profiles
+    fragments:
+    - 2031-fix-wideip-irule-update.yaml
+    - 2163-fix-getting-ip-from-destination.yaml
+    - 2170-add-parent-in-serversslprofile.yaml
+    - fix-autopopulate-node.yaml
+    - fix-idempotency-gtm-wide-ip.yaml
+    release_date: '2022-05-26'
   1.2.0:
     changes:
       bugfixes:

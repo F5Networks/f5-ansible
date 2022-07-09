@@ -18,9 +18,10 @@ version_added: "1.0.0"
 options:
   name:
     description:
-      - Name of the node to create, or re-use, when creating a new pool member.
-      - This parameter is optional. If not specified, a node name will be
-        created automatically from either the specified C(address) or C(fqdn).
+      - Name of the node to create or re-use when creating a new pool member.
+      - While this parameter is optional, we recommend specifying this parameter
+        at all times to mitigate anyunexpected behavior.
+      - If not specified, a node name is created automatically from either the specified C(address) or C(fqdn).
       - The C(enabled) state is an alias of C(present).
     type: str
   state:
@@ -56,7 +57,7 @@ options:
   fqdn:
     description:
       - FQDN name of the pool member. This can be any name that is a valid RFC 1123 DNS
-        name. Therefore, the only characters that can be used are "A" to "Z",
+        name. Therefore, the only usable characters are "A" to "Z",
         "a" to "z", "0" to "9", the hyphen ("-") and the period (".").
       - FQDN names must include at least one period; delineating the host from
         the domain. For example, C(host.domain).
@@ -203,6 +204,7 @@ EXAMPLES = r'''
   bigip_pool_member:
     pool: my-pool
     partition: Common
+    name: my-member
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     description: web server
@@ -219,6 +221,7 @@ EXAMPLES = r'''
   bigip_pool_member:
     pool: my-pool
     partition: Common
+    name: my-member
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     ratio: 1
@@ -234,6 +237,7 @@ EXAMPLES = r'''
     state: absent
     pool: my-pool
     partition: Common
+    name: my-member
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     provider:
@@ -247,6 +251,7 @@ EXAMPLES = r'''
     state: forced_offline
     pool: my-pool
     partition: Common
+    name: my-member
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     provider:
@@ -803,7 +808,7 @@ class UsableChanges(Changes):
         monitor_string = self._values['monitors']
         if monitor_string is None:
             return None
-        if '{' in monitor_string and '}':
+        if '{' in monitor_string and '}' in monitor_string:
             tmp = monitor_string.strip('}').split('{')
             monitor = ''.join(tmp).rstrip()
             return monitor
@@ -1271,6 +1276,8 @@ class ModuleManager(object):
                 raise F5ModuleError(resp.content)
 
     def pool_exist(self):
+        if self.module.check_mode:
+            return True
         if self.replace_all_with:
             pool_name = transform_name(name=fq_name(self.module.params['partition'], self.module.params['pool']))
         else:

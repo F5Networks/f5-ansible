@@ -5,6 +5,7 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -142,6 +143,34 @@ options:
     type: int
     aliases:
       - minimum_active_members
+  min_up_members:
+    description:
+      - Specifies the minimum number of pool members that must be up,
+      - otherwise, the system takes the action specified in the C(min-up-members-action) option.
+      - Use this option for gateway pools in a redundant system where a unit number is applied to the pool.
+      - This indicates the pool is configured only on the specified unit.
+      - When creating a new pool, if this parameter is not specified, the default is C(0).
+    type: int
+  min_up_members_action:
+    description:
+      - Specifies the action to take if C(min_up_members_checking) is C(enabled) and the number of active pool members
+        falls below the number specified in the C(min_up_members) option.
+      - When creating a new pool, if this parameter is not specified, the default is C(failover).
+    type: str
+    choices:
+      - failover
+      - reboot
+      - restart-all
+  min_up_members_checking:
+    description:
+      - Enables or disables the C(min_up_members) feature.
+      - If you enable this feature, you must also specify a value for both the C(min_up_members) and
+        C(min_up_members_action) options.
+      - When creating a new pool, if this parameter is not specified, the default is C(disabled).
+    type: str
+    choices:
+      - enabled
+      - disabled
   aggregate:
     description:
       - List of pool definitions to be created, modified, or removed.
@@ -412,8 +441,10 @@ class Parameters(AnsibleF5Parameters):
         'serviceDownAction': 'service_down_action',
         'monitor': 'monitors',
         'minActiveMembers': 'priority_group_activation',
+        'minUpMembers': 'min_up_members',
+        'minUpMembersAction': 'min_up_members_action',
+        'minUpMembersChecking': 'min_up_members_checking',
     }
-
     api_attributes = [
         'description',
         'name',
@@ -424,6 +455,9 @@ class Parameters(AnsibleF5Parameters):
         'serviceDownAction',
         'metadata',
         'minActiveMembers',
+        'minUpMembers',
+        'minUpMembersAction',
+        'minUpMembersChecking',
     ]
 
     returnables = [
@@ -440,6 +474,9 @@ class Parameters(AnsibleF5Parameters):
         'partition',
         'metadata',
         'priority_group_activation',
+        'min_up_members',
+        'min_up_members_action',
+        'min_up_members_checking',
     ]
 
     updatables = [
@@ -453,6 +490,9 @@ class Parameters(AnsibleF5Parameters):
         'reselect_tries',
         'metadata',
         'priority_group_activation',
+        'min_up_members',
+        'min_up_members_action',
+        'min_up_members_checking',
     ]
 
     @property
@@ -493,6 +533,24 @@ class Parameters(AnsibleF5Parameters):
         if self._values['priority_group_activation'] is None:
             return None
         return int(self._values['priority_group_activation'])
+
+    @property
+    def min_up_members(self):
+        if self._values['min_up_members'] is None:
+            return None
+        return int(self._values['min_up_members'])
+
+    @property
+    def min_up_members_action(self):
+        if self._values['min_up_members_action'] is None:
+            return None
+        return self._values['min_up_members_action']
+
+    @property
+    def min_up_members_checking(self):
+        if self._values['min_up_members_checking'] is None:
+            return None
+        return self._values['min_up_members_checking']
 
 
 class ApiParameters(Parameters):
@@ -626,7 +684,7 @@ class UsableChanges(Changes):
         if monitor_string is None:
             return None
 
-        if '{' in monitor_string and '}':
+        if '{' in monitor_string and '}' in monitor_string:
             tmp = monitor_string.strip('}').split('{')
             monitor = ''.join(tmp).rstrip()
             return monitor
@@ -975,6 +1033,15 @@ class ModuleManager(object):
         if self.want.priority_group_activation is None:
             self.want.update({'priority_group_activation': 0})
 
+        if self.want.min_up_members is None:
+            self.want.update({'min_up_members': 0})
+
+        if self.want.min_up_members_action is None:
+            self.want.update({'min_up_members_action': 'failover'})
+
+        if self.want.min_up_members_checking is None:
+            self.want.update({'min_up_members_checking': 'disabled'})
+
         self._set_changed_options()
         if self.module.check_mode:
             return True
@@ -1196,6 +1263,15 @@ class ArgumentSpec(object):
             priority_group_activation=dict(
                 type='int',
                 aliases=['minimum_active_members']
+            ),
+            min_up_members=dict(
+                type='int'
+            ),
+            min_up_members_action=dict(
+                choices=['failover', 'reboot', 'restart-all']
+            ),
+            min_up_members_checking=dict(
+                choices=['enabled', 'disabled']
             ),
             partition=dict(
                 default='Common',

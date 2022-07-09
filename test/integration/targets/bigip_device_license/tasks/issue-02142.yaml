@@ -1,0 +1,40 @@
+---
+
+- name: Get license key and add-on keys
+  set_fact: 
+    license_key: "{{ lookup('env', 'LICENSE_KEY') }}"
+    addon_key1: "{{ lookup('env', 'ADDON_KEY1') }}"
+    addon_key2: "{{ lookup('env', 'ADDON_KEY2') }}"
+    license_server: "{{ lookup('env', 'LICENSE_SERVER') }}"
+
+- name: Add a license with multiple add on keys
+  bigip_device_license:
+    license_key: "{{ license_key }}"
+    addon_keys:
+      - "{{ addon_key1 }}"
+      - "{{ addon_key2 }}"
+    accept_eula: yes
+    license_server: "{{ license_server }}"
+  register: result
+
+- name: Assert Add a license with multiple add on keys
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add a license with multiple add on keys - Idempotent Check
+  bigip_device_license:
+    license_key: "{{ license_key }}"
+    addon_keys:
+      - "{{ addon_key1 }}"
+      - "{{ addon_key2 }}"
+    accept_eula: yes
+    license_server: "{{ license_server }}"
+  register: result
+
+- name: Assert Add a license with multiple add on keys - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed

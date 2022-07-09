@@ -80,7 +80,7 @@ options:
         response before a node is marked up. A value of 0 causes a
         node to be marked up immediately after a valid response is received
         from the node. If this parameter is not provided when creating
-        a new monitor, the default value will be 0.
+        a new monitor, the default value is 0.
     type: int
   target_username:
     description:
@@ -270,7 +270,9 @@ class Parameters(AnsibleF5Parameters):
 
     @destination.setter
     def destination(self, value):
-        ip, port = value.split(':')
+        ip, d, port = value.rpartition('.')
+        if not is_valid_ip(ip) and ip != '*':
+            ip, d, port = value.rpartition(':')
         self._values['ip'] = ip
         self._values['port'] = port
 
