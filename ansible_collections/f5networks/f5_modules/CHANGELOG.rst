@@ -5,6 +5,36 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.18.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_pool - add three new parameters named, min_up_members, min_up_members_action and min_up_members_checking
+
+Bugfixes
+--------
+
+- bigip_device_info - fixed pagination bug for VLANS data
+- bigip_gtm_monitor_bigip - fixed bug related to ip extraction from monitor.
+- bigip_gtm_monitor_external - fixed bug related to ip extraction from monitor.
+- bigip_gtm_monitor_firepass - fixed bug related to ip extraction from monitor.
+- bigip_gtm_monitor_http - fixed bug related to ip extraction from monitor.
+- bigip_gtm_monitor_https - fixed bug related to ip extraction from monitor.
+- bigip_gtm_monitor_tcp - fixed bug related to ip extraction from monitor.
+- bigip_gtm_monitor_tcp_half_open - fixed bug related to ip extraction from monitor.
+- bigip_monitor_dns - fixed bug related to ip extraction from monitor.
+- bigip_monitor_external - fixed bug related to ip extraction from monitor.
+- bigip_monitor_ftp - fixed bug related to ip extraction from monitor.
+- bigip_monitor_gateway_icmp - fixed bug related to ip extraction from monitor.
+- bigip_monitor_ldap - fixed bug related to ip extraction from monitor.
+- bigip_monitor_mysql - fixed bug related to ip extraction from monitor.
+- bigip_monitor_oracle - fixed bug related to ip extraction from monitor.
+- bigip_monitor_smtp - fixed bug related to ip extraction from monitor.
+- bigip_monitor_tcp - fixed bug related to ip extraction from monitor.
+- bigip_monitor_udp - fixed bug related to ip extraction from monitor.
+
 v1.17.0
 =======
 
