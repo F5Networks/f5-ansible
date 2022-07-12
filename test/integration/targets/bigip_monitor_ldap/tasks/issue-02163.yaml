@@ -19,19 +19,19 @@
     that:
       - result is not changed
 
-- name: Issue 02163 - Uptade LDAP Monitor with IPv4
+- name: Issue 02163 - Update LDAP Monitor with IPv4
   bigip_monitor_ldap:
     name: issue_02163
     ip: '10.10.10.10'
     port: 4016
   register: result
 
-- name: Issue 02163 - Assert Uptade LDAP Monitor with IPv4
+- name: Issue 02163 - Assert Update LDAP Monitor with IPv4
   assert:
     that:
       - result is changed
 
-- name: Issue 02163 - Uptade LDAP Monitor with IPv4 - Idempotent Check
+- name: Issue 02163 - Update LDAP Monitor with IPv4 - Idempotent Check
   bigip_monitor_ldap:
     name: issue_02163
     ip: '10.10.10.10'
@@ -39,7 +39,7 @@
     state: present
   register: result
 
-- name: Issue 02163 - Assert Uptade LDAP Monitor with IPv4 - Idempotent Check
+- name: Issue 02163 - Assert Update LDAP Monitor with IPv4 - Idempotent Check
   assert:
     that:
       - result is not changed
@@ -51,7 +51,7 @@
     port: 4016
   register: result
 
-- name: Issue 02163 - Assert Uptade LDAP Monitor with IPv6
+- name: Issue 02163 - Assert Update LDAP Monitor with IPv6
   assert:
     that:
       - result is changed
@@ -63,7 +63,7 @@
     port: 4016
   register: result
 
-- name: Issue 02163 - Assert Uptade LDAP Monitor with IPv6 - Idempotent Check
+- name: Issue 02163 - Assert Update LDAP Monitor with IPv6 - Idempotent Check
   assert:
     that:
       - result is not changed
@@ -76,7 +76,7 @@
     port: 4016
   register: result
 
-- name: Issue 02163 - Assert Uptade LDAP Monitor with IP as *
+- name: Issue 02163 - Assert Update LDAP Monitor with IP as *
   assert:
     that:
       - result is changed
@@ -89,7 +89,7 @@
     state: present
   register: result
 
-- name: Issue 02163 - Assert Uptade LDAP Monitor with IP as * - Idempotent Check
+- name: Issue 02163 - Assert Update LDAP Monitor with IP as * - Idempotent Check
   assert:
     that:
       - result is not changed
@@ -115,4 +115,3 @@
   assert:
     that:
       - result is not changed
-...
