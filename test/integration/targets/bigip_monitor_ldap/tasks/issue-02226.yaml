@@ -1,0 +1,84 @@
+---
+
+- name: Issue 02226 - Create Monitor with username and password
+  bigip_monitor_ldap:
+    name: "test_ldap_monitor"
+    base: "CN=Users,DC=ad,DC=qa,DC=cloud"
+    chase_referrals: yes
+    filter: "sAMAccountName=check_user"
+    mandatory_attributes: no
+    security: "ssl"
+    target_username: "CN=check_user,CN=Users,DC=ad,DC=qa,DC=cloud"
+    target_password: "123456"
+    update_password: "on_create"
+  register: result
+
+- name: Issue 02226 - Assert Create Monitor with username and password
+  assert:
+    that:
+      - result is changed
+      - result is success
+      - result.base == "CN=Users,DC=ad,DC=qa,DC=cloud"
+      - result.chase_referrals == "yes"
+      - result.filter == "sAMAccountName=check_user"
+      - result.mandatory_attributes == "no"
+      - result.security == "ssl"
+
+- name: Issue 02226 - Create Monitor with username and password - Idempotent check
+  bigip_monitor_ldap:
+    name: "test_ldap_monitor"
+    base: "CN=Users,DC=ad,DC=qa,DC=cloud"
+    chase_referrals: yes
+    filter: "sAMAccountName=check_user"
+    mandatory_attributes: no
+    security: "ssl"
+    target_username: "CN=check_user,CN=Users,DC=ad,DC=qa,DC=cloud"
+    target_password: "123456"
+    update_password: "on_create"
+  register: result
+
+- name: Issue 02226 - Assert Create Monitor with username and password - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02226 - Get ldap monitor facts
+  bigip_command:
+    commands:
+      - tmsh list ltm monitor ldap test_ldap_monitor
+  register: before
+
+- name: Issue 02226 - Assert ldap monitor has username and password
+  assert:
+    that:
+      - "'username' in before.stdout_lines[0] | regex_search('username')"
+      - "'password' in before.stdout_lines[0] | regex_search('password')"
+
+- name: Issue 02226 - Change Monitor password
+  bigip_monitor_ldap:
+    name: "test_ldap_monitor"
+    target_password: "insecurepass"
+  register: result
+
+- name: Issue 02226 - Assert Change Monitor password
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02226 - Get ldap monitor facts after change
+  bigip_command:
+    commands:
+      - tmsh list ltm monitor ldap test_ldap_monitor
+  register: after
+
+- name: Issue 02226 - Assert password value still present
+  assert:
+    that:
+        - "'password' in after.stdout_lines[0] | regex_search('password')"
+
+- name: Issue 02226 - Remove monitor
+  bigip_monitor_ldap:
+    name: "test_ldap_monitor"
+    state: absent
