@@ -296,6 +296,7 @@ class Parameters(AnsibleF5Parameters):
         'chase_referrals',
         'manual_resume',
         'target_username',
+        'target_password',
         'filter',
         'base',
     ]
