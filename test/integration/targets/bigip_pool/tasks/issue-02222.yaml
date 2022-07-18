@@ -1,0 +1,63 @@
+---
+
+- name: Issue 02222 - Create a pool with availability requirements
+  bigip_pool:
+    state: present
+    name: issue_02222
+    partition: Common
+    availability_requirements_type: m_of_n
+    availability_requirements_at_least: 1
+    monitors:
+      - http
+      - tcp
+  register: result
+
+- name: Issue 02222 - Assert Create a pool with availability requirements
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 02222 - Create a pool with availability requirements - Idempotent Check
+  bigip_pool:
+    state: present
+    name: issue_02222
+    partition: Common
+    availability_requirements_type: m_of_n
+    availability_requirements_at_least: 1
+    monitors:
+      - http
+      - tcp
+  register: result
+
+- name: Issue 02222 - Assert Create a pool with availability requirements - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 02222 - Remove pool
+  bigip_pool:
+    state: absent
+    name: issue_02222
+    partition: Common
+  register: result
+
+- name: Issue 02222 - Assert Remove pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 02222 - Remove pool -Idempotent Check
+  bigip_pool:
+    state: absent
+    name: issue_02222
+    partition: Common
+  register: result
+
+- name: Issue 02222 - Assert Remove pool - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed
