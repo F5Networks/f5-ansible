@@ -169,3 +169,6 @@
 
 - import_tasks: sr-1-8210113510.yaml
   tags: sr-1-8210113510
+
+- import_tasks: issue-02222.yaml
+  tags: issue-02222
