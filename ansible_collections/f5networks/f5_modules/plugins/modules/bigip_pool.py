@@ -66,6 +66,8 @@ options:
       - Both C(single) and C(and_list) are functionally identical, as BIG-IP
         considers all monitors as "a list".
     type: str
+    aliases:
+      - availability_requirements_type
     choices:
       - and_list
       - m_of_n
@@ -75,6 +77,8 @@ options:
       - Monitor quorum value when C(monitor_type) is C(m_of_n).
       - Quorum must be a value of 1 or greater when C(monitor_type) is C(m_of_n).
     type: int
+    aliases:
+      - availability_requirements_at_least
   monitors:
     description:
       - Monitor template name list. If the partition is not provided as part of
@@ -273,6 +277,22 @@ EXAMPLES = r'''
     partition: Common
     monitor_type: m_of_n
     quorum: 1
+    monitors:
+      - http
+      - tcp
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Set multiple monitors (at least 2 must succeed)
+  bigip_pool:
+    state: present
+    name: my-pool
+    partition: Common
+    availability_requirements_type: m_of_n
+    availability_requirements_at_least: 2
     monitors:
       - http
       - tcp
@@ -1233,10 +1253,12 @@ class ArgumentSpec(object):
             monitor_type=dict(
                 choices=[
                     'and_list', 'm_of_n', 'single'
-                ]
+                ],
+                aliases=['availability_requirements_type']
             ),
             quorum=dict(
-                type='int'
+                type='int',
+                aliases=['availability_requirements_at_least']
             ),
             monitors=dict(
                 type='list',
