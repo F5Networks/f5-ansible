@@ -518,7 +518,7 @@ class ModuleManager(object):
         # version key can be missing in the event that an existing volume has
         # no installed software in it.
         if self.want.version != response.get('version', None):
-            if (response.get('active') is None) and response.get('status') == "complete":
+            if response.get('status') is not None:
                 if self.remove_volume():
                     pass
             return False
@@ -526,19 +526,21 @@ class ModuleManager(object):
         if self.want.build != response.get('build', None):
             return False
 
+        if self.want.state == 'installed':
+            return True
+
         if (response.get('active') is None) and (response.get('status') == "complete"):
             if self.remove_volume():
                 return False
 
-        if self.want.state == 'installed':
-            return True
         if self.want.state == 'activated':
             if 'media' in response and 'defaultBootLocation' in response['media'][0]:
                 return True
         return False
 
     def remove_volume(self):
-        delresp = self.client.api.delete(self.volume_url)
+        vol_url = self.volume_url.split('~')[0]
+        delresp = self.client.api.delete(vol_url)
         if delresp.status == 200:
             time.sleep(60)
             return True

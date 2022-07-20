@@ -1,0 +1,59 @@
+---
+
+# These tests require viprion on a vcmp host 
+
+- name: SR 8372348301 - Install image on Viprion on a vcmp host
+  bigip_software_install:
+    image: "{{ image_old_version: }}"
+    state: installed
+    type: vcmp
+    volume: HD1.3
+  register: result
+
+- name: Assert SR 8372348301 - Install image on Viprion on a vcmp host
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: SR 8372348301 - Install image on Viprion on a vcmp host - Idempotent Check
+  bigip_software_install:
+    image: "{{ image_old_version: }}"
+    state: installed
+    type: vcmp
+    volume: HD1.3
+  register: result
+
+- name: Assert SR 8372348301 - Install image on Viprion on a vcmp host - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: SR 8372348301 - Install newer image on Viprion on a vcmp host
+  bigip_software_install:
+    image: "{{ image_new_version }}"
+    state: installed
+    type: vcmp
+    volume: HD1.3
+  register: result
+
+- name: Assert SR 8372348301 - Install newer image on Viprion on a vcmp host
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: SR 8372348301 - Install newer image on Viprion on a vcmp host - Idempotent Check
+  bigip_software_install:
+    image: "{{ image_new_version }}"
+    state: installed
+    type: vcmp
+    volume: HD1.3
+  register: result
+
+- name: Assert SR 8372348301 - Install newer image on Viprion on a vcmp host - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
