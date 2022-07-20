@@ -64,3 +64,6 @@
 
 - import_tasks: issue-01680.yaml
   tags: issue-01680
+
+- import_tasks: sr-1-8372348301.yaml
+  tags: sr-1-8372348301.yaml

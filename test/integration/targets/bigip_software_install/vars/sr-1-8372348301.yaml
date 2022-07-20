@@ -1,0 +1,4 @@
+---
+
+image_old_version: "{{ role_path }}/files/BIGIP-13.1.5-0.0.32.iso.example"
+image_new_version: "{{ role_path }}/files/BIGIP-15.1.6.1-0.0.10.iso.example"
