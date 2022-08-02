@@ -216,7 +216,6 @@ class TestOtherFunctions(unittest.TestCase):
 
     def test_in_cicd_false(self):
         def mock_os_env_return(value):
-            _ = value
             return False
 
         with patch('ansible_collections.f5networks.f5_modules.plugins.module_utils.teem.os.getenv') as env:
