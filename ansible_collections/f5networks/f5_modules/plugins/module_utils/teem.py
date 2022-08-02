@@ -111,10 +111,9 @@ class TeemClient(object):
 
     def get_platform(self):
         if self.coll_name.lower() in self.module_name:
-            return PLATFORM.get(
-                self.module_name.split('.')[2].split('_')[0], self.module_name.split('.')[2].split('_')[0]
-            )
-        return PLATFORM.get(self.module_name.split('_')[0], self.module_name.split('_')[0])
+            self.module_name = self.module_name.split('.')[2]
+            return PLATFORM.get(self.module_name.split('_')[0], 'unknown')
+        return PLATFORM.get(self.module_name.split('_')[0], 'unknown')
 
 
 def in_docker():

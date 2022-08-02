@@ -113,13 +113,15 @@ class TestTeemClient(unittest.TestCase):
         result = teem.get_platform()
 
         assert result == 'BIG-IP'
+        assert teem.module_name == 'bigip_fake'
 
     def test_teem_get_platform_fq_name_platform_not_found(self):
-        self.fake_module._name = 'f5networks.f5_modules.velos_fake'
+        self.fake_module._name = 'f5networks.f5_modules.foobar_fake'
         teem = TeemClient(self.start_time, self.fake_module, '15.1.1')
         result = teem.get_platform()
 
-        assert result == 'velos'
+        assert result == 'unknown'
+        assert teem.module_name == 'foobar_fake'
 
     def test_teem_get_platform_short_name(self):
         self.fake_module._name = 'bigiq_fake'
@@ -127,13 +129,15 @@ class TestTeemClient(unittest.TestCase):
         result = teem.get_platform()
 
         assert result == 'BIG-IQ'
+        assert teem.module_name == 'bigiq_fake'
 
     def test_teem_get_platform_short_name_platform_not_found(self):
-        self.fake_module._name = 'velos_fake'
+        self.fake_module._name = 'foobar_fake'
         teem = TeemClient(self.start_time, self.fake_module, '15.1.1')
         result = teem.get_platform()
 
-        assert result == 'velos'
+        assert result == 'unknown'
+        assert teem.module_name == 'foobar_fake'
 
 
 class TestOtherFunctions(unittest.TestCase):
@@ -173,17 +177,17 @@ class TestOtherFunctions(unittest.TestCase):
 
         assert result is None
 
-    @patch('builtins.open', mock_open(
-        read_data='14:name=systemd:/docker/8fc719d06c9e3\n13:rdma:/\n12:pids:/docker/8fc719d06c9e3\n')
-           )
+    @patch(
+        'builtins.open', mock_open(
+            read_data='14:name=systemd:/docker/8fc719d06c9e3\n13:rdma:/\n12:pids:/docker/8fc719d06c9e3\n'
+        )
+    )
     def test_in_docker_true(self):
         result = in_docker()
 
         assert result is True
 
-    @patch('builtins.open', mock_open(
-        read_data='14:name=systemd:/8fc719d06c9e3\n13:rdma:/\n')
-           )
+    @patch('builtins.open', mock_open(read_data='14:name=systemd:/8fc719d06c9e3\n13:rdma:/\n'))
     def test_in_docker_false(self):
         result = in_docker()
 
