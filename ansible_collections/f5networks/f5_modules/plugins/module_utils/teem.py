@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import json
+import os
 import sys
 import uuid
 import random
@@ -24,7 +25,7 @@ from ansible.module_utils.six.moves.urllib.error import (
 )
 
 from .constants import (
-    TEEM_ENDPOINT, TEEM_KEY, TEEM_TIMEOUT, TEEM_VERIFY, BASE_HEADERS, PLATFORM
+    TEEM_ENDPOINT, TEEM_KEY, TEEM_TIMEOUT, TEEM_VERIFY, BASE_HEADERS, PLATFORM, CICD_ENV
 )
 
 from .version import CURRENT_COLL_VERSION
@@ -37,10 +38,12 @@ class TeemClient(object):
         self.version = version
         self.start_time = start_time
         self.docker = False
+        self.in_ci = False
+        self.coll_name = 'F5_MODULES'
 
     def prepare_request(self):
         self.docker = in_docker()
-        user_agent = 'F5_MODULES{0}'.format(CURRENT_COLL_VERSION)
+        user_agent = '{0}/{1}'.format(self.coll_name, CURRENT_COLL_VERSION)
         dai = generate_asset_id(socket.gethostname())
         telemetry = self.build_telemetry()
         url = 'https://%s/ee/v1/telemetry' % TEEM_ENDPOINT
@@ -52,10 +55,10 @@ class TeemClient(object):
         }
         headers.update(BASE_HEADERS)
         data = {
-            'digitalAssetName': 'F5_MODULES',
+            'digitalAssetName': self.coll_name,
             'digitalAssetVersion': CURRENT_COLL_VERSION,
             'digitalAssetId': str(dai),
-            'documentType': 'F5_MODULES Ansible Collection',
+            'documentType': '{0} Ansible Collection'.format(self.coll_name),
             'documentVersion': '1',
             'observationStartTime': self.start_time,
             'observationEndTime': datetime.now().isoformat(),
@@ -88,19 +91,29 @@ class TeemClient(object):
         return False
 
     def build_telemetry(self):
-        platform = PLATFORM.get(self.module_name.split('_')[0], '')
+        platform = self.get_platform()
+        self.in_ci, ci_name = in_cicd()
         python_version = sys.version.split(' ', maxsplit=1)[0]
 
         return [{
-            'CollectionName': 'F5_MODULES',
+            'CollectionName': '{0}'.format(self.coll_name),
             'CollectionVersion': CURRENT_COLL_VERSION,
             'CollectionModuleName': self.module_name,
             'f5Platform': platform,
             'f5SoftwareVersion': self.version if self.version else 'none',
             'ControllerAnsibleVersion': self.ansible_version,
             'ControllerPythonVersion': python_version,
-            'ControllerAsDocker': self.docker
+            'ControllerAsDocker': self.docker,
+            'DockerHostname': socket.gethostname() if self.docker else 'none',
+            'RunningInCiEnv': self.in_ci,
+            'CiEnvName': ci_name if self.in_ci else 'none'
         }]
+
+    def get_platform(self):
+        if self.coll_name.lower() in self.module_name:
+            self.module_name = self.module_name.split('.')[2]
+            return PLATFORM.get(self.module_name.split('_')[0], 'unknown')
+        return PLATFORM.get(self.module_name.split('_')[0], 'unknown')
 
 
 def in_docker():
@@ -117,6 +130,24 @@ def in_docker():
     if any('/docker/' in x for x in lines):
         return True
     return False
+
+
+def in_cicd():
+    env = determine_environment()
+    if env:
+        return True, env
+    return False, None
+
+
+def determine_environment():
+    for key in CICD_ENV:
+        env = os.getenv(key)
+        if env:
+            if key == 'CI_NAME' and env == 'codeship':
+                return CICD_ENV[key]
+            if key == 'CI_NAME' and env != 'codeship':
+                return None
+            return CICD_ENV[key]
 
 
 def generate_asset_id(seed):
