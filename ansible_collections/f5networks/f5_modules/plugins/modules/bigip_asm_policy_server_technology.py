@@ -311,7 +311,7 @@ class ModuleManager(object):
             self.client.provider['server_port'],
         )
         query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,id,partition".format(
-            self.want.name, self.want.partition
+            self.want.policy_name, self.want.partition
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -325,17 +325,16 @@ class ModuleManager(object):
         if 'items' in response and response['items'] != []:
             # because api filter on ASM is broken when names that contain numbers at the end we need to work around it
             for policy in response['items']:
-                if policy['name'] == self.want.name and policy['partition'] == self.want.partition:
+                if policy['name'] == self.want.policy_name and policy['partition'] == self.want.partition:
                     policy_id = policy['id']
 
         if not policy_id:
             raise F5ModuleError(
-                "The policy with the name {0} was not found.".format(self.want.name)
+                "The policy with the name {0} was not found.".format(self.want.policy_name)
             )
         return policy_id
 
     def _get_server_tech_link(self):
-        link = None
         uri = "https://{0}:{1}/mgmt/tm/asm/server-technologies/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -351,10 +350,11 @@ class ModuleManager(object):
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
             raise F5ModuleError(resp.content)
 
-        if 'items' in response:
-            link = response['items'][0]['selfLink']
-            return link
-        return link
+        if 'items' in response and response['items'] != []:
+            for item in response['items']:
+                if item['serverTechnologyName'] == self.want.name:
+                    return item['selfLink']
+        raise F5ModuleError("The following server technology: {0} was not found on the device.".format(self.want.name))
 
     def create_on_device(self):
         policy_id = self._get_policy_id()
