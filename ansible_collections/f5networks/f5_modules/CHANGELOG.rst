@@ -5,6 +5,21 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.19.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_pool - Added aliases for the parameters, monitor_type and quorum
+- module_utils/teem.py - add additional telemetry data fields with relevant tests
+
+Bugfixes
+--------
+
+- bigip_monitor_ldap - fixed bug related to password not set during create
+- bigip_software_install - fixed bug related to idempotency and installation of different version of software
+
 v1.18.0
 =======
 
