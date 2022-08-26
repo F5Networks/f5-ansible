@@ -116,6 +116,7 @@ options:
         choices:
           - server_ssl
           - persist
+          - asm
       asm_policy:
         description:
           - ASM policy to enable.
