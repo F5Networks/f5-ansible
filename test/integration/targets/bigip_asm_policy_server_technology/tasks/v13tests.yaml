@@ -69,7 +69,7 @@
     state: absent
   register: result
 
-- name: Assert Remove Server Technology from ASM Policy- Idempotent check
+- name: Assert Remove Server Technology from ASM Policy - Idempotent check
   assert:
     that:
       - result is success

@@ -124,7 +124,7 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Create blank ASM policy and activate
-  bigip_asm_policy:
+  bigip_asm_policy_manage:
     name: new_blank_policy
     active: yes
     state: present
@@ -135,7 +135,7 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Activate ASM policy
-  bigip_asm_policy:
+  bigip_asm_policy_manage:
     name: inactive_policy
     active: yes
     state: present
