@@ -1,0 +1,4 @@
+---
+bugfixes:
+    - bigip_asm_policy_server_technology - fix issue with naming during discovery
+    - bigip_asm_policy_signature_set - fix issue with naming during discovery
