@@ -1,0 +1,28 @@
+---
+
+- name: Issue 2216 - qkview file create only
+  bigip_qkview:
+    filename: "{{ qkview_file_name }}"
+    only_create_file: yes
+
+- name: Issue 2216 - Run ls command on the device
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/util/unix-ls
+    method: post
+    body_format: json
+    body: "{{lookup('file', 'issue-2216.json')}}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    force_basic_auth: yes
+    validate_certs: no
+  register: result
+
+- name: Set facts
+  set_fact:
+    ls_output: "{{ result.json['commandResult'] }}"
+
+- name: Issue 2216 - Assert qkview file created
+  assert:
+    that:
+      - result is success
+      - '"{{ qkview_file_name }}" in ls_output'
