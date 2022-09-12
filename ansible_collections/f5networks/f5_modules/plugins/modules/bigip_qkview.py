@@ -27,7 +27,6 @@ options:
     description:
       - Destination on your local filesystem where you want to save the QKview.
     type: path
-    required: True
   asm_request_log:
     description:
       - When C(true), includes ASM request log data. When C(False),
@@ -66,6 +65,13 @@ options:
         exist.
     type: bool
     default: yes
+  only_create_file:
+    description:
+      - If C(yes), the file is created on device and not downloaded. The file will not be deleted by the
+        module form the device.
+    type: bool
+    default: no
+    version_added: "1.20.0"
 notes:
   - This module does not include the "max time" or "restrict to blade" options.
   - If you are using this module with either Ansible Tower or Ansible AWX, you
@@ -264,14 +270,15 @@ class BaseManager(object):
         return result
 
     def present(self):
-        if os.path.exists(self.want.dest) and not self.want.force:
-            raise F5ModuleError(
-                "The specified 'dest' file already exists."
-            )
-        if not os.path.exists(os.path.dirname(self.want.dest)):
-            raise F5ModuleError(
-                "The directory of your 'dest' file does not exist."
-            )
+        if not self.want.only_create_file:
+            if os.path.exists(self.want.dest) and not self.want.force:
+                raise F5ModuleError(
+                    "The specified 'dest' file already exists."
+                )
+            if not os.path.exists(os.path.dirname(self.want.dest)):
+                raise F5ModuleError(
+                    "The directory of your 'dest' file does not exist."
+                )
         if self.want.exclude:
             choices = ['all', 'audit', 'secure', 'bash_history']
             if not all(x in choices for x in self.want.exclude_raw):
@@ -311,24 +318,25 @@ class BaseManager(object):
                 "Failed to create qkview on device."
             )
 
-        result = self._move_qkview_to_download()
-        if not result:
-            raise F5ModuleError(
-                "Failed to move the file to a downloadable location"
-            )
+        if not self.want.only_create_file:
+            result = self._move_qkview_to_download()
+            if not result:
+                raise F5ModuleError(
+                    "Failed to move the file to a downloadable location"
+                )
 
-        self._download_file()
-        if not os.path.exists(self.want.dest):
-            raise F5ModuleError(
-                "Failed to save the qkview to local disk"
-            )
+            self._download_file()
+            if not os.path.exists(self.want.dest):
+                raise F5ModuleError(
+                    "Failed to save the qkview to local disk"
+                )
 
-        self._delete_qkview()
-        result = self.exists()
-        if result:
-            raise F5ModuleError(
-                "Failed to remove the remote qkview"
-            )
+            self._delete_qkview()
+            result = self.exists()
+            if result:
+                raise F5ModuleError(
+                    "Failed to remove the remote qkview"
+                )
 
     def _delete_qkview(self):
         tpath_name = '{0}/{1}'.format(self.remote_dir, self.want.filename)
@@ -563,11 +571,17 @@ class ArgumentSpec(object):
                     'all', 'audit', 'secure', 'bash_history'
                 ]
             ),
+            only_create_file=dict(
+                default='no',
+                type='bool'
+            ),
             dest=dict(
-                type='path',
-                required=True
+                type='path'
             )
         )
+        self.required_if = [
+            ['only_create_file', 'no', ['dest']]
+        ]
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)

@@ -45,6 +45,9 @@
     path: "{{ qkview_path_local }}"
     state: absent
 
+- import_tasks: issue-02216.yaml
+  tags: issue-02216
+
 #- name: The whole enchilada
 #  bigip_qkview:
 #      asm_request_log: yes
