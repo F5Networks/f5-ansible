@@ -121,6 +121,11 @@ options:
         authentication method is not available.
       - Option only available on C(TMOS 13.0.0) and above.
     type: bool
+  referrals:
+    description:
+      - Specifies whether automatic referral chasing should be enabled.
+      - Option only available on C(TMOS 15.1.0) and above.
+    type: bool
   state:
     description:
       - When C(present), ensures the device authentication method exists.
@@ -247,6 +252,11 @@ fallback_to_local:
   returned: changed
   type: bool
   sample: yes
+referrals:
+  description: Specifies whether automatic referral chasing should be enabled
+  returned: changed
+  type: bool
+  sample: yes
 '''
 
 from datetime import datetime
@@ -267,6 +277,7 @@ class Parameters(AnsibleF5Parameters):
         'bindPw': 'bind_password',
         'userTemplate': 'user_template',
         'fallback': 'fallback_to_local',
+        'referrals': 'referrals',
         'loginAttribute': 'login_ldap_attr',
         'sslCheckPeer': 'validate_certs',
         'sslClientCert': 'client_cert',
@@ -291,6 +302,7 @@ class Parameters(AnsibleF5Parameters):
         'sslClientCert',
         'sslClientKey',
         'userTemplate',
+        'referrals',
     ]
 
     returnables = [
@@ -298,6 +310,7 @@ class Parameters(AnsibleF5Parameters):
         'bind_password',
         'check_member_attr',
         'fallback_to_local',
+        'referrals',
         'login_ldap_attr',
         'port',
         'remote_directory_tree',
@@ -316,6 +329,7 @@ class Parameters(AnsibleF5Parameters):
         'bind_password',
         'check_member_attr',
         'fallback_to_local',
+        'referrals',
         'login_ldap_attr',
         'port',
         'remote_directory_tree',
@@ -390,6 +404,10 @@ class Parameters(AnsibleF5Parameters):
     def fallback_to_local(self):
         return flatten_boolean(self._values['fallback_to_local'])
 
+    @property
+    def referrals(self):
+        return flatten_boolean(self._values['referrals'])
+
 
 class ApiParameters(Parameters):
     pass
@@ -440,6 +458,14 @@ class UsableChanges(Changes):
         return 'false'
 
     @property
+    def referrals(self):
+        if self._values['referrals'] is None:
+            return None
+        elif self._values['referrals'] == 'yes':
+            return 'yes'
+        return 'no'
+
+    @property
     def check_member_attr(self):
         if self._values['check_member_attr'] is None:
             return None
@@ -466,6 +492,10 @@ class ReportableChanges(Changes):
     @property
     def validate_certs(self):
         return flatten_boolean(self._values['validate_certs'])
+
+    @property
+    def referrals(self):
+        return flatten_boolean(self._values['referrals'])
 
     @property
     def check_member_attr(self):
@@ -846,6 +876,7 @@ class ArgumentSpec(object):
             validate_certs=dict(type='bool', aliases=['ssl_check_peer']),
             login_ldap_attr=dict(),
             fallback_to_local=dict(type='bool'),
+            referrals=dict(type='bool'),
             use_for_auth=dict(type='bool'),
             update_password=dict(
                 default='always',

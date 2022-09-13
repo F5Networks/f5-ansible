@@ -64,6 +64,7 @@ class TestParameters(unittest.TestCase):
             validate_certs=True,
             login_ldap_attr='bob',
             fallback_to_local=True,
+            referrals=False,
             update_password='on_create',
         )
         p = ApiParameters(params=args)
@@ -82,6 +83,7 @@ class TestParameters(unittest.TestCase):
         assert p.validate_certs == 'yes'
         assert p.login_ldap_attr == 'bob'
         assert p.fallback_to_local == 'yes'
+        assert p.referrals == 'no'
         assert p.update_password == 'on_create'
 
 
