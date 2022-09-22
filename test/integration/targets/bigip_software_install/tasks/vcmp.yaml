@@ -1,0 +1,121 @@
+---
+
+- name: Install new OS
+  bigip_software_install_patch:
+    block_device_image: 16.1.2.2.iso
+    type: vcmp
+    state: installed
+    volume: HD1.3
+    provider: "{{ adminProvider }}"
+  register: result
+
+- name: Assert Install new OS
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Install new OS - Idempotent Check
+  bigip_software_install_patch:
+    block_device_image: 16.1.2.2.iso
+    type: vcmp
+    state: installed
+    volume: HD1.3
+    provider: "{{ adminProvider }}"
+  register: result
+
+- name: Assert Install new OS - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Install different version
+  bigip_software_install_patch:
+    block_device_image: 12.1.2.iso
+    type: vcmp
+    state: installed
+    volume: HD1.3
+    provider: "{{ adminProvider }}"
+  register: result
+
+- name: Assert Install different version
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Install different version - Idempotent Check
+  bigip_software_install_patch:
+    block_device_image: 12.1.2.iso
+    type: vcmp
+    state: installed
+    volume: HD1.3
+    provider: "{{ adminProvider }}"
+  register: result
+
+- name: Assert Install different version - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Install hotfix image
+  bigip_software_install_patch:
+    block_device_image: Hotfix-BIGIP-16.1.2.2.0.73.28-ENG.iso
+    type: vcmp
+    state: installed
+    volume: HD1.3
+    provider: "{{ adminProvider }}"
+  register: result
+
+- name: Assert Install hotfix image
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Install hotfix image - Idempotent Check
+  bigip_software_install_patch:
+    block_device_image: Hotfix-BIGIP-16.1.2.2.0.73.28-ENG.iso
+    type: vcmp
+    state: installed
+    volume: HD1.3
+    provider: "{{ adminProvider }}"
+  register: result
+
+- name: Assert Install hotfix image - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Install on a new volume
+  bigip_software_install_patch:
+    block_device_image: 16.1.2.2.iso
+    type: vcmp
+    state: installed
+    volume: HD1.5
+    provider: "{{ adminProvider }}"
+  register: result
+
+- name: Assert Install on a new volume
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Install on a new volume - Idempotent Check
+  bigip_software_install_patch:
+    block_device_image: 16.1.2.2.iso
+    type: vcmp
+    state: installed
+    volume: HD1.5
+    provider: "{{ adminProvider }}"
+  register: result
+
+- name: Assert Install on a new volume - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed

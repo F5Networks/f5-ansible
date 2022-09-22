@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_software_install - fixed bug related to installing hotfix image on vcmp guest
