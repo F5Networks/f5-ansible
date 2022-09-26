@@ -67,3 +67,6 @@
 
 - import_tasks: sr-1-8372348301.yaml
   tags: sr-1-8372348301.yaml
+
+- import_tasks: vcmp.yaml
+  tags: vcmp

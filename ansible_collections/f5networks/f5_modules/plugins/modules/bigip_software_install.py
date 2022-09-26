@@ -456,7 +456,7 @@ class ModuleManager(object):
             )
 
     def present(self):
-        if self.volume_exists():
+        if self.exists():
             return False
         else:
             return self.update()
@@ -504,8 +504,6 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        errors = [401, 403, 409, 500, 501, 502, 503, 504]
-
         if resp.status in errors or 'code' in response and response['code'] in errors:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
@@ -515,28 +513,27 @@ class ModuleManager(object):
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return False
 
-        # version key can be missing in the event that an existing volume has
-        # no installed software in it.
-        if self.want.version != response.get('version', None):
-            if response.get('status') is not None:
-                if self.remove_volume():
-                    pass
+        return True
+
+    def software_installation_exists(self):
+        if self.volume_url is None:
             return False
 
-        if self.want.build != response.get('build', None):
+        resp = self.client.api.get(self.volume_url)
+
+        try:
+            resp_json = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp_json.get('status') and resp_json.get('status') == 404:
             return False
 
-        if self.want.state == 'installed':
-            return True
+        same_version = self.want.version == resp_json.get('version', None)
+        same_build = self.want.build == resp_json.get('build', None)
+        if (not same_build) or (not same_version):
+            return False
 
-        if (response.get('active') is None) and (response.get('status') == "complete"):
-            if self.remove_volume():
-                return False
-
-        if self.want.state == 'activated':
-            if 'media' in response and 'defaultBootLocation' in response['media'][0]:
-                return True
-        return False
+        return True
 
     def remove_volume(self):
         vol_url = self.volume_url.split('~')[0]
@@ -546,25 +543,12 @@ class ModuleManager(object):
             return True
 
     def exists(self):
-        resp = self.client.api.get(self.volume_url)
-
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status == 404 or 'code' in response and response['code'] == 404:
+        if not self.volume_exists():
+            self.want.update({'options': [{'create-volume': True}]})
             return False
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            return True
-
-        errors = [401, 403, 409, 500, 501, 502, 503, 504]
-
-        if resp.status in errors or 'code' in response and response['code'] in errors:
-            if 'message' in response:
-                raise F5ModuleError(response['message'])
-            else:
-                raise F5ModuleError(resp.content)
+        if not self.software_installation_exists():
+            return False
+        return True
 
     def update(self):
         if self.module.check_mode:
@@ -583,9 +567,7 @@ class ModuleManager(object):
                     "The specified block_device_image was not found on the device."
                 )
 
-        options = list()
-        if not self.volume_exists():
-            options.append({'create-volume': True})
+        options = self.want.options if bool(self.want.options) else list()
         if self.want.state == 'activated':
             options.append({'reboot': True})
         self.want.update({'options': options})
