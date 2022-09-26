@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_data_group - fixed bug discovered while updating records in internal data group

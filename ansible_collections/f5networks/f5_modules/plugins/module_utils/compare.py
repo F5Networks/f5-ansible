@@ -39,7 +39,7 @@ def compare_complex_list(want, have):
 
     Args:
         want (list): List of dictionaries to compare with second parameter.
-        have (list): List of dictionaries compare with first parameter.
+        have (list): List of dictionaries to compare with first parameter.
 
     Returns:
         bool:

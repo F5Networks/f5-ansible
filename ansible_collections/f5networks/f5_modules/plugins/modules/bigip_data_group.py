@@ -276,6 +276,7 @@ import os
 import re
 from datetime import datetime
 
+from ansible.module_utils.six import iteritems
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -295,7 +296,7 @@ from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec, transform_name
 )
 from ..module_utils.compare import (
-    cmp_str_with_none, compare_complex_list
+    cmp_str_with_none
 )
 from ..module_utils.icontrol import (
     upload_file, tmos_version
@@ -873,6 +874,28 @@ class Difference(object):
         except AttributeError:
             return attr1
 
+    def _compare_records(self):
+        want = self.want.records
+        have = self.have.records
+        if want == [] and have is None:
+            return None
+        if want is None:
+            return None
+        w = []
+        h = []
+
+        for x in want:
+            tmp = tuple((str(k), str(v)) for k, v in iteritems(x))
+            w.append(tmp)
+        for x in have:
+            tmp = tuple((str(k), str(v)) for k, v in iteritems(x))
+            h.append(tmp)
+
+        if set(w) == set(h):
+            return None
+        else:
+            return want
+
     @property
     def records(self):
         # External data groups are compared by their checksum, not their records. This
@@ -887,7 +910,7 @@ class Difference(object):
             return None
         if self.have.records is None:
             return self.want.records
-        result = compare_complex_list(self.want.records, self.have.records)
+        result = self._compare_records()
         return result
 
     @property
