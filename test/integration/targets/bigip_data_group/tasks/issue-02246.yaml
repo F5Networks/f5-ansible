@@ -1,0 +1,135 @@
+---
+
+- name: Issue 02246 - Create an internal data group
+  bigip_data_group:
+    name: issue-02246
+    internal: yes
+    type: string
+    records:
+      - key: key1
+        value: value1
+      - key: key2
+        value: value2
+  register: result
+
+- name: Issue 02246 - Assert Create an internal data group
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 02246 - Create an internal data group - Idempotent check
+  bigip_data_group:
+    name: issue-02246
+    internal: yes
+    type: string
+    records:
+      - key: key1
+        value: value1
+      - key: key2
+        value: value2
+  register: result
+
+- name: Issue 02246 - Assert Create an internal data group - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 02246 - Update an internal data group
+  bigip_data_group:
+    name: issue-02246
+    internal: yes
+    type: string
+    records:
+      - key: key1
+        value: value2
+      - key: key2
+        value: value1
+  register: result
+
+- name: Issue 02246 - Assert Update an internal data group
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 02246 - Update an internal data group - Idempotent check
+  bigip_data_group:
+    name: issue-02246
+    internal: yes
+    type: string
+    records:
+      - key: key1
+        value: value2
+      - key: key2
+        value: value1
+  register: result
+
+- name: Issue 02246 - Assert Update an internal data group - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 02246 - Update again an internal data group
+  bigip_data_group:
+    name: issue-02246
+    internal: yes
+    type: string
+    records:
+      - key: key1
+        value: value2
+      - key: key2
+        value: value2
+  register: result
+
+- name: Issue 02246 - Assert Update again an internal data group
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 02246 - Update again an internal data group - Idempotent check
+  bigip_data_group:
+    name: issue-02246
+    internal: yes
+    type: string
+    records:
+      - key: key1
+        value: value2
+      - key: key2
+        value: value2
+  register: result
+
+- name: Issue 02246 - Assert Update again an internal data group - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 02246 - Delete internal data group
+  bigip_data_group:
+    name: issue-02246
+    internal: yes
+    state: absent
+  register: result
+
+- name: Issue 02246 - Assert Delete internal data group
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 02246 - Delete internal data group - Idempotent check
+  bigip_data_group:
+    name: issue-02246
+    internal: yes
+    state: absent
+  register: result
+
+- name: Issue 02246 - Assert Delete internal data group - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
