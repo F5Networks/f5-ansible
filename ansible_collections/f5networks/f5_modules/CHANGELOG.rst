@@ -5,6 +5,22 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.20.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_qkview - added a new parameter, only_create_file
+
+Bugfixes
+--------
+
+- bigip_asm_policy_server_technology - fix issue with naming during discovery
+- bigip_asm_policy_signature_set - fix issue with naming during discovery
+- bigip_data_group - fixed bug discovered while updating records in internal data group
+- bigip_software_install - fixed bug related to installing hotfix image on vcmp guest
+
 v1.19.0
 =======
 
