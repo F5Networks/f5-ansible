@@ -47,6 +47,13 @@ options:
       - When creating a new device group, this option will default to C(no).
     type: bool
     default: no
+  asm_sync:
+    description:
+      - Specifies whether to synchronize ASM configurations of device group members.
+      - A device can be a member of only one ASM-enabled device group.
+      - When creating a new device group, this option will default to C(no).
+    type: bool
+    default: no
   save_on_auto_sync:
     description:
       - When performing an auto-sync, specifies whether the configuration
@@ -121,6 +128,17 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
+
+- name: Create a sync-only device group with auto-sync and asm-sync enabled
+  bigip_device_group:
+    name: foo-group
+    auto_sync: yes
+    asm_sync: yes
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -146,6 +164,11 @@ type:
   sample: sync-failover
 auto_sync:
   description: The new auto_sync value of the device group.
+  returned: changed
+  type: bool
+  sample: true
+asm_sync:
+  description: The new asm_sync value of the device group.
   returned: changed
   type: bool
   sample: true
@@ -177,6 +200,7 @@ class Parameters(AnsibleF5Parameters):
         'saveOnAutoSync': 'save_on_auto_sync',
         'fullLoadOnSync': 'full_sync',
         'autoSync': 'auto_sync',
+        'asmSync': 'asm_sync',
         'incrementalConfigSyncSizeMax': 'max_incremental_sync_size',
         'networkFailover': 'network_failover',
     }
@@ -186,6 +210,7 @@ class Parameters(AnsibleF5Parameters):
         'description',
         'type',
         'autoSync',
+        'asmSync',
         'incrementalConfigSyncSizeMax',
         'networkFailover',
     ]
@@ -195,6 +220,7 @@ class Parameters(AnsibleF5Parameters):
         'description',
         'type',
         'auto_sync',
+        'asm_sync',
         'max_incremental_sync_size',
         'network_failover',
     ]
@@ -203,6 +229,7 @@ class Parameters(AnsibleF5Parameters):
         'full_sync',
         'description',
         'auto_sync',
+        'asm_sync',
         'max_incremental_sync_size',
         'network_failover',
     ]
@@ -239,6 +266,14 @@ class ApiParameters(Parameters):
         if self._values['auto_sync'] is None:
             return None
         elif self._values['auto_sync'] == 'enabled':
+            return True
+        return False
+
+    @property
+    def asm_sync(self):
+        if self._values['asm_sync'] is None:
+            return None
+        elif self._values['asm_sync'] == 'enabled':
             return True
         return False
 
@@ -299,6 +334,14 @@ class UsableChanges(Changes):
         return 'disabled'
 
     @property
+    def asm_sync(self):
+        if self._values['asm_sync'] is None:
+            return None
+        elif self._values['asm_sync']:
+            return 'enabled'
+        return 'disabled'
+
+    @property
     def save_on_auto_sync(self):
         if self._values['save_on_auto_sync'] is None:
             return None
@@ -331,6 +374,14 @@ class ReportableChanges(Changes):
         if self._values['auto_sync'] is None:
             return None
         elif self._values['auto_sync'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def asm_sync(self):
+        if self._values['asm_sync'] is None:
+            return None
+        elif self._values['asm_sync'] == 'enabled':
             return 'yes'
         return 'no'
 
@@ -572,6 +623,10 @@ class ArgumentSpec(object):
             ),
             description=dict(),
             auto_sync=dict(
+                type='bool',
+                default='no'
+            ),
+            asm_sync=dict(
                 type='bool',
                 default='no'
             ),

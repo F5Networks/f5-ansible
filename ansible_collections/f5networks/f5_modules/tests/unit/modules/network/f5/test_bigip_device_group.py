@@ -53,7 +53,8 @@ class TestParameters(unittest.TestCase):
             full_sync=False,
             description="my description",
             type="sync-failover",
-            auto_sync=True
+            auto_sync=True,
+            asm_sync=True
         )
 
         p = ModuleParameters(params=args)
@@ -62,6 +63,7 @@ class TestParameters(unittest.TestCase):
         assert p.description == "my description"
         assert p.type == "sync-failover"
         assert p.auto_sync is True
+        assert p.asm_sync is True
 
     def test_api_parameters(self):
         args = dict(
@@ -76,6 +78,7 @@ class TestParameters(unittest.TestCase):
 
         p = ApiParameters(params=args)
         assert p.auto_sync is True
+        assert p.asm_sync is False
         assert p.full_sync is False
         assert p.max_incremental_sync_size == 1024
         assert p.save_on_auto_sync is False
