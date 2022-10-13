@@ -1,0 +1,42 @@
+---
+
+- name: Get temporary file for fetching UCS
+  file:
+    path: "{{ role_path }}/files/basename.ucs"
+    state: touch
+    mode: 0644
+  # register: ucs2
+
+- name: Save a UCS file locally for later usage
+  bigip_ucs_fetch:
+    dest: "{{ role_path }}/files/basename.ucs"
+
+- name: Upload UCS File
+  bigip_ucs:
+    ucs: "{{ role_path }}/files/basename.ucs"
+    force: yes
+    state: present
+
+- name: Check file permission and ownership
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/util/bash
+    method: POST
+    validate_certs: no
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body:
+      command: "run"
+      utilCmdArgs: "-c 'stat -c \"%a %U %G\" /var/local/ucs/basename.ucs'"
+  register: result
+
+- name: Assert file permission and ownership
+  assert:
+    that:
+      result.json.commandResult == "644 root root\n"
+
+- name: Remove temporary UCS file
+  file:
+    path: "{{ role_path }}/files/basename.ucs"
+    state: absent

@@ -498,6 +498,22 @@ class V1Manager(BaseManager):
       * No API to upload UCS files
 
     """
+
+    def _set_mode_and_ownership(self):
+        url = 'https://{0}:{1}/mgmt/tm/util/bash'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        ownership = 'root:root'
+        ucs_path = f'/var/local/ucs/{self.want.basename}'
+        file_mode = oct(os.stat(self.want.ucs).st_mode)[-3:]
+        args = dict(
+            command='run',
+            utilCmdArgs='-c "chown {0} {1};chmod {2} {1}"'.format(ownership, ucs_path, file_mode)
+        )
+
+        self.client.api.post(url, json=args)
+
     def upload_file_to_device(self, content, name):
         url = 'https://{0}:{1}/mgmt/shared/file-transfer/uploads'.format(
             self.client.provider['server'],
@@ -536,6 +552,8 @@ class V1Manager(BaseManager):
                 raise F5ModuleError(response['message'])
             else:
                 raise F5ModuleError(resp.content)
+
+        self._set_mode_and_ownership()
         return True
 
     def read_current_from_device(self):

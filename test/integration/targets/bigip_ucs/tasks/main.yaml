@@ -89,4 +89,7 @@
     state: absent
   register: result
 
+- import_tasks: issue-2227.yaml
+  tags: issue-2227
+
 - import_tasks: teardown.yaml
