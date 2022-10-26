@@ -77,6 +77,8 @@ class TestParameters(unittest.TestCase):
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_software_image.ModuleManager._set_mode_and_ownership')
+        self.p1.start()
         self.p2 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_software_image.tmos_version')
         self.p3 = patch('ansible_collections.f5networks.f5_modules.plugins.modules.bigip_software_image.send_teem')
         self.m2 = self.p2.start()
@@ -85,6 +87,7 @@ class TestManager(unittest.TestCase):
         self.m3.return_value = True
 
     def tearDown(self):
+        self.p1.stop()
         self.p2.stop()
         self.p3.stop()
 
