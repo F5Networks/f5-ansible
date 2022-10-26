@@ -1,0 +1,30 @@
+---
+
+- name: Upload the image
+  bigip_software_image:
+    image: "{{ initial_image }}"
+    state: present
+
+- name: Check file permission and ownership
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/util/bash
+    method: POST
+    validate_certs: no
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body:
+      command: "run"
+      utilCmdArgs: "-c 'stat -c \"%a %U %G\" /shared/images/BIGIP-16.1.1-0.0.16.iso'"
+  register: result
+
+- name: Assert file permission and ownership
+  assert:
+    that:
+      result.json.commandResult == "644 root root\n"
+
+- name: Remove the image from the bigip host
+  bigip_software_image:
+    image: "{{ initial_image }}"
+    state: absent
