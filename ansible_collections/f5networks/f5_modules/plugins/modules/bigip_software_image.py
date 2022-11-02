@@ -374,6 +374,21 @@ class ModuleManager(object):
             time.sleep(1)
         raise F5ModuleError("Failed to delete the resource.")
 
+    def _set_mode_and_ownership(self):
+        url = 'https://{0}:{1}/mgmt/tm/util/bash'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        ownership = 'root:root'
+        image_path = f'/shared/images/{self.want.filename}'
+        file_mode = '0644'
+        args = dict(
+            command='run',
+            utilCmdArgs='-c "chown {0} {1};chmod {2} {1}"'.format(ownership, image_path, file_mode)
+        )
+
+        self.client.api.post(url, json=args)
+
     def create(self):
         self._set_changed_options()
         if self.module.check_mode:
@@ -393,6 +408,7 @@ class ModuleManager(object):
                 # This must appear after the creation process because the information
                 # does not exist on the device (has been parsed by BIG-IP) until the
                 # ISO is uploaded.
+                self._set_mode_and_ownership()
                 self.want = self.read_current_from_device()
                 self._set_changed_options()
                 return True
