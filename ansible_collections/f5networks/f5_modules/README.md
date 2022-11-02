@@ -5,8 +5,7 @@ This collection packages and distributes modules, and plugins.
 
 ## Requirements
 
- - ansible >= 2.9
- - ipaddress (python < 3.5)
+ - ansible >= 2.10
 
 ## Installation
 
@@ -30,8 +29,8 @@ Semantic Versioning examples below:
 - Increment minor (for example: y in x.y.z) version number for new functionality in a backwards compatible manner.
 - Increment patch (for example: z in x.y.z) version number for backwards compatible bug fixes.
 
-## Deprecation Notice
-Support for versions of Python earlier than 3.5 is being deprecated and will be removed at a future date. 
+## Python Version Notice
+Collection only supports python 3.5 and above.
 
 ## Example Usage
 
