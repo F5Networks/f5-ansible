@@ -54,6 +54,7 @@ options:
       - When creating a new device group, this option will default to C(no).
     type: bool
     default: no
+    version_added: "1.21.0"
   save_on_auto_sync:
     description:
       - When performing an auto-sync, specifies whether the configuration
