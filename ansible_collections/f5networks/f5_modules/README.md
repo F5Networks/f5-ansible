@@ -7,6 +7,9 @@ This collection packages and distributes modules, and plugins.
 
  - ansible >= 2.9
 
+## Python Version Notice
+Collection only supports python 3.6 and above, however F5 recommends to move to Python 3.8 and above.
+
 ## Installation
 To install in ansible default or defined paths use:
 ```bash
@@ -27,9 +30,6 @@ Semantic Versioning examples below:
 - Increment major (for example: x in x.y.z) version number for an incompatible API change.
 - Increment minor (for example: y in x.y.z) version number for new functionality in a backwards compatible manner.
 - Increment patch (for example: z in x.y.z) version number for backwards compatible bug fixes.
-
-## Python Version Notice
-Collection only supports python 3.6 and above, however F5 recommends to move to Python 3.8 and above.
 
 ## Example Usage
 
