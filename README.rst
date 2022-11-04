@@ -43,7 +43,7 @@ recent Ansible module updates between releases.
 
 Installing the Daily Build
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. code:: shell
+.. code-block:: shell
 
     ansible-galaxy collection install <collection name> -p ./collections
     e.g.
@@ -54,6 +54,24 @@ Installing the Daily Build
    "-p" is the location in which the collection will be installed. This location should be defined in the path for
    ansible to search for collections. An example of this would be adding ``collections_paths = ./collections``
    to your **ansible.cfg**
+
+Running latest devel in EE
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+We also offer a new method of running the collection inside Ansible's Execution Environment container.
+The advantage of such approach is that any required package dependencies and minimum supported pyton versions are
+installed in an isolated container which minimizes any environment related issues during runtime. More information on EE
+can be found here [execenv]. Use the below requirements.yml file when building EE container:
+
+.. code-block:: yaml
+
+    collections:
+      - name: ansible.netcommon
+        version: ">=2.0.0"
+      - name: f5networks.f5_modules
+        source: https://github.com/F5Networks/f5-ansible-f5modules#ansible_collections/f5networks/f5_modules
+        type: git
+        version: devel
+
 
 Support
 -------
@@ -76,9 +94,9 @@ Documentation
 All documentation is available on |ansiblehelp|.
 Changelog information available on |changelog|.
 
-Python Version Deprecation
+Python Version Change
 --------------------------
-Support for versions of Python earlier than 3.5 is being deprecated and will be removed at a future date.
+Collection only supports python 3.6 and above, however F5 recommends to move to Python 3.8 and above.
 
 Your ideas
 ----------
