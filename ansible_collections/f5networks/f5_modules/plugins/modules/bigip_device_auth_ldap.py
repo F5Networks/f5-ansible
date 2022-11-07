@@ -126,6 +126,7 @@ options:
       - Specifies whether automatic referral chasing should be enabled.
       - Option only available on C(TMOS 15.1.0) and above.
     type: bool
+    version_added: "1.21.0"
   state:
     description:
       - When C(present), ensures the device authentication method exists.
