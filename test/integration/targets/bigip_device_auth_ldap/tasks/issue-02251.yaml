@@ -1,0 +1,57 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Issue 02251 - Create an LDAP device configuration with referrals
+  bigip_device_auth_ldap:
+    servers:
+      - 1.1.1.1
+    referrals: yes
+    source_type: active-directory
+  register: result
+
+- name: Issue 02251 - Assert Create an LDAP device configuration, referrals - yes
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 02251 - Create an LDAP device configuration, referrals - yes - Idempotent check
+  bigip_device_auth_ldap:
+    servers:
+      - 1.1.1.1
+    referrals: yes
+    source_type: active-directory
+  register: result
+
+- name: Issue 02251 - Assert Create an LDAP device configuration, referrals - yes - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 02251 - Change LDAP configuration, referrals - no
+  bigip_device_auth_ldap:
+    referrals: no
+  register: result
+
+- name: Issue 02251 - Assert Change LDAP configuration, referrals - no
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 02251 - Change LDAP configuration, referrals - no - Idempotent check
+  bigip_device_auth_ldap:
+    referrals: no
+  register: result
+
+- name: Issue 02251 - Assert Change LDAP configuration, referrals - no - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 02251 - Remove LDAP configuration
+  bigip_device_auth_ldap:
+    state: absent
