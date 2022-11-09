@@ -16,21 +16,21 @@
    limitations under the License.
    -->
 
-Ansible F5
-==========
+F5 BIG-IP Imperative Collection for Ansible
+===========================================
 
 |slack badge| |travis badge| |shippable badge|
 
 Introduction
 ------------
 
-This repository is the source for F5 Imperative Collection for Ansible.
+This repository is the source for F5 BIG-IP Imperative Collection for Ansible.
 The architecture of the modules makes inherent use of the BIG-IP REST APIs as well as the tmsh API where required.
 
 This repository is an **incubator** for Ansible imperative modules. The modules in this repository **may be
 broken due to experimentation or refactoring**.
 
-The F5 Modules for Ansible are freely provided to the open source community for automating BIG-IP device configurations.
+The F5 BIG-IP Modules for Ansible are freely provided to the open source community for automating BIG-IP device configurations.
 
 If you want to download the stable modules, please install latest collection release found on galaxy: |f5_collection|.
 
@@ -58,7 +58,7 @@ Installing the Daily Build
 Running latest devel in EE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 We also offer a new method of running the collection inside Ansible's Execution Environment container.
-The advantage of such approach is that any required package dependencies and minimum supported pyton versions are
+The advantage of such approach is that any required package dependencies and minimum supported Python versions are
 installed in an isolated container which minimizes any environment related issues during runtime. More information on EE
 can be found here [execenv]. Use the below requirements.yml file when building EE container:
 
@@ -79,7 +79,7 @@ F5 supports the F5 Imperative Collection for Ansible delivered in |ansible_galax
 
 Community Support
 ~~~~~~~~~~~~~~~~~
-We encourage you to use our |slacklink| for discussion and assistance on F5 Ansible Modules (click the **ansible** channel). There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should not be considered a substitute for F5 Technical Support.
+We encourage you to use our |slacklink| for discussion and assistance on F5 BIG-IP Ansible Modules (click the **ansible** channel). There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should not be considered a substitute for F5 Technical Support.
 
 Bugs, Issues
 ------------
@@ -96,7 +96,7 @@ Changelog information available on |changelog|.
 
 Python Version Change
 --------------------------
-Collection only supports python 3.6 and above, however F5 recommends to move to Python 3.8 and above.
+Collection only supports python 3.6 and above, however F5 recommends Python 3.8 and above.
 
 Your ideas
 ----------
