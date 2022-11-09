@@ -5,6 +5,15 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.21.0
+=======
+
+Bugfixes
+--------
+
+- bigip_software_image - fixed permission and ownership of the uploaded image file
+- bigip_ucs - fixed permission and ownership of the ucs file
+
 v1.20.0
 =======
 

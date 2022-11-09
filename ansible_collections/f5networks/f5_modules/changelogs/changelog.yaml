@@ -885,6 +885,16 @@ releases:
     - fix-naming-issues-asm.yaml
     - fix-records-update-issues-data-group.yaml
     release_date: '2022-09-29'
+  1.21.0:
+    changes:
+      bugfixes:
+      - bigip_software_image - fixed permission and ownership of the uploaded image
+        file
+      - bigip_ucs - fixed permission and ownership of the ucs file
+    fragments:
+    - 2227-fix-permission-ownership-bigip-ucs.yaml
+    - sr-fix-image-upload-bug.yaml
+    release_date: '2022-11-09'
   1.3.0:
     changes:
       bugfixes:
