@@ -1,0 +1,50 @@
+---
+
+- name: Issue 02261 - Set asm_sync on device group
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    asm_sync: yes
+  register: result
+
+- name: Issue 02261 - Set asm_sync on device group
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02261 - Set asm_sync on device group - Idempotent check
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    asm_sync: yes
+  register: result
+
+- name: Issue 02261 - Set asm_sync on device group - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02261 - Unset asm_sync on device group
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    asm_sync: no
+  register: result
+
+- name: Issue 02261 - Unset asm_sync on device group
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02261 - Unset asm_sync on device group - Idempotent check
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    asm_sync: no
+  register: result
+
+- name: Issue 02261 - Unset asm_sync on device group - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02261 - Remove device group
+  bigip_device_group:
+    name: "{{ device_group_name }}"
+    state: absent

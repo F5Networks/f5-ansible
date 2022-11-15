@@ -100,6 +100,16 @@ options:
         C(time_until_up) is specified, it must be C(0). Or, if it already exists, it
         must be C(0).
     type: bool
+  up_interval:
+    description:
+      - Specifies the interval for the system to use to perform the health check
+        when a resource is up.
+      - When C(0), specifies the system uses the interval specified in
+        C(interval) to check the health of the resource.
+      - When any other number, enables you to specify a different interval
+        when checking the health of a resource that is up.
+    type: int
+    version_added: "1.22.0"
   partition:
     description:
       - Device partition to manage resources on.
@@ -193,6 +203,11 @@ reverse:
   returned: changed
   type: bool
   sample: yes
+up_interval:
+  description: Interval for the system to use to perform the health check when a resource is up.
+  returned: changed
+  type: int
+  sample: 0
 '''
 from datetime import datetime
 
@@ -216,6 +231,7 @@ class Parameters(AnsibleF5Parameters):
         'defaultsFrom': 'parent',
         'recv': 'receive',
         'recvDisable': 'receive_disable',
+        'upInterval': 'up_interval',
     }
 
     api_attributes = [
@@ -231,6 +247,7 @@ class Parameters(AnsibleF5Parameters):
         'recvDisable',
         'description',
         'reverse',
+        'upInterval',
     ]
 
     returnables = [
@@ -245,6 +262,7 @@ class Parameters(AnsibleF5Parameters):
         'receive_disable',
         'description',
         'reverse',
+        'up_interval',
     ]
 
     updatables = [
@@ -259,6 +277,7 @@ class Parameters(AnsibleF5Parameters):
         'receive_disable',
         'description',
         'reverse',
+        'up_interval',
     ]
 
     @property
@@ -705,6 +724,7 @@ class ArgumentSpec(object):
             receive=dict(),
             receive_disable=dict(),
             ip=dict(),
+            up_interval=dict(type='int'),
             port=dict(),
             interval=dict(type='int'),
             reverse=dict(type='bool'),

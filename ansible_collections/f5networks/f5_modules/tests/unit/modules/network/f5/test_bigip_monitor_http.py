@@ -59,6 +59,7 @@ class TestParameters(unittest.TestCase):
             interval=20,
             timeout=30,
             time_until_up=60,
+            up_interval=10,
             partition='Common'
         )
 
@@ -74,6 +75,7 @@ class TestParameters(unittest.TestCase):
         assert p.interval == 20
         assert p.timeout == 30
         assert p.time_until_up == 60
+        assert p.up_interval == 10
 
     def test_module_parameters_ints_as_strings(self):
         args = dict(
