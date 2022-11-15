@@ -53,32 +53,27 @@ class TestParameters(unittest.TestCase):
             full_sync=False,
             description="my description",
             type="sync-failover",
-            auto_sync=True
+            auto_sync=True,
+            asm_sync=True
         )
 
         p = ModuleParameters(params=args)
-        assert p.save_on_auto_sync is True
-        assert p.full_sync is False
+        assert p.save_on_auto_sync == 'true'
+        assert p.full_sync == 'false'
         assert p.description == "my description"
         assert p.type == "sync-failover"
-        assert p.auto_sync is True
+        assert p.auto_sync == 'enabled'
+        assert p.asm_sync == 'enabled'
 
     def test_api_parameters(self):
-        args = dict(
-            asmSync="disabled",
-            autoSync="enabled",
-            fullLoadOnSync="false",
-            incrementalConfigSyncSizeMax=1024,
-            networkFailover="disabled",
-            saveOnAutoSync="false",
-            type="sync-only"
-        )
+        args = load_fixture('load_device_group.json')
 
         p = ApiParameters(params=args)
-        assert p.auto_sync is True
-        assert p.full_sync is False
+        assert p.auto_sync == 'enabled'
+        assert p.asm_sync == 'disabled'
+        assert p.full_sync == 'true'
         assert p.max_incremental_sync_size == 1024
-        assert p.save_on_auto_sync is False
+        assert p.save_on_auto_sync == 'false'
         assert p.type == 'sync-only'
 
 

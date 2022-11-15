@@ -1,0 +1,4 @@
+---
+minor_changes:
+    - bigip_device_group - added a new parameter, asm_sync to support ASM policy synchronization
+    - bigip_device_group - changed full_sync, auto_sync, save_on_auto_sync parameters only to set default value during creation, to work as documented.

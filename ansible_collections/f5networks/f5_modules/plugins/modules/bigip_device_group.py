@@ -46,7 +46,13 @@ options:
         automatically.
       - When creating a new device group, this option will default to C(no).
     type: bool
-    default: no
+  asm_sync:
+    description:
+      - Specifies whether to synchronize ASM configurations of device group members.
+      - A device can be a member of only one ASM-enabled device group.
+      - When creating a new device group, this option will default to C(no).
+    type: bool
+    version_added: "1.22.0"
   save_on_auto_sync:
     description:
       - When performing an auto-sync, specifies whether the configuration
@@ -121,6 +127,17 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
+
+- name: Create a sync-only device group with auto-sync and asm-sync enabled
+  bigip_device_group:
+    name: foo-group
+    auto_sync: yes
+    asm_sync: yes
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -149,6 +166,11 @@ auto_sync:
   returned: changed
   type: bool
   sample: true
+asm_sync:
+  description: The new asm_sync value of the device group.
+  returned: changed
+  type: bool
+  sample: true
 max_incremental_sync_size:
   description: The new sync size of the device group.
   returned: changed
@@ -162,11 +184,10 @@ network_failover:
 '''
 from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, f5_argument_spec
+    F5ModuleError, AnsibleF5Parameters, f5_argument_spec, flatten_boolean
 )
 from ..module_utils.icontrol import tmos_version
 from ..module_utils.teem import send_teem
@@ -177,6 +198,7 @@ class Parameters(AnsibleF5Parameters):
         'saveOnAutoSync': 'save_on_auto_sync',
         'fullLoadOnSync': 'full_sync',
         'autoSync': 'auto_sync',
+        'asmSync': 'asm_sync',
         'incrementalConfigSyncSizeMax': 'max_incremental_sync_size',
         'networkFailover': 'network_failover',
     }
@@ -186,6 +208,7 @@ class Parameters(AnsibleF5Parameters):
         'description',
         'type',
         'autoSync',
+        'asmSync',
         'incrementalConfigSyncSizeMax',
         'networkFailover',
     ]
@@ -195,6 +218,7 @@ class Parameters(AnsibleF5Parameters):
         'description',
         'type',
         'auto_sync',
+        'asm_sync',
         'max_incremental_sync_size',
         'network_failover',
     ]
@@ -203,6 +227,7 @@ class Parameters(AnsibleF5Parameters):
         'full_sync',
         'description',
         'auto_sync',
+        'asm_sync',
         'max_incremental_sync_size',
         'network_failover',
     ]
@@ -226,43 +251,49 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    @property
-    def network_failover(self):
-        if self._values['network_failover'] is None:
-            return None
-        elif self._values['network_failover'] == 'enabled':
-            return True
-        return False
-
-    @property
-    def auto_sync(self):
-        if self._values['auto_sync'] is None:
-            return None
-        elif self._values['auto_sync'] == 'enabled':
-            return True
-        return False
-
-    @property
-    def save_on_auto_sync(self):
-        if self._values['save_on_auto_sync'] is None:
-            return None
-        elif self._values['save_on_auto_sync'] in BOOLEANS_TRUE:
-            return True
-        else:
-            return False
-
-    @property
-    def full_sync(self):
-        if self._values['full_sync'] is None:
-            return None
-        elif self._values['full_sync'] in BOOLEANS_TRUE:
-            return True
-        else:
-            return False
+    pass
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def asm_sync(self):
+        result = flatten_boolean(self._values['asm_sync'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
+    @property
+    def network_failover(self):
+        result = flatten_boolean(self._values['network_failover'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
+    @property
+    def auto_sync(self):
+        result = flatten_boolean(self._values['auto_sync'])
+        if result == 'yes':
+            return 'enabled'
+        if result == 'no':
+            return 'disabled'
+
+    @property
+    def save_on_auto_sync(self):
+        result = flatten_boolean(self._values['save_on_auto_sync'])
+        if result == 'yes':
+            return 'true'
+        if result == 'no':
+            return 'false'
+
+    @property
+    def full_sync(self):
+        result = flatten_boolean(self._values['full_sync'])
+        if result == 'yes':
+            return 'true'
+        if result == 'no':
+            return 'false'
 
 
 class Changes(Parameters):
@@ -282,73 +313,29 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    @property
-    def network_failover(self):
-        if self._values['network_failover'] is None:
-            return None
-        elif self._values['network_failover']:
-            return 'enabled'
-        return 'disabled'
-
-    @property
-    def auto_sync(self):
-        if self._values['auto_sync'] is None:
-            return None
-        elif self._values['auto_sync']:
-            return 'enabled'
-        return 'disabled'
-
-    @property
-    def save_on_auto_sync(self):
-        if self._values['save_on_auto_sync'] is None:
-            return None
-        elif self._values['save_on_auto_sync'] in BOOLEANS_TRUE:
-            return "true"
-        else:
-            return "false"
-
-    @property
-    def full_sync(self):
-        if self._values['full_sync'] is None:
-            return None
-        elif self._values['full_sync'] in BOOLEANS_TRUE:
-            return "true"
-        else:
-            return "false"
+    pass
 
 
 class ReportableChanges(Changes):
     @property
     def network_failover(self):
-        if self._values['network_failover'] is None:
-            return None
-        elif self._values['network_failover'] == 'enabled':
-            return 'yes'
-        return 'no'
+        return flatten_boolean(self._values['network_failover'])
 
     @property
     def auto_sync(self):
-        if self._values['auto_sync'] is None:
-            return None
-        elif self._values['auto_sync'] == 'enabled':
-            return 'yes'
-        return 'no'
+        return flatten_boolean(self._values['auto_sync'])
+
+    @property
+    def asm_sync(self):
+        return flatten_boolean(self._values['asm_sync'])
 
     @property
     def save_on_auto_sync(self):
-        if self._values['save_on_auto_sync'] is None:
-            return None
-        elif self._values['save_on_auto_sync'] in BOOLEANS_TRUE:
-            return "yes"
-        return "no"
+        return flatten_boolean(self._values['save_on_auto_sync'])
 
     @property
     def full_sync(self):
-        if self._values['full_sync'] is None:
-            return None
-        elif self._values['full_sync'] in BOOLEANS_TRUE:
-            return "yes"
-        return "no"
+        return flatten_boolean(self._values['full_sync'])
 
 
 class ModuleManager(object):
@@ -500,10 +487,23 @@ class ModuleManager(object):
                 return True
             raise F5ModuleError(response.content)
 
-    def create_on_device(self):
-        params = self.changes.api_params()
+    def _set_create_defaults(self, params):
+        if self.want.auto_sync is None:
+            params['autoSync'] = 'disabled'
+        if self.want.full_sync is None:
+            params['fullLoadOnSync'] = 'false'
+        if self.want.save_on_auto_sync is None:
+            params['saveOnAutoSync'] = 'false'
+        if self.want.asm_sync is None:
+            params['asmSync'] = 'disabled'
+
         params['name'] = self.want.name
         params['partition'] = self.want.partition
+        return params
+
+    def create_on_device(self):
+        params = self._set_create_defaults(self.changes.api_params())
+
         uri = "https://{0}:{1}/mgmt/tm/cm/device-group/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -572,8 +572,10 @@ class ArgumentSpec(object):
             ),
             description=dict(),
             auto_sync=dict(
-                type='bool',
-                default='no'
+                type='bool'
+            ),
+            asm_sync=dict(
+                type='bool'
             ),
             save_on_auto_sync=dict(
                 type='bool',

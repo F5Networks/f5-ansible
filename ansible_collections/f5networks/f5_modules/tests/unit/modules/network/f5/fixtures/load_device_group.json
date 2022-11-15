@@ -1,0 +1,19 @@
+{
+    "kind": "tm:cm:device-group:device-groupstate",
+    "name": "datasync-device-sslo.ansible.lab.local-dg",
+    "partition": "Common",
+    "fullPath": "/Common/datasync-device-sslo.ansible.lab.local-dg",
+    "generation": 1,
+    "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~datasync-device-sslo.ansible.lab.local-dg?ver=16.0.0",
+    "asmSync": "disabled",
+    "autoSync": "enabled",
+    "fullLoadOnSync": "true",
+    "incrementalConfigSyncSizeMax": 1024,
+    "networkFailover": "disabled",
+    "saveOnAutoSync": "false",
+    "type": "sync-only",
+    "devicesReference": {
+        "link": "https://localhost/mgmt/tm/cm/device-group/~Common~datasync-device-sslo.ansible.lab.local-dg/devices?ver=16.0.0",
+        "isSubcollection": true
+    }
+}

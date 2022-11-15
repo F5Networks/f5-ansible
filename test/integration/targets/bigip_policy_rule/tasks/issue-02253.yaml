@@ -1,0 +1,137 @@
+---
+
+- name: Issue 02253 - Provision ASM to test attaching ASM policies to LTM policy
+  bigip_provision:
+    module: asm
+  tags:
+    - module-provisioning
+
+- name: Issue 02253 - Collect BIG-IP facts - policy
+  bigip_device_info:
+    include: system-info
+  register: f
+
+- name: Issue 02253 - Create ASM policy, compact XML file - current
+  bigip_asm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  when: f.system_info.product_version >= "13.0.0"
+
+- name: Issue 02253 - Create ASM policy, compact XML file - legacy
+  bigip_asm_policy_import:
+    name: foo-policy
+    source: "{{ role_path }}/files/v1_policy_default_compact_format_enabled.xml"
+  when: f.system_info.product_version < "13.0.0"
+
+- name: Issue 02253 - Activate imported ASM policy
+  bigip_asm_policy_manage:
+    name: foo-policy
+    active: yes
+    state: present
+
+- name: Issue 02253 - Create LTM policy
+  bigip_policy:
+    name: issue-02253
+
+- name: Issue 02253 - Create default published rule using asm, no conditions
+  bigip_policy_rule:
+    policy: issue-02253
+    name: default
+    actions:
+      - type: enable
+        asm_policy: foo-policy
+
+- name: Issue 02253 - Create a rule to disable asm for HTTP host condition
+  bigip_policy_rule:
+    policy: issue-02253
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "FOOBAR"
+    actions:
+      - type: disable
+        disable_target: asm
+        event: request
+  register: result
+
+- name: Issue 02253 - Assert Create rule to disable asm for HTTP host condition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02253 - Create rule to disable asm for HTTP host condition - Idempotent check
+  bigip_policy_rule:
+    policy: issue-02253
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "FOOBAR"
+    actions:
+      - type: disable
+        disable_target: asm
+        event: request
+  register: result
+
+- name: Issue 02253 - Assert Create rule to disable asm for HTTP host condition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+- name: Issue 02253 - Add condition to a rule to disable asm
+  bigip_policy_rule:
+    policy: issue-02253
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "FOOBAR"
+      - type: http_host
+        host_begins_with_any:
+          - foo.bar.com
+    actions:
+      - type: disable
+        disable_target: asm
+        event: request
+  register: result
+
+- name: Issue 02253 - Assert Add condition to a rule to disable asm
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02253 - Add condition to a rule to disable asm - Idempotent check
+  bigip_policy_rule:
+    policy: issue-02253
+    name: rule1
+    conditions:
+      - type: http_host
+        host_is_any: "FOOBAR"
+      - type: http_host
+        host_begins_with_any:
+          - foo.bar.com
+    actions:
+      - type: disable
+        disable_target: asm
+        event: request
+  register: result
+
+- name: Issue 02253 - Assert Add condition to a rule to disable asm - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02253 - Delete LTM policy
+  bigip_policy:
+    name: issue-02253
+    state: absent
+
+- name: Issue 02253 - Remove ASM policy
+  bigip_asm_policy_manage:
+    name: foo-policy
+    state: absent
+
+
