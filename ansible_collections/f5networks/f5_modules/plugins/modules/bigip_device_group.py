@@ -52,7 +52,7 @@ options:
       - A device can be a member of only one ASM-enabled device group.
       - When creating a new device group, this option will default to C(no).
     type: bool
-  version_added: "1.22.0"
+    version_added: "1.22.0"
   save_on_auto_sync:
     description:
       - When performing an auto-sync, specifies whether the configuration
