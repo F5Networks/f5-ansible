@@ -1,0 +1,73 @@
+---
+
+- name: Issue 02052 - Create published policy
+  bigip_policy:
+    name: issue-02052
+
+- name: Issue 02052 - Create VS
+  bigip_virtual_server:
+    name: issue-02052-vs
+    destination: 1.1.1.1
+    port: 80
+
+- name: Issue 02052 - Add rule LTM policy host_ends_not_with_any and host_begins_not_with_any
+  bigip_policy_rule:
+    name: rule_02052
+    description: fwd
+    policy: issue-02052
+    partition: Common
+    conditions:
+      - type: http_host
+        host_begins_not_with_any: test
+        event: request
+      - type: http_host
+        host_ends_not_with_any: me
+        event: request
+    actions:
+      - type: forward
+        virtual: issue-02052-vs
+        event: request
+    state: present
+  register: result
+
+- name: Issue 02052 - Assert Add rule LTM policy host_ends_not_with_any and host_begins_not_with_any
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 02052 - Add rule LTM policy host_ends_not_with_any and host_begins_not_with_any - Idempotent check
+  bigip_policy_rule:
+    name: rule_02052
+    description: fwd
+    policy: issue-02052
+    partition: Common
+    conditions:
+      - type: http_host
+        host_begins_not_with_any: test
+        event: request
+      - type: http_host
+        host_ends_not_with_any: me
+        event: request
+    actions:
+      - type: forward
+        virtual: issue-02052-vs
+        event: request
+    state: present
+  register: result
+
+- name: Issue 02052 - Assert Add rule LTM policy host_ends_not_with_any and host_begins_not_with_any - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02052 - Remove published policy
+  bigip_policy:
+    name: issue-02052
+    state: absent
+
+- name: Issue 02052 - Delete VS
+  bigip_virtual_server:
+    name: issue-02052-vs
+    state: absent

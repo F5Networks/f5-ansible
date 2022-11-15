@@ -442,6 +442,9 @@
 - import_tasks: issue-02048.yaml
   tags: issue-02048
 
+- import_tasks: issue-02052.yaml
+  tags: issue-02052
+
 - import_tasks: issue-02083.yaml
   tags: issue-02083
 
