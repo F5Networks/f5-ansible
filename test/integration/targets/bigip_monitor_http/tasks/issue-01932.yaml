@@ -1,0 +1,53 @@
+---
+- name: Issue 01932 - Create HTTP Monitor
+  bigip_monitor_http:
+    name: issue_01932
+    up_interval: 10
+    interval: 60
+    timeout: 180
+  register: result
+
+- name: Issue 01932 - Assert Create HTTP Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01932 - Create HTTP Monitor - Idempotent Check
+  bigip_monitor_http:
+    name: issue_01932
+    up_interval: 10
+    interval: 60
+    timeout: 180
+  register: result
+
+- name: Issue 01932 - Assert Create HTTP Monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01932 - Change up_interval
+  bigip_monitor_http:
+    name: issue_01932
+    up_interval: 20
+  register: result
+
+- name: Issue 01932 - Assert Change up_interval
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 01932 - Change up_interval - Idempotent Check
+  bigip_monitor_http:
+    name: issue_01932
+    up_interval: 20
+  register: result
+
+- name: Issue 01932 - Assert Change up_interval - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 01932 - Delete HTTP Monitor
+  bigip_monitor_http:
+    name: issue_01932
+    state: absent
