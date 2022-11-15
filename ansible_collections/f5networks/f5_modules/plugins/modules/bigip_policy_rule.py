@@ -116,6 +116,7 @@ options:
         choices:
           - server_ssl
           - persist
+          - asm
       asm_policy:
         description:
           - ASM policy to enable.
@@ -1250,7 +1251,8 @@ class ModuleParameters(Parameters):
 
         target_map = dict(
             server_ssl='serverSsl',
-            persist='persist'
+            persist='persist',
+            asm='asm'
         )
         event_map = dict(
             client_accepted='clientAccepted',
@@ -1905,6 +1907,9 @@ class ReportableChanges(Changes):
                 if 'persist' in action and action['persist']:
                     action['disable_target'] = 'persist'
                     del action['persist']
+                if 'asm' in action and action['asm']:
+                    action['disable_target'] = 'asm'
+                    del action['asm']
                 del action['enable']
             elif 'redirect' in item:
                 action.update(item)
@@ -2466,7 +2471,7 @@ class ArgumentSpec(object):
                     expression=dict(),
                     variable_name=dict(),
                     disable_target=dict(
-                        choices=['server_ssl', 'persist']
+                        choices=['server_ssl', 'persist', 'asm']
                     ),
                     http_header=dict(
                         type='dict',
