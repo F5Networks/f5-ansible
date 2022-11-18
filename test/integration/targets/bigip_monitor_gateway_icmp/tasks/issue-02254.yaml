@@ -1,0 +1,60 @@
+---
+
+- name: Create a route domain
+  bigip_routedomain:
+    id: "1"
+    name: "1"
+
+- name: Create gateway icmp monitor
+  bigip_monitor_gateway_icmp:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create gateway icmp monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create gateway icmp monitor - Idempotent Check
+  bigip_monitor_gateway_icmp:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create gateway icmp monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete gateway icmp monitor
+  bigip_monitor_gateway_icmp:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create gateway icmp monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete gateway icmp monitor - Idempotent Check
+  bigip_monitor_gateway_icmp:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create gateway icmp monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success

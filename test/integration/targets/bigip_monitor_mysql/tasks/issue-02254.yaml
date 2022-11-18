@@ -1,0 +1,60 @@
+---
+
+- name: Create a route domain
+  bigip_routedomain:
+    id: "1"
+    name: "1"
+
+- name: Create mysql monitor
+  bigip_monitor_mysql:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create mysql monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create mysql monitor - Idempotent Check
+  bigip_monitor_mysql:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create mysql monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete mysql monitor
+  bigip_monitor_mysql:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create mysql monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete mysql monitor - Idempotent Check
+  bigip_monitor_mysql:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create mysql monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success

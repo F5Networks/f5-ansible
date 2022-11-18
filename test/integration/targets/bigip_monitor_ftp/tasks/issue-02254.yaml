@@ -1,0 +1,60 @@
+---
+
+- name: Create a route domain
+  bigip_routedomain:
+    id: "1"
+    name: "1"
+
+- name: Create ftp monitor
+  bigip_monitor_ftp:
+    name: "{{ monitor_name1 }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create ftp monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create ftp monitor - Idempotent Check
+  bigip_monitor_ftp:
+    name: "{{ monitor_name1 }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create ftp monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete ftp monitor
+  bigip_monitor_ftp:
+    name: "{{ monitor_name1 }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create ftp monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete ftp monitor - Idempotent Check
+  bigip_monitor_ftp:
+    name: "{{ monitor_name1 }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create ftp monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success

@@ -502,5 +502,8 @@
     state: absent
   register: result
 
+- import_tasks: issue-02254.yaml
+  tags: "issue-02254"
+
 - import_tasks: teardown.yaml
 

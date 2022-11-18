@@ -1,0 +1,17 @@
+---
+bugfixes:
+    - bigip_monitor_dns - user can now pass route domain in the ip without error.
+    - bigip_monitor_external - user can now pass route domain in the ip without error.
+    - bigip_monitor_ftm - user can now pass route domain in the ip without error.
+    - bigip_monitor_gateway_icmp - user can now pass route domain in the ip without error.
+    - bigip_monitor_http - user can now pass route domain in the ip without error.
+    - bigip_monitor_https - user can now pass route domain in the ip without error.
+    - bigip_monitor_icmp - user can now pass route domain in the ip without error.
+    - bigip_monitor_ldap - user can now pass route domain in the ip without error.
+    - bigip_monitor_mysql - user can now pass route domain in the ip without error.
+    - bigip_monitor_oracle - user can now pass route domain in the ip without error.
+    - bigip_monitor_smtp - user can now pass route domain in the ip without error.
+    - bigip_monitor_tcp_echo - user can now pass route domain in the ip without error.
+    - bigip_monitor_tcp_half_open - user can now pass route domain in the ip without error.
+    - bigip_monitor_tcp - user can now pass route domain in the ip without error.
+    - bigip_monitor_udp - user can now pass route domain in the ip without error.
