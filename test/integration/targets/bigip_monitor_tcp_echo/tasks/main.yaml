@@ -146,3 +146,6 @@
 
 - import_tasks: issue-00839.yaml
   tags: issue-00839
+
+- import_tasks: issue-02254.yaml
+  tags: issue-02254

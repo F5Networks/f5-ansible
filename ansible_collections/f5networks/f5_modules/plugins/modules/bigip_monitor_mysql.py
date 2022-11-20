@@ -458,7 +458,7 @@ class ModuleParameters(Parameters):
             return None
         if self._values['ip'] in ['*', '0.0.0.0']:
             return '*'
-        elif is_valid_ip(self._values['ip']):
+        elif is_valid_ip(self._values['ip']) or is_valid_ip(self._values['ip'].split("%")[0]):
             return self._values['ip']
         else:
             raise F5ModuleError(
