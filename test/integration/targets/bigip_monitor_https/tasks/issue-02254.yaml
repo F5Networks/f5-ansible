@@ -1,0 +1,60 @@
+---
+
+- name: Create a route domain
+  bigip_routedomain:
+    id: "1"
+    name: "1"
+
+- name: Create https monitor
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create https monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create https monitor - Idempotent Check
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create https monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete https monitor
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create https monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete https monitor - Idempotent Check
+  bigip_monitor_https:
+    name: "{{ monitor_name }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create https monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success

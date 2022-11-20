@@ -1,0 +1,64 @@
+---
+
+- name: Create a route domain
+  bigip_routedomain:
+    id: "1"
+    name: "1"
+
+- name: Create dns monitor
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name1 }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create dns monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create dns monitor - Idempotent Check
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name1 }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+  register: result
+
+- name: Assert Create dns monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete dns monitor
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name1 }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create dns monitor
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete dns monitor - Idempotent Check
+  bigip_monitor_dns:
+    name: "{{ monitor_name }}"
+    query_name: "{{ query_name1 }}"
+    ip: '1.2.3.4%1'
+    port: '470'
+    state: absent
+  register: result
+
+- name: Assert Create dns monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
