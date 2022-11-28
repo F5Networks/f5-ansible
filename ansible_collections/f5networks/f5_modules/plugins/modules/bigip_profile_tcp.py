@@ -41,6 +41,16 @@ options:
       - When C(0), or C(indefinite), specifies the system does not delete TCP connections
         regardless of how long they remain idle.
     type: str
+  keep_alive_interval:
+    description:
+      - Specifies how frequently the system sends data over an idle TCP connection,
+        to determine whether the connection is still valid.
+      - When creating a new profile, if this parameter is not specified, the remote
+        device will choose a default value appropriate for the profile, based on its
+        C(parent) profile.
+      - When C(0), or C(indefinite), specifies that the system does not send keep-alive communication.
+    type: str
+    version_added: "1.22.0"
   time_wait_recycle:
     description:
       - Specifies connections in a TIME-WAIT state are reused if a SYN packet (indicating a request
@@ -217,6 +227,11 @@ time_wait_timeout:
   returned: changed
   type: str
   sample: immediate
+keep_alive_interval:
+  description: Specifies how frequently the system sends data over an idle TCP connection.
+  returned: changed
+  type: str
+  sample: indefinite
 '''
 from datetime import datetime
 
@@ -244,7 +259,8 @@ class Parameters(AnsibleF5Parameters):
         'synRtoBase': 'syn_rto_base',
         'delayedAcks': 'delayed_acks',
         'ipTosToClient': 'ip_tos_to_client',
-        'timeWaitTimeout': 'time_wait_timeout'
+        'timeWaitTimeout': 'time_wait_timeout',
+        'keepAliveInterval': 'keep_alive_interval',
     }
 
     api_attributes = [
@@ -260,6 +276,7 @@ class Parameters(AnsibleF5Parameters):
         'delayedAcks',
         'ipTosToClient',
         'timeWaitTimeout',
+        'keepAliveInterval',
     ]
 
     returnables = [
@@ -275,6 +292,7 @@ class Parameters(AnsibleF5Parameters):
         'delayed_acks',
         'ip_tos_to_client',
         'time_wait_timeout',
+        'keep_alive_interval',
     ]
 
     updatables = [
@@ -290,6 +308,7 @@ class Parameters(AnsibleF5Parameters):
         'delayed_acks',
         'ip_tos_to_client',
         'time_wait_timeout',
+        'keep_alive_interval',
     ]
 
 
@@ -340,6 +359,18 @@ class ModuleParameters(Parameters):
         if self._values['idle_timeout'] == 'indefinite':
             return 4294967295
         return int(self._values['idle_timeout'])
+
+    @property
+    def keep_alive_interval(self):
+        if self._values['keep_alive_interval'] is None:
+            return None
+        if self._values['keep_alive_interval'] == 'indefinite':
+            return 0
+        if 0 <= int(self._values['keep_alive_interval']) <= 4294967295:
+            return int(self._values['keep_alive_interval'])
+        raise F5ModuleError(
+            "Valid 'keep_alive_interval' must be in range 0 - 4294967295 or 'indefinite'."
+        )
 
     @property
     def time_wait_recycle(self):
@@ -459,6 +490,14 @@ class ReportableChanges(Changes):
         if self._values['idle_timeout'] == 4294967295:
             return 'indefinite'
         return int(self._values['idle_timeout'])
+
+    @property
+    def keep_alive_interval(self):
+        if self._values['keep_alive_interval'] is None:
+            return None
+        if self._values['keep_alive_interval'] == 0:
+            return 'indefinite'
+        return str(self._values['keep_alive_interval'])
 
     @property
     def time_wait_recycle(self):
@@ -738,6 +777,7 @@ class ArgumentSpec(object):
             delayed_acks=dict(type='bool'),
             ip_tos_to_client=dict(),
             time_wait_timeout=dict(),
+            keep_alive_interval=dict(),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
