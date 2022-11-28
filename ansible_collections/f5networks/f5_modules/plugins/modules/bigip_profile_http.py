@@ -142,6 +142,13 @@ options:
       - When set to C(yes), enables the HSTS settings.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
+  hsts_preload:
+    description:
+      - When set to C(yes), adds the HSTS host and its subdomains to the browser's
+        HSTS preload list of sites that are considered HTTPS only.
+      - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
+    type: bool
+    version_added: "1.22.0"
   accept_xff:
     description:
       - Enables or disables trusting the client IP address, and statistics from the client IP address,
@@ -421,6 +428,11 @@ hsts_mode:
   returned: changed
   type: bool
   sample: no
+hsts_preload:
+  description: Enables the HSTS preload.
+  returned: changed
+  type: bool
+  sample: no
 maximum_age:
   description: The maximum length of time, in seconds, that HSTS functionality requests that clients only use HTTPS.
   returned: changed
@@ -659,6 +671,7 @@ class Parameters(AnsibleF5Parameters):
         'explicit_proxy',
         'dns_resolver',
         'hsts_mode',
+        'hsts_preload',
         'maximum_age',
         'include_subdomains',
         'server_agent_name',
@@ -697,6 +710,7 @@ class Parameters(AnsibleF5Parameters):
         'proxy_type',
         'dns_resolver',
         'hsts_mode',
+        'hsts_preload',
         'maximum_age',
         'include_subdomains',
         'server_agent_name',
@@ -814,6 +828,12 @@ class ApiParameters(Parameters):
         if self._values['hsts'] is None:
             return None
         return self._values['hsts']['mode']
+
+    @property
+    def hsts_preload(self):
+        if self._values['hsts'] is None:
+            return None
+        return self._values['hsts']['preload']
 
     @property
     def maximum_age(self):
@@ -948,6 +968,15 @@ class ModuleParameters(Parameters):
     @property
     def hsts_mode(self):
         result = flatten_boolean(self._values['hsts_mode'])
+        if result is None:
+            return None
+        if result == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def hsts_preload(self):
+        result = flatten_boolean(self._values['hsts_preload'])
         if result is None:
             return None
         if result == 'yes':
@@ -1128,7 +1157,7 @@ class Changes(Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
         except Exception:
-            pass
+            raise
         return result
 
 
@@ -1153,6 +1182,8 @@ class UsableChanges(Changes):
             result['maximumAge'] = self._values['maximum_age']
         if self._values['include_subdomains'] is not None:
             result['includeSubdomains'] = self._values['include_subdomains']
+        if self._values['hsts_preload'] is not None:
+            result['preload'] = self._values['hsts_preload']
         if not result:
             return None
         return result
@@ -1200,6 +1231,7 @@ class ReportableChanges(Changes):
         'explicit_proxy',
         'dns_resolver',
         'hsts_mode',
+        'hsts_preload',
         'maximum_age',
         'include_subdomains',
         'server_agent_name',
@@ -1229,6 +1261,14 @@ class ReportableChanges(Changes):
         if self._values['hsts_mode'] is None:
             return None
         elif self._values['hsts_mode'] == 'enabled':
+            return 'yes'
+        return 'no'
+
+    @property
+    def hsts_preload(self):
+        if self._values['hsts_preload'] is None:
+            return None
+        elif self._values['hsts_preload'] == 'enabled':
             return 'yes'
         return 'no'
 
@@ -1691,6 +1731,7 @@ class ArgumentSpec(object):
             header_insert=dict(),
             server_agent_name=dict(),
             hsts_mode=dict(type='bool'),
+            hsts_preload=dict(type='bool'),
             maximum_age=dict(),
             include_subdomains=dict(type='bool'),
             enforcement=dict(
