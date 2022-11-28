@@ -1,0 +1,62 @@
+---
+- name: Issue 02113 - Create HTTP profile with HSTS preload
+  bigip_profile_http:
+    name: "issue_02113"
+    hsts_mode: yes
+    include_subdomains: no
+    hsts_preload: yes
+    maximum_age: "indefinite"
+  register: result
+
+- name: Issue 02113 - Assert Create HTTP profile with HSTS preload
+  assert:
+    that:
+      - result is changed
+      - result.hsts_mode == 'yes'
+      - result.hsts_preload == 'yes'
+      - result.include_subdomains == 'no'
+      - result.maximum_age == 'indefinite'
+
+- name: Issue 02113 - Create HTTP profile with HSTS preload - Idempotent check
+  bigip_profile_http:
+    name: "issue_02113"
+    hsts_mode: yes
+    include_subdomains: no
+    hsts_preload: yes
+    maximum_age: "indefinite"
+  register: result
+
+- name: Issue 02113 - Assert Create HTTP profile with HSTS preload - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02113 - Change HTTP profile's HSTS preload
+  bigip_profile_http:
+    name: "issue_02113"
+    hsts_preload: no
+  register: result
+
+- name: Issue 02113 - Assert Change HTTP profile's HSTS preload
+  assert:
+    that:
+      - result is changed
+      - result.hsts_preload == 'no'
+
+- name: Issue 02113 - Change HTTP profile's HSTS preload - Idempotent check
+  bigip_profile_http:
+    name: "issue_02113"
+    hsts_preload: no
+  register: result
+
+- name: Issue 02113 - Assert Change HTTP profile's HSTS preload - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 02113 - Remove profiles
+  bigip_profile_http:
+    name: "issue_02113"
+    state: absent
