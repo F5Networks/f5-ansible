@@ -239,7 +239,7 @@ spanning:
   sample: disabled
 '''
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -395,7 +395,7 @@ class Parameters(AnsibleF5Parameters):
         if self._values['route_advertisement'] is None:
             return None
         version = tmos_version(self.client)
-        if LooseVersion(version) <= LooseVersion('13.0.0'):
+        if Version(version) <= Version('13.0.0'):
             if self._values['route_advertisement'] == 'disabled':
                 return 'disabled'
             else:

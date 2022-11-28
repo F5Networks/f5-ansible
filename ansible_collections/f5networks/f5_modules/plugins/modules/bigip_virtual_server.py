@@ -921,7 +921,7 @@ import os
 import re
 from collections import namedtuple
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -1266,7 +1266,7 @@ class Parameters(AnsibleF5Parameters):
 
     def _read_sip_profiles_from_device(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('14.0.0'):
+        if Version(version) < Version('14.0.0'):
             return []
         uri = "https://{0}:{1}/mgmt/tm/ltm/message-routing/sip/profile/session/".format(
             self.client.provider['server'],

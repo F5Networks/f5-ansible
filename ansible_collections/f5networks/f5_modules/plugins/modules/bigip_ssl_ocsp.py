@@ -227,7 +227,7 @@ trusted_responders:
   sample: /Common/default
 '''
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -527,7 +527,7 @@ class ModuleManager(object):
     def exec_module(self):
         start = datetime.now().isoformat()
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('13.0.0'):
+        if Version(version) < Version('13.0.0'):
             raise F5ModuleError(
                 "BIG-IP v13 or greater is required to use this module."
             )

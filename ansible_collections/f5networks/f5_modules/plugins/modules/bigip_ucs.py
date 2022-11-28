@@ -177,7 +177,7 @@ import os
 import re
 import time
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
@@ -319,7 +319,7 @@ class ModuleManager(object):
         :return: Bool
         """
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('12.1.0'):
+        if Version(version) < Version('12.1.0'):
             return True
         else:
             return False

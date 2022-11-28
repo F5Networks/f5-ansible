@@ -83,7 +83,7 @@ common_name:
 
 import os
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -219,7 +219,7 @@ class ModuleManager(object):
         return result
 
     def version_is_less_than_14(self, version):
-        if LooseVersion(version) < LooseVersion('14.0.0'):
+        if Version(version) < Version('14.0.0'):
             return True
         else:
             return False

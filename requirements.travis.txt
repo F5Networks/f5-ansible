@@ -1,6 +1,7 @@
 ansible
 invoke
 cffi
+packaging
 
 # Test running
 pycodestyle==2.6.0

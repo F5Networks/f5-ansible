@@ -364,10 +364,10 @@ mobile_detection:
   sample: hash/dictionary of values
 '''
 from datetime import datetime
+from packaging.version import Version
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from distutils.version import LooseVersion
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -1065,7 +1065,7 @@ class ModuleManager(object):
 
     def version_less_than_13_1(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('13.1.0'):
+        if Version(version) < Version('13.1.0'):
             return True
         return False
 
