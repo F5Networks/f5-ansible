@@ -1,0 +1,53 @@
+---
+- name: Issue 01897 - Create a TCP profile with indefinite keep_alive_interval
+  bigip_profile_tcp:
+    name: issue_01897
+    keep_alive_interval: indefinite
+  register: result
+
+- name: Issue 01897 - Assert Create a TCP profile with indefinite keep_alive_interval
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01897 - Create a TCP profile with indefinite keep_alive_interval - Idempotent check
+  bigip_profile_tcp:
+    name: issue_01897
+    keep_alive_interval: indefinite
+  register: result
+
+- name: Issue 01897 - Assert Create a TCP profile with indefinite keep_alive_interval - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01897 - Modify a TCP profile with 2000 keep_alive_interval
+  bigip_profile_tcp:
+    name: issue_01897
+    keep_alive_interval: 2000
+  register: result
+
+- name: Issue 01897 - Assert Modify a TCP profile with 2000 keep_alive_interval
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01897 - Modify a TCP profile with 2000 keep_alive_interval - Idempotent check
+  bigip_profile_tcp:
+    name: issue_01897
+    keep_alive_interval: 2000
+  register: result
+
+- name: Issue 01897 - Assert Modify a TCP profile with 2000 keep_alive_interval - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01897 - Remove a TCP profile
+  bigip_profile_tcp:
+    name: issue_01897
+    state: absent
