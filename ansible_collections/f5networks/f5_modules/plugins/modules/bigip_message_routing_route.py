@@ -145,7 +145,7 @@ from datetime import datetime
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -468,7 +468,7 @@ class ModuleManager(object):
 
     def version_less_than_14(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('14.0.0'):
+        if Version(version) < Version('14.0.0'):
             return True
         return False
 

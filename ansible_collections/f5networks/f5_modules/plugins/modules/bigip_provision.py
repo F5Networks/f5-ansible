@@ -138,7 +138,7 @@ memory:
 
 import time
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -319,7 +319,7 @@ class ModuleManager(object):
 
     def version_is_greater_or_equal_15(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) >= LooseVersion('15.0.0'):
+        if Version(version) >= Version('15.0.0'):
             return True
         else:
             return False

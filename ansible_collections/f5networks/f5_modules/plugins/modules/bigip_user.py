@@ -205,7 +205,7 @@ shell:
 import os
 import tempfile
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 try:
     from BytesIO import BytesIO
@@ -469,7 +469,7 @@ class ModuleManager(object):
         :return: Bool
         """
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('13.0.0'):
+        if Version(version) < Version('13.0.0'):
             return True
         else:
             return False

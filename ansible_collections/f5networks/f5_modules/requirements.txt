@@ -2,3 +2,4 @@ cryptography
 objectpath
 ordereddict
 simplejson
+packaging

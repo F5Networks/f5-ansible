@@ -172,11 +172,11 @@ learn:
   sample: yes
 '''
 from datetime import datetime
+from packaging.version import Version
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from distutils.version import LooseVersion
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -272,7 +272,7 @@ class ModuleParameters(Parameters):
 
         version = tmos_version(self.client)
 
-        if LooseVersion(version) < LooseVersion('13.0.0'):
+        if Version(version) < Version('13.0.0'):
             name_list = [
                 'All Response Signatures',
                 'All Signatures',

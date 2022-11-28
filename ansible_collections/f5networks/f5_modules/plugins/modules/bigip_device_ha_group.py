@@ -262,7 +262,7 @@ trunks:
   sample: hash/dictionary of values
 '''
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
@@ -383,7 +383,7 @@ class ModuleParameters(Parameters):
 
     def _is_v13_and_above(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) >= LooseVersion('13.0.0'):
+        if Version(version) >= Version('13.0.0'):
             return True
         return False
 

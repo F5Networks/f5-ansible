@@ -111,7 +111,7 @@ import ssl
 import time
 
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -235,7 +235,7 @@ class ModuleManager(object):
 
     def is_version_less_than_14(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('14.0.0'):
+        if Version(version) < Version('14.0.0'):
             return True
         else:
             return False
