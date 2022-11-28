@@ -3,6 +3,7 @@ git+https://github.com/ansible/ansible.git@devel
 pytest
 pytest-xdist
 flake8
+packaging
 q
 nose
 mock

@@ -103,7 +103,7 @@ RETURN = r'''
 import os
 import time
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.urls import urlparse
@@ -210,7 +210,7 @@ class ModuleManager(object):
         version = tmos_version(self.client)
         changed = False
         state = self.want.state
-        if LooseVersion(version) <= LooseVersion('12.0.0'):
+        if Version(version) <= Version('12.0.0'):
             raise F5ModuleError(
                 "This version of BIG-IP is not supported."
             )

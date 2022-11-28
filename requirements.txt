@@ -1,3 +1,14 @@
 ansible>=2.9.0
 q
-invoke
+invoke~=1.7.3
+
+Jinja2~=3.1.2
+packaging
+semver~=2.13.0
+pytest~=7.2.0
+PyYAML~=6.0
+netaddr~=0.8.0
+packaging~=21.3
+ordereddict~=1.1
+cryptography~=38.0.3
+objectpath~=0.6.1

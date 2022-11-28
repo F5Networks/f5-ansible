@@ -824,7 +824,7 @@ import datetime
 import math
 import re
 
-from distutils.version import LooseVersion
+from packaging.version import Version
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import (
     iteritems, string_types
@@ -1703,7 +1703,7 @@ class SystemInfoFactManager(BaseManager):
         if tmp:
             result.update(tmp)
 
-        if LooseVersion(bigiq_version(self.client)) < LooseVersion('7.0.0'):
+        if Version(bigiq_version(self.client)) < Version('7.0.0'):
             tmp = self.read_uptime_info_from_device()
             if tmp:
                 result.update(tmp)

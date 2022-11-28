@@ -421,7 +421,7 @@ from datetime import datetime
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -1235,7 +1235,7 @@ class Difference(object):
         if not devices_change and not server_change:
             return None
         tmos = tmos_version(self.client)
-        if LooseVersion(tmos) >= LooseVersion('13.0.0'):
+        if Version(tmos) >= Version('13.0.0'):
             result = self._handle_current_server_type_and_devices(
                 devices_change, server_change
             )
@@ -1368,7 +1368,7 @@ class ModuleManager(object):
 
     def version_is_less_than(self, version):
         tmos = tmos_version(self.client)
-        if LooseVersion(tmos) < LooseVersion(version):
+        if Version(tmos) < Version(version):
             return True
         else:
             return False

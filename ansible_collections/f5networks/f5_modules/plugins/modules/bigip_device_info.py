@@ -7508,7 +7508,7 @@ import math
 import re
 import time
 from collections import namedtuple
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
@@ -7918,7 +7918,7 @@ class AsmPolicyStatsFactManager(BaseManager):
 
     def version_is_less_than_13(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('13.0.0'):
+        if Version(version) < Version('13.0.0'):
             return True
         else:
             return False
@@ -8327,7 +8327,7 @@ class AsmPolicyFactManager(BaseManager):
 
     def version_is_less_than_13(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('13.0.0'):
+        if Version(version) < Version('13.0.0'):
             return True
         else:
             return False
@@ -8466,7 +8466,7 @@ class AsmServerTechnologyFactManager(BaseManager):
 
     def version_is_less_than_13(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('13.0.0'):
+        if Version(version) < Version('13.0.0'):
             return True
         else:
             return False

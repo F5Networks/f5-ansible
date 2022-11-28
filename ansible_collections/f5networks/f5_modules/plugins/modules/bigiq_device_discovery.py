@@ -281,7 +281,7 @@ modules:
 
 import time
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -654,7 +654,7 @@ class ModuleManager(object):
             )
 
     def check_bigiq_version(self, version):
-        if LooseVersion(version) < LooseVersion('6.1.0'):
+        if Version(version) < Version('6.1.0'):
             raise F5ModuleError(
                 'Module supports only BIGIQ version 6.1.x or higher.'
             )
