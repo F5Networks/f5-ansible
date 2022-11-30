@@ -226,11 +226,20 @@ trusted_responders:
   type: int
   sample: /Common/default
 '''
+import traceback
 from datetime import datetime
-from packaging.version import Version
+
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
 
 from ansible.module_utils.basic import (
-    AnsibleModule, env_fallback
+    AnsibleModule, missing_required_lib, env_fallback
 )
 
 from ..module_utils.bigip import F5RestClient
@@ -759,6 +768,12 @@ def main():
         mutually_exclusive=spec.mutually_exclusive,
         required_together=spec.required_together,
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module)
