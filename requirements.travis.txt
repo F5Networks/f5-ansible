@@ -1,4 +1,4 @@
-ansible
+ansible>=6.0.0,<7.0.0
 invoke
 cffi
 packaging
@@ -12,7 +12,6 @@ mock
 virtualenv
 semver
 antsibull-changelog
-ipaddress; python_version < '3.5'
 cryptography
 objectpath
 ordereddict
