@@ -238,11 +238,20 @@ spanning:
   type: str
   sample: disabled
 '''
+import traceback
 from datetime import datetime
-from packaging.version import Version
+
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
 
 from ansible.module_utils.basic import (
-    AnsibleModule, env_fallback
+    AnsibleModule, missing_required_lib, env_fallback
 )
 from ansible.module_utils.parsing.convert_bool import (
     BOOLEANS_TRUE, BOOLEANS_FALSE
@@ -874,6 +883,12 @@ def main():
         supports_check_mode=spec.supports_check_mode,
         required_one_of=spec.required_one_of
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module)

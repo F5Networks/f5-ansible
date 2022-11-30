@@ -117,11 +117,20 @@ type:
 
 import os
 import tempfile
+import traceback
 from datetime import datetime
-from packaging.version import Version
+
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
 
 from ansible.module_utils.basic import (
-    AnsibleModule, env_fallback
+    AnsibleModule, missing_required_lib, env_fallback
 )
 
 from ..module_utils.bigip import F5RestClient
@@ -479,6 +488,12 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module)

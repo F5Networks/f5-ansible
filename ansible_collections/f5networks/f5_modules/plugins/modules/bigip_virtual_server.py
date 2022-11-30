@@ -919,12 +919,21 @@ service_down_immediate_action:
 '''
 import os
 import re
+import traceback
 from collections import namedtuple
 from datetime import datetime
-from packaging.version import Version
+
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
 
 from ansible.module_utils.basic import (
-    AnsibleModule, env_fallback
+    AnsibleModule, missing_required_lib, env_fallback
 )
 from ansible.module_utils.six import iteritems
 
@@ -3794,6 +3803,12 @@ def main():
         supports_check_mode=spec.supports_check_mode,
         mutually_exclusive=spec.mutually_exclusive
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module)

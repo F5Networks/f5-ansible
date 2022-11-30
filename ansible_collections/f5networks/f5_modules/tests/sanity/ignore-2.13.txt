@@ -23,6 +23,9 @@ plugins/action/bigiq.py action-plugin-docs # undocumented action plugin to fix, 
 plugins/modules/bigip_imish_config.py validate-modules:parameter-type-not-in-doc
 plugins/modules/bigip_imish_config.py validate-modules:undocumented-parameter
 plugins/modules/bigip_imish_config.py validate-modules:doc-default-does-not-match-spec
+plugins/modules/bigip_ucs_fetch.py validate-modules:doc-default-does-not-match-spec
+plugins/modules/bigip_ucs_fetch.py validate-modules:parameter-type-not-in-doc
+plugins/modules/bigip_ucs_fetch.py validate-modules:undocumented-parameter
 plugins/modules/bigip_data_group.py validate-modules:no-log-needed
 plugins/modules/bigip_device_license.py validate-modules:no-log-needed
 plugins/modules/bigip_device_auth_ldap.py validate-modules:no-log-needed
@@ -33,8 +36,11 @@ plugins/modules/bigip_ike_peer.py validate-modules:no-log-needed
 plugins/modules/bigip_password_policy.py validate-modules:no-log-needed
 plugins/modules/bigip_profile_client_ssl.py validate-modules:no-log-needed
 plugins/modules/bigip_profile_server_ssl.py validate-modules:no-log-needed
+plugins/modules/bigip_ssl_ocsp.py validate-modules:no-log-needed
 plugins/modules/bigip_sys_db.py validate-modules:no-log-needed
 plugins/modules/bigip_tunnel.py validate-modules:no-log-needed
+plugins/modules/bigiq_application_https_offload.py validate-modules:no-log-needed
+plugins/modules/bigiq_application_https_waf.py validate-modules:no-log-needed
 plugins/modules/bigiq_regkey_license.py validate-modules:no-log-needed
 plugins/modules/bigip_imish_config.py validate-modules:incompatible-default-type
 plugins/modules/bigiq_application_https_offload.py validate-modules:incompatible-default-type

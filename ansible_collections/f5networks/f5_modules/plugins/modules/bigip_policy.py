@@ -190,24 +190,32 @@ rules:
   sample: ['/Common/rule1', '/Common/rule2']
 '''
 import re
+import traceback
 from datetime import datetime
-from packaging.version import Version
+
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
+
+try:
+    from urllib import quote_plus
+except ImportError:
+    from urllib.parse import quote_plus
 
 from ansible.module_utils.basic import (
-    AnsibleModule, env_fallback
+    AnsibleModule, missing_required_lib, env_fallback
 )
-
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, fq_name
 )
 from ..module_utils.icontrol import tmos_version
 from ..module_utils.teem import send_teem
-
-try:
-    from urllib import quote_plus
-except ImportError:
-    from urllib.parse import quote_plus
 
 
 class Parameters(AnsibleF5Parameters):
@@ -1127,6 +1135,12 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module)
