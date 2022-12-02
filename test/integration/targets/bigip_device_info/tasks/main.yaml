@@ -541,3 +541,6 @@
 
 - import_tasks: issue-02209.yaml
   tags: issue-02209
+
+- import_tasks: issue-license-info.yaml
+  tags: issue-license
