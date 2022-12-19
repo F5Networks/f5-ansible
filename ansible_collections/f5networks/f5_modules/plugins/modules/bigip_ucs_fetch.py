@@ -60,16 +60,16 @@ options:
   async_timeout:
     description:
       - Parameter used when creating new UCS file on a device.
-      - The amount of time to wait for the API async interface to complete its task, in seconds.
+      - The number of seconds to wait for the API async interface to complete its task.
       - The accepted value range is between C(150) and C(1800) seconds.
     type: int
     default: 150
   only_create_file:
     description:
-      - If C(yes), the file is created on device and not downloaded. If the UCS archive exists on device,
-        no change is made and file is not be downloaded.
-      - To recreate UCS files left on the device, remove them with C(bigip_ucs) module before running this module with
-        C(only_create_file) set to C(yes).
+      - If C(yes), the file is created on the device and not downloaded. If the UCS archive exists on the device,
+        no change is made and the file is not downloaded.
+      - To recreate UCS files left on the device, remove them with the  C(bigip_ucs) module before running this
+         module with C(only_create_file) set to C(yes).
     type: bool
     default: no
     version_added: "1.12.0"
@@ -139,7 +139,7 @@ checksum:
   type: str
   sample: 7b46bbe4f8ebfee64761b5313855618f64c64109
 dest:
-  description: Location on the ansible host the UCS was saved to.
+  description: Location on the Ansible host the UCS was saved to.
   returned: success
   type: str
   sample: /path/to/file.txt
