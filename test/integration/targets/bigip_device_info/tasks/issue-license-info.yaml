@@ -1,0 +1,27 @@
+---
+
+- name: Gather License info
+  bigip_device_info:
+    gather_subset:
+      - license
+  register: result
+
+- name: Assert Gather license info
+  assert:
+    that:
+      - result is success
+      - '"license" in result'
+
+- name: Gather all info except license
+  bigip_device_info:
+    gather_subset:
+      - all
+      - "!license"
+  register: result
+
+- name: Assert Gather license info
+  assert:
+    that:
+      - result is success
+      - '"license" not in result'
+
