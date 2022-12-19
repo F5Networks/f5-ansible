@@ -25,6 +25,18 @@ options:
     type: str
     default: Common
     version_added: "1.14.0"
+  data_increment:
+    description:
+      - Specifies the paging increment at which device data is gathered from the API.
+      - Allows for greater control of pace at which data is queried from the device.
+      - Setting is useful for setups with large configurations which may take long time with the default values.
+      - While there is no limit to what value can be specified, users should note that putting very large values with
+        C(gather_subset) set to meta choices like C(all) might lead to module or device API crash.
+      - F5 recommends using C(data_increment) custom values in tandem with C(partition) and a specific C(gather_subset)
+        value for best experience.
+    type: int
+    default: 10
+    version_added: "1.22.0"
   gather_subset:
     description:
       - When supplied, this argument will restrict the information returned to a given subset.
@@ -225,6 +237,18 @@ EXAMPLES = r'''
     gather_subset:
       - all
       - "!trunks"
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Collect BIG-IP information with custom data_increment and specific partition
+  bigip_device_info:
+    data_increment: 50
+    partition: Foo
+    gather_subset:
+      - gtm-a-wide-ips
     provider:
       server: lb.mydomain.com
       user: admin
@@ -7587,7 +7611,7 @@ else:
     HAS_PACKAGING = True
 
 from ansible.module_utils.basic import (
-    AnsibleModule, missing_required_lib
+    AnsibleModule, missing_required_lib, env_fallback
 )
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import (
@@ -7650,14 +7674,11 @@ class BaseManager(object):
         self.installed_packages = []
 
     def exec_module(self):
-        start = datetime.datetime.now().isoformat()
-        version = tmos_version(self.client)
         results = []
         facts = self.read_facts()
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
-        send_teem(start, self.client, self.module, version)
         return results
 
 
@@ -7813,7 +7834,7 @@ class ApmAccessPolicyFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -7821,7 +7842,9 @@ class ApmAccessPolicyFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -8660,7 +8683,7 @@ class AsmSignatureSetsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -8668,7 +8691,7 @@ class AsmSignatureSetsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = '?$top=5&$skip={0}'.format(skip)
+        query = '?$top={0}&$skip={1}'.format(self.module.params['data_increment'], skip)
         resp = self.client.api.get(uri + query)
 
         try:
@@ -8991,7 +9014,7 @@ class ClientSslProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -8999,7 +9022,9 @@ class ClientSslProfilesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -9166,7 +9191,7 @@ class DeviceGroupsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -9174,9 +9199,8 @@ class DeviceGroupsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -9338,7 +9362,7 @@ class DevicesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -9346,7 +9370,9 @@ class DevicesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -9500,7 +9526,7 @@ class ExternalMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -9508,7 +9534,9 @@ class ExternalMonitorsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -9660,7 +9688,7 @@ class FastHttpProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -9668,7 +9696,9 @@ class FastHttpProfilesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -9998,7 +10028,7 @@ class FastL4ProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -10006,7 +10036,9 @@ class FastL4ProfilesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -10109,7 +10141,7 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -10117,7 +10149,9 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -10360,7 +10394,7 @@ class GtmAPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -10368,9 +10402,8 @@ class GtmAPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -10425,7 +10458,7 @@ class GtmAaaaPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -10433,9 +10466,8 @@ class GtmAaaaPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -10490,7 +10522,7 @@ class GtmCnamePoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -10498,9 +10530,8 @@ class GtmCnamePoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -10555,7 +10586,7 @@ class GtmMxPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -10563,9 +10594,8 @@ class GtmMxPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -10620,7 +10650,7 @@ class GtmNaptrPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -10628,9 +10658,8 @@ class GtmNaptrPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -10685,7 +10714,7 @@ class GtmSrvPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -10693,9 +10722,8 @@ class GtmSrvPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -11006,7 +11034,7 @@ class GtmServersFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11014,9 +11042,8 @@ class GtmServersFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -11145,7 +11172,7 @@ class GtmAWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11153,7 +11180,9 @@ class GtmAWideIpsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -11207,7 +11236,7 @@ class GtmAaaaWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11215,7 +11244,9 @@ class GtmAaaaWideIpsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -11269,7 +11300,7 @@ class GtmCnameWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11277,7 +11308,9 @@ class GtmCnameWideIpsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -11331,7 +11364,7 @@ class GtmMxWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11339,7 +11372,9 @@ class GtmMxWideIpsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -11393,7 +11428,7 @@ class GtmNaptrWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11401,7 +11436,9 @@ class GtmNaptrWideIpsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -11455,7 +11492,7 @@ class GtmSrvWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11463,7 +11500,9 @@ class GtmSrvWideIpsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -11556,7 +11595,7 @@ class GtmTopologyRegionFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11564,7 +11603,9 @@ class GtmTopologyRegionFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -11681,7 +11722,7 @@ class HttpMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11689,7 +11730,9 @@ class HttpMonitorsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -11806,7 +11849,7 @@ class HttpsMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -11814,7 +11857,9 @@ class HttpsMonitorsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -12068,7 +12113,7 @@ class HttpProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -12076,7 +12121,9 @@ class HttpProfilesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -12178,7 +12225,7 @@ class IappServicesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -12186,7 +12233,9 @@ class IappServicesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -12390,7 +12439,7 @@ class IcmpMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -12398,7 +12447,9 @@ class IcmpMonitorsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -12521,7 +12572,7 @@ class InterfacesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -12529,7 +12580,7 @@ class InterfacesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}".format(skip)
+        query = "?$top={0}&$skip={1}".format(self.module.params['data_increment'], skip)
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -12594,7 +12645,7 @@ class InternalDataGroupsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -12602,7 +12653,9 @@ class InternalDataGroupsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -12703,7 +12756,7 @@ class IrulesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -12711,7 +12764,9 @@ class IrulesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -13209,7 +13264,7 @@ class LtmPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -13227,7 +13282,9 @@ class LtmPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -13393,7 +13450,7 @@ class LtmPolicyFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -13401,9 +13458,8 @@ class LtmPolicyFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -13580,7 +13636,7 @@ class NodesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -13588,7 +13644,9 @@ class NodesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -13710,7 +13768,7 @@ class OneConnectProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -13718,7 +13776,9 @@ class OneConnectProfilesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -13940,7 +14000,7 @@ class RouteDomainFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -13948,7 +14008,9 @@ class RouteDomainFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -14064,7 +14126,7 @@ class SelfIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -14072,7 +14134,9 @@ class SelfIpsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -14383,7 +14447,7 @@ class ServerSslProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -14391,7 +14455,9 @@ class ServerSslProfilesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -14771,7 +14837,7 @@ class SslCertificatesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -14779,7 +14845,9 @@ class SslCertificatesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -14859,7 +14927,7 @@ class SslKeysFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -14867,7 +14935,9 @@ class SslKeysFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -15644,7 +15714,7 @@ class TcpMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -15652,7 +15722,9 @@ class TcpMonitorsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -15742,7 +15814,7 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -15750,7 +15822,9 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -16177,7 +16251,7 @@ class TcpProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -16185,7 +16259,9 @@ class TcpProfilesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -16293,7 +16369,7 @@ class TrafficGroupsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -16301,7 +16377,9 @@ class TrafficGroupsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -16428,7 +16506,7 @@ class TrunksFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -16436,7 +16514,7 @@ class TrunksFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}".format(skip)
+        query = "?$top={0}&$skip={1}".format(self.module.params['data_increment'], skip)
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -16547,7 +16625,7 @@ class UCSFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -16555,7 +16633,7 @@ class UCSFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}".format(skip)
+        query = "?$top={0}&$skip={1}".format(self.module.params['data_increment'], skip)
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -16749,7 +16827,7 @@ class UdpProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -16757,7 +16835,9 @@ class UdpProfilesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -16963,7 +17043,7 @@ class VirtualAddressesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -16971,7 +17051,9 @@ class VirtualAddressesFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -17750,7 +17832,7 @@ class VirtualServersFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -17758,9 +17840,8 @@ class VirtualServersFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params["partition"]
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -17926,7 +18007,7 @@ class VlansFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -17934,9 +18015,8 @@ class VlansFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -18026,7 +18106,7 @@ class ManagementRouteFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -18034,9 +18114,8 @@ class ManagementRouteFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
         try:
@@ -18203,6 +18282,9 @@ class ModuleManager(object):
         }
 
     def exec_module(self):
+        start = datetime.datetime.now().isoformat()
+        client = F5RestClient(**self.module.params)
+        version = tmos_version(client)
         self.handle_all_keyword()
         self.handle_profiles_keyword()
         self.handle_monitors_keyword()
@@ -18235,6 +18317,7 @@ class ModuleManager(object):
             result['queried'] = True
         else:
             result['queried'] = False
+        send_teem(start, client, self.module, version)
         return result
 
     def filter_excluded_facts(self):
@@ -18358,9 +18441,13 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
+            data_increment=dict(
+                type='int',
+                default=10
+            ),
             partition=dict(
-                type="str",
-                default="Common",
+                default='Common',
+                fallback=(env_fallback, ['F5_PARTITION'])
             ),
             gather_subset=dict(
                 type='list',
