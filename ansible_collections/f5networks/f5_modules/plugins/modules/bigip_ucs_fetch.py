@@ -69,7 +69,7 @@ options:
       - If C(yes), the file is created on the device and not downloaded. If the UCS archive exists on the device,
         no change is made and the file is not downloaded.
       - To recreate UCS files left on the device, remove them with the  C(bigip_ucs) module before running this
-         module with C(only_create_file) set to C(yes).
+        module with C(only_create_file) set to C(yes).
     type: bool
     default: no
     version_added: "1.12.0"
