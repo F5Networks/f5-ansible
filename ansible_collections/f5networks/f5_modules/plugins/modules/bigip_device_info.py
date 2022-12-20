@@ -1,4 +1,4 @@
-    #!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # Copyright: (c) 2017, F5 Networks Inc.
@@ -3410,7 +3410,7 @@ license:
         - Specifies the registration key associated with the license.
       returned: queried
       type: str
-      sample: XXXX-YYYYY-ZZZZZ-PPPPP-QQQQQQ
+      sample: XXXX-XXXX-XXXX-XXXX-XXXX
     service_check_date:
       description:
         - Specifies the last date the license was last activated.
