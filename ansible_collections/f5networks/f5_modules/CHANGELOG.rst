@@ -5,6 +5,42 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.22.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_device_auth_ldap - added a new parameter referrals
+- bigip_device_group - added a new parameter, asm_sync to support ASM policy synchronization
+- bigip_device_group - changed full_sync, auto_sync, save_on_auto_sync parameters only to set default value during creation, to work as documented.
+- bigip_device_info - add data_increment parameter for better control of data gathering from API, addresses cases where large configurations were causing token timeouts during module operation
+- bigip_device_info - added option for gathering info about device license.
+- bigip_monitor_http - add up_interval parameter
+- bigip_policy_rule - added ASM to disable_target list
+- bigip_policy_rule - added host_begins_not_with_any and host_ends_not_with_any to conditions
+- bigip_profile_http- add hsts_preload parameter
+- bigip_profile_tcp - add keep_alive_interval parameter
+
+Bugfixes
+--------
+
+- bigip_monitor_dns - user can now pass route domain in the ip without error.
+- bigip_monitor_external - user can now pass route domain in the ip without error.
+- bigip_monitor_ftm - user can now pass route domain in the ip without error.
+- bigip_monitor_gateway_icmp - user can now pass route domain in the ip without error.
+- bigip_monitor_http - user can now pass route domain in the ip without error.
+- bigip_monitor_https - user can now pass route domain in the ip without error.
+- bigip_monitor_icmp - user can now pass route domain in the ip without error.
+- bigip_monitor_ldap - user can now pass route domain in the ip without error.
+- bigip_monitor_mysql - user can now pass route domain in the ip without error.
+- bigip_monitor_oracle - user can now pass route domain in the ip without error.
+- bigip_monitor_smtp - user can now pass route domain in the ip without error.
+- bigip_monitor_tcp - user can now pass route domain in the ip without error.
+- bigip_monitor_tcp_echo - user can now pass route domain in the ip without error.
+- bigip_monitor_tcp_half_open - user can now pass route domain in the ip without error.
+- bigip_monitor_udp - user can now pass route domain in the ip without error.
+
 v1.21.0
 =======
 
