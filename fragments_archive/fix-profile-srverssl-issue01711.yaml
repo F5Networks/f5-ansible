@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_profile_server_ssl - Add fix for a bug 01711 that added suuport for authenticate name and trusted cert

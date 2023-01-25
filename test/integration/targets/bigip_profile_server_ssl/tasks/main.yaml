@@ -488,3 +488,6 @@
 
 - import_tasks: issue-02040.yaml
   tags: issue-02040
+
+- import_tasks: issue-01171.yaml
+  tags: issue-01171

@@ -104,6 +104,16 @@ options:
     description:
       - Specifies the certificates-key chain to associate with the SSL profile.
     type: str
+  authenticate_name:
+    description:
+      - Specifies a Common Name (CN) that is embedded in a server certificate
+        The system authenticates a server based on the specified CN
+    type: str
+  ca_file:
+    description:
+      - Specifies a server CA that the system trusts
+        default is (None).
+    type: str
   passphrase:
     description:
       - Specifies a passphrase used to encrypt the key.
@@ -211,6 +221,8 @@ class Parameters(AnsibleF5Parameters):
         'sniRequire': 'sni_require',
         'serverName': 'server_name',
         'peerCertMode': 'server_certificate',
+        'caFile': 'ca_file',
+        'authenticateName': 'authenticate_name',
     }
 
     api_attributes = [
@@ -227,6 +239,8 @@ class Parameters(AnsibleF5Parameters):
         'serverName',
         'peerCertMode',
         'renegotiation',
+        'caFile',
+        'authenticateName',
     ]
 
     returnables = [
@@ -243,6 +257,8 @@ class Parameters(AnsibleF5Parameters):
         'server_name',
         'server_certificate',
         'renegotiation',
+        'ca_file',
+        'authenticate_name',
     ]
 
     updatables = [
@@ -259,6 +275,8 @@ class Parameters(AnsibleF5Parameters):
         'server_certificate',
         'renegotiation',
         'parent',
+        'ca_file',
+        'authenticate_name',
     ]
 
     @property
@@ -299,6 +317,15 @@ class Parameters(AnsibleF5Parameters):
         if self._values['ocsp_profile'] in ['', 'none']:
             return ''
         result = fq_name(self.partition, self._values['ocsp_profile'])
+        return result
+
+    @property
+    def ca_file(self):
+        if self._values['ca_file'] is None:
+            return None
+        if self._values['ca_file'] in ['', 'none']:
+            return ''
+        result = fq_name(self.partition, self._values['ca_file'])
         return result
 
 
@@ -691,6 +718,8 @@ class ArgumentSpec(object):
             parent=dict(default='/Common/serverssl'),
             ciphers=dict(),
             cipher_group=dict(),
+            authenticate_name=dict(),
+            ca_file=dict(),
             secure_renegotiation=dict(
                 choices=['require', 'require-strict', 'request']
             ),
