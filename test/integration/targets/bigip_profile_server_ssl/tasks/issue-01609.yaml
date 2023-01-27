@@ -1,0 +1,79 @@
+---
+- name: Issue 01609 - Create a server SSL profile with SSL Options
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01609
+    options:
+      - no-sslv3
+      - no-ssl
+      - no-dtls
+      - no-tlsv1.3
+      - no-session-resumption-on-renegotiation
+      - no-sslv3
+  register: result
+
+- name: Issue 01609 - Assert Create a server SSL profile with SSL Options
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01609 - Create a server SSL profile with SSL Options - Idempotent check
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01609
+    options:
+      - no-sslv3
+      - no-ssl
+      - no-dtls
+      - no-tlsv1.3
+      - no-session-resumption-on-renegotiation
+      - no-sslv3
+  register: result
+
+- name: Issue 01609 - Assert Create a server SSL profile with SSL Options - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01609 - Modify a server SSL profile with SSL Options changed
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01609
+    options:
+      - no-sslv3
+      - no-ssl
+      - no-dtls
+      - no-tlsv1.3
+      - no-session-resumption-on-renegotiation
+      - no-sslv3
+      - single-dh-use
+  register: result
+
+- name: Issue 01609 - Assert Create a server SSL profile with SSL Options
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01609 - Modify a server SSL profile with SSL Options changed - Idempotent check
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01609
+    options:
+      - no-sslv3
+      - no-ssl
+      - no-dtls
+      - no-tlsv1.3
+      - no-session-resumption-on-renegotiation
+      - no-sslv3
+      - single-dh-use
+  register: result
+
+- name: Issue 01609 - Assert Create a server SSL profile with SSL Options - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01609 - Remove a server SSL profile with SSL Options
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01609
+    state: absent
