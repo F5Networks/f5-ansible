@@ -1,0 +1,18 @@
+- name: Set license key and server fact
+  set_fact:
+    license_key: "{{ lookup('env', 'LICENSE_KEY') }}"
+    license_server: "{{ lookup('env', 'LICENSE_SERVER') }}"
+
+- name: Add license to device, expect expired token error
+  bigip_device_license:
+    license_key: "{{ license_key }}"
+    accept_eula: yes
+    license_server: "{{ license_server }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert failure
+  assert:
+    that:
+      - result is not success
+      - result.msg == "X-F5-Auth-Token has expired."

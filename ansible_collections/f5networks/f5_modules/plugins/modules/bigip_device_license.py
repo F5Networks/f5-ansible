@@ -681,7 +681,9 @@ class ModuleManager(object):
                     nops += 1
                 else:
                     nops = 0
-            except Exception:
+            except Exception as ex:
+                if '"message":"X-F5-Auth-Token has expired."' in str(ex):
+                    raise F5ModuleError("X-F5-Auth-Token has expired.")
                 pass
             time.sleep(5)
 
@@ -707,7 +709,9 @@ class ModuleManager(object):
 
             if 'commandResult' in response:
                 return True
-        except Exception:
+        except Exception as ex:
+            if '"message":"X-F5-Auth-Token has expired."' in str(ex):
+                raise
             pass
         return False
 
