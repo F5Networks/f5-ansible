@@ -104,6 +104,37 @@ options:
     description:
       - Specifies the certificates-key chain to associate with the SSL profile.
     type: str
+  authenticate_name:
+    description:
+      - Specifies a Common Name (CN) that is embedded in a server certificate
+        The system authenticates a server based on the specified CN
+    type: str
+  ca_file:
+    description:
+      - Specifies a server CA that the system trusts
+        default is (None).
+    type: str
+  options:
+    description:
+      - Options the system uses for SSL processing in the form of a list. When
+        creating a new profile, the list is provided by the parent profile.
+      - When C('') or C(none), all options for SSL processing are disabled.
+    type: list
+    elements: str
+    choices:
+      - dont-insert-empty-fragments
+      - no-ssl
+      - no-dtls
+      - no-session-resumption-on-renegotiation
+      - no-tlsv1.1
+      - no-tlsv1.2
+      - no-tlsv1.3
+      - single-dh-use
+      - tls-rollback-bug
+      - no-sslv3
+      - no-tls
+      - no-tlsv1
+      - "none"
   passphrase:
     description:
       - Specifies a passphrase used to encrypt the key.
@@ -185,6 +216,11 @@ renegotiation:
   returned: changed
   type: bool
   sample: yes
+options:
+  description: The list of options for SSL processing.
+  returned: changed
+  type: list
+  sample: ['no-ssl', 'no-sslv3']
 '''
 from datetime import datetime
 
@@ -194,7 +230,7 @@ from ansible.module_utils.basic import (
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean, fq_name
+    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean, fq_name, is_empty_list
 )
 from ..module_utils.icontrol import tmos_version
 from ..module_utils.teem import send_teem
@@ -211,6 +247,9 @@ class Parameters(AnsibleF5Parameters):
         'sniRequire': 'sni_require',
         'serverName': 'server_name',
         'peerCertMode': 'server_certificate',
+        'caFile': 'ca_file',
+        'authenticateName': 'authenticate_name',
+        'tmOptions': 'options',
     }
 
     api_attributes = [
@@ -227,6 +266,9 @@ class Parameters(AnsibleF5Parameters):
         'serverName',
         'peerCertMode',
         'renegotiation',
+        'caFile',
+        'authenticateName',
+        'tmOptions',
     ]
 
     returnables = [
@@ -243,6 +285,9 @@ class Parameters(AnsibleF5Parameters):
         'server_name',
         'server_certificate',
         'renegotiation',
+        'ca_file',
+        'authenticate_name',
+        'options',
     ]
 
     updatables = [
@@ -259,6 +304,9 @@ class Parameters(AnsibleF5Parameters):
         'server_certificate',
         'renegotiation',
         'parent',
+        'ca_file',
+        'authenticate_name',
+        'options',
     ]
 
     @property
@@ -299,6 +347,15 @@ class Parameters(AnsibleF5Parameters):
         if self._values['ocsp_profile'] in ['', 'none']:
             return ''
         result = fq_name(self.partition, self._values['ocsp_profile'])
+        return result
+
+    @property
+    def ca_file(self):
+        if self._values['ca_file'] is None:
+            return None
+        if self._values['ca_file'] in ['', 'none']:
+            return ''
+        result = fq_name(self.partition, self._values['ca_file'])
         return result
 
 
@@ -373,6 +430,15 @@ class ModuleParameters(Parameters):
             raise F5ModuleError("The cipher_group parameter must be set to 'none' if cipher is defined.")
         result = fq_name(self.partition, self._values['cipher_group'])
         return result
+
+    @property
+    def options(self):
+        options = self._values['options']
+        if options is None:
+            return None
+        if is_empty_list(options):
+            return []
+        return options
 
 
 class Changes(Parameters):
@@ -471,6 +537,27 @@ class Difference(object):
             return None
         if self.want.cipher_group != self.have.cipher_group:
             return self.want.cipher_group
+
+    @property
+    def options(self):
+        if self.want.options is None:
+            return None
+        # starting with v14 options may return as a space delimited string in curly
+        # braces, eg "{ option1 option2 }", or simply "none" to indicate empty set
+        if self.have.options is None or self.have.options == 'none':
+            self.have.options = []
+        if not isinstance(self.have.options, list):
+            if self.have.options.startswith('{'):
+                self.have.options = self.have.options[2:-2].split(' ')
+            else:
+                self.have.options = [self.have.options]
+        if not self.want.options:
+            # we don't want options.  If we have any, indicate we should remove, else noop
+            return [] if self.have.options else None
+        if not self.have.options:
+            return self.want.options
+        if set(self.want.options) != set(self.have.options):
+            return self.want.options
 
 
 class ModuleManager(object):
@@ -691,6 +778,27 @@ class ArgumentSpec(object):
             parent=dict(default='/Common/serverssl'),
             ciphers=dict(),
             cipher_group=dict(),
+            authenticate_name=dict(),
+            ca_file=dict(),
+            options=dict(
+                type='list',
+                elements='str',
+                choices=[
+                    'dont-insert-empty-fragments',
+                    'no-ssl',
+                    'no-dtls',
+                    'no-session-resumption-on-renegotiation',
+                    'no-tlsv1.1',
+                    'no-tlsv1.2',
+                    'no-tlsv1.3',
+                    'single-dh-use',
+                    'tls-rollback-bug',
+                    'no-sslv3',
+                    'no-tls',
+                    'no-tlsv1',
+                    'none',
+                ]
+            ),
             secure_renegotiation=dict(
                 choices=['require', 'require-strict', 'request']
             ),

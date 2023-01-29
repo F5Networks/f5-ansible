@@ -1,0 +1,83 @@
+---
+- name: Issue 01711 - Create a server SSL profile with authenticate name and trusted ca cert
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01711
+    authenticate_name: "testauthenticate"
+    ca_file: "/Common/ca-bundle.crt"
+  register: result
+
+- name: Issue 01711 - Assert Create a server SSL profile with authenticate name and trusted ca cert
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01711 - Create a server SSL profile with authenticate name and trusted ca cert - Idempotent check
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01711
+    authenticate_name: "testauthenticate"
+    ca_file: "/Common/ca-bundle.crt"
+  register: result
+
+- name: Issue 01711 - Assert Create a server SSL profile with authenticate name and trusted ca cert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01711 - Modify a server SSL profile authenticate name changed
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01711
+    authenticate_name: "testauthenticate2"
+    ca_file: "/Common/ca-bundle.crt"
+  register: result
+
+- name: Issue 01711 - Assert Create a server SSL profile with authenticate name and trusted ca cert
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01711 - Modify a server SSL profile authenticate name changed - Idempotent check
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01711
+    authenticate_name: "testauthenticate2"
+    ca_file: "/Common/ca-bundle.crt"
+  register: result
+
+- name: Issue 01711 - Assert Create a server SSL profile with authenticate name and trusted ca cert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01711 - Modify a server SSL profile change trusted cert
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01711
+    ca_file: "/Common/default.crt"
+    authenticate_name: "testauthenticate2"
+  register: result
+
+- name: Issue 01711 - Assert Modify a server SSL profile change trusted cert
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 01711 - Modify a server SSL profile change trusted cert - Idempotent check
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01711
+    ca_file: "/Common/default.crt"
+    authenticate_name: "testauthenticate2"
+  register: result
+
+- name: Issue 01711 - Assert Modify a server SSL profile change trusted cert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 01711 - Remove a server SSL profile with authenticate name and trusted ca cert
+  bigip_profile_server_ssl:
+    name: ssl_profile_issue_01711
+    state: absent
