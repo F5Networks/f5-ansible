@@ -505,6 +505,8 @@ class F5BaseClient(object):
     def merge_provider_timeout_param(self, result, provider):
         if self.validate_params('timeout', provider):
             result['timeout'] = provider['timeout']
+        elif self.validate_params('F5_TIMEOUT', os.environ):
+            result['timeout'] = os.environ.get('F5_TIMEOUT')
         else:
             result['timeout'] = None
 
