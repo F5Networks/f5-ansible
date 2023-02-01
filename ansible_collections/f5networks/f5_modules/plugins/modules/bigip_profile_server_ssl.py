@@ -106,13 +106,13 @@ options:
     type: str
   authenticate_name:
     description:
-      - Specifies a Common Name (CN) that is embedded in a server certificate
-        The system authenticates a server based on the specified CN
+      - Specifies a Common Name (CN) that is embedded in a server certificate.
+        The system authenticates a server based on the specified CN.
     type: str
   ca_file:
     description:
-      - Specifies a server CA that the system trusts
-        default is (None).
+      - Specifies a server CA the system trusts.
+        The default is (None).
     type: str
   options:
     description:
