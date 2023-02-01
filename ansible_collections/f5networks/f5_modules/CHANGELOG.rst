@@ -5,6 +5,14 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.22.1
+=======
+
+Bugfixes
+--------
+
+- bigip_device_license - Add fix for a bug that caused infinite loop when the auth token expired
+
 v1.22.0
 =======
 
