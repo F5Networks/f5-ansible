@@ -28,6 +28,7 @@ options:
     description:
       - C(yes) or C(no), specifies whether or not system GUI log audit messages.
     type: bool
+    version_added: "1.23.0"
   gui_setup:
     description:
       - C(yes) or C(no), the Setup utility in the browser-based
