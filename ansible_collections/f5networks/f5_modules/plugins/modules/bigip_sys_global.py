@@ -24,6 +24,10 @@ options:
       - Specifies the number of seconds of inactivity before the system logs
         off a user that is logged on.
     type: int
+  gui_audit:
+    description:
+      - C(yes) or C(no), specifies whether or not system GUI log audit messages.
+    type: bool
   gui_setup:
     description:
       - C(yes) or C(no), the Setup utility in the browser-based
@@ -96,6 +100,11 @@ console_timeout:
   returned: changed
   type: int
   sample: 600
+gui_audit:
+  description: The new setting for GUI auditing.
+  returned: changed
+  type: bool
+  sample: yes
 gui_setup:
   description: The new setting for the Setup utility.
   returned: changed
@@ -146,6 +155,7 @@ class Parameters(AnsibleF5Parameters):
     api_map = {
         'guiSecurityBanner': 'security_banner',
         'guiSecurityBannerText': 'banner_text',
+        'guiAudit': 'gui_audit',
         'guiSetup': 'gui_setup',
         'lcdDisplay': 'lcd_display',
         'mgmtDhcp': 'mgmt_dhcp',
@@ -157,6 +167,7 @@ class Parameters(AnsibleF5Parameters):
     api_attributes = [
         'guiSecurityBanner',
         'guiSecurityBannerText',
+        'guiAudit',
         'guiSetup',
         'lcdDisplay',
         'mgmtDhcp',
@@ -168,6 +179,7 @@ class Parameters(AnsibleF5Parameters):
     returnables = [
         'security_banner',
         'banner_text',
+        'gui_audit',
         'gui_setup',
         'lcd_display',
         'mgmt_dhcp',
@@ -179,6 +191,7 @@ class Parameters(AnsibleF5Parameters):
     updatables = [
         'security_banner',
         'banner_text',
+        'gui_audit',
         'gui_setup',
         'lcd_display',
         'mgmt_dhcp',
@@ -190,6 +203,10 @@ class Parameters(AnsibleF5Parameters):
     @property
     def security_banner(self):
         return flatten_boolean(self._values['security_banner'])
+
+    @property
+    def gui_audit(self):
+        return flatten_boolean(self._values['gui_audit'])
 
     @property
     def gui_setup(self):
@@ -242,6 +259,14 @@ class UsableChanges(Changes):
         return 'disabled'
 
     @property
+    def gui_audit(self):
+        if self._values['gui_audit'] is None:
+            return None
+        if self._values['gui_audit'] == 'yes':
+            return 'enabled'
+        return 'disabled'
+
+    @property
     def gui_setup(self):
         if self._values['gui_setup'] is None:
             return None
@@ -286,6 +311,10 @@ class ReportableChanges(Changes):
     @property
     def security_banner(self):
         return flatten_boolean(self._values['security_banner'])
+
+    @property
+    def gui_audit(self):
+        return flatten_boolean(self._values['gui_audit'])
 
     @property
     def gui_setup(self):
@@ -451,6 +480,9 @@ class ArgumentSpec(object):
                 type='bool'
             ),
             banner_text=dict(),
+            gui_audit=dict(
+                type='bool'
+            ),
             gui_setup=dict(
                 type='bool'
             ),
