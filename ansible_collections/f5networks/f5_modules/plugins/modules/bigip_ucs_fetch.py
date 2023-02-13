@@ -450,7 +450,7 @@ class BaseManager(object):
         self.async_wait(task)
 
     def create_async_task_on_device(self):
-        if self.want.passphrase:
+        if self.want.encryption_password:
             params = dict(
                 command='save',
                 name=self.want.src,
