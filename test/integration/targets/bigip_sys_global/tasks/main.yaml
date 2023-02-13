@@ -133,4 +133,24 @@
     that:
       - result is not changed
 
+- name: Set gui audit
+  bigip_sys_global:
+    gui_audit: "{{ gui_audit }}"
+  register: result
+
+- name: Assert Set gui audit
+  assert:
+    that:
+      - result is changed
+
+- name: Set gui audit - Idempotent check
+  bigip_sys_global:
+    gui_audit: "{{ gui_audit }}"
+  register: result
+
+- name: Set gui audit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - import_tasks: teardown.yaml
