@@ -462,7 +462,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 if 'Once configured [All] partition, remote user group cannot' in response['message']:
                     raise F5ModuleError(
@@ -486,7 +486,7 @@ class ModuleManager(object):
         response = self.client.api.delete(uri)
         if response.status == 200:
             return True
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -504,7 +504,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:

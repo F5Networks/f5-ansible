@@ -267,7 +267,7 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(
                 "No default HTTP LB template was found."
             )
-        elif 'code' in response and response['code'] == 400:
+        elif 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -297,7 +297,7 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(str(ex))
         if resp.status == 200 and response['totalItems'] == 0:
             return None
-        elif 'code' in response and response['code'] == 400:
+        elif 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -322,7 +322,7 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(str(ex))
         if resp.status == 200 and response['totalItems'] == 0:
             return None
-        elif 'code' in response and response['code'] == 400:
+        elif 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -645,7 +645,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -673,7 +673,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:

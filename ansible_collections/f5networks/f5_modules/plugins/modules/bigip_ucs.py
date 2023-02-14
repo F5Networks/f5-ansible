@@ -558,7 +558,7 @@ class V1Manager(BaseManager):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -680,7 +680,7 @@ class V2Manager(V1Manager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:

@@ -154,7 +154,7 @@ class ApiParameters(Parameters):
         except ValueError:
             return []
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 return []
             else:
@@ -181,7 +181,7 @@ class ApiParameters(Parameters):
         except ValueError:
             return []
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 return []
             else:
@@ -201,7 +201,7 @@ class ApiParameters(Parameters):
         except ValueError:
             return []
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 return []
             else:
@@ -666,7 +666,7 @@ class ModuleManager(object):
             # At times during reboot BIG-IP will reset or timeout connections so we catch and pass this here.
             return None
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:

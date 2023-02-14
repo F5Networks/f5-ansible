@@ -668,7 +668,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -697,7 +697,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -720,7 +720,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -798,7 +798,7 @@ class ModuleManager(object):
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             return True
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -818,7 +818,7 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError:
             return False
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -847,7 +847,7 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError:
             return False
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -884,7 +884,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -916,7 +916,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -948,7 +948,7 @@ class ModuleManager(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] != 200:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
