@@ -395,7 +395,7 @@ source:
     port:
       description: Single numeric port.
       returned: changed
-      type: int
+      type: str
       sample: 8080
     port_list:
       description: An existing port list.
@@ -441,7 +441,7 @@ destination:
     port:
       description: Single numeric port.
       returned: changed
-      type: int
+      type: str
       sample: 8080
     port_list:
       description: An existing port list.
