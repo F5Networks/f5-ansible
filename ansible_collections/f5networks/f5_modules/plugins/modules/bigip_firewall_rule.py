@@ -105,6 +105,8 @@ options:
         or IPv6 address range, geographic location, VLAN, address list, port,
         port range, port list or address list.
       - You can specify a mix of different types of items for the source address.
+      - A special value C(any) can be specified to all the source items to match any
+        value for the respective item.
     type: list
     elements: dict
     suboptions:
@@ -128,7 +130,7 @@ options:
         description:
           - Specifies a single numeric port.
           - This option is only valid when C(protocol) is C(tcp)(6) or C(udp)(17).
-        type: int
+        type: str
       port_list:
         description:
           - Specifes an existing port list.
@@ -154,6 +156,8 @@ options:
         an IPv4 or IPv6 address range, geographic location, VLAN, address list, port,
         port range, port list or address list.
       - You can specify a mix of different types of items for the source address.
+      - A special value C(any) can be specified to the destination items to match any
+        value for the respective item.
     type: list
     elements: dict
     suboptions:
@@ -177,7 +181,7 @@ options:
         description:
           - Specifies a single numeric port.
           - This option is only valid when C(protocol) is C(tcp)(6) or C(udp)(17).
-        type: int
+        type: str
       port_list:
         description:
           - Specifes an existing port list.
@@ -764,17 +768,17 @@ class UsableChanges(Changes):
             portLists=[]
         )
         for x in self._values['source']:
-            if x[0] == 'address':
+            if x[0] == 'address' and x[1] != 'any':
                 result['addresses'].append({'name': x[1]})
-            elif x[0] == 'address_list':
+            elif x[0] == 'address_list' and x[1] != 'any':
                 result['addressLists'].append(x[1])
-            elif x[0] == 'vlan':
+            elif x[0] == 'vlan' and x[1] != 'any':
                 result['vlans'].append(x[1])
-            elif x[0] == 'geo':
+            elif x[0] == 'geo' and x[1] != 'any':
                 result['geo'].append({'name': x[1]})
-            elif x[0] == 'port':
+            elif x[0] == 'port' and x[1] != 'any':
                 result['ports'].append({'name': str(x[1])})
-            elif x[0] == 'port_list':
+            elif x[0] == 'port_list' and x[1] != 'any':
                 result['portLists'].append(x[1])
         return result
 
@@ -791,15 +795,15 @@ class UsableChanges(Changes):
             portLists=[]
         )
         for x in self._values['destination']:
-            if x[0] == 'address':
+            if x[0] == 'address' and x[1] != 'any':
                 result['addresses'].append({'name': x[1]})
-            elif x[0] == 'address_list':
+            elif x[0] == 'address_list' and x[1] != 'any':
                 result['addressLists'].append(x[1])
-            elif x[0] == 'geo':
+            elif x[0] == 'geo' and x[1] != 'any':
                 result['geo'].append({'name': x[1]})
-            elif x[0] == 'port':
+            elif x[0] == 'port' and x[1] != 'any':
                 result['ports'].append({'name': str(x[1])})
-            elif x[0] == 'port_list':
+            elif x[0] == 'port_list' and x[1] != 'any':
                 result['portLists'].append(x[1])
         return result
 
@@ -906,6 +910,9 @@ class Difference(object):
             return None
         if self.want.source is None and self.have.source is None:
             return None
+        src_attrs = set([attr[1] for attr in self.want.source])
+        if src_attrs == {'any'} and self.have.source is None:
+            return None
         if self.have.source is None:
             return self.want.source
         if set(self.want.source) != set(self.have.source):
@@ -916,6 +923,9 @@ class Difference(object):
         if self.want.destination is None:
             return None
         if self.want.destination is None and self.have.destination is None:
+            return None
+        dest_attrs = set([attr[1] for attr in self.want.destination])
+        if dest_attrs == {'any'} and self.have.destination is None:
             return None
         if self.have.destination is None:
             return self.want.destination
@@ -1230,7 +1240,7 @@ class ArgumentSpec(object):
                     address_list=dict(),
                     address_range=dict(),
                     country=dict(),
-                    port=dict(type='int'),
+                    port=dict(),
                     port_list=dict(),
                     port_range=dict(),
                     vlan=dict(),
@@ -1248,7 +1258,7 @@ class ArgumentSpec(object):
                     address_list=dict(),
                     address_range=dict(),
                     country=dict(),
-                    port=dict(type='int'),
+                    port=dict(),
                     port_list=dict(),
                     port_range=dict(),
                 ),
