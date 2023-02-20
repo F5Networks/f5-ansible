@@ -1,0 +1,132 @@
+---
+- name: Create a basic firewall policy
+  bigip_firewall_policy:
+    name: issue-2290-policy
+
+- name: 2290-Create a new rule in the issue-2290-policy firewall policy
+  bigip_firewall_rule:
+    name: issue_2290
+    parent_policy: 'issue-2290-policy'
+    protocol: tcp
+    source:
+      - address: 1.2.3.4
+      - address: "::1"
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 161
+      - port_range: 80-443
+    destination:
+      - address: 1.2.3.4
+      - address: "::1"
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 161
+      - port_range: 80-443
+    action: accept
+    logging: yes
+  register: result
+
+- name: Assert 2290-Create a new rule in the issue-2290-policy firewall policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: 2290-Create a new rule in the issue-2290-policy firewall policy - Idempotent Check
+  bigip_firewall_rule:
+    name: issue_2290
+    parent_policy: 'issue-2290-policy'
+    protocol: tcp
+    source:
+      - address: 1.2.3.4
+      - address: "::1"
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 161
+      - port_range: 80-443
+    destination:
+      - address: 1.2.3.4
+      - address: "::1"
+      - address_range: 1.1.1.1-2.2.2.2
+      - country: US
+      - port: 161
+      - port_range: 80-443
+    action: accept
+    logging: yes
+  register: result
+
+- name: Assert 2290-Create a new rule in the issue-2290-policy firewall policy - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: 2290 - Modify rule in the issue-2290-policy firewall policy
+  bigip_firewall_rule:
+    name: issue_2290
+    parent_policy: 'issue-2290-policy'
+    protocol: tcp
+    source:
+      - address: any
+      - address: any
+      - address_range: any
+      - country: any
+      - port: any
+      - port_range: any
+    destination:
+      - address: any
+      - address: any
+      - address_range: any
+      - country: any
+      - port: any
+      - port_range: any
+    action: accept
+    logging: yes
+  register: result
+
+- name: Assert 2290 - Modify rule in the issue-2290-policy firewall policy
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: 2290 - Modify rule in the issue-2290-policy firewall policy - Idempotent Check
+  bigip_firewall_rule:
+    name: issue_2290
+    parent_policy: 'issue-2290-policy'
+    protocol: tcp
+    source:
+      - address: any
+      - address: any
+      - address_range: any
+      - country: any
+      - port: any
+      - port_range: any
+    destination:
+      - address: any
+      - address: any
+      - address_range: any
+      - country: any
+      - port: any
+      - port_range: any
+    action: accept
+    logging: yes
+  register: result
+
+- name: Assert 2290 - Modify rule in the issue-2290-policy firewall policy - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: 2290 - Delete firewall rule
+  bigip_firewall_rule:
+    name: issue_2290
+    parent_policy: 'issue-2290-policy'
+    state: absent
+  register: result
+
+- name: Delete firewall policy
+  bigip_firewall_policy:
+    name: issue-2290-policy
+    state: absent
