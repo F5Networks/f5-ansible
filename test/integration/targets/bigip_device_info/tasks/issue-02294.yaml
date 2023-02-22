@@ -1,0 +1,46 @@
+---
+
+- name: Create published policy
+  bigip_policy:
+    name: test_policy
+
+- name: Create a virtual server
+  bigip_virtual_server:
+    name: test_vs
+    destination: 1.1.1.1
+    port: 80
+
+- name: Add rule to the policy
+  bigip_policy_rule:
+    policy: test_policy
+    name: test_rule
+    actions:
+      - type: forward
+        virtual: "/Common/test_vs"
+  register: result
+
+- name: Gather LTM Policies
+  bigip_device_info:
+    gather_subset:
+      - "ltm-policies"
+  register: result
+
+- name: Assert LMT Policy rules contains the attributes
+  assert:
+    that:
+      - item.rules[0].actions[0].virtual == "/Common/test_vs"
+      - item.rules[0].actions[0].forward == true
+  loop: "{{ result.ltm_policies }}"
+  when: item.name == "test_policy"
+
+- name: Delete policy
+  bigip_policy:
+    name: test_policy
+    state: absent
+
+- name: Delete virtual server
+  bigip_virtual_server:
+    name: test_vs
+    destination: 1.1.1.1
+    port: 80
+    state: absent
