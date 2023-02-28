@@ -120,6 +120,7 @@ except ImportError:
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
 else:
     HAS_PACKAGING = True
+    PACKAGING_IMPORT_ERROR = None
 
 try:
     import urlparse

@@ -1,12 +1,12 @@
-ansible>=6.0.0,<7.0.0
+ansible
 invoke
 cffi
 packaging
 
 # Test running
-pycodestyle==2.6.0
-pylint==2.6.0
-flake8==3.8.4
+pycodestyle
+pylint
+flake8
 nose
 mock
 virtualenv
