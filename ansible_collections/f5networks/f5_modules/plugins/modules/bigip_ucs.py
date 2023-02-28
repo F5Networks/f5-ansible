@@ -187,6 +187,7 @@ except ImportError:
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
 else:
     HAS_PACKAGING = True
+    PACKAGING_IMPORT_ERROR = None
 
 from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib
@@ -516,7 +517,7 @@ class V1Manager(BaseManager):
             self.client.provider['server_port']
         )
         ownership = 'root:root'
-        ucs_path = f'/var/local/ucs/{self.want.basename}'
+        ucs_path = '/var/local/ucs/{0}'.format(self.want.basename)
         file_mode = oct(os.stat(self.want.ucs).st_mode)[-3:]
         args = dict(
             command='run',

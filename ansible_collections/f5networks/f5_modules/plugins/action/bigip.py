@@ -39,8 +39,7 @@ display = Display()
 
 class ActionModule(ActionNetworkModule):
 
-    def run(self, tmp=None, task_vars=None):
-        del tmp  # tmp no longer has any effect
+    def run(self, task_vars=None):
 
         self._config_module = True if self._task.action == 'bigip_imish_config' else False
         socket_path = None
