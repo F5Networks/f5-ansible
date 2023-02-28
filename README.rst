@@ -72,6 +72,12 @@ can be found here [execenv]. Use the below requirements.yml file when building E
         type: git
         version: devel
 
+.. note::
+
+   When running the **bigip_device_certificate** module one might see errors related to establishing ssh connection,
+   one reason behind that could be ansible setting the ssh type to **libssh**, there are two ways to fix that,
+   first, set the environemnt variable ``ANSIBLE_NETWORK_CLI_SSH_TYPE=paramiko`` while running the playbook.
+   The second way is to add ``ssh_type = paramiko`` under section ``[persistent_connection]`` in **ansible.cfg**
 
 Support
 -------
