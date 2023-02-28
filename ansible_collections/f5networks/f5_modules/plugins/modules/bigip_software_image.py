@@ -380,7 +380,7 @@ class ModuleManager(object):
             self.client.provider['server_port']
         )
         ownership = 'root:root'
-        image_path = f'/shared/images/{self.want.filename}'
+        image_path = '/shared/images/{0}'.format(self.want.filename)
         file_mode = '0644'
         args = dict(
             command='run',

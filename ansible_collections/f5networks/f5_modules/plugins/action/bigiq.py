@@ -37,7 +37,7 @@ display = Display()
 
 class ActionModule(ActionNetworkModule):
 
-    def run(self, tmp=None, task_vars=None):
+    def run(self, task_vars=None):
         socket_path = None
         transport = 'rest'
 
