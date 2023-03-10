@@ -101,6 +101,10 @@ options:
 extends_documentation_fragment: f5networks.f5_modules.f5ssh
 author:
   - Wojciech Wypior (@wojtek0806)
+notes:
+  - When using this module make sure ssh type is not set to libssh, to do this you could either
+    set the environment variable like this ANSIBLE_NETWORK_CLI_SSH_TYPE=paramiko or set add
+    ssh_type = paramiko under section persistent_connection in ansible.cfg.
 '''
 
 EXAMPLES = r'''
