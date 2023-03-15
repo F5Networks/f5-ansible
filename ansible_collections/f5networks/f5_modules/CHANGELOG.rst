@@ -5,6 +5,22 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.23.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_firewall_rule - the source and destination items can be set to `any` and port type is changed from int to str
+- bigip_policy_rule - added host_contains parameter to http_host condition type
+- bigip_sys_global - added gui_audit parameter to control audit log for changes through webui
+
+Bugfixes
+--------
+
+- bigip_device_info - Included additional attributes for actions in ltm policy rules
+- bigip_ucs_fetch - fix a typo causing a bug that prevented ucs file from being encrypted with the provided passphrase
+
 v1.22.1
 =======
 
