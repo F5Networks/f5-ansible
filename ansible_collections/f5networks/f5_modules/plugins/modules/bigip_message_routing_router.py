@@ -40,12 +40,12 @@ options:
     type: str
   ignore_client_port:
     description:
-      - When C(yes), the remote port on clientside connections (connections where the peer connected to the BIG-IP)
+      - When C(true), the remote port on clientside connections (connections where the peer connected to the BIG-IP)
         is ignored when searching for an existing connection.
     type: bool
   inherited_traffic_group:
     description:
-      - When set to C(yes), the C(traffic_group) will be inherited from the containing folder. When not specified the
+      - When set to C(true), the C(traffic_group) is inherited from the containing folder. When not specified the
         system sets this to C(no) when creating new router profile.
     type: bool
   traffic_group:
@@ -56,7 +56,7 @@ options:
     type: str
   use_local_connection:
     description:
-      - If C(yes), the router will route a message to an existing connection on the same TMM as the message was
+      - If C(true), the router will route a message to an existing connection on the same TMM as the message was
         received.
     type: bool
   max_pending_bytes:
@@ -171,12 +171,12 @@ ignore_client_port:
   description: Enables ignoring of the remote port on clientside connections when searching for an existing connection.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 inherited_traffic_group:
   description: Specifies if a traffic-group should be inherited from containing folder.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 traffic_group:
   description: The traffic-group of the router profile.
   returned: changed
@@ -186,7 +186,7 @@ use_local_connection:
   description: Enables routing of messages to an existing connection on the same TMM as the message was received.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 max_pending_bytes:
   description: The maximum number of bytes worth of pending messages that will be held.
   returned: changed
@@ -206,7 +206,7 @@ mirror:
   description: Enables or disables state mirroring.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 mirrored_msg_sweeper_interval:
   description: The maximum time in milliseconds that a message will be held on the standby device.
   returned: changed
