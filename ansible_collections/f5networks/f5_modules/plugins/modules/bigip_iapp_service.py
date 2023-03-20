@@ -45,7 +45,7 @@ options:
         This option is equivalent to re-configuring the iApp if that template
         has changed.
     type: bool
-    default: no
+    default: false
   state:
     description:
       - When C(present), ensures the iApp service is created and running.
@@ -65,10 +65,10 @@ options:
       - Indicates whether the application service is tied to the template,
         so when the template is updated, the application service changes to
         reflect the updates.
-      - When C(yes), disallows any updates to the resources that the iApp
+      - When C(true), disallows any updates to the resources that the iApp
         service has created, if they are not updated directly through the
         iApp.
-      - When C(no), allows updates outside of the iApp.
+      - When C(false), allows updates outside of the iApp.
       - If this option is specified in the Ansible task, it takes precedence
         over any similar setting in the iApp Service payload that you provide in
         the C(parameters) field.
