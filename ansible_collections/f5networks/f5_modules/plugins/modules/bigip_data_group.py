@@ -47,16 +47,16 @@ options:
       - The type of this data group.
       - You should only consider setting this value in cases where you know exactly what
         you are doing, B(or), you are working with a pre-existing internal data group.
-      - Be aware that if you deliberately force this parameter to C(yes), and you have a
+      - Be aware that if you deliberately force this parameter to C(true), and you have a
         either a large number of records or a large total records size, this large amount
         of data will be reflected in your BIG-IP configuration. This can lead to B(long)
         system configuration load times due to parsing and verifying the large
         configuration.
-      - There is a limit of either 4 megabytes or 65,000 records (whichever is more restrictive)
-        for uploads when this parameter is C(yes).
+      - When this parameter is C(true), there is a limit for uploads of either 4 megabytes
+        or 65,000 records, whichever is more restrictive.
       - This value cannot be changed once the data group is created.
     type: bool
-    default: no
+    default: false
   external_file_name:
     description:
       - When creating a new data group, this specifies the file name you want to give an
@@ -125,10 +125,10 @@ options:
     default: ":="
   delete_data_group_file:
     description:
-      - When C(yes), ensures the remote data group file is deleted.
-      - This parameter is only relevant when C(state) is C(absent) and C(internal) is C(no).
+      - When C(true), ensures the remote data group file is deleted.
+      - This parameter is only relevant when C(state) is C(absent) and C(internal) is C(false).
     type: bool
-    default: no
+    default: false
   partition:
     description:
       - Device partition to manage resources on.
