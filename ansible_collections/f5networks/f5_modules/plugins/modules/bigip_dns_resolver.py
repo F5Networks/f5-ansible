@@ -37,14 +37,14 @@ options:
       - Specifies whether the system answers DNS queries for the default zones localhost,
         reverse 127.0.0.1 and ::1, and AS112.
       - When creating a new resolver, if this parameter is not specified, the default
-        is C(no), meaning the system passes along the DNS queries for the default zones.
+        is C(false), meaning the system passes along the DNS queries for the default zones.
     type: bool
   randomize_query_case:
     description:
-      - When C(yes), specifies the internal DNS resolver randomizes character case
+      - When C(true), specifies the internal DNS resolver randomizes character case
         in domain name queries issued to the root DNS servers.
       - When creating a new resolver, if this parameter is not specified, the default
-        is C(yes).
+        is C(true).
     type: bool
   use_ipv4:
     description:
@@ -52,7 +52,7 @@ options:
       - An IPv4 Self IP and default route must be available for these queries to work
         successfully.
       - When creating a new resolver, if this parameter is not specified, the default
-        is C(yes).
+        is C(true).
     type: bool
   use_ipv6:
     description:
@@ -60,19 +60,19 @@ options:
       - An IPv6 Self IP and default route must be available for these queries to work
         successfully.
       - When creating a new resolver, if this parameter is not specified, the default
-        is C(yes).
+        is C(true).
     type: bool
   use_udp:
     description:
       - Specifies whether the system answers and issues UDP-formatted queries.
       - When creating a new resolver, if this parameter is not specified, the default
-        is C(yes).
+        is C(true).
     type: bool
   use_tcp:
     description:
       - Specifies whether the system answers and issues TCP-formatted queries.
       - When creating a new resolver, if this parameter is not specified, the default
-        is C(yes).
+        is C(true).
     type: bool
   state:
     description:
@@ -119,32 +119,32 @@ answer_default_zones:
   description: The new Answer Default Zones setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 randomize_query_case:
   description: The new Randomize Query Character Case setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 use_ipv4:
   description: The new Use IPv4 setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 use_ipv6:
   description: The new Use IPv6 setting.
   returned: changed
   type: bool
-  sample: no
+  sample: default
 use_udp:
   description: The new Use UDP setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 use_tcp:
   description: The new Use TCP setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 '''
 from datetime import datetime
 
