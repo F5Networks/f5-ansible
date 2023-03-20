@@ -193,7 +193,7 @@ options:
       - This operation is all or none, meaning it will stop if there are some pools
         that cannot be removed.
     type: bool
-    default: no
+    default: false
     aliases:
       - purge
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -427,7 +427,7 @@ replace_all_with:
   description: Purges all non-aggregate pools from device
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 
 import re
