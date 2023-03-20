@@ -22,9 +22,9 @@ options:
     required: True
   enable:
     description:
-      - When set to C(no), the system disables the HA score feature.
+      - When set to C(false), the system disables the HA score feature.
     type: bool
-    default: yes
+    default: true
   description:
     description:
       - User created HA group description.
@@ -192,7 +192,7 @@ enable:
   description: Enables or disables the HA score feature.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 description:
   description: User created HA group description.
   returned: changed
