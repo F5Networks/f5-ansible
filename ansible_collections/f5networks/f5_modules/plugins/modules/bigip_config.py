@@ -28,16 +28,16 @@ options:
       - This operation is performed after any changes are made to the
         current running config. If no changes are made, the configuration
         is still saved to the startup config.
-      - This option will always cause the module to return B(changed).
+      - This option always causes the module to return B(changed).
     type: bool
-    default: yes
+    default: true
   reset:
     description:
       - Loads the default configuration on the device.
-      - If this option is specified, the default configuration will be
+      - If this option is specified, the default configuration is
         loaded before any commands or other provided configuration is run.
     type: bool
-    default: no
+    default: false
   merge_content:
     description:
       - Loads the specified configuration that you want to merge into
@@ -51,10 +51,10 @@ options:
       - Validates the specified configuration to see whether it is
         valid to replace the running configuration.
       - The running configuration will not be changed.
-      - When this parameter is set to C(yes), no change will be reported
+      - When this parameter is set to C(true), no change is reported
         by the module.
     type: bool
-    default: no
+    default: false
 notes:
   - This module requires that sys db variable on device C(systemauth.disablebash) is set to C(false).
 extends_documentation_fragment: f5networks.f5_modules.f5
