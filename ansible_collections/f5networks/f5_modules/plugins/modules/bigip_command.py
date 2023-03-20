@@ -81,7 +81,7 @@ options:
       - Note that the F5 Ansible developers specifically leave this on to make you
         aware that your usage of this module may be better served by official F5
         Ansible modules. This module should always be used as a last resort.
-    default: True
+    default: true
     type: bool
   chdir:
     description:
@@ -200,7 +200,7 @@ warn:
   description: Whether or not to raise warnings about modification commands.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 '''
 
 import copy
