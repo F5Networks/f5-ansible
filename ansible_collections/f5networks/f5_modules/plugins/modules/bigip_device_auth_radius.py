@@ -56,8 +56,8 @@ options:
   use_for_auth:
     description:
       - Specifies whether or not this auth source is put in use on the system.
-      - If C(yes), the module sets the current system auth type to the value of C(radius).
-      - If C(no), the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
+      - If C(true), the module sets the current system auth type to the value of C(radius).
+      - If C(false), the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
         without removing the configured RADIUS resource.
     type: bool
   state:
@@ -138,7 +138,7 @@ accounting_bug:
   description: Enables or disables validation of the accounting response vector.
   type: bool
   returned: changed
-  sample: yes
+  sample: true
 '''
 from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
