@@ -116,7 +116,7 @@ policy_enforcement:
   description: The new policy enforcement setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 required_lowercase:
   description: The lowercase requirement.
   returned: changed
