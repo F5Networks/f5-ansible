@@ -81,17 +81,17 @@ options:
     description:
       - Specifies whether the system automatically changes the status of a resource
         to B(enabled) at the next successful monitor check.
-      - If you set this option to C(yes), you must manually re-enable the resource
+      - If you set this option to C(true), you must manually re-enable the resource
         before the system can use it for load balancing connections.
-      - When C(yes), specifies you must manually re-enable the resource after an
+      - When C(true), specifies you must manually re-enable the resource after an
         unsuccessful monitor check.
-      - When C(no), specifies the system automatically changes the status of a
+      - When C(false), specifies the system automatically changes the status of a
         resource to B(enabled) at the next successful monitor check.
     type: bool
   adaptive:
     description:
       - Specifies whether adaptive response time monitoring is enabled for this monitor.
-      - When C(yes), the monitor determines the state of a service based on how divergent
+      - When C(true), the monitor determines the state of a service based on how divergent
         from the mean latency a monitor probe for that service is allowed to be.
         Also, values for the C(allowed_divergence), C(adaptive_limit), and
         and C(sampling_timespan) will be enforced.
@@ -208,7 +208,7 @@ adaptive:
   description: Whether adaptive is enabled or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 allowed_divergence_type:
   description: Type of divergence used for adaptive response time monitoring.
   returned: changed
@@ -252,7 +252,7 @@ transparent:
   description: Whether the monitor operates in transparent mode.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 '''
 from datetime import datetime
 
