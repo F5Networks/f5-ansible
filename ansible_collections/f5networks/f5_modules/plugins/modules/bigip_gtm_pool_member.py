@@ -98,7 +98,7 @@ options:
       - Removes members not defined in the C(aggregate) parameter.
       - This operation is all or none, meaning it will stop if there are some pool members
         that cannot be removed.
-    default: no
+    default: false
     type: bool
     aliases:
       - purge
@@ -113,17 +113,17 @@ options:
     suboptions:
       bits_enabled:
         description:
-          - Whether the bits limit is enabled or not.
+          - Whether or not the bits limit is enabled.
           - This parameter allows you to switch on or off the effect of the limit.
         type: bool
       packets_enabled:
         description:
-          - Whether the packets limit is enabled or not.
+          - Whether or not the packets limit is enabled.
           - This parameter allows you to switch on or off the effect of the limit.
         type: bool
       connections_enabled:
         description:
-          - Whether the current connections limit is enabled or not.
+          - Whether or not the current connections limit is enabled.
           - This parameter allows you to switch on or off the effect of the limit.
         type: bool
       bits_limit:
@@ -260,7 +260,7 @@ bits_enabled:
   description: Whether the bits limit is enabled.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 bits_limit:
   description: The new bits_enabled limit.
   returned: changed
@@ -270,7 +270,7 @@ connections_enabled:
   description: Whether the connections limit is enabled.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 connections_limit:
   description: The new connections_limit limit.
   returned: changed
@@ -280,12 +280,12 @@ disabled:
   description: Whether the pool member is disabled or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 enabled:
   description: Whether the pool member is enabled or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 member_order:
   description: The new order in which the member appears in the pool.
   returned: changed
@@ -300,7 +300,7 @@ packets_enabled:
   description: Whether the packets limit is enabled.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 packets_limit:
   description: The new packets_limit limit.
   returned: changed
@@ -320,7 +320,7 @@ replace_all_with:
   description: Purges all non-aggregate pool members from device
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 
 from copy import deepcopy
