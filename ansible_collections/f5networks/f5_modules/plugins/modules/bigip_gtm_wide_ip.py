@@ -117,10 +117,10 @@ options:
     type: str
   persistence:
     description:
-      - When C(yes), ensures that when a local DNS makes repetitive requests on
+      - When C(true), ensures when a local DNS makes repetitive requests on
         behalf of a client, the system reconnects the client to the same resource
         as previous requests.
-      - When C(no), ensures repetitive requests do not reconnect the client
+      - When C(false), ensures repetitive requests do not reconnect the client
         to the same resource.
     type: bool
   persistence_ttl:
@@ -258,7 +258,7 @@ persistence:
   description: Whether pool connections will be persisted.
   returned: changed
   type: bool
-  sample: False
+  sample: false
 persist_cidr_ipv4:
   description: Specifies a mask used to group IPv4 LDNS addresses.
   returned: changed
