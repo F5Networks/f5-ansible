@@ -46,11 +46,11 @@ options:
     elements: dict
   failover_multicast:
     description:
-      - When C(yes), ensures the Failover Multicast configuration is enabled
+      - When C(true), ensures the Failover Multicast configuration is enabled
         and, if no further multicast configuration is provided, ensures that
         C(multicast_interface), C(multicast_address) and C(multicast_port) are
         the defaults specified in the description of each option.
-      - When C(no), ensures that Failover Multicast configuration is disabled.
+      - When C(false), ensures that Failover Multicast configuration is disabled.
     type: bool
   multicast_interface:
     description:
