@@ -77,10 +77,10 @@ options:
         type: str
       true_names:
         description:
-          - When C(yes), the module will not append C(.crt) and C(.key) extensions to the given certificate and key names.
-          - When C(no), the module will append C(.crt) and C(.key) extensions to the given certificate and key names.
+          - When C(true), the module does not append C(.crt) and C(.key) extensions to the given certificate and key names.
+          - When C(false), the module appends C(.crt) and C(.key) extensions to the given certificate and key names.
         type: bool
-        default: no
+        default: false
         version_added: "1.1.0"
   partition:
     description:
@@ -198,7 +198,7 @@ options:
     type: bool
   retain_certificate:
     description:
-      - When C(yes), the client certificate is retained in SSL session.
+      - When C(true), the client certificate is retained in SSL session.
     type: bool
   cert_auth_depth:
     description:
@@ -353,17 +353,17 @@ allow_non_ssl:
   description: Acceptance of non-SSL connections.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 strict_resume:
   description: Resumption of SSL sessions after an unclean shutdown.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 renegotiation:
   description: Renegotiation of SSL sessions.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 cache_size:
   description: Specifies the number of sessions in the SSL session cache.
   returned: changed
