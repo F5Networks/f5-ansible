@@ -37,7 +37,7 @@ options:
         template will run.
       - This value B(must) be less than the C(timeout) value.
       - When creating a new monitor, if this parameter is not provided, the
-        default C(5) will be used.
+        default C(5) is used.
     type: int
   up_interval:
     description:
@@ -48,7 +48,7 @@ options:
       - When any other number, enables you to specify a different interval to
         use when checking the health of a resource that is up.
       - When creating a new monitor, if this parameter is not provided, the
-        default C(0) will be used.
+        default C(0) is used.
     type: int
   timeout:
     description:
@@ -59,14 +59,14 @@ options:
       - You can change this to any number, however, it should be 3 times the
         interval number of seconds plus 1 second.
       - If this parameter is not provided when creating a new monitor, the default
-        value will be C(16).
+        value is C(16).
     type: int
   transparent:
     description:
       - Specifies whether the monitor operates in transparent mode.
       - Monitors in transparent mode can monitor pool members through firewalls.
       - When creating a new monitor, if this parameter is not provided, the default
-        value will be C(no).
+        value is C(false).
     type: bool
   reverse:
     description:
@@ -97,13 +97,13 @@ options:
     description:
       - Specifies whether the system automatically changes the status of a resource
         to B(enabled) at the next successful monitor check.
-      - If C(yes), you must manually re-enable the resource
+      - If C(true), you must manually re-enable the resource
         before the system can use it for load balancing connections.
       - When creating a new monitor, if this parameter is not specified, the default
-        value is C(no).
-      - When C(yes), specifies you must manually re-enable the resource after an
+        value is C(false).
+      - When C(true), specifies you must manually re-enable the resource after an
         unsuccessful monitor check.
-      - When C(no), specifies the system automatically changes the status of a
+      - When C(false), specifies the system automatically changes the status of a
         resource to B(enabled) at the next successful monitor check.
     type: bool
   ip:
@@ -154,11 +154,11 @@ options:
       - Specifies the RCODE required in the response for an up status.
       - When creating a new monitor, if this parameter is not specified, the default
         value is C(no-error).
-      - When C(no-error), specifies the status of the node will be marked up if
+      - When C(no-error), specifies the status of the node is marked up if
         the received DNS message has no error.
-      - When C(anything), specifies the status of the node will be marked up
+      - When C(anything), specifies the status of the node is marked up
         irrespective of the RCODE in the DNS message received.
-      - If this parameter is set to C(anything), it will disregard the C(receive)
+      - If this parameter is set to C(anything), it disregards the C(receive)
         string, and nullify it if the monitor is being updated.
     type: str
     choices:
@@ -167,10 +167,10 @@ options:
   adaptive:
     description:
       - Specifies whether adaptive response time monitoring is enabled for this monitor.
-      - When C(yes), the monitor determines the state of a service based on how divergent
+      - When C(true), the monitor determines the state of a service based on how divergent
         from the mean latency a monitor probe for that service is allowed to be.
         Also, values for the C(allowed_divergence), C(adaptive_limit), and
-        and C(sampling_timespan) will be enforced.
+        and C(sampling_timespan) are enforced.
       - When C(disabled), the monitor determines the state of a service based on the
         C(interval), C(up_interval), C(time_until_up), and C(timeout) monitor settings.
     type: bool
@@ -276,7 +276,7 @@ adaptive:
   description: Whether adaptive is enabled or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 accept_rcode:
   description: RCODE required in the response for an up status.
   returned: changed
@@ -345,7 +345,7 @@ reverse:
   description: Whether the monitor operates in reverse mode.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 port:
   description:
     - Alias port or service for the monitor to check, on behalf of the pools or pool
@@ -357,7 +357,7 @@ transparent:
   description: Whether the monitor operates in transparent mode.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 '''
 from datetime import datetime
 
