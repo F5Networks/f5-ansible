@@ -165,7 +165,7 @@ enforce_tls_requirements:
   description: Specifies whether the system requires TLS for communications.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 frame_size:
   description: The size of the data frames.
   returned: changed
