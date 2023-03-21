@@ -103,7 +103,7 @@ options:
     description:
       - Indicates connections may be shared not only within a virtual server, but
         also among similar virtual servers.
-      - When C(yes), all virtual servers that use the same OneConnect and other internal
+      - When C(true), all virtual servers that use the same OneConnect and other internal
         network profiles can share connections.
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
@@ -179,7 +179,7 @@ share_pools:
   description: Share connections among similar virtual servers.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 from datetime import datetime
 
