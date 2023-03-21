@@ -18,7 +18,7 @@ options:
   active:
     description:
       - If C(true), applies and activates the existing inactive policy. If C(false), it
-        deactivates the existing active policy. Generally should be C(yes) only in cases where
+        deactivates the existing active policy. Generally should be C(true) only in cases where
         you want to activate new or existing policy.
       - In TMOS v14 and later, deactivating the policy causes it to be detached from any other associated objects,
         therefore the default option of C(false) has been removed in order to prevent accidental disassociation.

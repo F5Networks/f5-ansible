@@ -23,12 +23,12 @@ options:
   dest:
     description:
       - A directory to save the policy file into.
-      - This option is ignored when C(inline) is set to c(yes).
+      - This option is ignored when C(inline) is set to C(true).
     type: path
   file:
     description:
       - The name of the file to be created on the remote device for downloading.
-      - When C(binary) is set to C(no) the ASM policy is in XML format.
+      - When C(binary) is set to C(false) the ASM policy is in XML format.
     type: str
   inline:
     description:

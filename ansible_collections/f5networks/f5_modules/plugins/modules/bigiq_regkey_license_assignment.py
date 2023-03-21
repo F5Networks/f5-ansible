@@ -29,11 +29,11 @@ options:
     required: True
   device:
     description:
-      - When C(managed) is C(no), specifies the address, or hostname, where the BIG-IQ
+      - When C(managed) is C(false), specifies the address, or hostname, where the BIG-IQ
         can reach the remote device to register.
-      - When C(managed) is C(yes), specifies the managed device, or device UUID, that
+      - When C(managed) is C(true), specifies the managed device, or device UUID, that
         you want to register.
-      - If C(managed) is C(yes), it is very important you do not have more than
+      - If C(managed) is C(true), it is very important you do not have more than
         one device with the same name. BIG-IQ internally recognizes devices by their ID,
         and therefore, this module cannot guarantee the correct device will be
         registered. The device returned is the device that is used.

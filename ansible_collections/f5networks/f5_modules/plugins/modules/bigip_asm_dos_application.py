@@ -148,12 +148,12 @@ options:
       ios_allowed_package_names:
         description:
           - Specifies the names of iOS packages to allow traffic on.
-          - This option has no effect when C(allow_any_ios_package) is set to C(yes).
+          - This option has no effect when C(allow_any_ios_package) is set to C(true).
         type: list
         elements: str
       android_publishers:
         description:
-          - This option has no effect when C(allow_any_android_package) is set to C(yes).
+          - This option has no effect when C(allow_any_android_package) is set to C(true).
           - Specifies the allowed publisher certificates for android applications.
           - The publisher certificate needs to be installed on the BIG-IP beforehand.
           - "The certificate name located on a different partition than the one specified

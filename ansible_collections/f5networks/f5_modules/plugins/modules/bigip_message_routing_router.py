@@ -45,14 +45,14 @@ options:
     type: bool
   inherited_traffic_group:
     description:
-      - When set to C(true), the C(traffic_group) is inherited from the containing folder. When not specified the
-        system sets this to C(no) when creating new router profile.
+      - When set to C(true), the C(traffic_group) is inherited from the containing folder. When not specified, the
+        system sets this to C(false) when creating new router profile.
     type: bool
   traffic_group:
     description:
       - Specifies the traffic-group of the router profile.
       - Setting the C(traffic_group) to an empty string value C("") will cause the device to inherit from containing
-        folder, which means the value of C(inherited_traffic_group) on device will be C(yes).
+        folder, which means the value of C(inherited_traffic_group) on device will be C(true).
     type: str
   use_local_connection:
     description:

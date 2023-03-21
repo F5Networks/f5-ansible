@@ -34,7 +34,7 @@ options:
   dest:
     description:
       - A directory to save the UCS file into.
-      - This option is mandatory when C(only_create_file) is set to C(no).
+      - This option is mandatory when C(only_create_file) is set to C(false).
     type: path
   encryption_password:
     description:
@@ -55,7 +55,7 @@ options:
     description:
       - The name of the UCS file to create on the remote server for downloading.
       - The file is retrieved or created in /var/local/ucs/.
-      - This option is mandatory when C(only_create_file) is set to C(yes).
+      - This option is mandatory when C(only_create_file) is set to C(true).
     type: str
   async_timeout:
     description:

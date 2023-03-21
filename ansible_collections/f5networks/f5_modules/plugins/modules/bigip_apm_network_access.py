@@ -107,7 +107,7 @@ options:
   ipv4_address_space:
     description:
       - Specifies a list of IPv4 hosts or networks describing the target LAN.
-      - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(yes).
+      - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(true).
     type: list
     elements: dict
     suboptions:
@@ -119,7 +119,7 @@ options:
   ipv6_address_space:
     description:
       - Specifies a list of IPv6 hosts or networks describing the target LAN.
-      - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(yes).
+      - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(true).
     type: list
     elements: dict
     suboptions:

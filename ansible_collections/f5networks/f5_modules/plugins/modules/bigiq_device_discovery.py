@@ -39,7 +39,7 @@ options:
     description:
       - DSC cluster name of the BIG-IP device to be managed.
       - This is optional if the managed device is not a part of a cluster group.
-      - When C(use_bigiq_sync) is set to C(yes), this parameter is required.
+      - When C(use_bigiq_sync) is set to C(true), this parameter is required.
     type: str
   use_bigiq_sync:
     description:

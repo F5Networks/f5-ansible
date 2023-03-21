@@ -814,7 +814,7 @@ client_ssl_profiles:
       sample: ignore
     sni_require:
       description:
-        - When this option is C(yes), a client connection that does not
+        - When this option is C(true), a client connection that does not
           specify a known server name or does not support SNI extension will
           be rejected.
       returned: queried
@@ -822,7 +822,7 @@ client_ssl_profiles:
       sample: false
     sni_default:
       description:
-        - When C(yes), this profile is the default SSL profile when the server
+        - When C(true), this profile is the default SSL profile when the server
           name in a client connection does not match any configured server
           names, or a client connection does not specify any server name at
           all.
@@ -887,7 +887,7 @@ client_ssl_profiles:
     retain_certificate:
       description:
         - APM module requires storing certificate in SSL session. When
-          C(no), certificate will not be stored in SSL session.
+          C(false), certificate will not be stored in SSL session.
       returned: queried
       type: bool
       sample: true
@@ -1358,7 +1358,7 @@ fasthttp_profiles:
       sample: 0
     oneconnect_replenish':
       description:
-        - When C(yes), specifies the system will not keep a steady-state maximum of
+        - When C(true), specifies the system will not keep a steady-state maximum of
           connections to the back-end, unless the number of connections to the pool have
           dropped beneath the C(minimum_pool_size) specified in the profile.
       returned: queried
@@ -1385,7 +1385,7 @@ fasthttp_profiles:
       sample: My profile
     force_http_1_0_response:
       description:
-        - When C(yes), specifies the server sends responses to clients in the HTTP/1.0
+        - When C(true), specifies the server sends responses to clients in the HTTP/1.0
           format.
       returned: queried
       type: bool
@@ -1399,7 +1399,7 @@ fasthttp_profiles:
       sample: "X-F5-Authentication: foo"
     http_1_1_close_workarounds:
       description:
-        - When C(yes), specifies the server uses workarounds for HTTP 1.1 close issues.
+        - When C(true), specifies the server uses workarounds for HTTP 1.1 close issues.
       returned: queried
       type: bool
       sample: false
@@ -1445,7 +1445,7 @@ fasthttp_profiles:
       sample: 0
     reset_on_timeout:
       description:
-        - When C(yes), specifies the system sends a reset packet (RST) in addition to
+        - When C(true), specifies the system sends a reset packet (RST) in addition to
           deleting the connection, when a connection exceeds the idle timeout value.
       returned: queried
       type: bool
@@ -2315,12 +2315,12 @@ gtm_wide_ips:
       type: bool
     failure_rcode:
       description:
-        - Specifies the DNS RCODE used when C(failure_rcode_response) is C(yes).
+        - Specifies the DNS RCODE used when C(failure_rcode_response) is C(true).
       returned: queried
       type: int
     failure_rcode_response:
       description:
-        - When C(yes), specifies the system returns a RCODE response to
+        - When C(true), specifies the system returns a RCODE response to
           Wide IP requests after exhausting all load balancing methods.
       returned: queried
       type: bool
@@ -2816,7 +2816,7 @@ http_profiles:
         - Specifies the pass-through behavior when a redirect lacking the
           trailing carriage-return and line feed pair at the end of the headers
           is parsed.
-        - When C(no), the system will silently drop the invalid HTTP.
+        - When C(false), the system will silently drop the invalid HTTP.
       returned: queried
       type: bool
       sample: false
@@ -2901,19 +2901,19 @@ http_profiles:
       sample: deny
     hsts_include_subdomains:
       description:
-        - When C(yes), applies the HSTS policy to the HSTS host and its subdomains.
+        - When C(true), applies the HSTS policy to the HSTS host and its subdomains.
       returned: queried
       type: bool
       sample: true
     hsts_enabled:
       description:
-        - When C(yes), enables the HTTP Strict Transport Security settings.
+        - When C(true), enables the HTTP Strict Transport Security settings.
       returned: queried
       type: bool
       sample: true
     insert_xforwarded_for:
       description:
-        - When C(yes), specifies the system inserts an X-Forwarded-For header in
+        - When C(true), specifies the system inserts an X-Forwarded-For header in
           an HTTP request with the client IP address, to use with connection pooling.
       returned: queried
       type: bool
@@ -2927,7 +2927,7 @@ http_profiles:
       sample: 80
     onconnect_transformations:
       description:
-        - When C(yes), specifies the system performs HTTP header transformations
+        - When C(true), specifies the system performs HTTP header transformations
           for the purpose of keeping connections open.
       returned: queried
       type: bool
@@ -4848,7 +4848,7 @@ server_ssl_profiles:
       sample: true
     retain_certificate:
       description:
-        - APM module requires storing certificates in the SSL session. When C(no),
+        - APM module requires storing certificates in the SSL session. When C(false),
           a certificate will not be stored in the SSL session.
       returned: queried
       type: bool
@@ -4886,7 +4886,7 @@ server_ssl_profiles:
       sample: false
     sni_default:
       description:
-        - When C(yes), this profile is the default SSL profile when the server
+        - When C(true), this profile is the default SSL profile when the server
           name in a client connection does not match any configured server
           names, or a client connection does not specify any server name at
           all.
@@ -4895,7 +4895,7 @@ server_ssl_profiles:
       sample: true
     sni_require:
       description:
-        - When C(yes), connections to a server that do not support SNI
+        - When C(true), connections to a server that do not support SNI
           extension will be rejected.
       returned: queried
       type: bool
@@ -4935,7 +4935,7 @@ server_ssl_profiles:
       sample: false
     unclean_shutdown:
       description:
-        - Specifies, when C(yes), that the SSL profile performs unclean
+        - Specifies, when C(true), that the SSL profile performs unclean
           shutdowns of all SSL connections. This means underlying TCP
           connections are closed without exchanging the required SSL
           shutdown alerts.
@@ -5837,35 +5837,35 @@ tcp_profiles:
     abc:
       description:
         - Appropriate Byte Counting (RFC 3465)
-        - When C(yes), increases the congestion window by basing the amount to
+        - When C(true), increases the congestion window by basing the amount to
           increase on the number of previously unacknowledged bytes that each ACK covers.
       returned: queried
       type: bool
       sample: true
     ack_on_push:
       description:
-        - When C(yes), specifies significantly improved performance to Microsoft
+        - When C(true), specifies significantly improved performance to Microsoft
           Windows and MacOS peers who are writing out on a very small send buffer.
       returned: queried
       type: bool
       sample: false
     auto_proxy_buffer:
       description:
-        - When C(yes), specifies the system uses the network measurements to set
+        - When C(true), specifies the system uses the network measurements to set
           the optimal proxy buffer size.
       returned: queried
       type: bool
       sample: true
     auto_receive_window:
       description:
-        - When C(yes), specifies the system uses the network measurements to
+        - When C(true), specifies the system uses the network measurements to
           set the optimal receive window size.
       returned: queried
       type: bool
       sample: false
     auto_send_buffer:
       description:
-        - When C(yes), specifies the system uses the network measurements to
+        - When C(true), specifies the system uses the network measurements to
           set the optimal send buffer size.
       returned: queried
       type: bool
@@ -5885,7 +5885,7 @@ tcp_profiles:
       sample: indefinite
     congestion_metrics_cache:
       description:
-        - When C(yes), specifies the system uses a cache for storing congestion
+        - When C(true), specifies the system uses a cache for storing congestion
           metrics.
         - Subsequently, because these metrics are already known and cached, the initial
           slow-start ramp for previously-encountered peers improves.
@@ -5911,7 +5911,7 @@ tcp_profiles:
       sample: high-speed
     deferred_accept:
       description:
-        - When C(yes), specifies the system defers allocation of the connection
+        - When C(true), specifies the system defers allocation of the connection
           chain context until the system has received the payload from the client.
         - Enabling this setting is useful in dealing with 3-way handshake denial-of-service
           attacks.
@@ -5936,14 +5936,14 @@ tcp_profiles:
     dsack:
       description:
         - D-SACK (RFC 2883)
-        - When C(yes), specifies the use of the selective ACK (SACK) option to acknowledge
+        - When C(true), specifies the use of the selective ACK (SACK) option to acknowledge
           duplicate segments.
       returned: queried
       type: bool
       sample: true
     early_retransmit:
       description:
-        - When C(yes), specifies the system uses early retransmit (as specified in
+        - When C(true), specifies the system uses early retransmit (as specified in
           RFC 5827) to reduce the recovery time for connections that are receive- buffer
           or user-data limited.
       returned: queried
@@ -5951,7 +5951,7 @@ tcp_profiles:
       sample: true
     explicit_congestion_notification:
       description:
-        - When C(yes), specifies the system uses the TCP flags CWR (congestion window
+        - When C(true), specifies the system uses the TCP flags CWR (congestion window
           reduction) and ECE (ECN-Echo) to notify its peer of congestion and congestion
           counter-measures.
       returned: queried
@@ -5966,7 +5966,7 @@ tcp_profiles:
       sample: true
     fast_open:
       description:
-        - When C(yes), specifies, the system supports TCP Fast Open, which reduces
+        - When C(true), specifies, the system supports TCP Fast Open, which reduces
           latency by allowing a client to include the first packet of data with the SYN
       returned: queried
       type: bool
@@ -6052,7 +6052,7 @@ tcp_profiles:
       sample: 50
     limited_transmit_recovery:
       description:
-        - When C(yes), specifies the system uses limited transmit recovery
+        - When C(true), specifies the system uses limited transmit recovery
           revisions for fast retransmits (as specified in RFC 3042) to reduce
           the recovery time for connections on a lossy network.
       returned: queried
@@ -6087,7 +6087,7 @@ tcp_profiles:
       sample: 1460
     md5_signature:
       description:
-        - When C(yes), specifies to use RFC2385 TCP-MD5 signatures to protect
+        - When C(true), specifies to use RFC2385 TCP-MD5 signatures to protect
           TCP traffic against intermediate tampering.
       returned: queried
       type: bool
@@ -6101,7 +6101,7 @@ tcp_profiles:
       sample: 1000
     multipath_tcp:
       description:
-        - When C(yes), specifies the system accepts Multipath TCP (MPTCP)
+        - When C(true), specifies the system accepts Multipath TCP (MPTCP)
           connections, which allow multiple client-side flows to connect to a
           single server-side flow.
       returned: queried
@@ -6109,14 +6109,14 @@ tcp_profiles:
       sample: true
     mptcp_checksum:
       description:
-        - When C(yes), specifies the system calculates the checksum for
+        - When C(true), specifies the system calculates the checksum for
           MPTCP connections.
       returned: queried
       type: bool
       sample: false
     mptcp_checksum_verify:
       description:
-        - When C(yes), specifies the system verifies the checksum for
+        - When C(true), specifies the system verifies the checksum for
           MPTCP connections.
       returned: queried
       type: bool
@@ -6130,7 +6130,7 @@ tcp_profiles:
       sample: reset
     mptcp_fast_join:
       description:
-        - When C(yes), specifies a FAST join, allowing data to be sent on the
+        - When C(true), specifies a FAST join, allowing data to be sent on the
           MP_JOIN_SYN, which can allow a server response to occur in parallel
           with the JOIN.
       returned: queried
@@ -6229,7 +6229,7 @@ tcp_profiles:
       sample: 32768
     proxy_max_segment:
       description:
-        - When C(yes), specifies the system attempts to advertise the same
+        - When C(true), specifies the system attempts to advertise the same
           maximum segment size (MSS) to the server-side connection as that of the
           client-side connection.
       returned: queried
@@ -6237,7 +6237,7 @@ tcp_profiles:
       sample: true
     proxy_options:
       description:
-        - When C(yes), specifies the system advertises an option (such as
+        - When C(true), specifies the system advertises an option (such as
           time stamps) to the server only when the option is negotiated with the
           client.
       returned: queried
@@ -6251,7 +6251,7 @@ tcp_profiles:
       sample: default
     rate_pace:
       description:
-        - When C(yes), specifies the system paces the egress packets to
+        - When C(true), specifies the system paces the egress packets to
           avoid dropping packets, allowing for optimum goodput.
       returned: queried
       type: bool
@@ -6271,7 +6271,7 @@ tcp_profiles:
       sample: 65535
     reset_on_timeout:
       description:
-        - When C(yes), specifies the system sends a reset packet (RST)
+        - When C(true), specifies the system sends a reset packet (RST)
           in addition to deleting the connection, when a connection exceeds
           the idle timeout value.
       returned: queried
@@ -6286,14 +6286,14 @@ tcp_profiles:
       sample: 3
     selective_acks:
       description:
-        - When C(yes), specifies the system processes data using
+        - When C(true), specifies the system processes data using
           selective ACKs (SACKs) whenever possible, to improve system performance.
       returned: queried
       type: bool
       sample: true
     selective_nack:
       description:
-        - When C(yes), specifies the system processes data using a selective
+        - When C(true), specifies the system processes data using a selective
           negative acknowledgment (SNACK) whenever possible, to improve system
           performance.
       returned: queried
@@ -6307,7 +6307,7 @@ tcp_profiles:
       sample: 65535
     slow_start:
       description:
-        - When C(yes), specifies the system uses Slow-Start Congestion
+        - When C(true), specifies the system uses Slow-Start Congestion
           Avoidance as described in RFC3390 in order to ramp up traffic without
           causing excessive congestion on the link.
       returned: queried
@@ -6337,14 +6337,14 @@ tcp_profiles:
       sample: 3000
     tail_loss_probe:
       description:
-        - When C(yes), specifies the system uses Tail Loss Probe to
+        - When C(true), specifies the system uses Tail Loss Probe to
           reduce the number of retransmission timeouts.
       returned: queried
       type: bool
       sample: true
     time_wait_recycle:
       description:
-        - When C(yes), specifies that connections in a TIME-WAIT state are
+        - When C(true), specifies that connections in a TIME-WAIT state are
           reused when the system receives a SYN packet, indicating a request
           for a new connection.
       returned: queried
@@ -6359,14 +6359,14 @@ tcp_profiles:
       sample: 2000
     timestamps:
       description:
-        - When C(yes), specifies the system uses the timestamps extension
+        - When C(true), specifies the system uses the timestamps extension
           for TCP (as specified in RFC 1323) to enhance high-speed network performance.
       returned: queried
       type: bool
       sample: true
     verified_accept:
       description:
-        - When C(yes), specifies the system can actually communicate with
+        - When C(true), specifies the system can actually communicate with
           the server before establishing a client connection.
       returned: queried
       type: bool
@@ -6696,7 +6696,7 @@ udp_profiles:
       sample: true
     proxy_mss:
       description:
-        - When C(yes), specifies the system advertises the same mss
+        - When C(true), specifies the system advertises the same mss
           to the server as was negotiated with the client.
       returned: queried
       type: bool

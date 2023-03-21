@@ -43,7 +43,7 @@ options:
       - not-supported
   bundle_speed:
     description:
-      - Sets the bundle speed, which is applicable only when the bundle is C(yes).
+      - Sets the bundle speed, which is applicable only when the bundle is C(true).
       - This option is only supported on selected hardware platforms and interfaces.
       - "Attempting to enable this option on a C(VE) or any other unsupported platform/interface
         will result in module run failure."
@@ -247,7 +247,7 @@ options:
       poll_interval:
         description:
           - Specifies the maximum interval between two pollings, in seconds.
-          - For this setting to take effect, C(poll_interval_global) must be set to C(no).
+          - For this setting to take effect, C(poll_interval_global) must be set to C(false).
           - The valid range is 0 - 4294967295.
         type: int
       poll_interval_global:

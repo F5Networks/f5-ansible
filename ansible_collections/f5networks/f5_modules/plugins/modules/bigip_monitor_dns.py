@@ -176,7 +176,7 @@ options:
     type: bool
   allowed_divergence_type:
     description:
-      - When specifying a new monitor, if C(adaptive) is C(yes), the default is
+      - When specifying a new monitor, if C(adaptive) is C(true), the default is
         C(relative).
       - When C(absolute), the number of milliseconds the latency of a monitor probe
         can exceed the mean latency of a monitor probe for the service being probed.
@@ -190,7 +190,7 @@ options:
       - absolute
   allowed_divergence_value:
     description:
-      - When specifying a new monitor, if C(adaptive) is C(yes), and C(type) is
+      - When specifying a new monitor, if C(adaptive) is C(true), and C(type) is
         C(relative), the default is C(25) percent.
     type: int
   adaptive_limit:
@@ -199,15 +199,15 @@ options:
         probe, regardless of C(allowed_divergence) setting, for a probe to be
         considered successful.
       - This value applies regardless of the value of the C(allowed_divergence) setting.
-      - While this value can be configured when C(adaptive) is C(no), it will not take
-        effect on the system until C(adaptive) is C(yes).
+      - While this value can be configured when C(adaptive) is C(false), it will not take
+        effect on the system until C(adaptive) is C(true).
     type: int
   sampling_timespan:
     description:
       - Specifies the length, in seconds, of the probe history window the system
         uses to calculate the mean latency and standard deviation of a monitor probe.
-      - While this value can be configured when C(adaptive) is C(no), it will not take
-        effect on the system until C(adaptive) is C(yes).
+      - While this value can be configured when C(adaptive) is C(false), it will not take
+        effect on the system until C(adaptive) is C(true).
     type: int
   partition:
     description:

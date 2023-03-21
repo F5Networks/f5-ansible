@@ -61,7 +61,7 @@ options:
     description:
       - When creating a new data group, this specifies the file name you want to give an
         external data group file on the BIG-IP.
-      - This parameter is ignored when C(internal) is C(yes).
+      - This parameter is ignored when C(internal) is C(true).
       - This parameter can be used to select an existing data group file to use with an
         existing external data group.
       - If this value is not provided, it will be given the value specified in C(name) and,
@@ -76,7 +76,7 @@ options:
       - The technical limit of either the number of records, or the total size of all
         records. Varies with the size of the total resources on your system; in particular,
         RAM.
-      - When C(internal) is C(no), at least one record must be specified in either C(records)
+      - When C(internal) is C(false), at least one record must be specified in either C(records)
         or C(records_src).
       - "When C(type) is: C(ip), C(address), C(addr) if the addresses use a non-default route domain,
         they must be explicit about it, meaning they must contain a route domain notation C(%) e.g. 10.10.1.1%11.
@@ -110,7 +110,7 @@ options:
         a C(type) of C(address), C(integer), or C(string). See the examples section for
         examples of the different types of payload formats that are expected in your data
         group file.
-      - When C(internal) is C(no), at least one record must be specified in either C(records)
+      - When C(internal) is C(false), at least one record must be specified in either C(records)
         or C(records_src).
     type: path
   separator:
@@ -119,7 +119,7 @@ options:
         be used to break apart entries in the C(records_src) into key/value pairs.
       - By default, the value of this parameter is C(:=).
       - This value cannot be changed once it is set.
-      - This parameter is only relevant when C(internal) is C(no). It will be ignored
+      - This parameter is only relevant when C(internal) is C(false). It will be ignored
         otherwise.
     type: str
     default: ":="

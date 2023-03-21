@@ -56,19 +56,19 @@ options:
     description:
       - Interface over which the system sends multicast messages associated
         with failover.
-      - When C(failover_multicast) is C(yes) and this option is not provided, a default of C(eth0) will be used.
+      - When C(failover_multicast) is C(true) and this option is not provided, a default of C(eth0) will be used.
     type: str
   multicast_address:
     description:
       - IP address for the system to send multicast messages associated with
         failover.
-      - When C(failover_multicast) is C(yes) and this option is not provided, a default of C(224.0.0.245) will be used.
+      - When C(failover_multicast) is C(true) and this option is not provided, a default of C(224.0.0.245) will be used.
     type: str
   multicast_port:
     description:
       - Port for the system to send multicast messages associated with
         failover.
-      - When C(failover_multicast) is C(yes) and this option is not provided, a default of C(62960) will be used.
+      - When C(failover_multicast) is C(true) and this option is not provided, a default of C(62960) will be used.
         This value must be between 0 and 65535.
     type: int
   cluster_mirroring:
