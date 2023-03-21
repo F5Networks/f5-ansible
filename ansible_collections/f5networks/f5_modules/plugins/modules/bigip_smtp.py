@@ -62,8 +62,8 @@ options:
         authentication is not used (for example, staging configs or emergency changes).
         This parameter acts as a switch to make the specified C(smtp_server_username)
         and C(smtp_server_password) parameters active or not.
-      - When C(yes), the authentication parameters are active.
-      - When C(no), the authentication parameters are inactive.
+      - When C(true), the authentication parameters are active.
+      - When C(false), the authentication parameters are inactive.
     type: bool
   smtp_server_username:
     description:
@@ -148,7 +148,7 @@ authentication:
   description: Whether the authentication parameters are active or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 from datetime import datetime
 from ansible.module_utils.basic import (
