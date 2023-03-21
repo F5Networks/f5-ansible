@@ -40,7 +40,7 @@ options:
     description:
       - Specifies whether the monitor sends error messages and additional information to a log file created and
         labeled specifically for this monitor.
-      - "When C(yes) the system redirects error messages and additional information to the
+      - "When C(true) the system redirects error messages and additional information to the
         C(/var/log/monitors/<monitor_name>-<node_name>-<port>.log) file."
     type: bool
   mode:
@@ -111,13 +111,13 @@ options:
     description:
       - Specifies whether the system automatically changes the status of a resource
         to B(enabled) at the next successful monitor check.
-      - If you set this option to C(yes), you must manually re-enable the resource
+      - If you set this option to C(true), you must manually re-enable the resource
         before the system can use it for load balancing connections.
       - When creating a new monitor, if this parameter is not specified, the default
-        value is C(no).
-      - When C(yes), specifies you must manually re-enable the resource after an
+        value is C(false).
+      - When C(true), specifies you must manually re-enable the resource after an
         unsuccessful monitor check.
-      - When C(no), specifies the system automatically changes the status of a
+      - When C(false)), specifies the system automatically changes the status of a
         resource to B(enabled) at the next successful monitor check.
     type: bool
   time_until_up:
@@ -214,7 +214,7 @@ debug:
       labeled specifically for this monitor.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 mode:
   description: Specifies the data transfer process (DTP) mode.
   returned: changed
@@ -258,7 +258,7 @@ manual_resume:
       resource to up at the next successful monitor check.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 time_until_up:
   description: The new time in which to mark a system as up after first successful response.
   returned: changed

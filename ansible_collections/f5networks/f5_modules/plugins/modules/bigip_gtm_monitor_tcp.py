@@ -38,23 +38,23 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value will be
+        provided when creating a new monitor, the default value is
         '*'.
       - If this value is an IP address, a C(port) number must be specified.
     type: str
   port:
     description:
       - Port address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value will be
+        provided when creating a new monitor, the default value is
         '*'. Note that if using an IP address, you must specify a value between
         1 and 65535.
     type: str
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
-        template will run.
+        template runs.
       - If this parameter is not provided when creating a new monitor, the
-        default value will be 30.
+        default value is 30.
       - This value B(must) be less than the C(timeout) value.
     type: int
   timeout:
@@ -66,7 +66,7 @@ options:
         number to any number you want, however, it should be 3 times the
         interval number of seconds plus 1 second.
       - If this parameter is not provided when creating a new monitor, the
-        default value will be 120.
+        default value is 120.
     type: int
   partition:
     description:
@@ -86,19 +86,19 @@ options:
     description:
       - Specifies the number of seconds after which the system times out the probe request
         to the system.
-      - When creating a new monitor, if this parameter is not provided, then the default
-        value will be C(5).
+      - When creating a new monitor, if this parameter is not provided, the default
+        value is C(5).
     type: int
   ignore_down_response:
     description:
       - Specifies the monitor allows more than one probe attempt per interval.
-      - When C(yes), specifies the monitor ignores down responses for the duration of
+      - When C(true), specifies the monitor ignores down responses for the duration of
         the monitor timeout. Once the monitor timeout is reached without the system receiving
         an up response, the system marks the object down.
-      - When C(no), specifies the monitor immediately marks an object down when it
+      - When C(false), specifies the monitor immediately marks an object down when it
         receives a down response.
       - When creating a new monitor, if this parameter is not provided, the default
-        value will be C(no).
+        value is C(false).
     type: bool
   transparent:
     description:
@@ -109,7 +109,7 @@ options:
       - If the monitor cannot successfully reach the aliased destination, the pool member
         or node through which the monitor traffic was sent is marked down.
       - When creating a new monitor, if this parameter is not provided, then the default
-        value will be C(no).
+        value is C(false).
     type: bool
   reverse:
     description:
@@ -192,7 +192,7 @@ ignore_down_response:
   description: Whether to ignore the down response or not.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 send:
   description: The new send string for this monitor.
   returned: changed
@@ -212,12 +212,12 @@ reverse:
   description: The new value for whether the monitor operates in reverse mode.
   returned: changed
   type: bool
-  sample: False
+  sample: false
 transparent:
   description: The new value for whether the monitor operates in transparent mode.
   returned: changed
   type: bool
-  sample: False
+  sample: false
 '''
 from datetime import datetime
 from ansible.module_utils.basic import (

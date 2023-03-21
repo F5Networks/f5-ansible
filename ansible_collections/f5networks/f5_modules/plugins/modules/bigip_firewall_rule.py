@@ -198,7 +198,7 @@ options:
     description:
       - Specifies whether logging is enabled or disabled for the firewall rule.
       - When creating a new rule, if this parameter is not specified, the default
-        if C(no).
+        if C(false).
     type: bool
   rule_list:
     description:
@@ -458,7 +458,7 @@ logging:
   description: Enable or Disable logging for the firewall rule.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 rule_list:
   description: An existing rule list to use in the parent policy.
   returned: changed

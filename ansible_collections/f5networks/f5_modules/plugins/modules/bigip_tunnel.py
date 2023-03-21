@@ -73,10 +73,10 @@ options:
     description:
       - Enables or disables the tunnel to use the PMTU (Path MTU) information provided by ICMP
         NeedFrag error messages.
-      - If C(yes) and the tunnel C(mtu) is set to C(0), the tunnel will use the PMTU information.
-      - If C(yes) and the tunnel C(mtu) is fixed to a non-zero value, the tunnel will use the
+      - If C(true) and the tunnel C(mtu) is set to C(0), the tunnel will use the PMTU information.
+      - If C(true) and the tunnel C(mtu) is fixed to a non-zero value, the tunnel will use the
         minimum of PMTU and MTU.
-      - If C(no), the tunnel will use fixed MTU or calculate its MTU using tunnel encapsulation
+      - If C(false), the tunnel will use fixed MTU or calculate its MTU using tunnel encapsulation
         configurations.
     type: bool
   tos:
@@ -124,7 +124,7 @@ options:
   transparent:
     description:
       - Specifies that the tunnel operates in transparent mode.
-      - When C(yes), you can inspect and manipulate the encapsulated traffic flowing through the BIG-IP
+      - When C(true), you can inspect and manipulate the encapsulated traffic flowing through the BIG-IP
         system.
       - A transparent tunnel terminates a tunnel while presenting the illusion that the tunnel transits
         the device unmodified (that is, the BIG-IP system appears as if it were an intermediate router

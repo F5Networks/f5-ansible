@@ -192,7 +192,7 @@ advertise:
   description: Specifies if the Listener advertises to surrounding routers.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 auto_lasthop:
   description: Shows whether the system automatically maps the last hop for pools.
   returned: changed
@@ -217,7 +217,7 @@ enabled:
   description: Provides DNS Listener state.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 ip_protocol:
   description: IP protocol used by the DNS Listener.
   returned: changed

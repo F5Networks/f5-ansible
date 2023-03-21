@@ -33,28 +33,28 @@ options:
     type: str
   match_across_services:
     description:
-      - When C(yes), specifies all persistent connections from a client IP address that go
+      - When C(true), specifies all persistent connections from a client IP address that go
         to the same virtual IP address also go to the same node.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: bool
   match_across_virtuals:
     description:
-      - When C(yes), specifies all persistent connections from the same client IP address
+      - When C(true), specifies all persistent connections from the same client IP address
         go to the same node.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: bool
   match_across_pools:
     description:
-      - When C(yes), specifies the system can use any pool that contains this persistence
+      - When C(true), specifies the system can use any pool that contains this persistence
         record.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
     type: bool
   mirror:
     description:
-      - When C(yes), specifies if the active unit goes into the standby mode, the system
+      - When C(true), specifies if the active unit goes into the standby mode, the system
         mirrors any persistence records to its peer.
       - When creating a new profile, if this parameter is not specified, the
         default is provided by the parent profile.
@@ -75,7 +75,7 @@ options:
     type: str
   override_connection_limit:
     description:
-      - When C(yes), specifies the system allows you to specify that pool member connection
+      - When C(true), specifies the system allows you to specify that pool member connection
         limits will be overridden for persisted clients.
       - Per-virtual connection limits remain hard limits and are not overridden.
     type: bool
@@ -128,22 +128,22 @@ match_across_pools:
   description: The new Match Across Pools value.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 match_across_services:
   description: The new Match Across Services value.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 match_across_virtuals:
   description: The new Match Across Virtuals value.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 override_connection_limit:
   description: The new Override Connection Limit value.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 timeout:
   description: The duration of the persistence entries.
   returned: changed
@@ -153,7 +153,7 @@ mirror:
   description: The new Mirror value.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 rule:
   description: The iRule used to select persistence entry.
   returned: changed

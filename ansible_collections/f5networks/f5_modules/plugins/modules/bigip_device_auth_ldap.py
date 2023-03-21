@@ -152,8 +152,8 @@ options:
   use_for_auth:
     description:
       - Specifies whether or not this auth source is put in use on the system.
-      - If C(yes), the module sets the current system auth type to the value of C(ldap).
-      - If C(no), the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
+      - If C(true), the module sets the current system auth type to the value of C(ldap).
+      - If C(false), the module sets the authentication type to C(local), similar behavior to when C(state) is C(absent),
         without removing the configured LDAP resource.
     type: bool
   source_type:
@@ -217,7 +217,7 @@ check_member_attr:
   description: The user's member attribute in the remote LDAP or AD group.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 ssl:
   description: Specifies whether the system uses an SSL port to communicate with the LDAP server.
   returned: changed
@@ -242,7 +242,7 @@ validate_certs:
   description: Indicates if the system checks an SSL peer.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 login_ldap_attr:
   description: The LDAP directory attribute containing the local user name associated with the selected directory entry.
   returned: changed
@@ -252,12 +252,12 @@ fallback_to_local:
   description: Specifies the system uses the Local authentication method as fallback
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 referrals:
   description: Specifies whether automatic referral chasing should be enabled
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 
 from datetime import datetime

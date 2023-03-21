@@ -119,7 +119,7 @@ options:
         Address, FQDN, or User FQDN; specifies that the certificate's subjectAltName is
         compared with the identifier. If the two do not match, the negotiation fails.
       - When creating a new IKE peer, if this value is not specified, and
-        C(phase1_auth_method) is C(rsa-signature), the default is C(no).
+        C(phase1_auth_method) is C(rsa-signature), the default is C(false).
       - This parameter is invalid when C(phase1_auth_method) is C(pre-shared-key).
     type: bool
   preshared_key:
@@ -292,7 +292,7 @@ phase1_verify_peer_cert:
   description: The new IKE Phase 1 Key Verify Peer Certificate setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 verified_id_value:
   description: The new Verified ID Value setting for the Verified ID Type.
   returned: changed

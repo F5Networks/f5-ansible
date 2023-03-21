@@ -144,7 +144,7 @@ options:
   update_secret:
     description:
       - C(always) will allow updating secrets if the user chooses to do so.
-      - C(on_create) will only set the secret when a C(use_auth_source) is C(yes)
+      - C(on_create) will only set the secret when a C(use_auth_source) is C(true)
         and TACACS+ is not currently the auth source.
     type: str
     choices:

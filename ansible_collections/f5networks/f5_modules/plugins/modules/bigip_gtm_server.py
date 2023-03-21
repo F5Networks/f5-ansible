@@ -362,7 +362,7 @@ bits_enabled:
   description: Whether the bits limit is enabled.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 bits_limit:
   description: The new bits_enabled limit.
   returned: changed
@@ -372,7 +372,7 @@ connections_enabled:
   description: Whether the connections limit is enabled.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 connections_limit:
   description: The new connections_limit limit.
   returned: changed

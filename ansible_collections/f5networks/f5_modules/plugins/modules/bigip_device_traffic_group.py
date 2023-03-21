@@ -178,7 +178,7 @@ auto_failback:
   description: Specifies whether the traffic group fails back to the initial device specified in ha_order.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 auto_failback_time:
   description: Specifies the number of seconds the system delays before failing back.
   returned: changed

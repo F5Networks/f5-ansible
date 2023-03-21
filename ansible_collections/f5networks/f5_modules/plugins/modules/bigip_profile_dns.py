@@ -35,7 +35,7 @@ options:
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
       - The DNS Express engine receives zone transfers from the authoritative DNS server
-        for the zone. If the C(enable_zone_transfer) setting is also C(yes) on this profile,
+        for the zone. If the C(enable_zone_transfer) setting is also C(true) on this profile,
         the DNS Express engine also responds to zone transfer requests made by the nameservers
         configured as zone transfer clients for the DNS Express zone.
     type: bool
@@ -47,11 +47,11 @@ options:
         is provided by the parent profile.
       - The C(enable_dns_express) and C(enable_zone_transfer) settings on a DNS profile
         affect how the system responds to zone transfer requests.
-      - When the C(enable_dns_express) and C(enable_zone_transfer) settings are both C(yes),
+      - When the C(enable_dns_express) and C(enable_zone_transfer) settings are both C(true),
         if a zone transfer request matches a DNS Express zone, DNS Express answers the
         request.
       - When the C(enable_dns_express) setting is C(no) and the C(enable_zone_transfer)
-        setting is C(yes), the BIG-IP system processes zone transfer requests based on the
+        setting is C(true), the BIG-IP system processes zone transfer requests based on the
         last action and answers the request from local BIND or a pool member.
     type: bool
   enable_dnssec:
@@ -73,7 +73,7 @@ options:
         the header.
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
-      - If set to C(no), processing of the packet is subject to the unhandled-query-action
+      - If set to C(false), processing of the packet is subject to the unhandled-query-action
         option.
     type: bool
   use_local_bind:
@@ -95,10 +95,10 @@ options:
       - Specifies whether the system caches DNS responses.
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
-      - When C(yes), the BIG-IP system caches DNS responses handled by the virtual
+      - When C(true), the BIG-IP system caches DNS responses handled by the virtual
         servers associated with this profile. When you enable this setting, you must
         also specify a value for C(cache_name).
-      - When C(no), the BIG-IP system does not cache DNS responses handled by the
+      - When C(false), the BIG-IP system does not cache DNS responses handled by the
         virtual servers associated with this profile. However, the profile retains
         the association with the DNS cache in the C(cache_name) parameter. Disable
         this setting when you want to debug the system.
@@ -107,7 +107,7 @@ options:
     description:
       - Specifies the user-created cache the system uses to cache DNS responses.
       - When you select a cache for the system to use, you must also set C(enable_dns_cache)
-        to C(yes)
+        to C(true)
     type: str
   unhandled_query_action:
     description:
@@ -169,42 +169,42 @@ enable_dns_express:
   description: Whether DNS Express is enabled on the resource or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 enable_zone_transfer:
   description: Whether zone transfer are enabled on the resource or not.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 enable_dnssec:
   description: Whether DNSSEC is enabled on the resource or not.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 enable_gtm:
   description: Whether GTM is used to manage the resource or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 process_recursion_desired:
   description: Whether client-side DNS packets are processed with Recursion Desired set.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 use_local_bind:
   description: Whether non-wide IP queries are forwarded to the local BIND server or not.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 enable_dns_firewall:
   description: Whether DNS firewall capability is enabled or not.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 enable_cache:
   description: Whether DNS caching is enabled or not.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 cache_name:
   description: Name of the cache used by DNS.
   returned: changed

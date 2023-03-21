@@ -81,30 +81,30 @@ options:
     type: dict
   add_to_trusted:
     description:
-      - Specified if the certificate should be added to the trusted client and server certificate files.
+      - Specifies if the certificate should be added to the trusted client and server certificate files.
     type: bool
-    default: no
+    default: false
   new_cert:
     description:
-      - Specified if the module should generate a new certificate.
-      - When C(yes), the device certificate and key will be replaced.
+      - Specifies if the module should generate a new certificate.
+      - When C(true), the device certificate and key will be replaced.
     type: bool
-    default: no
+    default: false
   force:
     description:
-      - When C(yes), will update or overwrite the existing certificate when it is not expired on the device.
-      - When C(no), the certificate will only be updated/overwritten if expired.
-      - Generally should be C(yes) only in cases where you need to update certificate that is about to expire.
+      - When C(true), will update or overwrite the existing certificate when it is not expired on the device.
+      - When C(false), the certificate will only be updated/overwritten if expired.
+      - Generally should be C(true) only in cases where you need to update certificate that is about to expire.
       - This option is also needed when generating a new certificate to replace non-expired one.
     type: bool
-    default: no
+    default: false
 extends_documentation_fragment: f5networks.f5_modules.f5ssh
 author:
   - Wojciech Wypior (@wojtek0806)
 notes:
-  - When using this module make sure ssh type is not set to libssh, to do this you could either
-    set the environment variable like this ANSIBLE_NETWORK_CLI_SSH_TYPE=paramiko or set add
-    ssh_type = paramiko under section persistent_connection in ansible.cfg.
+  - When using this module make sure SSH type is not set to libssh. To do this you could either
+    set the environment variable like this C(ANSIBLE_NETWORK_CLI_SSH_TYPE=paramiko) or set C(add
+    ssh_type = paramiko) under section persistent_connection in ansible.cfg.
 '''
 
 EXAMPLES = r'''

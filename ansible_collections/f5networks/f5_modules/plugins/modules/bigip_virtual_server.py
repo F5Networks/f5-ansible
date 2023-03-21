@@ -271,14 +271,14 @@ options:
     type: raw
   insert_metadata:
     description:
-      - When set to C(no), the module does not set metadata on the device.
+      - When set to C(false), the module does not set metadata on the device.
       - Currently there is a limitation that non-admin users cannot set metadata on the object, despite being
-        able to create and modify virtual server objects. Setting this option to C(no) allows
+        able to create and modify virtual server objects. Setting this option to C(false) allows
         such users to use this module to manage virtual server objects on the device.
       - Attempting to change C(state) on Virtual Server that belongs to an iAPP with strict updates enabled will result
-        in error message returned by device, unless C(insert_metadata) parameter is set to C(no).
+        in error message returned by device, unless C(insert_metadata) parameter is set to C(false).
     type: bool
-    default: yes
+    default: true
   address_translation:
     description:
       - When C(enabled), specifies the system translates the address of the
@@ -500,7 +500,7 @@ options:
       - Not recommended for common use. In case of duplicate profiles, or erroneous profiles,
         the BIG-IP throws an error.
     type: bool
-    default: yes
+    default: true
     version_added: "1.2.0"
   bypass_module_checks:
     description:
@@ -509,10 +509,10 @@ options:
         which requires extra care when defining them.
       - The device is the final source of truth for such configurations, usable in cases where speed is
         preferred over accuracy.
-      - If set to C(yes), the module ignores the value op C(check_profiles) parameter.
+      - If set to C(true), the module ignores the value op C(check_profiles) parameter.
       - This parameter can be used when creating new or updating existing resources.
     type: bool
-    default: no
+    default: false
     version_added: "1.3.0"
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
@@ -775,7 +775,7 @@ disabled:
   description: Whether the virtual server is disabled or not.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 disabled_vlans:
   description: List of VLANs that the virtual is disabled for.
   returned: changed
@@ -785,7 +785,7 @@ enabled:
   description: Whether the virtual server is enabled or not.
   returned: changed
   type: bool
-  sample: False
+  sample: false
 enabled_vlans:
   description: List of VLANs that the virtual is enabled for.
   returned: changed
@@ -840,12 +840,12 @@ address_translation:
   description: The new value specifying whether address translation is on or off.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 port_translation:
   description: The new value specifying whether port translation is on or off.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 source_port:
   description: Specifies whether the system preserves the source port of the connection.
   returned: changed
@@ -855,7 +855,7 @@ mirror:
   description: Specifies the system mirrors connections on each member of a redundant pair.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 auto_last_hop:
   description: Specifies the autoLasthop value of the virtual server
   returned: changed

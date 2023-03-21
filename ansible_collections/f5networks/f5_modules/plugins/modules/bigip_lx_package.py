@@ -37,7 +37,7 @@ options:
     description:
       - Specifies whether the install file should be deleted on successful installation of the package.
     type: bool
-    default: no
+    default: false
     version_added: "1.4.0"
 notes:
   - Requires the RPM tool be installed on the host. This can be accomplished in

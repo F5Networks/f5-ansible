@@ -133,8 +133,8 @@ options:
   egress_intf_enabled:
     description:
       - Specifies how the system handles address translation on the interfaces specified in C(egress_interfaces).
-      - When set to C(yes), source address translation is allowed only on the specified C(egress_interfaces).
-      - When set to C(no), source address translation is disabled on the specified C(egress_interfaces).
+      - When set to C(true), source address translation is allowed only on the specified C(egress_interfaces).
+      - When set to C(false), source address translation is disabled on the specified C(egress_interfaces).
     type: bool
   egress_interfaces:
     description:
@@ -245,12 +245,12 @@ harpin_mode:
   description: Enables or disables hairpinning for incoming connections to active translation end-points.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 icmp_echo:
   description: Enables or disables ICMP echo on translated addresses.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 inbound_connections:
   description: Controls BIG-IP system support of inbound connections for each outbound mapping.
   returned: changed
@@ -275,7 +275,7 @@ route_advertisement:
   description: Specifies whether the translation addresses are advertised through dynamic routing protocols.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 pba_block_idle_timeout:
   description: The timeout duration subsequent to the point when the port block becomes idle.
   returned: changed
@@ -315,7 +315,7 @@ egress_intf_enabled:
   description: Specifies how the system handles address translation on the egress interfaces.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 egress_interfaces:
   description: The set of interfaces on which source address translation is allowed or disallowed.
   returned: changed

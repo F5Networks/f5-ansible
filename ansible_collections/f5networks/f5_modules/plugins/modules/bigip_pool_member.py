@@ -98,7 +98,7 @@ options:
         member references.
       - The node will not be removed if it is still referenced by other pool
         members. If this happens, the module will not raise an error.
-      - Setting this to C(yes) disables this behavior.
+      - Setting this to C(true) disables this behavior.
     type: bool
   priority_group:
     description:
@@ -116,15 +116,15 @@ options:
       - Specifies whether the system automatically creates ephemeral nodes using
         the IP addresses returned by the resolution of a DNS query for a node
         defined by an FQDN.
-      - When C(yes), the system generates an ephemeral node for each IP address
+      - When C(true), the system generates an ephemeral node for each IP address
         returned in response to a DNS query for the FQDN of the node. Additionally,
         when a DNS response indicates the IP address of an ephemeral node no longer
         exists, the system deletes the ephemeral node.
-      - When C(no), the system resolves a DNS query for the FQDN of the node
+      - When C(false), the system resolves a DNS query for the FQDN of the node
         with the single IP address associated with the FQDN.
-      - When creating a new pool member, the default for this parameter is C(yes).
+      - When creating a new pool member, the default for this parameter is C(true).
       - Once set this parameter cannot be changed afterwards.
-      - This parameter is ignored when C(reuse_nodes) is C(yes).
+      - This parameter is ignored when C(reuse_nodes) is C(true).
     type: bool
   reuse_nodes:
     description:
@@ -190,7 +190,7 @@ options:
       - This operation is all or none, meaning it will stop if there are some pool members
         that cannot be removed.
     type: bool
-    default: no
+    default: false
     aliases:
       - purge
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -381,7 +381,7 @@ fqdn_auto_populate:
   description: Whether FQDN auto population was set on the member or not.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 fqdn:
   description: The FQDN of the pool member.
   returned: changed
@@ -401,7 +401,7 @@ replace_all_with:
   description: Purges all non-aggregate pool members from device.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 
 import os

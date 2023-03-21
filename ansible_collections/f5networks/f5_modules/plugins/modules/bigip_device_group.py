@@ -30,7 +30,7 @@ options:
         configuration data and fail over to one another when a device becomes
         unavailable.
       - A C(sync-only) device group has no such failover. When creating a new
-        device group, this option will default to C(sync-only).
+        device group, this option defaults to C(sync-only).
       - This setting cannot be changed once it has been set.
     type: str
     choices:
@@ -44,22 +44,22 @@ options:
     description:
       - Indicates whether configuration synchronization occurs manually or
         automatically.
-      - When creating a new device group, this option will default to C(no).
+      - When creating a new device group, this option defaults to C(false).
     type: bool
   asm_sync:
     description:
       - Specifies whether to synchronize ASM configurations of device group members.
       - A device can be a member of only one ASM-enabled device group.
-      - When creating a new device group, this option will default to C(no).
+      - When creating a new device group, this option defaults to C(false).
     type: bool
     version_added: "1.22.0"
   save_on_auto_sync:
     description:
       - When performing an auto-sync, specifies whether the configuration
-        will be saved or not.
-      - When C(no), only the running configuration will be changed on the
+        is saved or not.
+      - When C(false), only the running configuration is changed on the
         device(s) being synced to.
-      - When creating a new device group, this option will default to C(no).
+      - When creating a new device group, this option defaults to C(false).
     type: bool
   full_sync:
     description:
@@ -73,7 +73,7 @@ options:
       - In order for this to work, all devices in the device-group must initially
         agree on the configuration. Typically this requires at least one full
         configuration load to each device.
-      - When creating a new device group, this option will default to C(no).
+      - When creating a new device group, this option defaults to C(false).
     type: bool
   max_incremental_sync_size:
     description:
@@ -180,7 +180,7 @@ network_failover:
   description: Whether or not network failover is enabled.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule

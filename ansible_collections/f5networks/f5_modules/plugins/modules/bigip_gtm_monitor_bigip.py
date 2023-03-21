@@ -31,7 +31,7 @@ options:
   ip:
     description:
       - IP address part of the IP/port definition. If this parameter is not
-        provided when creating a new monitor, the default value will be
+        provided when creating a new monitor, the default value is
         '*'.
     type: str
   port:
@@ -45,7 +45,7 @@ options:
       - Specifies, in seconds, the frequency at which the system issues the monitor
         check when either the resource is down or the status of the resource is unknown.
       - When creating a new monitor, if this parameter is not provided, the
-        default value will be C(30). This value B(must) be less than the C(timeout) value.
+        default value is C(30). This value B(must) be less than the C(timeout) value.
     type: int
   timeout:
     description:
@@ -55,18 +55,18 @@ options:
       - If the target does not respond within the set time period, it is considered down.
       - When this value is set to 0 (zero), the system uses the interval from the parent monitor.
       - When creating a new monitor, if this parameter is not provided,
-        the default value will be C(90).
+        the default value is C(90).
     type: int
   ignore_down_response:
     description:
       - Specifies the monitor allows more than one probe attempt per interval.
-      - When C(yes), specifies the monitor ignores down responses for the duration of
+      - When C(true), specifies the monitor ignores down responses for the duration of
         the monitor timeout. Once the monitor timeout is reached without the system receiving
         an up response, the system marks the object down.
-      - When C(no), specifies the monitor immediately marks an object down when it
+      - When C(false), specifies the monitor immediately marks an object down when it
         receives a down response.
       - When creating a new monitor, if this parameter is not provided, the default
-        value will be C(no).
+        value is C(false).
     type: bool
   aggregate_dynamic_ratios:
     description:
@@ -183,7 +183,7 @@ ignore_down_response:
   description: Whether to ignore the down response or not.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 '''
 
 import os

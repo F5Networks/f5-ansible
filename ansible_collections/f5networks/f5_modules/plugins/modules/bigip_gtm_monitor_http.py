@@ -93,13 +93,13 @@ options:
   ignore_down_response:
     description:
       - Specifies the monitor allows more than one probe attempt per interval.
-      - When C(yes), specifies the monitor ignores down responses for the duration of
+      - When C(true), specifies the monitor ignores down responses for the duration of
         the monitor timeout. Once the monitor timeout is reached without the system receiving
         an up response, the system marks the object down.
-      - When C(no), specifies the monitor immediately marks an object down when it
+      - When C(false), specifies the monitor immediately marks an object down when it
         receives a down response.
       - When creating a new monitor, if this parameter is not provided, the default
-        value is C(no).
+        value is C(false).
     type: bool
   transparent:
     description:
@@ -110,7 +110,7 @@ options:
       - If the monitor cannot successfully reach the aliased destination, the pool member
         or node through which the monitor traffic was sent is marked down.
       - When creating a new monitor, if this parameter is not provided, the default
-        value is no C(no).
+        value is no C(false).
     type: bool
   reverse:
     description:
@@ -210,7 +210,7 @@ ignore_down_response:
   description: Whether to ignore the down response or not.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 send:
   description: The new send string for this monitor.
   returned: changed
@@ -230,12 +230,12 @@ reverse:
   description: The new value for whether the monitor operates in reverse mode.
   returned: changed
   type: bool
-  sample: False
+  sample: false
 transparent:
   description: The new value for whether the monitor operates in transparent mode.
   returned: changed
   type: bool
-  sample: False
+  sample: false
 '''
 from datetime import datetime
 

@@ -62,9 +62,9 @@ options:
     description:
       - Specifies whether a qualified late-binding connection requires an explicit iRule
         command to migrate down to ePVA hardware.
-      - When C(no), a late-binding connection migrates down to ePVA immediately after
+      - When C(false), a late-binding connection migrates down to ePVA immediately after
         establishing the server-side connection.
-      - When C(yes), this parameter stops automatic migration to ePVA, and requires
+      - When C(true), this parameter stops automatic migration to ePVA, and requires
         the iRule explicitly trigger ePVA processing by invoking the C(release_flow)
         iRule command. This allows an iRule author to control when the connection uses the
         ePVA hardware.
@@ -165,12 +165,12 @@ options:
     type: str
   loose_close:
     description:
-      - When C(yes), specifies the system closes a loosely-initiated connection
+      - When C(true), specifies the system closes a loosely-initiated connection
         when the system receives the first FIN packet from either the client or the server.
     type: bool
   loose_initialization:
     description:
-      - When C(yes), specifies the system initializes a connection when it
+      - When C(true), specifies the system initializes a connection when it
         receives any TCP packet, rather than requiring a SYN packet for connection
         initiation.
     type: bool
@@ -181,7 +181,7 @@ options:
     type: int
   reassemble_fragments:
     description:
-      - When C(yes), specifies the system reassembles IP fragments.
+      - When C(true), specifies the system reassembles IP fragments.
     type: bool
   receive_window_size:
     description:
@@ -190,17 +190,17 @@ options:
     type: int
   reset_on_timeout:
     description:
-      - When C(yes), specifies the system sends a reset packet (RST) in addition
+      - When C(true), specifies the system sends a reset packet (RST) in addition
         to deleting the connection, when a connection exceeds the idle timeout value.
     type: bool
   rtt_from_client:
     description:
-      - When C(yes), specifies the system uses TCP timestamp options to measure
+      - When C(true), specifies the system uses TCP timestamp options to measure
         the round-trip time to the client.
     type: bool
   rtt_from_server:
     description:
-      - When C(yes), specifies the system uses TCP timestamp options to measure
+      - When C(true), specifies the system uses TCP timestamp options to measure
         the round-trip time to the server.
     type: bool
   server_sack:
@@ -226,7 +226,7 @@ options:
     type: str
   tcp_generate_isn:
     description:
-      - When C(yes), specifies the system generates initial sequence numbers
+      - When C(true), specifies the system generates initial sequence numbers
         for SYN packets, according to RFC 1948.
     type: bool
   tcp_handshake_timeout:
@@ -243,7 +243,7 @@ options:
     type: str
   tcp_strip_sack:
     description:
-      - When C(yes), specifies the system blocks a TCP selective ACK SackOK
+      - When C(true), specifies the system blocks a TCP selective ACK SackOK
         option from passing to the server on an initiating SYN.
     type: bool
   tcp_time_wait_timeout:
@@ -345,7 +345,7 @@ explicit_flow_migration:
   description: The new flow migration setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 idle_timeout:
   description: The new idle timeout setting.
   returned: changed
@@ -390,7 +390,7 @@ late_binding:
   description: The new Late Binding setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 link_qos_to_client:
   description: The new Link QoS to Client setting.
   returned: changed
@@ -405,12 +405,12 @@ loose_close:
   description: The new Loose Close setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 loose_initialization:
   description: The new Loose Initiation setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 mss_override:
   description: The new Maximum Segment Size Override setting.
   returned: changed
@@ -420,7 +420,7 @@ reassemble_fragments:
   description: The new Reassemble IP Fragments setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 receive_window_size:
   description: The new Receive Window setting.
   returned: changed
@@ -430,27 +430,27 @@ reset_on_timeout:
   description: The new Reset on Timeout setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 rtt_from_client:
   description: The new RTT from Client setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 rtt_from_server:
   description: The new RTT from Server setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 server_sack:
   description: The new Server Sack setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 server_timestamp:
   description: The new Server Timestamp setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 syn_cookie_mss:
   description: The new SYN Cookie MSS setting.
   returned: changed
@@ -465,7 +465,7 @@ tcp_generate_isn:
   description: The new Generate Initial Sequence Number setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 tcp_handshake_timeout:
   description: The new TCP Handshake Timeout setting.
   returned: changed
@@ -475,7 +475,7 @@ tcp_strip_sack:
   description: The new Strip Sack OK setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 tcp_time_wait_timeout:
   description: The new TCP Time Wait Timeout setting.
   returned: changed
@@ -500,12 +500,12 @@ hardware_syn_cookie:
   description: Enables or disables hardware SYN cookie support when PVA10 is present on the system.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 syn_cookie_enable:
   description: Specifies whether or not to use SYN Cookie.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 pva_acceleration:
   description: Specifies the Packet Velocity ASIC acceleration policy.
   returned: changed

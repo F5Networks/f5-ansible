@@ -109,11 +109,11 @@ options:
     description:
       - Specifies whether the system automatically changes the status of a resource
         to B(enabled) at the next successful monitor check.
-      - If you set this option to C(yes), you must manually re-enable the resource
+      - If you set this option to C(true), you must manually re-enable the resource
         before the system can use it for load balancing connections.
-      - When C(yes), specifies you must manually re-enable the resource after an
+      - When C(true), specifies you must manually re-enable the resource after an
         unsuccessful monitor check.
-      - When C(no), specifies the system automatically changes the status of a
+      - When C(false), specifies the system automatically changes the status of a
         resource to B(enabled) at the next successful monitor check.
     type: bool
   recv:
@@ -234,7 +234,7 @@ debug:
       labeled specifically for this monitor.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 ip:
   description: The new IP of IP/port definition.
   returned: changed
@@ -268,7 +268,7 @@ manual_resume:
       resource to up at the next successful monitor check.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 time_until_up:
   description: The new time in which to mark a system as up after first successful response.
   returned: changed

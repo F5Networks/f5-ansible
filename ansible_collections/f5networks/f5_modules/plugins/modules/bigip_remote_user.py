@@ -107,7 +107,7 @@ console_access:
   description: The default console access for all remote user accounts.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 description:
   description: The user-defined description.
   returned: changed

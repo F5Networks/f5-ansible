@@ -45,7 +45,7 @@ options:
     type: str
   datagram_load_balancing:
     description:
-      - When C(yes), specifies the system load balances UDP traffic
+      - When C(true), specifies the system load balances UDP traffic
         packet-by-packet.
     type: bool
   partition:
@@ -97,7 +97,7 @@ datagram_load_balancing:
   description: The new datagram load balancing setting of the resource.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 '''
 from datetime import datetime
 

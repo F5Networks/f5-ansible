@@ -465,17 +465,17 @@ allow_advertisement:
   description: The new Allow External Advertisement setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 auto_blacklist:
   description: The new Auto Blacklist setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 bad_actor_detection:
   description: The new Bad Actor Detection setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 blacklist_detection_seconds:
   description: The new Sustained Attack Detection Time setting.
   returned: changed
@@ -535,7 +535,7 @@ simulate_auto_threshold:
   description: The new Simulate Auto Threshold setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 state:
   description: The new state of the vector.
   returned: changed

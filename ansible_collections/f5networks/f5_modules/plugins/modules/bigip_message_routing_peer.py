@@ -34,7 +34,7 @@ options:
     default: generic
   auto_init:
     description:
-      - If C(yes), the BIG-IP automatically creates outbound connections to the active pool members in the
+      - If C(true), the BIG-IP automatically creates outbound connections to the active pool members in the
         specified C(pool) using the configuration of the specified C(transport_config).
       - For auto-initialization to attempt to create a connection, the peer must be included in a route that is attached
         to a router instance. For each router instance the peer is contained in, a connection is initiated.
@@ -151,7 +151,7 @@ auto_init:
   description: Enables creation of outbound connections to the active pool members.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 auto_init_interval:
   description: The interval at which attempts to initiate a connection occur.
   returned: changed

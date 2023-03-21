@@ -86,14 +86,14 @@ options:
       - Specifies whether the system automatically creates ephemeral nodes using
         the IP addresses returned by the resolution of a DNS query for a node defined
         by an FQDN.
-      - When C(yes), the system generates an ephemeral node for each IP address
+      - When C(true), the system generates an ephemeral node for each IP address
         returned in response to a DNS query for the FQDN of the node. Additionally,
         when a DNS response indicates the IP address of an ephemeral node no longer
         exists, the system deletes the ephemeral node.
-      - When C(no), the system resolves a DNS query for the FQDN of the node with the
+      - When C(false), the system resolves a DNS query for the FQDN of the node with the
         single IP address associated with the FQDN.
       - When creating a new node, if this parameter is not specified and C(fqdn) is
-        specified, this parameter will default to C(yes).
+        specified, this parameter defaults to C(true).
       - This parameter cannot be changed after it has been set.
     type: bool
   fqdn_up_interval:

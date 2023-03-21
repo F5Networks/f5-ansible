@@ -81,11 +81,11 @@ options:
     description:
       - Specifies whether the system automatically changes the status of a resource
         to B(enabled) at the next successful monitor check.
-      - If you set this option to C(yes), you must manually re-enable the resource
+      - If you set this option to C(true), you must manually re-enable the resource
         before the system can use it for load balancing connections.
-      - When C(yes), specifies you must manually re-enable the resource after an
+      - When C(true), specifies you must manually re-enable the resource after an
         unsuccessful monitor check.
-      - When C(no), specifies the system automatically changes the status of a
+      - When C(false), specifies the system automatically changes the status of a
         resource to B(enabled) at the next successful monitor check.
     type: bool
   target_username:
@@ -208,22 +208,22 @@ debug:
   description: The new Debug setting of the resource.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 mandatory_attributes:
   description: The new Mandatory Attributes setting of the resource.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 chase_referrals:
   description: The new Chase Referrals setting of the resource.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 manual_resume:
   description: The new Manual Resume setting of the resource.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 filter:
   description: The new LDAP Filter setting of the resource.
   returned: changed

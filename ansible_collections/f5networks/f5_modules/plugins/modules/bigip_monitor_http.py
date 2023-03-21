@@ -202,7 +202,7 @@ reverse:
   description: Whether the monitor operates in reverse mode.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 up_interval:
   description: Interval for the system to use to perform the health check when a resource is up.
   returned: changed

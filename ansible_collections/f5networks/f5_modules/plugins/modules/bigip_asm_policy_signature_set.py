@@ -17,7 +17,7 @@ version_added: "1.0.0"
 options:
   name:
     description:
-      - Specifies the name of the signature sets to apply on, or remove from, the ASM policy.
+      - Specifies the name of the signature sets to apply to, or remove from, the ASM policy.
       - Apart from built-in signature sets that ship with the device, you can create and use
         custom signature sets.
       - When C(All Response Signatures), configures all signatures in the attack signature
@@ -91,9 +91,9 @@ options:
     description:
       - Effective when the security policy enforcement mode is Blocking.
       - Determines how the system treats requests that match a signature included in the signature set.
-      - When C(yes), the system blocks all requests that match a signature,
+      - When C(true), the system blocks all requests that match a signature,
         and provides the client with a support ID number.
-      - When C(no), the system accepts those requests.
+      - When C(false), the system accepts those requests.
     type: bool
   learn:
     description:
@@ -159,17 +159,17 @@ alarm:
   description: Specifies whether the security policy logs the request data in the Statistics screen.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 block:
   description: Determines how the system treats requests that match a signature included in the signature set.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 learn:
   description: Specifies if the policy learns all requests that match a signature that is included in the signature set.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 import traceback
 from datetime import datetime

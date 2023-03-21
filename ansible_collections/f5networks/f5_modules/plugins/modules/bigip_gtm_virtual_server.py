@@ -139,17 +139,17 @@ options:
     suboptions:
       bits_enabled:
         description:
-          - Whether the bits limit is enabled or not.
+          - Whether or not the bits limit is enabled.
           - This parameter allows you to switch on or off the effect of the limit.
         type: bool
       packets_enabled:
         description:
-          - Whether the packets limit is enabled or not.
+          - Whether or not the packets limit is enabled.
           - This parameter allows you to switch on or off the effect of the limit.
         type: bool
       connections_enabled:
         description:
-          - Whether the current connections limit is enabled or not.
+          - Whether or not the current connections limit is enabled.
           - This parameter allows you to switch on or off the effect of the limit.
         type: bool
       bits_limit:

@@ -208,7 +208,7 @@ enabled:
   description: Whether the zone is enabled or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 allow_notify_from:
   description: The new DNS Express Allow NOTIFY From value.
   returned: changed
@@ -223,7 +223,7 @@ verify_tsig:
   description: The new DNS Express Verify Notify TSIG value.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 express_server:
   description: The new DNS Express Server value.
   returned: changed
@@ -233,7 +233,7 @@ response_policy:
   description: The new DNS Express Response Policy value.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 nameservers:
   description: The new Zone Transfer Clients Nameservers value.
   returned: changed
