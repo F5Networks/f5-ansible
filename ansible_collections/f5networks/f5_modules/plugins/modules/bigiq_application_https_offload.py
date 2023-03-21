@@ -160,7 +160,7 @@ options:
       - This parameter is only relevant when specifying a C(service_environment) which
         is a BIG-IP; not an SSG.
     type: bool
-    default:false
+    default: false
   state:
     description:
       - The state of the resource on the system.
