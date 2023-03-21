@@ -64,12 +64,12 @@ options:
       - source-destination-mac
   lacp_enabled:
     description:
-      - When C(yes), specifies the system supports the link aggregation control
+      - When C(true), specifies the system supports the link aggregation control
         protocol (LACP), which monitors the trunk by exchanging control packets over
         the member links to determine the health of the links.
       - If LACP detects a failure in a member link, it removes the link from the link
         aggregation.
-      - When creating a new trunk, if this parameter is not specified, LACP is C(no).
+      - When creating a new trunk, if this parameter is not specified, LACP is C(false).
       - LACP is disabled by default for backward compatibility. If this does not apply
         to your network, we recommend that you enable LACP.
     type: bool
@@ -169,7 +169,7 @@ lacp_enabled:
   description: Whether the system supports the link aggregation control protocol (LACP) or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 interfaces:
   description: Interfaces that are part of the trunk.
   returned: changed
