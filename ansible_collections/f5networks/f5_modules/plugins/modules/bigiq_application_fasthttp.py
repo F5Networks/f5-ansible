@@ -86,7 +86,7 @@ options:
       - This parameter is only relevant when specifying a C(service_environment) which
         is a BIG-IP; not an SSG.
     type: bool
-    default: no
+    default: false
   state:
     description:
       - The state of the resource on the system.
@@ -101,7 +101,7 @@ options:
     description:
       - If the module should wait for the application to be created, deleted, or updated.
     type: bool
-    default: yes
+    default: true
 extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
   - This module does not support updating of your application (whether deployed or not).
