@@ -19,7 +19,7 @@
 F5 BIG-IP Imperative Collection for Ansible
 ===========================================
 
-|slack badge| |travis badge| |shippable badge|
+|travis badge| |shippable badge|
 
 Introduction
 ------------
@@ -83,9 +83,6 @@ Support
 -------
 F5 supports the F5 Imperative Collection for Ansible delivered in |ansible_galaxy|. Please refer to the |support_policy| for details.
 
-Community Support
-~~~~~~~~~~~~~~~~~
-We encourage you to use our |slacklink| for discussion and assistance on F5 BIG-IP Ansible Modules (click the **ansible** channel). There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should not be considered a substitute for F5 Technical Support.
 
 Bugs, Issues
 ------------
@@ -113,12 +110,12 @@ If you've got the time, consider sending an email that introduces yourself and w
 
 .. note:: **We no longer accept external code submissions.**
 
-- Wojciech Wypior and the F5 team - solutionsfeedback@f5.com
+- Wojciech Wypior and the F5 team 
 
 Copyright
 ---------
 
-Copyright 2017-2022 F5 Networks Inc.
+Copyright 2017-2023 F5 Networks Inc.
 
 
 License
@@ -135,10 +132,6 @@ See `License`_.
 .. |travis badge| image:: https://travis-ci.com/F5Networks/f5-ansible.svg?branch=devel
     :target: https://travis-ci.com/F5Networks/f5-ansible
     :alt: Build Status
-
-.. |slack badge| image:: https://f5cloudsolutions.herokuapp.com/badge.svg
-    :target: https://f5cloudsolutions.herokuapp.com
-    :alt: Slack Status
 
 .. |shippable badge| image:: https://api.shippable.com/projects/57c88ded5a5c0d0f0012c53e/badge?branch=devel
     :target: https://app.shippable.com/github/F5Networks/f5-ansible
