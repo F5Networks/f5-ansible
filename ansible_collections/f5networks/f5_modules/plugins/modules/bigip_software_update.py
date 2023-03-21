@@ -65,12 +65,12 @@ auto_check:
   description: Whether the system automatically checks for updates.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 auto_phone_home:
   description: Whether the system automatically sends phone home data.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 frequency:
   description: Frequency of auto update checks.
   returned: changed
