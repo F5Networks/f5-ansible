@@ -26,7 +26,7 @@ options:
       - Specifies whether the system answers DNS queries for the default
         zones localhost, reverse 127.0.0.1 and ::1, and AS112.
       - When creating a new cache resolver, if this parameter is not specified, the
-        default is C(no).
+        default is C(false).
     type: bool
   forward_zones:
     description:

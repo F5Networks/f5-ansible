@@ -34,7 +34,7 @@ options:
         replace-all-with flag available in TMSH commands.
       - Using this option is not idempotent.
     type: bool
-    default: no
+    default: false
   rule_order:
     description:
       - Specifies a number that indicates the order of this rule relative to other rules in the policy.

@@ -37,7 +37,7 @@ options:
   inherit_parent_profile:
     description:
       - Enables the FTP data channel to inherit the TCP profile used by the control channel.
-      - "When C(no), the data channel uses FastL4 (BigProto) only."
+      - "When C(false), the data channel uses FastL4 (BigProto) only."
     type: bool
   log_profile:
     description:
@@ -124,7 +124,7 @@ allow_ftps:
   description: Allow explicit FTPS negotiation.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 description:
   description: Description of the profile.
   returned: changed
@@ -139,7 +139,7 @@ inherit_parent_profile:
   description: Enables the FTP data channel to inherit the TCP profile used by the control channel.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 log_profile:
   description: The ALG log profile that controls logging.
   returned: changed
@@ -154,7 +154,7 @@ translate_extended:
   description: Translates RFC 2428 extended requests when communicating with IPv4 servers.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 port:
   description: Specifies a service for the data channel port used for this FTP profile.
   returned: changed
@@ -164,7 +164,7 @@ security:
   description: Enables secure FTP traffic for the BIG-IP Application Security Manager.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 '''
 from datetime import datetime
 

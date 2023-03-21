@@ -32,7 +32,7 @@ options:
     type: str
   disable_parser:
     description:
-      - When C(yes), the generic message parser is disabled, ignoring all incoming packets and not directly
+      - When C(true), the generic message parser is disabled, ignoring all incoming packets and not directly
         send message data.
       - This mode supports iRule script protocol implementations that generates messages from the incoming transport
         stream and sends outgoing messages on the outgoing transport stream.
@@ -129,7 +129,7 @@ disable_parser:
   description: Disables generic message parser.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 max_egress_buffer:
   description: The maximum size of the send buffer in bytes.
   returned: changed
@@ -149,7 +149,7 @@ no_response:
   description: Disables matching of responses to requests.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 import traceback
 from datetime import datetime

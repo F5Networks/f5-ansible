@@ -43,20 +43,20 @@ options:
   arp:
     description:
       - Specifies whether the system accepts ARP requests.
-      - When C(no), specifies the system does not accept ARP requests.
-      - When C(yes), the packets are dropped.
+      - When C(false), specifies the system does not accept ARP requests.
+      - When C(true), the packets are dropped.
       - Both ARP and ICMP Echo must be disabled in order for forwarding
         virtual servers using that virtual address to forward ICMP packets.
       - When creating a new virtual address, if this parameter is not specified,
-        the default value is C(yes).
+        the default value is C(true).
     type: bool
   auto_delete:
     description:
       - Specifies whether the system automatically deletes the virtual
         address with the deletion of the last associated virtual server.
-        When C(no), specifies the system leaves the virtual
+        When C(false), specifies the system leaves the virtual
         address, even when all associated virtual servers have been deleted.
-        When creating the virtual address, the default value is C(yes).
+        When creating the virtual address, the default value is C(true).
     type: bool
   icmp_echo:
     description:
@@ -159,7 +159,7 @@ options:
       - You must also configure MAC masquerade addresses and disable C(arp) on the virtual
         address when Spanning is enabled.
       - When creating a new virtual address, if this parameter is not specified, the default
-        valus is C(no).
+        valus is C(false).
     type: bool
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
@@ -201,7 +201,7 @@ auto_delete:
   description: New setting for auto deleting virtual address.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 icmp_echo:
   description: New ICMP echo setting applied to virtual address.
   returned: changed
@@ -221,7 +221,7 @@ arp:
   description: The new way the virtual address handles ARP requests.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 address:
   description: The address of the virtual address.
   returned: created

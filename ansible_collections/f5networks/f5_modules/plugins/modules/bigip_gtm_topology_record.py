@@ -21,9 +21,9 @@ options:
     suboptions:
       negate:
         description:
-          - When set to c(yes) the system selects this topology record, when the request source does not match.
+          - When set to c(true) the system selects this topology record, when the request source does not match.
         type: bool
-        default: no
+        default: false
       subnet:
         description:
           - An IP address and network mask in the CIDR format.
@@ -80,9 +80,9 @@ options:
     suboptions:
       negate:
         description:
-          - When set to C(yes) the system selects this topology record, when the request destination does not match.
+          - When set to C(true) the system selects this topology record, when the request destination does not match.
         type: bool
-        default: no
+        default: false
       subnet:
         description:
           - An IP address and network mask in the CIDR format.

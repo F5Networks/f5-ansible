@@ -78,7 +78,7 @@ options:
   sni_require:
     description:
       - Requires the network peers also provide SNI support. This setting only takes
-        effect when C(sni_default) is C(yes).
+        effect when C(sni_default) is C(true).
       - When creating a new profile, the setting is provided by the parent profile.
     type: bool
   server_certificate:
@@ -215,7 +215,7 @@ renegotiation:
   description: Renegotiation of SSL sessions.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 options:
   description: The list of options for SSL processing.
   returned: changed

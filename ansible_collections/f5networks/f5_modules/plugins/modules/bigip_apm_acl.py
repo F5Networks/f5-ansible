@@ -298,7 +298,7 @@ path_match_case:
   description: Specifies whether alphabetic case is considered when matching paths in an access control entry.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 entries:
   description: Access control entries that define the ACL matching and its respective behavior.
   type: complex

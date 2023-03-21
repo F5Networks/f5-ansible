@@ -27,8 +27,8 @@ options:
   enabled:
     description:
       - Specifies the current status of the interface.
-      - When C(yes), enables the interface to pass traffic.
-      - When C(no), disables the interface from passing traffic.
+      - When C(true), enables the interface to pass traffic.
+      - When C(false), disables the interface from passing traffic.
     type: bool
   bundle:
     description:
@@ -43,7 +43,7 @@ options:
       - not-supported
   bundle_speed:
     description:
-      - Sets the bundle speed, which is applicable only when the bundle is C(yes).
+      - Sets the bundle speed, which is applicable only when the bundle is C(true).
       - This option is only supported on selected hardware platforms and interfaces.
       - "Attempting to enable this option on a C(VE) or any other unsupported platform/interface
         will result in module run failure."
@@ -55,9 +55,9 @@ options:
   force_gigabit_fiber:
     description:
       - Enables or disables forcing of gigabit fiber media.
-      - When C(yes) for a gigabit fiber interface, the media setting will be forced, and no auto-negotiation will be
+      - When C(true) for a gigabit fiber interface, the media setting will be forced, and no auto-negotiation will be
         performed.
-      - When C(no) auto-negotiation will be performed with just a single gigabit fiber option advertised.
+      - When C(false) auto-negotiation will be performed with just a single gigabit fiber option advertised.
     type: bool
   prefer_port:
     description:
@@ -222,10 +222,10 @@ options:
   stp_auto_edge_port:
     description:
       - Sets STP automatic edge port detection for the interface.
-      - "When C(yes), the system monitors the interface for incoming STP, RSTP, or MSTP packets. If no such packets are
+      - "When C(true), the system monitors the interface for incoming STP, RSTP, or MSTP packets. If no such packets are
         received for a sufficient period of time (about three seconds), the interface is automatically given edge port
         status."
-      - When C(no), the system never gives the interface edge port status automatically. Any STP setting set on a
+      - When C(false), the system never gives the interface edge port status automatically. Any STP setting set on a
         per-interface basis applies to all spanning tree instances.
     type: bool
   stp_edge_port:
@@ -247,14 +247,14 @@ options:
       poll_interval:
         description:
           - Specifies the maximum interval between two pollings, in seconds.
-          - For this setting to take effect, C(poll_interval_global) must be set to C(no).
+          - For this setting to take effect, C(poll_interval_global) must be set to C(false).
           - The valid range is 0 - 4294967295.
         type: int
       poll_interval_global:
         description:
           - Specifies whether the global interface C(poll_interval) setting overrides the object-level
             C(poll_interval) setting.
-          - When C(yes) the C(poll_interval) setting does not take effect.
+          - When C(true)) the C(poll_interval) setting does not take effect.
         type: bool
     type: dict
 extends_documentation_fragment: f5networks.f5_modules.f5
@@ -317,7 +317,7 @@ enabled:
   description: The current status of the interface.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 bundle:
   description: Enables or disables bundle capability.
   returned: changed
@@ -332,7 +332,7 @@ force_gigabit_fiber:
   description: Enables or disables forcing of gigabit fiber media.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 prefer_port:
   description: The side of a combo port the interface uses.
   returned: changed
@@ -377,7 +377,7 @@ stp:
   description: Enables or disables STP.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 stp_auto_edge_port:
   description: Sets STP automatic edge port detection for the interface.
   returned: changed
@@ -387,7 +387,7 @@ stp_edge_port:
   description: Specifies whether the interface connects to an end station instead of another spanning tree bridge.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 stp_link_type:
   description: The STP link type for the interface.
   returned: changed
@@ -402,7 +402,7 @@ sflow:
       description: The global sFlow settings override.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     poll_interval:
       description: The maximum interval in seconds between two pollings.
       returned: changed

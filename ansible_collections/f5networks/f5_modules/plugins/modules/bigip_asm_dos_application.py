@@ -40,11 +40,11 @@ options:
     type: bool
   single_page_application:
     description:
-      - Specifies, when C(yes), that the system supports a Single Page Applications.
+      - When C(true), specifies the system supports a Single Page Applications.
     type: bool
   trigger_irule:
     description:
-      - Specifies, when C(yes), that the system activates an Application DoS iRule event.
+      - When C(true), specifies the system activates an Application DoS iRule event.
     type: bool
   geolocations:
     description:
@@ -105,32 +105,32 @@ options:
     suboptions:
       enabled:
         description:
-          - When C(yes), requests from mobile applications built with Anti-Bot Mobile SDK will be detected and handled
+          - When C(true), requests from mobile applications built with Anti-Bot Mobile SDK are detected and handled
             according to the parameters set.
-          - When C(no), these requests will be handled like any other request which may let attacks in, or cause false
+          - When C(false), these requests are handled like any other request which may let attacks in, or cause false
             positives.
         type: bool
       allow_android_rooted_device:
         description:
-          - When C(yes) the device will allow traffic from rooted Android devices.
+          - When C(true), the device allows traffic from rooted Android devices.
         type: bool
       allow_any_android_package:
         description:
-          - When C(yes) allows any application publisher.
+          - When C(true), allows any application publisher.
           - A publisher is identified by the certificate used to sign the application.
         type: bool
       allow_any_ios_package:
         description:
-          - When C(yes) allows any iOS package.
+          - When C(true), allows any iOS package.
           - A package name is the unique identifier of the mobile application.
         type: bool
       allow_jailbroken_devices:
         description:
-          - When C(yes) allows traffic from jailbroken iOS devices.
+          - When C(true), allows traffic from jailbroken iOS devices.
         type: bool
       allow_emulators:
         description:
-          - When C(yes) allows traffic from applications run on emulators.
+          - When C(true), allows traffic from applications run on emulators.
         type: bool
       client_side_challenge_mode:
         description:
@@ -148,12 +148,12 @@ options:
       ios_allowed_package_names:
         description:
           - Specifies the names of iOS packages to allow traffic on.
-          - This option has no effect when C(allow_any_ios_package) is set to C(yes).
+          - This option has no effect when C(allow_any_ios_package) is set to C(true).
         type: list
         elements: str
       android_publishers:
         description:
-          - This option has no effect when C(allow_any_android_package) is set to C(yes).
+          - This option has no effect when C(allow_any_android_package) is set to C(true).
           - Specifies the allowed publisher certificates for android applications.
           - The publisher certificate needs to be installed on the BIG-IP beforehand.
           - "The certificate name located on a different partition than the one specified
@@ -232,7 +232,7 @@ rtbh_enable:
   description: Enables Remote Triggered Black Hole of attacking IPs.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 rtbh_duration:
   description: The duration of the RTBH BGP route advertisement.
   returned: changed
@@ -242,7 +242,7 @@ scrubbing_enable:
   description: Enables Traffic Scrubbing during attacks.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 scrubbing_duration:
   description: The duration of the Traffic Scrubbing BGP route advertisement.
   returned: changed
@@ -252,12 +252,12 @@ single_page_application:
   description: Enables support of Single Page Applications.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 trigger_irule:
   description: Activates an Application DoS iRule event.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 geolocations:
   description: Specifies geolocations countries whitelist, blacklist.
   type: complex
@@ -283,7 +283,7 @@ heavy_urls:
       description: Enables or disables automatic heavy URL detection.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     latency_threshold:
       description: Specifies the latency threshold for automatic heavy URL detection.
       returned: changed
@@ -320,32 +320,32 @@ mobile_detection:
       description: Enables or disables automatic mobile detection.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     allow_android_rooted_device:
       description: Allows traffic from rooted Android devices.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     allow_any_android_package:
       description: Allows any application publisher.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     allow_any_ios_package:
       description: Allows any iOS package.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     allow_jailbroken_devices:
       description: Allows traffic from jailbroken iOS devices.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     allow_emulators:
       description: Allows traffic from applications run on emulators.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     client_side_challenge_mode:
       description: Action to take when a CAPTCHA or Client Side Integrity challenge needs to be presented.
       returned: changed

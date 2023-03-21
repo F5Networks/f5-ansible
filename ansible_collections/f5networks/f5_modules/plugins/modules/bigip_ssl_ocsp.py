@@ -214,7 +214,7 @@ strict_responder_checking:
   description: The new Response Validation Strict Responder Certificate Checking value.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 connection_timeout:
   description: The new Connection Timeout value.
   returned: changed

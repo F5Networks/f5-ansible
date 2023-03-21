@@ -46,29 +46,29 @@ options:
     elements: dict
   failover_multicast:
     description:
-      - When C(yes), ensures the Failover Multicast configuration is enabled
+      - When C(true), ensures the Failover Multicast configuration is enabled
         and, if no further multicast configuration is provided, ensures that
         C(multicast_interface), C(multicast_address) and C(multicast_port) are
         the defaults specified in the description of each option.
-      - When C(no), ensures that Failover Multicast configuration is disabled.
+      - When C(false), ensures that Failover Multicast configuration is disabled.
     type: bool
   multicast_interface:
     description:
       - Interface over which the system sends multicast messages associated
         with failover.
-      - When C(failover_multicast) is C(yes) and this option is not provided, a default of C(eth0) will be used.
+      - When C(failover_multicast) is C(true) and this option is not provided, a default of C(eth0) will be used.
     type: str
   multicast_address:
     description:
       - IP address for the system to send multicast messages associated with
         failover.
-      - When C(failover_multicast) is C(yes) and this option is not provided, a default of C(224.0.0.245) will be used.
+      - When C(failover_multicast) is C(true) and this option is not provided, a default of C(224.0.0.245) will be used.
     type: str
   multicast_port:
     description:
       - Port for the system to send multicast messages associated with
         failover.
-      - When C(failover_multicast) is C(yes) and this option is not provided, a default of C(62960) will be used.
+      - When C(failover_multicast) is C(true) and this option is not provided, a default of C(62960) will be used.
         This value must be between 0 and 65535.
     type: int
   cluster_mirroring:

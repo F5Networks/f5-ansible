@@ -57,21 +57,21 @@ options:
   accept_eula:
     description:
       - Declares whether you accept the BIG-IP EULA or not. By default, this
-        value is C(no). You must specifically declare you have viewed and
+        value is C(false). You must specifically declare you have viewed and
         accepted the license. This module does not present you with the EULA,
         so it is incumbent on you to read it.
       - The EULA can be found here; https://support.f5.com/csp/article/K12902.
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
     type: bool
-    default: no
+    default: false
   force:
     description:
       - Declares whether to force license renewal. By default, this
-        value is C(no).
+        value is C(false).
       - This parameter is not required and will be ignored if it is provided.
     type: bool
-    default: no
+    default: false
 extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
   - This module can be used to license BIG-IPs that do not have access to internet.

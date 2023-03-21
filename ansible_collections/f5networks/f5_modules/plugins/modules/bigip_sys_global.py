@@ -26,17 +26,17 @@ options:
     type: int
   gui_audit:
     description:
-      - C(yes) or C(no), specifies whether or not system GUI log audit messages.
+      - C(true) or C(false), specifies whether or not system GUI log audit messages.
     type: bool
     version_added: "1.23.0"
   gui_setup:
     description:
-      - C(yes) or C(no), the Setup utility in the browser-based
+      - C(true) or C(false), the Setup utility in the browser-based
         Configuration utility.
     type: bool
   lcd_display:
     description:
-      - When C(yes), specifies the system menu displays on the
+      - When C(true), specifies the system menu displays on the
         LCD screen on the front of the unit. This setting has no effect
         when used on the VE platform.
     type: bool
@@ -47,13 +47,13 @@ options:
     type: bool
   net_reboot:
     description:
-      - When C(yes), specifies the next time you reboot the system,
+      - When C(true), specifies the next time you reboot the system,
         the system boots to an ISO image on the network, rather than an
         internal media drive.
     type: bool
   quiet_boot:
     description:
-      - When C(yes), specifies the system suppresses informational
+      - When C(true), specifies the system suppresses informational
         text on the console during the boot cycle. When C(no), the
         system presents messages and informational text on the console during
         the boot cycle.
@@ -105,41 +105,41 @@ gui_audit:
   description: The new setting for GUI auditing.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 gui_setup:
   description: The new setting for the Setup utility.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 lcd_display:
   description: The new setting for displaying the system menu on the LCD.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 mgmt_dhcp:
   description: The new setting for whether the mgmt interface should use DHCP or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 net_reboot:
   description: The new setting for whether the system should boot to an ISO on the network or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 quiet_boot:
   description:
     - The new setting for whether the system should suppress information to
       the console during boot or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 security_banner:
   description:
     - The new setting for whether the system should display an advisory message
       on the login screen or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule

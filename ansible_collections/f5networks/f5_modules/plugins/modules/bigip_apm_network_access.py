@@ -35,7 +35,7 @@ options:
     description:
       - Enables local subnet access and local access to any host or subnet in routes specified in the client routing
         table.
-      - When C(yes) the system does not support integrated IP filtering.
+      - When C(true) the system does not support integrated IP filtering.
     type: bool
   allow_local_dns:
     description:
@@ -53,7 +53,7 @@ options:
     type: str
   dtls:
     description:
-      - When C(yes) the network access connection uses Datagram Transport Level Security instead of TCP,
+      - When C(true) the network access connection uses Datagram Transport Level Security instead of TCP,
         to provide better throughput for high demand applications like VoIP or streaming video.
     type: bool
   dtls_port:
@@ -107,7 +107,7 @@ options:
   ipv4_address_space:
     description:
       - Specifies a list of IPv4 hosts or networks describing the target LAN.
-      - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(yes).
+      - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(true).
     type: list
     elements: dict
     suboptions:
@@ -119,7 +119,7 @@ options:
   ipv6_address_space:
     description:
       - Specifies a list of IPv6 hosts or networks describing the target LAN.
-      - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(yes).
+      - This option is mandatory when creating a new resource and C(split_tunnel) is set to C(true).
     type: list
     elements: dict
     suboptions:
@@ -208,17 +208,17 @@ allow_local_subnet:
   description: Enables local subnet access.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 allow_local_dns:
   description: Enables local access to DNS servers configured on the client.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 split_tunnel:
   description: Enables split tunnel on the network access resource.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 snat_pool:
   description: The name of a SNAT pool used by the network access resource.
   returned: changed
@@ -228,7 +228,7 @@ dtls:
   description: Enables use of DTLS by network access.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 dtls_port:
   description: Specifies the port number the network access resource uses for DTLS.
   returned: changed

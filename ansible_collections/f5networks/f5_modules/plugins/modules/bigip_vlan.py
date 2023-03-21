@@ -110,7 +110,7 @@ options:
         stateless traffic includes non-IP L2 traffic, ICMP, some UDP protocols,
         and so on.
       - When creating a new VLAN, if this parameter is not specified, the default
-        is (no).
+        is (false).
     type: bool
   partition:
     description:
@@ -119,13 +119,13 @@ options:
     default: Common
   source_check:
     description:
-      - When C(yes), specifies the system verifies the return route to an initial
+      - When C(true), specifies the system verifies the return route to an initial
         packet is the same VLAN from which the packet originated.
-      - The system performs this verification only if the C(auto_last_hop) option is C(no).
+      - The system performs this verification only if the C(auto_last_hop) option is C(false).
     type: bool
   fail_safe:
     description:
-      - When C(yes), specifies the VLAN takes the specified C(fail_safe_action) if the
+      - When C(true), specifies the VLAN takes the specified C(fail_safe_action) if the
         system detects a loss of traffic on this VLAN's interfaces.
     type: bool
   fail_safe_timeout:
@@ -173,7 +173,7 @@ options:
   hw_syn_cookie:
     description:
       - Enables hardware syncookie mode on a VLAN.
-      - When C(yes), the hardware per-VLAN SYN cookie protection is triggered when the certain traffic threshold
+      - When C(true), the hardware per-VLAN SYN cookie protection is triggered when the certain traffic threshold
         is reached on supported platforms.
     type: bool
     version_added: "1.3.0"
@@ -265,12 +265,12 @@ source_check:
   description: The new Source Check setting.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 fail_safe:
   description: The new Fail Safe setting.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 fail_safe_timeout:
   description: The new Fail Safe Timeout setting.
   returned: changed
@@ -295,7 +295,7 @@ hw_syn_cookie:
   description: Enables hardware syncookie mode on a VLAN.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 '''
 from datetime import datetime
 

@@ -55,7 +55,7 @@ options:
     description:
       - Specifies connections in a TIME-WAIT state are reused if a SYN packet (indicating a request
         for a new connection) is received.
-      - When C(no), connections in a TIME-WAIT state remain unused for a specified length of time.
+      - When C(false), connections in a TIME-WAIT state remain unused for a specified length of time.
       - When creating a new profile, if this parameter is not specified, the default
         is provided by the parent profile.
     type: bool
@@ -73,13 +73,13 @@ options:
       - disabled
   early_retransmit:
     description:
-      - When C(yes), the system uses early fast retransmits to reduce the recovery time for connections that are
+      - When C(true), the system uses early fast retransmits to reduce the recovery time for connections that are
         receive-buffer or user-data limited.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
   proxy_options:
     description:
-      - When C(yes), the system advertises an option, such as a time-stamp, to the server only if it was negotiated
+      - When C(true), the system advertises an option, such as a time-stamp, to the server only if it was negotiated
         with the client.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
@@ -108,7 +108,7 @@ options:
     type: int
   delayed_acks:
     description:
-      - When C(yes), the system sends fewer than one ACK segment per data segment received.
+      - When C(true), the system sends fewer than one ACK segment per data segment received.
       - When creating a new profile, if this parameter is not specified, the default is provided by the parent profile.
     type: bool
   ip_tos_to_client:
@@ -181,7 +181,7 @@ time_wait_recycle:
   description: Reuse connections in TIME-WAIT state.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 nagle:
   description: Specifies the use of Nagle's algorithm.
   returned: changed
@@ -191,12 +191,12 @@ early_retransmit:
   description: Specifies the use of early fast retransmits.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 proxy_options:
   description: Specifies if the system advertises negotiated options to the server.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 initial_congestion_window_size:
   description: Specifies the initial congestion window size for connections to this destination.
   returned: changed
@@ -216,7 +216,7 @@ delayed_acks:
   description: Specifies if the system sends fewer than one ACK segment per data segment received.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 ip_tos_to_client:
   description: Specifies the L3 Type of Service level that the system inserts in TCP packets destined for clients.
   returned: changed

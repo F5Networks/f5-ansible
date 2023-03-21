@@ -70,11 +70,11 @@ options:
         type: str
       log_rtbh:
         description:
-          - When C(yes), specifies remotely triggered blackholing events are logged.
+          - When C(true), specifies remotely triggered blackholing events are logged.
         type: bool
       log_shun:
         description:
-          - When C(yes), specifies IP Intelligence shun list events are logged.
+          - When C(true), specifies IP Intelligence shun list events are logged.
           - This option can only be set on the C(global-network) built-in profile.
         type: bool
       log_translation_fields:
@@ -226,17 +226,17 @@ ip_intelligence:
       description: Logging of remotely triggered blackholing events.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_shun:
       description: Logging of IP Intelligence shun list events.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     log_translation_fields:
       description: Logging of translated fields in IP Intelligence log messages.
       returned: changed
       type: bool
-      sample: no
+      sample: false
   sample: hash/dictionary of values
 port_misuse:
   description: Port Misuse related settings of the log profile.

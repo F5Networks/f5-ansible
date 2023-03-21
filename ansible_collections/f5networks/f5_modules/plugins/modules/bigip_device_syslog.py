@@ -284,12 +284,12 @@ console_log:
   description: Whether logging to the console is enabled or not.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 iso_date:
   description: Whether ISO date format in logs is enabled or not.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 cron_from:
   description: The new lowest time-based scheduling logging level.
   returned: changed

@@ -19,7 +19,7 @@ description:
     downloads.f5.com, and then importing all the iApps with this module.
     This module can also update existing iApps provided the source
     of the iApp changed while the name stayed the same. Note that
-    this module will not reconfigure any services that may have been
+    this module does not reconfigure any services that may have been
     created using the C(bigip_iapp_service) module. iApps are normally
     not updated in production. Instead, new versions are deployed and then
     existing services are changed to consume that new template. As such,
@@ -29,9 +29,9 @@ options:
   force:
     description:
       - Specifies whether or not to force the uploading of an iApp. When
-        C(yes), the system will force update the iApp even if there are iApp services
+        C(true), the system force updates the iApp even if there are iApp services
         using it. This will not update the running service, use
-        C(bigip_iapp_service) to do that. When C(no), the system updates the iApp
+        C(bigip_iapp_service) to do that. When C(false), the system updates the iApp
         only if there are no iApp services using the template.
     type: bool
   name:

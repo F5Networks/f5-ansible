@@ -207,7 +207,7 @@ options:
         address families are configured.
       - Only used with the C(lines) parameter.
     type: bool
-    default: no
+    default: false
     version_added: "1.2.0"
 notes:
   - Abbreviated commands are NOT idempotent

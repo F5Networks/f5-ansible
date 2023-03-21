@@ -48,13 +48,13 @@ options:
   force:
     description:
       - Force overwriting a file.
-      - By default, files will only be overwritten if the SHA of the file is different
+      - By default, files are only overwritten if the SHA of the file is different
         for the given filename. This parameter can be used to force overwriting the file
         even if it already exists and its SHA matches.
       - The C(lw4o6-table) datastore does not keep checksums of its file. Therefore, you
         would need to provide this argument to update any of these files.
     type: bool
-    default: no
+    default: false
   partition:
     description:
       - Device partition to manage resources on.

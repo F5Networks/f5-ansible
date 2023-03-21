@@ -25,7 +25,7 @@ options:
       - ip
   arp:
     description:
-      - If C(yes), specifies the NAT sends ARP requests.
+      - If C(true), specifies the NAT sends ARP requests.
     type: bool
   connection_limit:
     description:
@@ -203,7 +203,7 @@ arp:
   description: Whether snat-translation sends arp requests.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 connection_limit:
   description: The new connection limit of the virtual address.
   returned: changed

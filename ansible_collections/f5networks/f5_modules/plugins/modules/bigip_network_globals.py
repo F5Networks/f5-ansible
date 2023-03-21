@@ -104,7 +104,7 @@ options:
         type: int
       rate_limit:
         description:
-          - When C(yes), the DB variable C(switchboard.maxmcastrate) setting controls the multicast packet per second rate
+          - When C(true), the DB variable C(switchboard.maxmcastrate) setting controls the multicast packet per second rate
             limiting in the switch.
         type: bool
   dag:
@@ -147,8 +147,8 @@ options:
       enabled:
         description:
           - Specifies the current status of LLDP.
-          - When C(yes), the LLDP is enabled globally on the device.
-          - When C(no), the LLDP is disabled globally on the device.
+          - When C(true), the LLDP is enabled globally on the device.
+          - When C(false), the LLDP is disabled globally on the device.
         type: bool
       max_neighbors_per_port:
         description:
@@ -200,9 +200,9 @@ options:
       all:
         description:
           - Sets B(all) or B(none) ports and protocols as a system wide C(self_allow) setting.
-          - When C(yes), the self_allow allows all protocols and ports. This is the equivalent of setting B(all) option
+          - When C(true), the self_allow allows all protocols and ports. This is the equivalent of setting B(all) option
             in C(TMSH).
-          - When C(no), the self_allow allows no protocols and ports. This is the equivalent of setting B(none) option
+          - When C(false), the self_allow allows no protocols and ports. This is the equivalent of setting B(none) option
             in C(TMSH).
         type: bool
     version_added: "1.1.0"
@@ -331,7 +331,7 @@ multicast:
       description: Enables DB variable control over multicast packet per second rate limiting in the switch.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
   sample: hash/dictionary of values
 dag:
   description: Manage multicast traffic configuration options.
@@ -363,7 +363,7 @@ lldp:
       description: The current status of LLDP.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     max_neighbors_per_port:
       description: The maximum number of neighbors per port.
       returned: changed
@@ -415,7 +415,7 @@ self_allow:
       description: Allows all or none ports and protocols as a system wide self_allow setting.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
   sample: hash/dictionary of values
 '''
 from datetime import datetime

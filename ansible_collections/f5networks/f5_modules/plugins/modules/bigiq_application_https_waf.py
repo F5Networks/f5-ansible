@@ -160,7 +160,7 @@ options:
       - This parameter is only relevant when specifying a C(service_environment) which
         is a BIG-IP; not an SSG.
     type: bool
-    default: no
+    default: false
   domain_names:
     description:
       - Specifies host names that are used to access the web application that this
@@ -182,7 +182,7 @@ options:
     description:
       - If the module should wait for the application to be created, deleted, or updated.
     type: bool
-    default: yes
+    default: true
 extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
   - This module does not work on BIG-IQ version 6.1.x or greater.

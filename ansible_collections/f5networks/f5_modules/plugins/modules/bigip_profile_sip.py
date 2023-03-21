@@ -28,7 +28,7 @@ options:
     type: str
   community:
     description:
-      - When the C(dialog_aware) is C(yes) and the configuration requires multiple SIP virtual server-profile pairings,
+      - When the C(dialog_aware) is C(true) and the configuration requires multiple SIP virtual server-profile pairings,
         this string value indicates whether the pair belongs to the same SIP proxy functional group.
     type: str
   description:
@@ -38,29 +38,29 @@ options:
     type: str
   dialog_aware:
     description:
-      - When C(yes), the system gathers SIP dialog information and automatically forwards SIP messages belonging to
+      - When C(true), the system gathers SIP dialog information and automatically forwards SIP messages belonging to
         the known SIP dialog.
     type: bool
   enable_sip_firewall:
     description:
       - Specifies whether the Advanced Firewall Manager (AFM) policy is enabled.
-      - When C(yes), the SIP Security settings configured in the DoS Profile in AFM apply to the virtual servers that
+      - When C(true), the SIP Security settings configured in the DoS Profile in AFM apply to the virtual servers that
         use this profile.
     type: bool
   insert_record_route_header:
     description:
-      - When C(yes), inserts a Record-Route SIP header, which indicates the next hop for the following SIP request
+      - When C(true), inserts a Record-Route SIP header, which indicates the next hop for the following SIP request
         messages.
     type: bool
   insert_via_header:
     description:
-      - When C(yes), inserts a Via header in the forwarded SIP request.
+      - When C(true), inserts a Via header in the forwarded SIP request.
       - Via headers indicate the path taken through proxy devices and transports used. The response message uses this
         routing information.
     type: bool
   user_via_header:
     description:
-      - When C(insert_via_header) is C(yes), specifies the Via value the system inserts as the top Via header in a
+      - When C(insert_via_header) is C(true), specifies the Via value the system inserts as the top Via header in a
         SIP REQUEST message.
       - "The valid value must include SIP protocol and sent_by settings, for example: C(SIP/2.0/UDP 10.10.10.10:5060)."
       - To remove the entry completely, set a value of C('').
@@ -86,15 +86,15 @@ options:
       - When checked (enabled), inserts a secure Via header in the forwarded SIP request.
       - A secure Via header indicates where the message originated.
       - This parameter causes the inserted Via header to specify Transport Layer Security. For this option to take
-        effect, C(insert_via_header) must be set to (yes).
+        effect, C(insert_via_header) must be set to (true).
     type: bool
   security:
     description:
-      - "When C(yes). enables the use of enhanced Horizontal Security Layer (HSL) security checking."
+      - "When C(true), enables the use of enhanced Horizontal Security Layer (HSL) security checking."
     type: bool
   terminate_on_bye:
     description:
-      - When C(yes), closes a connection when a BYE transaction finishes.
+      - When C(true), closes a connection when a BYE transaction finishes.
       - A BYE transaction is a message an application sends to another application when it is ready to close the
         connection between the two.
     type: bool
@@ -181,22 +181,22 @@ dialog_aware:
   description: Specifies if the system gathers SIP dialog information.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 enable_sip_firewall:
   description: Specifies whether the Advanced Firewall Manager policy is enabled.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 insert_record_route_header:
   description: Specifies if the system will insert a Record-Route SIP header.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 insert_via_header:
   description: Specifies if the system will insert a Via header in the forwarded SIP request.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 user_via_header:
   description: The value the system inserts as the top Via header in a SIP REQUEST message.
   returned: changed
@@ -216,22 +216,22 @@ secure_via_header:
   description: Specifies if the system will insert a secure Via header in the forwarded SIP request.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 security:
   description: Enables the use of enhanced Horizontal Security Layer security checking.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 terminate_on_bye:
   description: Specifies if the system will close a connection when a BYE transaction finishes.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 max_size:
   description: Specifies if the system will close a connection when a BYE transaction finishes.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 '''
 from datetime import datetime
 

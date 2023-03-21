@@ -47,21 +47,21 @@ options:
       - The type of this data group.
       - You should only consider setting this value in cases where you know exactly what
         you are doing, B(or), you are working with a pre-existing internal data group.
-      - Be aware that if you deliberately force this parameter to C(yes), and you have a
+      - Be aware that if you deliberately force this parameter to C(true), and you have a
         either a large number of records or a large total records size, this large amount
         of data will be reflected in your BIG-IP configuration. This can lead to B(long)
         system configuration load times due to parsing and verifying the large
         configuration.
-      - There is a limit of either 4 megabytes or 65,000 records (whichever is more restrictive)
-        for uploads when this parameter is C(yes).
+      - When this parameter is C(true), there is a limit for uploads of either 4 megabytes
+        or 65,000 records, whichever is more restrictive.
       - This value cannot be changed once the data group is created.
     type: bool
-    default: no
+    default: false
   external_file_name:
     description:
       - When creating a new data group, this specifies the file name you want to give an
         external data group file on the BIG-IP.
-      - This parameter is ignored when C(internal) is C(yes).
+      - This parameter is ignored when C(internal) is C(true).
       - This parameter can be used to select an existing data group file to use with an
         existing external data group.
       - If this value is not provided, it will be given the value specified in C(name) and,
@@ -76,7 +76,7 @@ options:
       - The technical limit of either the number of records, or the total size of all
         records. Varies with the size of the total resources on your system; in particular,
         RAM.
-      - When C(internal) is C(no), at least one record must be specified in either C(records)
+      - When C(internal) is C(false), at least one record must be specified in either C(records)
         or C(records_src).
       - "When C(type) is: C(ip), C(address), C(addr) if the addresses use a non-default route domain,
         they must be explicit about it, meaning they must contain a route domain notation C(%) e.g. 10.10.1.1%11.
@@ -110,7 +110,7 @@ options:
         a C(type) of C(address), C(integer), or C(string). See the examples section for
         examples of the different types of payload formats that are expected in your data
         group file.
-      - When C(internal) is C(no), at least one record must be specified in either C(records)
+      - When C(internal) is C(false), at least one record must be specified in either C(records)
         or C(records_src).
     type: path
   separator:
@@ -119,16 +119,16 @@ options:
         be used to break apart entries in the C(records_src) into key/value pairs.
       - By default, the value of this parameter is C(:=).
       - This value cannot be changed once it is set.
-      - This parameter is only relevant when C(internal) is C(no). It will be ignored
+      - This parameter is only relevant when C(internal) is C(false). It will be ignored
         otherwise.
     type: str
     default: ":="
   delete_data_group_file:
     description:
-      - When C(yes), ensures the remote data group file is deleted.
-      - This parameter is only relevant when C(state) is C(absent) and C(internal) is C(no).
+      - When C(true), ensures the remote data group file is deleted.
+      - This parameter is only relevant when C(state) is C(absent) and C(internal) is C(false).
     type: bool
-    default: no
+    default: false
   partition:
     description:
       - Device partition to manage resources on.

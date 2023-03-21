@@ -43,7 +43,7 @@ options:
       - Enables or disables remote access for the specified group of remotely
         authenticated users.
       - When creating a new remote role, if this parameter is not specified, the default
-        is C(yes).
+        is C(true).
     type: bool
   assigned_role:
     description:
@@ -141,7 +141,7 @@ remote_access:
   description: Whether remote access is allowed or not.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 '''
 from datetime import datetime
 

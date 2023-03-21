@@ -314,7 +314,7 @@ log_matches_accept_rule:
       description: Enable or disable the logging of packets that match ACL rules.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     rate_limit:
       description: The rate limit for the logging of packets that match ACL rules.
       returned: changed
@@ -330,7 +330,7 @@ log_matches_drop_rule:
       description: Enable or disable the logging of packets that match ACL rules.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     rate_limit:
       description: The rate limit for the logging of packets that match ACL rules.
       returned: changed
@@ -346,7 +346,7 @@ log_matches_reject_rule:
       description: Enable or disable the logging of packets that match ACL rules.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     rate_limit:
       description: The rate limit for the logging of packets that match ACL rules.
       returned: changed
@@ -362,7 +362,7 @@ log_ip_errors:
       description: Enable or disable the logging of IP error packets.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     rate_limit:
       description: The rate limit for the logging of IP error packets.
       returned: changed
@@ -378,7 +378,7 @@ log_tcp_errors:
       description: Enable or disable the logging of TCP error packets.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     rate_limit:
       description: The rate limit for the logging of TCP error packets.
       returned: changed
@@ -394,7 +394,7 @@ log_tcp_events:
       description: Enable or disable the logging of TCP events on the client side.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     rate_limit:
       description: The rate limit for the logging of TCP events on the client side.
       returned: changed
@@ -405,7 +405,7 @@ log_translation_fields:
   description: Enable or disable the logging of translated (i.e server side) fields in ACL match and TCP events.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 log_storage_format:
   description: The type of the storage format.
   returned: changed
