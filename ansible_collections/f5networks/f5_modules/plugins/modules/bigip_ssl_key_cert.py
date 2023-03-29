@@ -65,7 +65,7 @@ options:
       - When C(false), the module appends C(.crt) and C(.key) extensions to the given certificate and key names.
     type: bool
     default: false
-    version_added: "1.22.0"
+    version_added: "1.24.0"
   partition:
     description:
       - Device partition to manage resources on.

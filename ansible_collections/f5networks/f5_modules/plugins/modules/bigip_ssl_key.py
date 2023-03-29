@@ -45,7 +45,7 @@ options:
       - When C(false), the module appends C(.key) extension to the given key name.
     type: bool
     default: false
-    version_added: "1.22.0"
+    version_added: "1.24.0"
   passphrase:
     description:
       - Passphrase on key.
