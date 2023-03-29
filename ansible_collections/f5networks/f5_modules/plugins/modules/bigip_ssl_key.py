@@ -39,6 +39,13 @@ options:
       - The name of the key.
     type: str
     required: True
+  true_names:
+    description:
+      - When C(true), the module does not append C(.key) extension to the given key name.
+      - When C(false), the module appends C(.key) extension to the given key name.
+    type: bool
+    default: false
+    version_added: "1.22.0"
   passphrase:
     description:
       - Passphrase on key.
@@ -117,7 +124,7 @@ from ansible.module_utils.basic import (
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec
+    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, flatten_boolean
 )
 from ..module_utils.icontrol import (
     upload_file, tmos_version
@@ -180,10 +187,14 @@ class ModuleParameters(Parameters):
 
     @property
     def key_filename(self):
-        if self.name.endswith('.key'):
+        true_name = flatten_boolean(self.true_names)
+        if true_name == 'yes':
             return self.name
         else:
-            return self.name + '.key'
+            if self.name.endswith('.key'):
+                return self.name
+            else:
+                return self.name + '.key'
 
     @property
     def key_checksum(self):
@@ -497,6 +508,10 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(
                 required=True
+            ),
+            true_names=dict(
+                type='bool',
+                default='no'
             ),
             content=dict(
                 aliases=['key_content'],

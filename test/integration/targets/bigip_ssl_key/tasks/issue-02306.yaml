@@ -1,0 +1,69 @@
+- name: Import key without .key extension
+  bigip_ssl_key:
+    content: "{{ lookup('file', 'cert1.key') }}"
+    name: key_bigip_ssl_key1
+    true_names: yes
+    state: present
+  register: result
+
+- name: Assert Import key without .key extension
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Fetch key data with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-key/key_bigip_ssl_key1
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: key_data
+
+- name: Assert key name does not contain .key extension
+  assert:
+    that:
+      key_data.json.name == "key_bigip_ssl_key1"
+
+- name: Import key with .key extension
+  bigip_ssl_key:
+    content: "{{ lookup('file', 'cert1.key') }}"
+    name: key_bigip_ssl_key1
+    true_names: no
+    state: present
+  register: result
+
+- name: Assert Import key with .key extension
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Fetch key data with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-key/key_bigip_ssl_key1.key
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: key_data
+
+- name: Assert key name does not contain .key extension
+  assert:
+    that:
+      key_data.json.name == "key_bigip_ssl_key1.key"
+
+- name: Delete key without .key extension
+  bigip_ssl_key:
+    content: "{{ lookup('file', 'cert1.key') }}"
+    name: key_bigip_ssl_key1
+    true_names: yes
+    state: present
+  register: result
+
+- name: Delete key with .key extension
+  bigip_ssl_key:
+    content: "{{ lookup('file', 'cert1.key') }}"
+    name: key_bigip_ssl_key1
+    true_names: no
+    state: present
+  register: result

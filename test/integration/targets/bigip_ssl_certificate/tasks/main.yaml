@@ -168,6 +168,9 @@
 - import_tasks: issue-00498.yaml
   tags: issue-00498
 
+- import_tasks: issue-02306.yaml
+  tags: issue-02306
+
 - import_tasks: make-cert/main.yaml
   when: result is not defined
   tags: generate_certs

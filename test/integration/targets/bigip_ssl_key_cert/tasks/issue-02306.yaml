@@ -1,0 +1,99 @@
+- name: Import key and cert without .key and .crt extensions
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: key1
+    cert_content: "{{ lookup('file', 'cert.pem') }}"
+    cert_name: cert1
+    true_names: yes
+    state: present
+  register: result
+
+- name: Assert Import key and cert without .key and .crt extensions
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Fetch key data with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-key/key1
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: key_data
+
+- name: Assert key name does not contain .key extension
+  assert:
+    that:
+      key_data.json.name == "key1"
+
+- name: Fetch cert with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-cert/cert1
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: cert_data
+
+- name: Assert cert name does not contain .crt extension
+  assert:
+    that:
+      cert_data.json.name == "cert1"
+
+- name: Import key and cert with .key and .crt extensions
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: key2
+    cert_content: "{{ lookup('file', 'cert.pem') }}"
+    cert_name: cert2
+    true_names: no
+    state: present
+  register: result
+
+- name: Assert Import key and cert with .key and .crt extensions
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Fetch key data with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-key/key2.key
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: key_data
+
+- name: Assert key name does not contain .key extension
+  assert:
+    that:
+      key_data.json.name == "key2.key"
+
+- name: Fetch cert with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-cert/cert2.crt
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: cert_data
+
+- name: Assert cert name does not contain .crt extension
+  assert:
+    that:
+      cert_data.json.name == "cert2.crt"
+
+- name: Delete key and cert without .key and .crt extensions
+  bigip_ssl_key_cert:
+    key_name: key1
+    cert_name: cert1
+    true_names: yes
+    state: absent
+  register: result
+
+- name: Delete key and cert with .key and .crt extensions
+  bigip_ssl_key_cert:
+    key_name: key2
+    cert_name: cert2
+    true_names: no
+    state: absent
+  register: result
