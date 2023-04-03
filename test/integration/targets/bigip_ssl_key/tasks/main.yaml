@@ -159,3 +159,6 @@
   loop:
     - key_bigip_ssl_key1
     - key_bigip_ssl_key2
+
+- import_tasks: issue-02306.yaml
+  tags: issue-02306

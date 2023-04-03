@@ -1,0 +1,69 @@
+- name: Import cert without .crt extension
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'cert1.crt') }}"
+    name: cert1
+    true_names: yes
+    state: present
+  register: result
+
+- name: Assert Import cert without .crt extension
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Fetch cert data with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-cert/cert1
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: cert_data
+
+- name: Assert cert name does not contain .crt extension
+  assert:
+    that:
+      cert_data.json.name == "cert1"
+
+- name: Import cert with .crt extension
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'cert1.crt') }}"
+    name: cert2
+    true_names: no
+    state: present
+  register: result
+
+- name: Assert Import cert with .crt extensions
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Fetch cert data with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-cert/cert2.crt
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: cert_data
+
+- name: Assert cert name does not contain .crt extension
+  assert:
+    that:
+      cert_data.json.name == "cert2.crt"
+
+- name: Delete cert without .crt extension
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'cert1.crt') }}"
+    name: cert1
+    true_names: yes
+    state: absent
+  register: result
+
+- name: Delete cert with .crt extension
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'cert1.crt') }}"
+    name: cert2
+    true_names: no
+    state: absent
+  register: result

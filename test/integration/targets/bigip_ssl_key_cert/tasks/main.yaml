@@ -200,3 +200,6 @@
   assert:
     that:
       - result is not changed
+
+- import_tasks: issue-02306.yaml
+  tags: issue-02306
