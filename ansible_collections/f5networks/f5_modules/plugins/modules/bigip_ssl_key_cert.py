@@ -59,6 +59,13 @@ options:
       - Issuer certificate used for OCSP monitoring.
       - This parameter is only valid on versions of BIG-IP 13.0.0 or above.
     type: str
+  true_names:
+    description:
+      - When C(true), the module does not append C(.crt) and C(.key) extensions to the given certificate and key names.
+      - When C(false), the module appends C(.crt) and C(.key) extensions to the given certificate and key names.
+    type: bool
+    default: false
+    version_added: "1.24.0"
   partition:
     description:
       - Device partition to manage resources on.
@@ -99,7 +106,7 @@ from ansible.module_utils.basic import (
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, transform_name,
+    F5ModuleError, AnsibleF5Parameters, transform_name, flatten_boolean,
     f5_argument_spec, fq_name, merge_two_dicts
 )
 from ..module_utils.icontrol import (
@@ -147,8 +154,6 @@ class ApiParameters(Parameters):
     def key_filename(self):
         if self._values['name'] is None:
             return None
-        if not self._values['name'].endswith('.key'):
-            return None
         return self._values['name']
 
     @property
@@ -163,8 +168,6 @@ class ApiParameters(Parameters):
     @property
     def cert_filename(self):
         if self._values['name'] is None:
-            return None
-        if not self._values['name'].endswith('.crt'):
             return None
         return self._values['name']
 
@@ -212,28 +215,40 @@ class ModuleParameters(Parameters):
         if self._values['issuer_cert'] is None:
             return None
         name = fq_name(self.partition, self._values['issuer_cert'])
-        if name.endswith('.crt'):
+        true_name = flatten_boolean(self.true_names)
+        if true_name == 'yes':
             return name
         else:
-            return name + '.crt'
+            if name.endswith('.crt'):
+                return name
+            else:
+                return name + '.crt'
 
     @property
     def key_filename(self):
         if self.key_name is None:
             return None
-        if self.key_name.endswith('.key'):
+        true_name = flatten_boolean(self.true_names)
+        if true_name == 'yes':
             return self.key_name
         else:
-            return self.key_name + '.key'
+            if self.key_name.endswith('.key'):
+                return self.key_name
+            else:
+                return self.key_name + '.key'
 
     @property
     def cert_filename(self):
         if self.cert_name is None:
             return None
-        if self.cert_name.endswith('.crt'):
+        true_name = flatten_boolean(self.true_names)
+        if true_name == 'yes':
             return self.cert_name
         else:
-            return self.cert_name + '.crt'
+            if self.cert_name.endswith('.crt'):
+                return self.cert_name
+            else:
+                return self.cert_name + '.crt'
 
     @property
     def key_checksum(self):
@@ -768,6 +783,10 @@ class ArgumentSpec(object):
                 no_log=True
             ),
             issuer_cert=dict(),
+            true_names=dict(
+                type='bool',
+                default='no'
+            ),
             state=dict(
                 required=False,
                 default='present',

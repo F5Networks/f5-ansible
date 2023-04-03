@@ -1,0 +1,5 @@
+---
+minor_changes:
+  - bigip_ssl_key_cert - added an option to prevent adding .key and .crt extensions to key and cert names respectively
+  - bigip_ssl_key - added an option to prevent adding .key extension to key names
+  - bigip_ssl_certificate - added an option to prevent adding .crt extension to cert names

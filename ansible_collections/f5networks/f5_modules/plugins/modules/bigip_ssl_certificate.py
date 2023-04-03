@@ -44,6 +44,13 @@ options:
       - Issuer certificate used for OCSP monitoring.
       - This parameter is only valid on versions of BIG-IP 13.0.0 or above.
     type: str
+  true_names:
+    description:
+      - When C(true), the module does not append C(.crt) extension to the given certificate name.
+      - When C(false), the module appends C(.crt) extension to the given certificate name.
+    type: bool
+    default: false
+    version_added: "1.24.0"
   partition:
     description:
       - Device partition to manage resources on.
@@ -132,7 +139,7 @@ from ansible.module_utils.basic import (
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, fq_name
+    F5ModuleError, AnsibleF5Parameters, transform_name, f5_argument_spec, fq_name, flatten_boolean
 )
 from ..module_utils.icontrol import (
     upload_file, tmos_version
@@ -205,10 +212,14 @@ class ModuleParameters(Parameters):
         if self._values['issuer_cert'] is None:
             return None
         name = fq_name(self.partition, self._values['issuer_cert'])
-        if name.endswith('.crt'):
-            return name
+        true_name = flatten_boolean(self.true_names)
+        if true_name == ' yes':
+            return self.name
         else:
-            return name + '.crt'
+            if name.endswith('.crt'):
+                return name
+            else:
+                return name + '.crt'
 
     @property
     def checksum(self):
@@ -218,10 +229,14 @@ class ModuleParameters(Parameters):
 
     @property
     def filename(self):
-        if self.name.endswith('.crt'):
+        true_name = flatten_boolean(self.true_names)
+        if true_name == 'yes':
             return self.name
         else:
-            return self.name + '.crt'
+            if self.name.endswith('.crt'):
+                return self.name
+            else:
+                return self.name + '.crt'
 
     @property
     def source_path(self):
@@ -562,6 +577,10 @@ class ArgumentSpec(object):
                 choices=['absent', 'present']
             ),
             issuer_cert=dict(),
+            true_names=dict(
+                type='bool',
+                default='no'
+            ),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
