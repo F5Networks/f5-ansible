@@ -13532,7 +13532,10 @@ class NodesParameters(BaseParameters):
             return None
         result = self._values['fqdn'].get('interval', None)
         if result:
-            return int(result)
+            try:
+                return int(result)
+            except ValueError:
+                return result
 
     @property
     def fqdn_down_interval(self):
@@ -13540,7 +13543,10 @@ class NodesParameters(BaseParameters):
             return None
         result = self._values['fqdn'].get('downInterval', None)
         if result:
-            return int(result)
+            try:
+                return int(result)
+            except ValueError:
+                return result
 
     @property
     def monitors(self):
