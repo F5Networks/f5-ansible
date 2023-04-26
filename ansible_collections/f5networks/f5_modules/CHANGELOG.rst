@@ -5,6 +5,22 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.24.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_ssl_certificate - added an option to prevent adding .crt extension to cert names
+- bigip_ssl_key - added an option to prevent adding .key extension to key names
+- bigip_ssl_key_cert - added an option to prevent adding .key and .crt extensions to key and cert names respectively
+
+Bugfixes
+--------
+
+- bigip_device_info - fix fqdn_up_interval and fqdn_down_interval to no longer cause string values not castable to int to raise an error
+- bigip_device_info - fixed flaw in code to ignore fields that do not exist in the response for license info
+
 v1.23.0
 =======
 
