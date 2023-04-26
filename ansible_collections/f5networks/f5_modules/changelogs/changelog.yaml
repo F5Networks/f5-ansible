@@ -973,6 +973,24 @@ releases:
     - 2308-bigip-policy-host-contains.yaml
     - fix-passphrase-bug-bigip-ucs-fetch.yaml
     release_date: '2023-03-15'
+  1.24.0:
+    changes:
+      bugfixes:
+      - bigip_device_info - fix fqdn_up_interval and fqdn_down_interval to no longer
+        cause string values not castable to int to raise an error
+      - bigip_device_info - fixed flaw in code to ignore fields that do not exist
+        in the response for license info
+      minor_changes:
+      - bigip_ssl_certificate - added an option to prevent adding .crt extension to
+        cert names
+      - bigip_ssl_key - added an option to prevent adding .key extension to key names
+      - bigip_ssl_key_cert - added an option to prevent adding .key and .crt extensions
+        to key and cert names respectively
+    fragments:
+    - 2263-fix-bigip-device-info-fqdn-pool-interval.yaml
+    - added-new-param-ssl-key-cert-modules.yaml
+    - device-info-license-bugfix.yaml
+    release_date: '2023-04-26'
   1.3.0:
     changes:
       bugfixes:
