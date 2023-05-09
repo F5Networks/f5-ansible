@@ -94,6 +94,8 @@ notes:
   - When using the bigip_command module with the REST API, there are a number of places regex is used
     internally to escape characters such as quotation marks. If your TMSH command contains regex characters itself,
     such as datagroup wildcards C(*), then a large amount of escape characters may be needed.
+  - When issuing a long running command the user needs to give sufficiently big value for the timeout option in
+    provider block.
 extends_documentation_fragment: f5networks.f5_modules.f5_rest_cli
 author:
   - Tim Rupp (@caphrim007)
@@ -108,6 +110,16 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       password: secret
       user: admin
+  delegate_to: localhost
+
+- name: sleep for 200 seconds
+  bigip_command:
+    commands: 'run /util bash -c "sleep 200"'
+    provider:
+      server: lb.mydomain.com
+      password: secret
+      user: admin
+      timeout: 210
   delegate_to: localhost
 
 - name: run show version and check to see if output contains BIG-IP

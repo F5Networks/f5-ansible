@@ -104,6 +104,7 @@ class F5RestClient(F5BaseClient):
         payload = {
             'timeout': token_timeout
         }
+        client_session.request.timeout = token_timeout
         response = client_session.patch(
             url,
             json=payload

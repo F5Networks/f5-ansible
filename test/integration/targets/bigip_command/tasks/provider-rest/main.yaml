@@ -148,3 +148,6 @@
 - import_tasks: issue-00843.yaml
   tags:
     - issue-00843
+
+- import_tasks: sleep.yaml
+  tags: sleep

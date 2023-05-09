@@ -1,0 +1,21 @@
+---
+
+- name: sleep for 200 seconds
+  bigip_command:
+    commands: 'run /util bash -c "sleep 200"'
+    provider:
+      transport: rest
+      server: "{{ ansible_host }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: no
+      server_port: "{{ bigip_port }}"
+      timeout: 250
+  delegate_to: localhost
+  register: result
+
+- name: Assert - command executed without error
+  assert:
+    that:
+      - result is success
+      - "'Error' not in result.stdout"

@@ -1,6 +1,6 @@
 ---
-bigip_username: foo
+bigip_username: admin
 bigip_port: 443
-bigip_password: bar
+bigip_password: F5site02
 validate_certs: true
 no_f5_teem: false
