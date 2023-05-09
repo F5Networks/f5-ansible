@@ -1,0 +1,394 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Provision GTM on the device
+  bigip_provision_async:
+    module: "gtm"
+  register: task
+  
+- name: Assert Provision GTM on the device
+  assert:
+    that:
+      - task is changed
+
+- name: Check for provision progress
+  bigip_provision_async:
+    module: "gtm"
+    check_status: yes
+    status_timeout: 900
+  register: status
+
+- name: Wait for 3 minutes if device is restarting services
+  bigip_wait:
+    timeout: 180
+  when:
+    - result.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Re-check for provision progress
+  bigip_provision_async:
+    module: "gtm"
+    check_status: yes
+    status_timeout: 900
+  register: status
+  when:
+    - status.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Provision GTM on the device - Idempotent Check
+  bigip_provision_async:
+    module: "gtm"
+  register: result
+  when:
+    - status.message == "Device has finished provisioning the requested module."
+
+- name: Assert Provision GTM on the device - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  when:
+    - status.message == "Device has finished provisioning the requested module."
+
+- name: De-provision GTM on the device
+  bigip_provision_async:
+    module: "gtm"
+    state: "absent"
+  register: task
+
+- name: Assert De-provision GTM on the device
+  assert:
+    that:
+      - task is changed
+
+- name: Check for de-provision progress
+  bigip_provision_async:
+    module: "gtm"
+    check_status: yes
+    state: "absent"
+    status_timeout: 900
+  register: status
+
+- name: Wait for 3 minutes if device is restarting services
+  bigip_wait:
+    timeout: 180
+  when:
+    - result.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Re-check for de-provision progress
+  bigip_provision_async:
+    module: "gtm"
+    check_status: yes
+    state: "absent"
+    status_timeout: 900
+  register: status
+  when:
+    - status.message == "Device is restarting services, unable to check provisioning status."
+
+- name: De-provision GTM on the device - Idempotent Check
+  bigip_provision_async:
+    module: "gtm"
+    state: "absent"
+  register: result
+  when:
+    - status.message == "Device has finished de-provisioning the requested module."
+
+- name: Assert Provision GTM on the device - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  when:
+    - status.message == "Device has finished de-provisioning the requested module."
+
+- name: Provision ASM on the device
+  bigip_provision_async:
+    module: "asm"
+  register: task
+  
+- name: Assert Provision ASM on the device
+  assert:
+    that:
+      - task is changed
+
+- name: Check for provision progress
+  bigip_provision_async:
+    module: "asm"
+    check_status: yes
+    status_timeout: 900
+  register: status
+
+- name: Wait for 6 minutes if device is restarting services
+  bigip_wait:
+    timeout: 360
+  when:
+    - result.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Re-check for provision progress
+  bigip_provision_async:
+    module: "asm"
+    check_status: yes
+    status_timeout: 900
+  register: status
+  when:
+    - status.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Provision ASM on the device - Idempotent Check
+  bigip_provision_async:
+    module: "asm"
+  register: result
+  when:
+    - status.message == "Device has finished provisioning the requested module."
+
+- name: Assert Provision ASM on the device - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  when:
+    - status.message == "Device has finished provisioning the requested module."
+
+- name: De-Provision ASM on the device
+  bigip_provision_async:
+    module: "asm"
+    state: "absent"
+  register: task
+
+- name: Assert De-Provision ASM on the device
+  assert:
+    that:
+      - task is changed
+
+- name: Check for de-provision progress
+  bigip_provision_async:
+    module: "asm"
+    check_status: yes
+    state: "absent"
+    status_timeout: 900
+  register: status
+
+- name: Wait for 6 minutes if device is restarting services
+  bigip_wait:
+    timeout: 360
+  when:
+    - result.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Re-check for de-provision progress
+  bigip_provision_async:
+    module: "asm"
+    check_status: yes
+    state: "absent"
+    status_timeout: 900
+  register: status
+  when:
+    - status.message == "Device is restarting services, unable to check provisioning status."
+
+- name: De-provision ASM on the device - Idempotent Check
+  bigip_provision_async:
+    module: "asm"
+    state: "absent"
+  register: result
+  when:
+    - status.message == "Device has finished de-provisioning the requested module."
+
+- name: Assert De-Provision ASM on the device - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  when:
+    - status.message == "Device has finished de-provisioning the requested module."
+
+- name: Provision LTM on the device
+  bigip_provision_async:
+    module: "ltm"
+  register: task
+  
+- name: Assert Provision LTM on the device
+  assert:
+    that:
+      - task is changed
+
+- name: Check for provision progress
+  bigip_provision_async:
+    module: "ltm"
+    check_status: yes
+    status_timeout: 900
+  register: status
+
+- name: Wait for 3 minutes if device is restarting services
+  bigip_wait:
+    timeout: 180
+  when:
+    - result.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Re-check for provision progress
+  bigip_provision_async:
+    module: "ltm"
+    check_status: yes
+    status_timeout: 900
+  register: status
+  when:
+    - status.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Provision LTM on the device - Idempotent Check
+  bigip_provision_async:
+    module: "ltm"
+  register: result
+  when:
+    - status.message == "Device has finished provisioning the requested module."
+
+- name: Assert Provision LTM on the device - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  when:
+    - status.message == "Device has finished provisioning the requested module."
+
+- name: De-provision LTM on the device
+  bigip_provision_async:
+    module: "ltm"
+    state: "absent"
+  register: task
+
+- name: Assert De-provision LTM on the device
+  assert:
+    that:
+      - task is changed
+
+- name: Check for de-provision progress
+  bigip_provision_async:
+    module: "ltm"
+    check_status: yes
+    state: "absent"
+    status_timeout: 900
+  register: status
+
+- name: Wait for 3 minutes if device is restarting services
+  bigip_wait:
+    timeout: 180
+  when:
+    - result.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Re-check for de-provision progress
+  bigip_provision_async:
+    module: "ltm"
+    check_status: yes
+    state: "absent"
+    status_timeout: 900
+  register: status
+  when:
+    - status.message == "Device is restarting services, unable to check provisioning status."
+
+- name: De-provision LTM on the device - Idempotent Check
+  bigip_provision_async:
+    module: "ltm"
+    state: "absent"
+  register: result
+  when:
+    - status.message == "Device has finished de-provisioning the requested module."
+
+- name: Assert Provision LTM on the device - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  when:
+    - status.message == "Device has finished de-provisioning the requested module."
+
+- name: Provision VCMP on the device
+  bigip_provision_async:
+    module: "vcmp"
+    level: "dedicated"
+  register: task
+  
+- name: Assert Provision VCMP on the device
+  assert:
+    that:
+      - task is changed
+
+- name: Check for provision progress
+  bigip_provision_async:
+    module: "vcmp"
+    level: "dedicated"
+    check_status: yes
+    status_timeout: 900
+  register: status
+
+- name: Wait for 10 minutes if device is restarting services
+  bigip_wait:
+    timeout: 600
+    type: vcmp
+  when:
+    - result.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Re-check for provision progress
+  bigip_provision_async:
+    module: "vcmp"
+    level: "dedicated"
+    check_status: yes
+    status_timeout: 900
+  register: status
+  when:
+    - status.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Provision VCMP on the device - Idempotent Check
+  bigip_provision_async:
+    module: "vcmp"
+    level: "dedicated"
+  register: result
+  when:
+    - status.message == "Device has finished provisioning the requested module."
+
+- name: Assert Provision VCMP on the device - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  when:
+    - status.message == "Device has finished provisioning the requested module."
+
+- name: De-provision VCMP on the device
+  bigip_provision_async:
+    module: "vcmp"
+    state: "absent"
+  register: task
+
+- name: Assert De-provision VCMP on the device
+  assert:
+    that:
+      - task is changed
+
+- name: Check for de-provision progress
+  bigip_provision_async:
+    module: "vcmp"
+    state: "absent"
+    check_status: yes
+    status_timeout: 900
+  register: status
+
+- name: Wait for 10 minutes if device is restarting services
+  bigip_wait:
+    timeout: 600
+  when:
+    - result.message == "Device is restarting services, unable to check provisioning status."
+
+- name: Re-check for de-provision progress
+  bigip_provision_async:
+    module: "vcmp"
+    state: "absent"
+    check_status: yes
+    status_timeout: 900
+  register: status
+  when:
+    - status.message == "Device is restarting services, unable to check provisioning status."
+
+- name: De-provision VCMP on the device - Idempotent Check
+  bigip_provision_async:
+    module: "vcmp"
+    state: "absent"
+  register: result
+  when:
+    - status.message == "Device has finished de-provisioning the requested module."
+
+- name: Assert Provision VCMP on the device - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+  when:
+    - status.message == "Device has finished de-provisioning the requested module."
+
+- import_tasks: teardown.yaml
