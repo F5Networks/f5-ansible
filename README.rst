@@ -21,6 +21,12 @@ F5 BIG-IP Imperative Collection for Ansible
 
 |travis badge| |shippable badge|
 
+Important Warning
+-----------------
+
+Do not use https://f5cloudsolutions.herokuapp.com/ for accessing F5 slack channel. It is not owned/maintained/used by F5 anymore.
+You might be exposing yourself to security issues if you access this link thinking it to be the link to F5 slack channel. 
+
 Introduction
 ------------
 
@@ -171,10 +177,6 @@ See `License`_.
 .. |ansiblegethelp| raw:: html
 
    <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/support.html" target="_blank">Get Help</a>
-
-.. |slacklink| raw:: html
-
-   <a href="https://f5cloudsolutions.herokuapp.com/" target="_blank">Slack channel</a>
 
 .. |changelog| raw:: html
 
