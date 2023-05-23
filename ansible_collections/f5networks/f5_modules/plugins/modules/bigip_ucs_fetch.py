@@ -29,6 +29,8 @@ options:
     description:
       - Creates the UCS based on the value of C(src), if the file does not already
         exist on the remote system.
+      - When set to C(false), with C(fail_on_missing) set to C(false) the module will return no change
+        if the ucs file is missing on device.
     type: bool
     default: true
   dest:
@@ -43,6 +45,10 @@ options:
   fail_on_missing:
     description:
       - Make the module fail if the UCS file on the remote system is missing.
+      - This option always takes precedence over C(create_on_missing), hence when set to C(true), the module will
+        always fail if the UCS is missing, even if C(create_on_missing) option is set to C(true).
+      - When set to C(false), with C(create_on_missing) set to C(false) the module will return no change
+        if the ucs file is missing on device.
     type: bool
     default: false
   force:
@@ -68,7 +74,7 @@ options:
     description:
       - If C(true), the file is created on the device and not downloaded. If the UCS archive exists on the device,
         no change is made and the file is not downloaded.
-      - To recreate UCS files left on the device, remove them with the  C(bigip_ucs) module before running this
+      - To recreate UCS files left on the device, remove them with the C(bigip_ucs) module before running this
         module with C(only_create_file) set to C(true).
     type: bool
     default: false
