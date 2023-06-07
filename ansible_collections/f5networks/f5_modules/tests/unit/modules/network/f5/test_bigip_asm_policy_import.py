@@ -16,7 +16,7 @@ if sys.version_info < (2, 7):
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_asm_policy_import import (
-    ApiParameters, ModuleParameters, ModuleManager, ArgumentSpec
+    ModuleParameters, ModuleManager, ArgumentSpec
 )
 from ansible_collections.f5networks.f5_modules.tests.unit.modules.utils import set_module_args
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest

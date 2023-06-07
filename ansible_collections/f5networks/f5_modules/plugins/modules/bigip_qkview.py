@@ -38,7 +38,6 @@ options:
       - Maximum file size of the QKview file, in bytes. By default, no max
         file size is specified.
     type: int
-    default: 0
   complete_information:
     description:
       - Include complete (all applicable) information in the QKview.
@@ -121,11 +120,6 @@ except ImportError:
 else:
     HAS_PACKAGING = True
     PACKAGING_IMPORT_ERROR = None
-
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
 
 from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib
