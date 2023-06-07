@@ -104,12 +104,6 @@ from ..module_utils.common import (
 )
 from ..module_utils.teem import send_teem
 
-try:
-    from ..module_utils.common import run_commands
-    HAS_CLI_TRANSPORT = True
-except ImportError:
-    HAS_CLI_TRANSPORT = False
-
 
 def hard_timeout(module, want, start):
     elapsed = datetime.datetime.utcnow() - start
@@ -470,7 +464,7 @@ class ModuleManager(object):
         self.module = kwargs.get('module', None)
 
     def exec_module(self):
-        if is_cli(self.module) and HAS_CLI_TRANSPORT:
+        if is_cli(self.module):
             manager = self.get_manager('v1')
         else:
             manager = self.get_manager('v2')
