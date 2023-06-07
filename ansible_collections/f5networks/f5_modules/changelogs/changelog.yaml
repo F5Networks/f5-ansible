@@ -991,6 +991,22 @@ releases:
     - added-new-param-ssl-key-cert-modules.yaml
     - device-info-license-bugfix.yaml
     release_date: '2023-04-26'
+  1.25.0:
+    changes:
+      bugfixes:
+      - bigip_provision_async - created module to address scenarios where infinite
+        loops or timeouts happen
+      minor_changes:
+      - bigip_command - Added note to give appropriate timeout value for long running
+        commands
+    fragments:
+    - bigip-command-long-running-cmd-fix.yaml
+    - new-bigip-async-module.yaml
+    modules:
+    - description: Manage BIG-IP module provisioning
+      name: bigip_provision_async
+      namespace: ''
+    release_date: '2023-06-07'
   1.3.0:
     changes:
       bugfixes:
