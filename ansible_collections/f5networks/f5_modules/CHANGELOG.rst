@@ -5,6 +5,24 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.25.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_command - Added note to give appropriate timeout value for long running commands
+
+Bugfixes
+--------
+
+- bigip_provision_async - created module to address scenarios where infinite loops or timeouts happen
+
+New Modules
+-----------
+
+- bigip_provision_async - Manage BIG-IP module provisioning
+
 v1.24.0
 =======
 
