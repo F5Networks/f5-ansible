@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_provision_async
 short_description: Manage BIG-IP module provisioning
 description:
-  - Manage BIG-IP module provisioning. This module will perform provisioning operations in asynchronous way. See Notes
+  - Manages BIG-IP module provisioning. This module will perform provisioning operations in an asynchronous way. See the Notes
     section for more information.
 version_added: "1.25.0"
 options:
@@ -49,9 +49,9 @@ options:
         For example, changing one module to C(dedicated) requires setting all
         others to C(none). Setting the level of a module to C(none) means
         the module is not activated.
-      - Use a C(state) of B(absent) to set c(level) to none and de-provision the module.
+      - Use a C(state) if B(absent) to set c(level) to none and de-provision the module.
       - This parameter is not relevant to C(cgnat - pre tmos 15.0) or C(mgmt) and will not be
-        applied to the C(cgnat - pre tmos 15.0) or C(mgmt) module.
+        applied to the C(cgnat - pre tmos 15.0) or the C(mgmt) module.
     type: str
     choices:
       - dedicated
@@ -61,7 +61,7 @@ options:
   memory:
     description:
       - Sets additional memory for the management module. This is in addition to
-        minimum allocated RAM of 1264MB.
+        the minimum allocated RAM of 1264MB.
       - The accepted value range is C(0 - 8192). Maximum value is restricted by
         the available RAM in the system.
       - Specifying C(large) reserves an additional 500MB for the mgmt module.
@@ -74,26 +74,26 @@ options:
     type: str
   check_status:
     description:
-      - If C(true) will run the module to check provisioning progress.
-      - Required to use C(module) parameter.
+      - If C(true), then the module will run to check provisioning progress.
+      - Required parameter, if using the C(module) parameter.
     type: bool
     default: false
   status_timeout:
     description:
       - The amount of time in seconds to wait for provisioning process to finish.
       - The accepted value range is between C(150) and C(3600) seconds.
-      - If the device needs to restart the module will return with no change and an appropriate message. In such case,
-        it is up to the user to pause playbook execution until device is ready, see C(EXAMPLES) section.
+      - If the device needs to restart the module, then it will return with no change and an appropriate message. In such cases,
+        you must pause the playbook execution, until the device is ready (see the C(EXAMPLES) section).
     type: int
     default: 300
   state:
     description:
-      - The state of the provisioned module on the system. When C(present),
+      - The state of the provisioned module on the system. If C(present), then that
         guarantees the specified module is provisioned at the requested
         level, provided there are sufficient resources on the device (such
         as physical RAM) to support the module.
-      - When C(absent), de-provision the module.
-      - C(absent), is not a relevant option for the C(mgmt) module, as it can not be de-provisioned.
+      - If C(absent), then that de-provisions the module.
+      - C(absent), is not an option for the C(mgmt) module, as it cannot be de-provisioned.
     type: str
     choices:
       - present
@@ -101,12 +101,12 @@ options:
     default: present
 extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
-  - Checking for provisioning status with C(check_status) parameter is not idempotent, see C(EXAMPLES) section.
-  - The module allows to perform same provisioning operations as bigip_provision with the difference being that it will
-    not wait through the service restarts or device reboots. This is to fix the edge cases when using this module in
-    certain environments would cause timeout or be stuck in infinite loops, despite provisioning operation being
+  - Checking for provisioning status with the C(check_status) parameter is not idempotent (see the C(EXAMPLES) section).
+  - The module allows the same provisioning operations as bigip_provision with the difference being that it will
+    not wait through the service restarts or device reboots. This is to fix the edge cases, when using this module in
+    certain environments that can cause a timeout or be stuck in infinite loops, despite the provisioning operation being
     successful.
-  - The module should be used in conjunction with C(bigip_wait) module for best results.
+  - Use the module in conjunction with the C(bigip_wait) module, for best results.
   - This module requires TMOS version of 15.x and above.
 author:
   - Wojciech Wypior (@wojtek0806)
@@ -319,7 +319,7 @@ level:
   type: str
   sample: minimum
 memory:
-  description: The new provisioned amount of memory for mgmt module.
+  description: The new provisioned amount of memory for the mgmt module.
   returned: changed
   type: str
   sample: large
