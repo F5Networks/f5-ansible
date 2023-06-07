@@ -20,7 +20,7 @@ from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_cert
     ModuleManager, ArgumentSpec, ModuleParameters
 )
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
-from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
+from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock
 from ansible_collections.f5networks.f5_modules.tests.unit.modules.utils import set_module_args
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
