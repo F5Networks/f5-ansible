@@ -51,9 +51,18 @@ options:
         default: yes
       timeout:
         description:
+          - transport: rest
           - Specifies the timeout in seconds for communicating with the network device
-            for either connecting or sending commands.  If the timeout is
+            for either connecting or sending commands. If the timeout is
             exceeded before the operation is completed, the module will error.
+          -
+          - Transport: cli
+          - Use the ANSIBLE_PERSISTENT_COMMAND_TIMEOUT environment variable or specify a command_timeout in the ansible.cfg file.
+          -
+          - Environment Variable: export ANSIBLE_PERSISTENT_COMMAND_TIMEOUT=30.
+          - Use the global configuration in the ansible.cfg file, to set the following:
+          - [persistent_connection]
+          - command_timeout = 30
         type: int
       ssh_keyfile:
         description:
