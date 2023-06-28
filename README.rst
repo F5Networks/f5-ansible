@@ -24,7 +24,7 @@ F5 BIG-IP Imperative Collection for Ansible
 Important Warning
 -----------------
 
-Do not use https://f5cloudsolutions.herokuapp.com/ for accessing F5 slack channel. It is not owned/maintained/used by F5 anymore.
+Do not use Heroku App link for accessing F5 slack channel. It is not owned/maintained/used by F5 anymore.
 You might be exposing yourself to security issues if you access this link thinking it to be the link to F5 slack channel. 
 
 Introduction
