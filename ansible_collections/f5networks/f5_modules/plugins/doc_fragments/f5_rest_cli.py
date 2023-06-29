@@ -56,9 +56,6 @@ options:
             for either connecting or sending commands. If the timeout is
             exceeded before the operation is completed, the module will error.
           -
-          - Transport: cli
-          - Use the ANSIBLE_PERSISTENT_COMMAND_TIMEOUT environment variable or specify a command_timeout in the ansible.cfg file.
-          -
           - Environment Variable: export ANSIBLE_PERSISTENT_COMMAND_TIMEOUT=30.
           - Use the global configuration in the ansible.cfg file, to set the following:
           - [persistent_connection]
@@ -96,4 +93,5 @@ notes:
     specific configuration persists to disk, be sure to include at least one task that uses the
     M(f5networks.f5_modules.bigip_config) module to save the running configuration. Refer to the module's documentation for
     the correct usage of the module to save your running configuration.
+  - Timeout parameter > Transport: cli - Use the ANSIBLE_PERSISTENT_COMMAND_TIMEOUT environment variable or specify a C(command_timeout) in the ansible.cfg file.
 '''
