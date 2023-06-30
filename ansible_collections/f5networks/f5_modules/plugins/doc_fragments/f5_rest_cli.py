@@ -51,6 +51,7 @@ options:
         default: yes
       timeout:
         description:
+          - Parameter in effect when C(transport) is  set to C(rest)
           - Specifies the timeout in seconds for communicating with the network device
             for either connecting or sending commands.  If the timeout is
             exceeded before the operation is completed, the module will error.
@@ -83,6 +84,8 @@ options:
 notes:
   - For more information on using Ansible to manage F5 Networks devices see U(https://www.ansible.com/integrations/networks/f5).
   - Requires BIG-IP software version >= 12.
+  - To specify C(timeout) when C(transport) is set to C(cli), use the C(ANSIBLE_PERSISTENT_COMMAND_TIMEOUT) environment variable or specify a C(command_timeout) in the ansible.cfg file,
+    see U(https://docs.ansible.com/ansible/latest/reference_appendices/config.html#persistent-command-timeout)
   - The F5 modules only manipulate the running configuration of the F5 product. To ensure that BIG-IP
     specific configuration persists to disk, be sure to include at least one task that uses the
     M(f5networks.f5_modules.bigip_config) module to save the running configuration. Refer to the module's documentation for
