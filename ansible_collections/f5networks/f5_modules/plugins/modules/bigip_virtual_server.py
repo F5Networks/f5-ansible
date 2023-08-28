@@ -1626,11 +1626,14 @@ class ApiParameters(Parameters):
         if 'items' not in self._values['profiles']:
             return None
         result = []
+        prof_path = 'https://localhost/mgmt/tm/ltm/profile/'
         for item in self._values['profiles']['items']:
             context = item['context']
             name = item['name']
+            path = item['nameReference']['link']
             if context in ['all', 'serverside', 'clientside']:
-                result.append(dict(name=name, context=context, fullPath=item['fullPath']))
+                if path.startswith(prof_path):
+                    result.append(dict(name=name, context=context, fullPath=item['fullPath']))
             else:
                 raise F5ModuleError(
                     "Unknown profile context found: '{0}'".format(context)
