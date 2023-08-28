@@ -1,0 +1,151 @@
+- name: Provision ASM
+  bigip_provision:
+    module: asm
+  tags:
+    - module-provisioning
+
+- name: Create blank ASM policy and activate
+  bigip_asm_policy_manage:
+    name: test_asm_policy
+    state: present
+  register: result
+
+- name: Assert Create blank ASM policy and activate
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create published policy
+  bigip_policy:
+    name: test_policy
+    state: present
+  register: result
+
+- name: Assert Create published policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: SR - Add rule to the published policy
+  bigip_policy_rule:
+    name: test_rule
+    policy: test_policy
+    conditions:
+      - type: all_traffic
+    actions:
+      - type: enable
+        asm_policy: test_asm_policy
+  register: result
+
+- name: Assert Add rule to the published policy
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a virtual server and attach asm policy to it
+  bigip_virtual_server:
+    state: present
+    partition: Common
+    name: test_vs
+    destination: 11.22.33.44
+    port: 443
+    profiles:
+      - http
+      - websecurity
+    policies:
+      - /Common/test_policy
+  register: result
+
+- name: Assert Create a virtual server and attach asm policy to it
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create a virtual server and attach asm policy to it - Idempotent Check
+  bigip_virtual_server:
+    state: present
+    partition: Common
+    destination: 11.22.33.44
+    port: 443
+    name: test_vs
+    profiles:
+      - http
+      - websecurity
+    policies:
+      - /Common/test_policy
+  register: result
+
+- name: Assert Create a virtual server and attach asm policy to it - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Modify the virtual server, add xml profile
+  bigip_virtual_server:
+    state: present
+    partition: Common
+    name: test_vs
+    destination: 11.22.33.44
+    port: 443
+    profiles:
+      - http
+      - websecurity
+      - xml
+    policies:
+      - /Common/test_policy
+  register: result
+
+- name: Assert Modify the virtual server, add xml profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Modify the virtual server, add xml profile - Idempotent Check
+  bigip_virtual_server:
+    state: present
+    partition: Common
+    name: test_vs
+    destination: 11.22.33.44
+    port: 443
+    profiles:
+      - http
+      - websecurity
+      - xml
+    policies:
+      - /Common/test_policy
+  register: result
+
+- name: Assert Modify the virtual server, add xml profile - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete virtual server
+  bigip_virtual_server:
+    state: absent
+    partition: Common
+    name: test_vs
+
+- name: Delete published policy
+  bigip_policy:
+    name: test_policy
+    state: absent
+
+- name: Delete ASM policy
+  bigip_asm_policy_manage:
+    name: test_asm_policy
+    state: absent
+
+- name: De-provision ASM
+  bigip_provision:
+    module: asm
+    state: absent
+  tags:
+    - module-de-provisioning

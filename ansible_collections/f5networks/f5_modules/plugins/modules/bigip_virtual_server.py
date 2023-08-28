@@ -954,7 +954,7 @@ from ..module_utils.ipaddress import (
     is_valid_ip, is_valid_ip_interface, ip_interface, validate_ip_v6_address, get_netmask, compress_address
 )
 from ..module_utils.teem import send_teem
-
+import q
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
@@ -1626,11 +1626,14 @@ class ApiParameters(Parameters):
         if 'items' not in self._values['profiles']:
             return None
         result = []
+        prof_path = 'https://localhost/mgmt/tm/ltm/profile/'
         for item in self._values['profiles']['items']:
             context = item['context']
             name = item['name']
+            path = item['nameReference']['link']
             if context in ['all', 'serverside', 'clientside']:
-                result.append(dict(name=name, context=context, fullPath=item['fullPath']))
+                if path.startswith(prof_path):
+                    result.append(dict(name=name, context=context, fullPath=item['fullPath']))
             else:
                 raise F5ModuleError(
                     "Unknown profile context found: '{0}'".format(context)
