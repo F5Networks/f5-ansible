@@ -1,0 +1,165 @@
+- name: Import key and cert (same name) without .key and .crt extensions
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: default_test
+    cert_content: "{{ lookup('file', 'cert.pem') }}"
+    cert_name: default_test
+    true_names: yes
+    state: present
+  register: result
+
+- name: Assert Import key and cert without .key and .crt extensions
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Import key and cert - Idempotent check
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: default_test
+    cert_content: "{{ lookup('file', 'cert.pem') }}"
+    cert_name: default_test
+    true_names: yes
+    state: present
+  register: result
+
+- name: Assert Import a key and cert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Fetch key data with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-key/default_test
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: key_data
+
+- name: Assert key name does not contain .key extension
+  assert:
+    that:
+      key_data.json.name == "default_test"
+
+- name: Fetch cert with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-cert/default_test
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: cert_data
+
+- name: Assert cert name does not contain .crt extension
+  assert:
+    that:
+      cert_data.json.name == "default_test"
+
+- name: Import key and cert (same name) with .key and .crt extensions
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: default_test
+    cert_content: "{{ lookup('file', 'cert.pem') }}"
+    cert_name: default_test
+    true_names: no
+    state: present
+  register: result
+
+- name: Assert Import key and cert with .key and .crt extensions
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Assert Import a key and cert - Idempotent check
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: default_test
+    cert_content: "{{ lookup('file', 'cert.pem') }}"
+    cert_name: default_test
+    true_names: no
+    state: present
+  register: result
+
+- name: Assert Import a key and cert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Fetch key data with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-key/default_test.key
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: key_data
+
+- name: Assert key name does not contain .key extension
+  assert:
+    that:
+      key_data.json.name == "default_test.key"
+
+- name: Fetch cert with uri
+  uri:
+    url: https://{{ansible_host}}:{{bigip_port}}/mgmt/tm/sys/file/ssl-cert/default_test.crt
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: no
+  register: cert_data
+
+- name: Assert cert name does not contain .crt extension
+  assert:
+    that:
+      cert_data.json.name == "default_test.crt"
+
+- name: Delete key and cert without .key and .crt extensions
+  bigip_ssl_key_cert:
+    key_name: default_test
+    cert_name: default_test
+    true_names: yes
+    state: absent
+  register: result
+
+- name: Assert Delete the key and cert
+  assert:
+    that:
+      - result is changed
+
+- name: Delete key and cert without .key and .crt extensions - Idempotent check
+  bigip_ssl_key_cert:
+    key_name: default_test
+    cert_name: default_test
+    true_names: yes
+    state: absent
+  register: result
+
+- name: Assert Delete a key and cert - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete key and cert with .key and .crt extensions
+  bigip_ssl_key_cert:
+    key_name: default_test
+    cert_name: default_test
+    true_names: no
+    state: absent
+  register: result 
+
+- name: Assert Delete the key and cert
+  assert:
+    that:
+      - result is changed
+
+- name: Delete key and cert with .key and .crt extensions - Idempotent check
+  bigip_ssl_key_cert:
+    key_name: default_test
+    cert_name: default_test
+    true_names: no
+    state: absent
+  register: result 
+
+- name: Assert Delete a key and cert - Idempotent check
+  assert:
+    that:
+      - result is not changed
