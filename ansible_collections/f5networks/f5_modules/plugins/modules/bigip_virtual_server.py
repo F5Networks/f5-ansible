@@ -954,7 +954,7 @@ from ..module_utils.ipaddress import (
     is_valid_ip, is_valid_ip_interface, ip_interface, validate_ip_v6_address, get_netmask, compress_address
 )
 from ..module_utils.teem import send_teem
-import q
+
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
