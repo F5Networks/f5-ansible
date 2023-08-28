@@ -459,9 +459,9 @@ class ModuleManager(object):
             return True
         self.create_on_device()
         if self.want.key_filename:
-            self.remove_uploaded_file_from_device(self.want.key_filename)
+            self.remove_uploaded_file_from_device(self.want.key_filename + "_key")
         if self.want.cert_filename:
-            self.remove_uploaded_file_from_device(self.want.cert_filename)
+            self.remove_uploaded_file_from_device(self.want.cert_filename + "_cert")
         return True
 
     def remove_uploaded_file_from_device(self, name):
@@ -611,7 +611,7 @@ class ModuleManager(object):
             )
             key_params_dict = params_dict.copy()
             key_params_dict['name'] = self.want.key_filename
-            key_params_dict['sourcePath'] = self.want.key_source_path
+            key_params_dict['sourcePath'] = self.want.key_source_path + "_key"
             links_and_params.append({'link': key_link, 'params': key_params_dict})
 
         if self.want.cert_name:
@@ -621,7 +621,7 @@ class ModuleManager(object):
             )
             cert_params_dict = params_dict.copy()
             cert_params_dict['name'] = self.want.cert_filename
-            cert_params_dict['sourcePath'] = self.want.cert_source_path
+            cert_params_dict['sourcePath'] = self.want.cert_source_path + "_cert"
 
             links_and_params.append({'link': cert_link, 'params': cert_params_dict})
 
@@ -637,11 +637,11 @@ class ModuleManager(object):
 
         if self.want.key_name:
             key_content = StringIO(self.want.key_content)
-            self.upload_file_to_device(key_content, self.want.key_filename)
+            self.upload_file_to_device(key_content, self.want.key_filename + "_key")
 
         if self.want.cert_name:
             cert_content = StringIO(self.want.cert_content)
-            self.upload_file_to_device(cert_content, self.want.cert_filename)
+            self.upload_file_to_device(cert_content, self.want.cert_filename + "_cert")
 
         with TransactionContextManager(self.client) as transact:
             for link in links_and_params:
