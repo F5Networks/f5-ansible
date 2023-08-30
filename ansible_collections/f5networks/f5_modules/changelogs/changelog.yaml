@@ -1009,6 +1009,17 @@ releases:
     release_date: '2023-06-07'
   1.25.1:
     release_date: '2023-07-19'
+  1.26.0:
+    changes:
+      bugfixes:
+      - bigip_ssl_key_cert - fixed flaw in code to make module work with same key
+        and cert name when true_names set to true
+      - bigip_virtual_server - fixed an idempotency bug where the module send asm
+        policy profile for update even when not specified explicitly by the user
+    fragments:
+    - true-names-bigfixes.yaml
+    - virtual-server-profile-idempotency.yaml
+    release_date: '2023-08-30'
   1.3.0:
     changes:
       bugfixes:
