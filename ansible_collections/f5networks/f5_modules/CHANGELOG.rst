@@ -5,6 +5,15 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.26.0
+=======
+
+Bugfixes
+--------
+
+- bigip_ssl_key_cert - fixed flaw in code to make module work with same key and cert name when true_names set to true
+- bigip_virtual_server - fixed an idempotency bug where the module send asm policy profile for update even when not specified explicitly by the user
+
 v1.25.1
 =======
 
