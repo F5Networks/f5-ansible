@@ -702,7 +702,7 @@ class UsableChanges(Changes):
     def monitors(self):
         monitor_string = self._values['monitors']
         if monitor_string is None:
-            return None
+            return ""
 
         if '{' in monitor_string and '}' in monitor_string:
             tmp = monitor_string.strip('}').split('{')
