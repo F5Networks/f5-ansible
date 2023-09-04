@@ -105,7 +105,7 @@ Changelog information available on |changelog|.
 
 Python Version Change
 --------------------------
-Collection only supports python 3.6 and above, however F5 recommends Python 3.8 and above.
+Collection only supports python 3.6 and above, however F5 recommends Python 3.9 and above.
 
 Your ideas
 ----------
