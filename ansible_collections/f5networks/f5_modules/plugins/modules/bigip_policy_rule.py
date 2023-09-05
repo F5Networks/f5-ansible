@@ -462,10 +462,52 @@ options:
         version_added: "1.10.0"
       server_name_is_any:
         description:
-          - A list of strings of characters the SSL Extension should match.
+          - A list of names the server name should be one of.
           - This parameter is only valid with the C(ssl_extension) type.
         type: list
         elements: str
+      server_name_is_not_any:
+        description:
+          - A list of names the server name should not be one of.
+          - This parameter is only valid with the C(ssl_extension) type.
+        type: list
+        elements: str
+        version_added: "1.27.0"
+      server_name_begins_with_any:
+        description:
+          - A list of names the server name should begin with.
+          - This parameter is only valid with the C(ssl_extension) type.
+        type: list
+        elements: str
+        version_added: "1.27.0"
+      server_name_begins_not_with_any:
+        description:
+          - A list of names the server name should not begin with.
+          - This parameter is only valid with the C(ssl_extension) type.
+        type: list
+        elements: str
+        version_added: "1.27.0"
+      server_name_ends_with_any:
+        description:
+          - A list of names the server name should end with.
+          - This parameter is only valid with the C(ssl_extension) type.
+        type: list
+        elements: str
+        version_added: "1.27.0"
+      server_name_ends_not_with_any:
+        description:
+          - A list of names the server name should not end with.
+          - This parameter is only valid with the C(ssl_extension) type.
+        type: list
+        elements: str
+        version_added: "1.27.0"
+      server_name_contains:
+        description:
+          - A list of names the server name should contain.
+          - This parameter is only valid with the C(ssl_extension) type.
+        type: list
+        elements: str
+        version_added: "1.27.0"
       address_matches_with_any:
         description:
           - A list of IP Subnet address strings the IP address should match.
@@ -1161,8 +1203,13 @@ class ModuleParameters(Parameters):
                 action[event] = True
 
     def _handle_ssl_extension_condition(self, action, item):
+        options = [
+            'server_name_is_any', 'server_name_is_not_any', 'server_name_contains',
+            'server_name_begins_with_any', 'server_name_begins_not_with_any',
+            'server_name_ends_with_any', 'server_name_ends_not_with_any',
+        ]
         action['type'] = 'ssl_extension'
-        if 'server_name_is_any' in item:
+        if 'server_name_is_any' in item and item['server_name_is_any'] is not None:
             if isinstance(item['server_name_is_any'], list):
                 values = item['server_name_is_any']
             else:
@@ -1172,6 +1219,69 @@ class ModuleParameters(Parameters):
                 serverName=True,
                 values=values
             ))
+        if 'server_name_is_not_any' in item and item['server_name_is_not_any'] is not None:
+            if isinstance(item['server_name_is_not_any'], list):
+                values = item['server_name_is_not_any']
+            else:
+                values = [item['server_name_is_not_any']]
+            action.update({
+                'equals': True,
+                'serverName': True,
+                'not': True,
+                'values': values
+            })
+        if 'server_name_begins_with_any' in item and item['server_name_begins_with_any'] is not None:
+            if isinstance(item['server_name_begins_with_any'], list):
+                values = item['server_name_begins_with_any']
+            else:
+                values = [item['server_name_begins_with_any']]
+            action.update(dict(
+                serverName=True,
+                startsWith=True,
+                values=values
+            ))
+        if 'server_name_begins_not_with_any' in item and item['server_name_begins_not_with_any'] is not None:
+            if isinstance(item['server_name_begins_not_with_any'], list):
+                values = item['server_name_begins_not_with_any']
+            else:
+                values = [item['server_name_begins_not_with_any']]
+            action.update({
+                'serverName': True,
+                'startsWith': True,
+                'not': True,
+                'values': values
+            })
+        if 'server_name_ends_with_any' in item and item['server_name_ends_with_any'] is not None:
+            if isinstance(item['server_name_ends_with_any'], list):
+                values = item['server_name_ends_with_any']
+            else:
+                values = [item['server_name_ends_with_any']]
+            action.update(dict(
+                serverName=True,
+                endsWith=True,
+                values=values
+            ))
+        if 'server_name_ends_not_with_any' in item and item['server_name_ends_not_with_any'] is not None:
+            if isinstance(item['server_name_ends_not_with_any'], list):
+                values = item['server_name_ends_not_with_any']
+            else:
+                values = [item['server_name_ends_not_with_any']]
+            action.update({
+                'serverName': True,
+                'endsWith': True,
+                'not': True,
+                'values': values
+            })
+        if 'server_name_contains' in item and item['server_name_contains'] is not None:
+            if isinstance(item['server_name_contains'], list):
+                values = item['server_name_contains']
+            else:
+                values = [item['server_name_contains']]
+            action.update({
+                'serverName': True,
+                'contains': True,
+                'values': values
+            })
         if 'event' not in item:
             raise F5ModuleError(
                 "An 'event' must be specified when the 'ssl_extension' condition is used."
@@ -2689,6 +2799,30 @@ class ArgumentSpec(object):
                         elements='str',
                     ),
                     server_name_is_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    server_name_is_not_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    server_name_begins_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    server_name_begins_not_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    server_name_ends_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    server_name_ends_not_with_any=dict(
+                        type='list',
+                        elements='str',
+                    ),
+                    server_name_contains=dict(
                         type='list',
                         elements='str',
                     ),
