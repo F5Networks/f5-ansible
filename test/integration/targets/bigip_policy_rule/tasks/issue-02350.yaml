@@ -1,0 +1,111 @@
+- name: Issue 02350 - Create published policy
+  bigip_policy:
+    name: issue-02350
+  register: result
+
+- name: Assert Issue 02350 - Create published policy
+  assert:
+    that:
+      - result is success
+
+- name: Issue 02350 - Add rule LTM policy server_name_contains and server_name_begins_not_with_any
+  bigip_policy_rule:
+    name: rule_02350
+    description: fwd
+    policy: issue-02350
+    partition: Common
+    conditions:
+      - type: ssl_extension
+        server_name_begins_not_with_any: insecure
+        event: ssl_client_hello
+      - type: ssl_extension
+        server_name_begins_with_any: secure
+        event: ssl_server_hello
+      - type: ssl_extension
+        server_name_is_any:
+          - secure_virtual_server
+          - secure_virtual_servr
+        event: ssl_client_hello
+      - type: ssl_extension
+        server_name_is_not_any:
+          - abc
+          - xyz
+        event: ssl_client_hello
+      - type: ssl_extension
+        server_name_ends_with_any:
+          - server
+          - servr
+        event: ssl_server_hello
+      - type: ssl_extension
+        server_name_ends_not_with_any:
+          - pool
+          - policy
+        event: ssl_client_hello
+      - type: ssl_extension
+        server_name_contains: virtual
+        event: ssl_server_hello
+    state: present
+  register: result
+
+- name: Assert Issue 02350 - Add rule LTM policy server_name_contains and server_name_begins_not_with_any
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 02350 - Add rule LTM policy server_name_contains and server_name_begins_not_with_any - Idempotent Check
+  bigip_policy_rule:
+    name: rule_02350
+    description: fwd
+    policy: issue-02350
+    partition: Common
+    conditions:
+      - type: ssl_extension
+        server_name_begins_not_with_any: insecure
+        event: ssl_client_hello
+      - type: ssl_extension
+        server_name_begins_with_any: secure
+        event: ssl_server_hello
+      - type: ssl_extension
+        server_name_is_any:
+          - secure_virtual_server
+          - secure_virtual_servr
+        event: ssl_client_hello
+      - type: ssl_extension
+        server_name_is_not_any:
+          - abc
+          - xyz
+        event: ssl_client_hello
+      - type: ssl_extension
+        server_name_ends_with_any:
+          - server
+          - servr
+        event: ssl_server_hello
+      - type: ssl_extension
+        server_name_ends_not_with_any:
+          - pool
+          - policy
+        event: ssl_client_hello
+      - type: ssl_extension
+        server_name_contains: virtual
+        event: ssl_server_hello
+    state: present
+  register: result
+
+- name: Assert Issue 02350 - Add rule LTM policy server_name_contains and server_name_begins_not_with_any - Idempotent Check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 02350 - Delete published policy
+  bigip_policy:
+    name: issue-02350
+    state: absent
+  register: result
+
+- name: Assert Issue 02350 - Delete published policy
+  assert:
+    that:
+      - result is success
+      - result is changed
