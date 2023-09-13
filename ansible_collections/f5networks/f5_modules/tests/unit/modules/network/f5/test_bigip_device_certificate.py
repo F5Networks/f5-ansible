@@ -206,5 +206,3 @@ class TestManager(unittest.TestCase):
             division='IT',
             common_name='foo.bar.local'
         )
-
-    
