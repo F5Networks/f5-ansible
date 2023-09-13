@@ -156,3 +156,53 @@ class TestManager(unittest.TestCase):
             common_name='foo.bar.local',
             email='admin@foo.bar.local'
         )
+
+    def test_create_new_cert_forcefully(self):
+        set_module_args(dict(
+            key_size=2048,
+            days_valid=60,
+            new_cert='yes',
+            force='yes',
+            issuer=dict(
+                country='US',
+                state='WA',
+                locality='Seattle',
+                organization='F5',
+                division='IT',
+                common_name='foo.bar.local',
+            ),
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin',
+                transport='cli',
+                server_port=22
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+
+        mm = ModuleManager(module=module)
+        mm.expired = Mock(return_value=True)
+        mm.generate_cert_key = Mock(return_value=True)
+        mm.restart_daemon = Mock(return_value=True)
+        mm.configure_new_cert = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['days_valid'] == 60
+        assert results['cert_name'] == 'server.crt'
+        assert results['key_name'] == 'server.key'
+        assert results['issuer'] == dict(
+            country='US',
+            state='WA',
+            locality='Seattle',
+            organization='F5',
+            division='IT',
+            common_name='foo.bar.local'
+        )
