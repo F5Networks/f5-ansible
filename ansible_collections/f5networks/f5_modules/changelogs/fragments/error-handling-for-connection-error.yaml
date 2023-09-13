@@ -1,0 +1,4 @@
+
+---
+bugfixes:
+  - bigip_device_certificate - error-handling for connection error while running exec command function to fetch certificate details
