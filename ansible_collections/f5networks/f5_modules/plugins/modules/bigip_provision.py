@@ -900,7 +900,7 @@ class ModuleManager(object):
                     else:
                         raise F5ModuleError(resp.content)
 
-                if len(response['items']) >= 0:
+                if len(response['items']) > 0:
                     nops += 1
                 else:
                     nops = 0
@@ -938,7 +938,7 @@ class ModuleManager(object):
                     else:
                         raise F5ModuleError(resp.content)
 
-                if len(response['items']) >= 0:
+                if len(response['items']) > 0:
                     nops += 1
                 else:
                     nops = 0
@@ -974,7 +974,7 @@ class ModuleManager(object):
                     else:
                         raise F5ModuleError(resp.content)
 
-                if len(response['items']) >= 0:
+                if len(response['items']) > 0:
                     nops += 1
                 else:
                     nops = 0
@@ -1010,7 +1010,7 @@ class ModuleManager(object):
                     else:
                         raise F5ModuleError(resp.content)
 
-                if len(response['items']) >= 0:
+                if len(response['items']) > 0:
                     nops += 1
                 else:
                     nops = 0
