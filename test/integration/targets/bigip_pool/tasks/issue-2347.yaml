@@ -1,0 +1,217 @@
+---
+
+- name: Issue-2347 Create a pool with monitor
+  f5networks.f5_modules.bigip_pool:
+    name: "issue-2347"
+    priority_group_activation: 1
+    lb_method: "least-connections-member"
+    monitor_type: "and_list"
+    monitors:
+      - /Common/http
+      - /Common/tcp
+    slow_ramp_time: 300
+    partition: "Common"
+    provider:
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: " {{ bigip_port }}"
+      no_f5_teem: true
+      timeout: 10
+      transport: rest
+      validate_certs: false
+    state: "present"
+  register: result
+
+- name: Issue-2347 - Assert Create a pool with monitor
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue-2347 Create a pool with monitor - Idempotent Check
+  f5networks.f5_modules.bigip_pool:
+    name: "issue-2347"
+    priority_group_activation: 1
+    lb_method: "least-connections-member"
+    monitor_type: "and_list"
+    monitors:
+      - /Common/http
+      - /Common/tcp
+    slow_ramp_time: 300
+    partition: "Common"
+    provider:
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: " {{ bigip_port }}"
+      no_f5_teem: true
+      timeout: 10
+      transport: rest
+      validate_certs: false
+    state: "present"
+  register: result
+
+- name: Issue-2347 - Assert Create a pool with monitor - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue-2347 Change the monitor type
+  f5networks.f5_modules.bigip_pool:
+      name: "issue-2347"
+      priority_group_activation: 1
+      lb_method: "least-connections-member"
+      monitor_type: "m_of_n"
+      quorum: 1
+      monitors:
+        - /Common/http
+        - /Common/tcp
+      slow_ramp_time: 300
+      partition: "Common"
+      provider:
+        user: "{{ bigip_username }}"
+        password: "{{ bigip_password }}"
+        server: "{{ ansible_host }}"
+        server_port: " {{ bigip_port }}"
+        no_f5_teem: true
+        timeout: 10
+        transport: rest
+        validate_certs: false
+      state: "present"
+  register: result
+
+- name: Issue-2347 - Assert Change the monitor type
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue-2347 Change the monitor type  Idempotent Check
+  f5networks.f5_modules.bigip_pool:
+      name: "issue-2347"
+      priority_group_activation: 1
+      lb_method: "least-connections-member"
+      monitor_type: "m_of_n"
+      quorum: 1
+      monitors:
+        - /Common/http
+        - /Common/tcp
+      slow_ramp_time: 300
+      partition: "Common"
+      provider:
+        user: "{{ bigip_username }}"
+        password: "{{ bigip_password }}"
+        server: "{{ ansible_host }}"
+        server_port: " {{ bigip_port }}"
+        no_f5_teem: true
+        timeout: 10
+        transport: rest
+        validate_certs: false
+      state: "present"
+  register: result
+
+- name: Issue-2347 - Change the monitor type - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue-2347 Removing monitor from the Pool
+  f5networks.f5_modules.bigip_pool:
+    name: "issue-2347"
+    priority_group_activation: 1
+    lb_method: "least-connections-member"
+    slow_ramp_time: 300
+    partition: "Common"
+    monitors: []
+    provider:
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: " {{ bigip_port }}"
+      no_f5_teem: true
+      timeout: 10
+      transport: rest
+      validate_certs: false
+    state: "present"
+  register: result
+
+- name: Issue-2347 - Assert Removing monitor from the Pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue-2347 Removing monitor from the Pool - Idempotent Check
+  f5networks.f5_modules.bigip_pool:
+    name: "issue-2347"
+    priority_group_activation: 1
+    lb_method: "least-connections-member"
+    slow_ramp_time: 300
+    partition: "Common"
+    monitors: []
+    provider:
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: " {{ bigip_port }}"
+      no_f5_teem: true
+      timeout: 10
+      transport: rest
+      validate_certs: false
+    state: "present"
+  register: result
+
+- name: Issue-2347 - Assert Removing monitor from the Pool - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue-2347 Delete pool
+  f5networks.f5_modules.bigip_pool:
+    name: "issue-2347"
+    priority_group_activation: 1
+    lb_method: "least-connections-member"
+    slow_ramp_time: 300
+    partition: "Common"
+    provider:
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: " {{ bigip_port }}"
+      no_f5_teem: true
+      timeout: 10
+      transport: rest
+      validate_certs: false
+    state: "absent"
+  register: result
+
+- name: Issue-2347 - Assert Delete a pool
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue-2347 Delete pool - Idempotent Check
+  f5networks.f5_modules.bigip_pool:
+    name: "issue-2347"
+    priority_group_activation: 1
+    lb_method: "least-connections-member"
+    slow_ramp_time: 300
+    partition: "Common"
+    provider:
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: " {{ bigip_port }}"
+      no_f5_teem: true
+      timeout: 10
+      transport: rest
+      validate_certs: false
+    state: "absent"
+  register: result
+
+- name: Issue-2347 - Assert Delete a pool - Idempotent Check
+  assert:
+    that:
+      - result is not changed

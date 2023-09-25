@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_pool - Resolved a bug in the code to allow the module to remove monitors from the pool 
