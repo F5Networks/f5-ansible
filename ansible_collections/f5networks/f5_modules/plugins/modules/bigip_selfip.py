@@ -20,6 +20,7 @@ options:
       - The IP addresses for the new self IP. This value is ignored upon update
         as addresses themselves cannot be changed after they are created.
       - This value is required when creating new self IPs.
+      - IPv4 and IPv6 are supported.
     type: str
   allow_service:
     description:
@@ -103,6 +104,18 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
+
+- name: Create Self IPv6
+  bigip_selfip:
+    address: fe80::10
+    name: self2
+    netmask: "ffff:ffff:ffff:ffff::"
+    vlan: vlan1
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+    delegate_to: localhost
 
 - name: Create Self IP with a Route Domain
   bigip_selfip:

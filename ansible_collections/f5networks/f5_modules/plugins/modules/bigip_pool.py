@@ -790,6 +790,8 @@ class Difference(object):
                     "Quorum value must be specified with monitor_type 'm_of_n'."
                 )
             if self.want.monitors != self.have.monitors:
+                if self.want.monitors is None or not self.want.monitors_list:
+                    return None
                 return dict(
                     monitors=self.want.monitors
                 )
@@ -799,6 +801,8 @@ class Difference(object):
                     "Quorum values have no effect when used with 'and_list'."
                 )
             if self.want.monitors != self.have.monitors:
+                if self.want.monitors is None or not self.want.monitors_list:
+                    return None
                 return dict(
                     monitors=self.want.monitors
                 )
@@ -822,6 +826,8 @@ class Difference(object):
             # "and_list plus some extra checks"
             self.want.update(dict(monitor_type='and_list'))
         if self.want.monitors != self.have.monitors:
+            if self.want.monitors is None or not self.want.monitors_list:
+                return None
             return dict(
                 monitors=self.want.monitors
             )
@@ -836,10 +842,17 @@ class Difference(object):
 
     @property
     def monitors(self):
+        if self.want.monitors is None:
+            return None
+        if not self.want.monitors_list and self.have.monitors is None:
+            # Idempotency check - removing monitors from a device where no monitors exists
+            return None
+        # when monitors_list is [], remove all the monitors
+        if not self.want.monitors_list:
+            # monitors is '' in the case of monitor_type and_list and min <quorum> of {  } in case monitor_type m_of_n
+            return {'monitors': ''}
         if self.want.monitor_type is None:
             self.want.update(dict(monitor_type=self.have.monitor_type))
-        if not self.want.monitors_list:
-            self.want.monitors = self.have.monitors_list
         if not self.want.monitors and self.want.monitor_type is not None:
             raise F5ModuleError(
                 "The 'monitors' parameter cannot be empty when 'monitor_type' parameter is specified"
