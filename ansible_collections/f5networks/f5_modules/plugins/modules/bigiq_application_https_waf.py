@@ -191,7 +191,7 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Load balance an HTTPS application on port 443 with a WAF using ASM
+- name: BIG-IQ CM an HTTPS application on port 443 with a WAF using ASM
   bigiq_application_https_waf:
     name: my-app
     description: Redirect HTTP to HTTPS via WAF
@@ -211,7 +211,7 @@ EXAMPLES = r'''
       port: 80
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
     state: present
   delegate_to: localhost

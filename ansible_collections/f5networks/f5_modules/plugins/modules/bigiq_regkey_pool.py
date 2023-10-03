@@ -56,7 +56,7 @@ EXAMPLES = r'''
     provider:
       user: admin
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
   delegate_to: localhost
 '''
 

@@ -114,7 +114,7 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Load balance a TCP-based application with a FastL4 profile
+- name: BIG-IQ CM a TCP-based application with a FastL4 profile
   bigiq_application_fastl4_tcp:
     name: my-app
     description: My description
@@ -131,7 +131,7 @@ EXAMPLES = r'''
       port: 443
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
     state: present
   delegate_to: localhost

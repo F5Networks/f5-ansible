@@ -90,7 +90,7 @@ EXAMPLES = r'''
     provider:
       user: admin
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
   delegate_to: localhost
 
 - name: Register a managed device, by name
@@ -103,7 +103,7 @@ EXAMPLES = r'''
     provider:
       user: admin
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
   delegate_to: localhost
 
 - name: Register a managed device, by UUID
@@ -116,7 +116,7 @@ EXAMPLES = r'''
     provider:
       user: admin
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
   delegate_to: localhost
 '''
 
