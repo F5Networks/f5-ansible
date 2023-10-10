@@ -102,7 +102,7 @@ EXAMPLES = r'''
     state: present
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
   delegate_to: localhost
 
@@ -115,7 +115,7 @@ EXAMPLES = r'''
     state: present
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
   delegate_to: localhost
 
@@ -128,7 +128,7 @@ EXAMPLES = r'''
     state: present
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
   delegate_to: localhost
 '''
