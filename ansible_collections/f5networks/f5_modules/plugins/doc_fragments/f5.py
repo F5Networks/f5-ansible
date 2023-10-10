@@ -18,14 +18,14 @@ options:
     suboptions:
       password:
         description:
-          - The password for the user account used to connect to the BIG-IP.
+          - The password for the user account used to connect to the BIG-IP or the BIG-IQ.
           - You may omit this option by setting the environment variable C(F5_PASSWORD).
         type: str
         required: true
         aliases: [ pass, pwd ]
       server:
         description:
-          - The BIG-IP host.
+          - The BIG-IP host or the BIG-IQ host.
           - You may omit this option by setting the environment variable C(F5_SERVER).
         type: str
         required: true
@@ -37,7 +37,7 @@ options:
         default: 443
       user:
         description:
-          - The username to connect to the BIG-IP with. This user must have
+          - The username to connect to the BIG-IP or the BIG-IQ. This user must have
             administrative privileges on the device.
           - You may omit this option by setting the environment variable C(F5_USER).
         type: str

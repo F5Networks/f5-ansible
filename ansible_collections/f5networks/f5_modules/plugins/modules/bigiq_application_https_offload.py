@@ -184,7 +184,7 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Load balance an HTTPS application on port 443 with SSL offloading on BIG-IP
+- name: BIG-IQ CM an HTTPS application on port 443 with SSL offloading on BIG-IP
   bigiq_application_https_offload:
     name: my-app
     description: Redirect HTTP to HTTPS
@@ -204,7 +204,7 @@ EXAMPLES = r'''
       port: 80
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
     state: present
   delegate_to: localhost

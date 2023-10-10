@@ -113,7 +113,7 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Load balance an HTTP application on port 80 on BIG-IP
+- name: BIG-IQ CM an HTTP application on port 80 on BIG-IP
   bigiq_application_fasthttp:
     name: my-app
     description: Fast HTTP
@@ -130,7 +130,7 @@ EXAMPLES = r'''
       port: 80
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
     state: present
   delegate_to: localhost

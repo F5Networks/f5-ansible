@@ -65,7 +65,7 @@ EXAMPLES = r'''
     gather_subset:
       - all
     provider:
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
       password: secret
   delegate_to: localhost
@@ -76,7 +76,7 @@ EXAMPLES = r'''
       - all
       - "!trunks"
     provider:
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
       password: secret
   delegate_to: localhost

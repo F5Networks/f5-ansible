@@ -113,7 +113,7 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Load balance a UDP-based application with a FastL4 profile
+- name: BIG-IQ CM a UDP-based application with a FastL4 profile
   bigiq_application_fastl4_udp:
     name: my-app
     description: My description
@@ -130,7 +130,7 @@ EXAMPLES = r'''
       port: 53
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
     state: present
   delegate_to: localhost
