@@ -106,7 +106,7 @@ options:
       - reselect
   partition:
     description:
-      - Device partition to manage resources on.
+      - Device partition on which to manage resources.
     type: str
     default: Common
   state:
