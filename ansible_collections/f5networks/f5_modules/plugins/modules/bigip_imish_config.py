@@ -211,7 +211,9 @@ options:
     version_added: "1.2.0"
 notes:
   - Abbreviated commands are NOT idempotent
-extends_documentation_fragment: f5networks.f5_modules.f5
+extends_documentation_fragment:
+  - f5networks.f5_modules.f5
+  - ansible.builtin.files
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
