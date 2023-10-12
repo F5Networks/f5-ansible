@@ -19,5 +19,5 @@ EXAMPLES: |
 
 RETURN:
   _value:
-    description:  The string with -devel suffix.
+    description: The string with -devel suffix.
     type: string
