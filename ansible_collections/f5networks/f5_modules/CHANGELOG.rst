@@ -5,6 +5,20 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.27.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_policy_rule - added six more options for ssl_extension condition
+
+Bugfixes
+--------
+
+- bigip_device_certificate - error-handling for connection error while running exec command function to fetch certificate details
+- bigip_pool - Resolved a bug in the code to allow the module to remove monitors from the pool
+
 v1.26.0
 =======
 
