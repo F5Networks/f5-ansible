@@ -44,9 +44,6 @@ options:
           - Valid country codes can be found here https://countrycode.org/.
         type: str
         required: True
-        choices:
-          - Any valid 2 character ISO country code.
-          - Any valid country name.
       region:
         description:
           - Region name of the country to use.

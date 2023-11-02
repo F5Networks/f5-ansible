@@ -1459,7 +1459,7 @@ class ArgumentSpec(object):
                 type='list',
                 elements='raw',
                 options=dict(
-                    key=dict(required=True),
+                    key=dict(required=True, no_log=True),
                     value=dict(type='raw')
                 )
             ),

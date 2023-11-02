@@ -662,7 +662,7 @@ class ArgumentSpec(object):
                 type='list',
                 elements='str',
             ),
-            tsig_server_key=dict(),
+            tsig_server_key=dict(no_log=True),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])

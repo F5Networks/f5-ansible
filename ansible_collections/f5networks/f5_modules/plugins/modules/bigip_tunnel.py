@@ -570,7 +570,7 @@ class ArgumentSpec(object):
             name=dict(required=True),
             profile=dict(),
             description=dict(),
-            key=dict(type='int'),
+            key=dict(type='int', no_log=True),
             local_address=dict(),
             remote_address=dict(),
             secondary_address=dict(),
