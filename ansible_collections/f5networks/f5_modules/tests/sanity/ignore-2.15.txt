@@ -1,7 +1,5 @@
 plugins/action/bigip.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added
 plugins/action/bigiq.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added
-plugins/lookup/bigiq_license.py validate-modules:invalid-documentation
-plugins/lookup/license_hopper.py validate-modules:invalid-documentation
 plugins/modules/bigip_gtm_pool_member.py validate-modules:undocumented-parameter
 plugins/modules/bigip_gtm_pool_member.py validate-modules:parameter-type-not-in-doc
 plugins/modules/bigip_gtm_pool_member.py validate-modules:doc-missing-type
