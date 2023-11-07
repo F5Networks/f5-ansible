@@ -7,14 +7,14 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = """
-name: bigiq_license
-author:
-  - Wojciech Wypior (@wojtek0806)
-version_added: "1.0.0"
-short_description: Select a random license key from a pool of biqiq available licenses
-description:
-  - Select a random license key from a pool of biqiq available licenses.
-  - Requires specifying BIGIQ license pool name and connection parameters.
+    name: bigiq_license
+    author:
+      - Wojciech Wypior (@wojtek0806)
+    version_added: "1.0.0"
+    short_description: Select a random license key from a pool of biqiq available licenses
+    description:
+      - Select a random license key from a pool of biqiq available licenses.
+      - Requires specifying BIGIQ license pool name and connection parameters.
 """
 
 EXAMPLES = """

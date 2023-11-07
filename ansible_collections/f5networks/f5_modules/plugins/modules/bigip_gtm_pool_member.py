@@ -22,12 +22,12 @@ version_added: "1.0.0"
 options:
   aggregate:
     description:
-     - List of GTM pool member definitions to be created, modified, or removed.
-     - When using C(aggregates), if one of the aggregate definitions is invalid, the aggregate run will fail,
-       indicating the error it last encountered.
-     - The module will C(NOT) rollback any changes it has made prior to encountering the error.
-     - The module also will not indicate what changes were made prior to failure, therefore we strongly advise
-       you run the module in check mode to make basic validation, prior to module execution.
+      - List of GTM pool member definitions to be created, modified, or removed.
+      - When using C(aggregates), if one of the aggregate definitions is invalid, the aggregate run will fail,
+        indicating the error it last encountered.
+      - The module will C(NOT) rollback any changes it has made prior to encountering the error.
+      - The module also will not indicate what changes were made prior to failure, therefore we strongly advise
+        you run the module in check mode to make basic validation, prior to module execution.
     type: list
     elements: dict
     suboptions:
@@ -45,8 +45,6 @@ options:
           - Specifies the order in which the member will appear in the pool.
           - The system uses this number with load balancing methods that involve prioritizing
             pool members, such as the Ratio load balancing method.
-          - When creating a new member using this module, if the C(member_order) parameter
-            is not specified, it will default to C(0) (first member in the pool).
         type: int
       monitor:
         description:
@@ -57,8 +55,6 @@ options:
           - If this parameter is not specified when creating a new pool member, the default
             of C(default) will be used.
           - To remove the monitor from the pool member, use the value C(none).
-          - For pool members created on different partitions, you can also specify the full
-            path to the Common monitor. For example, C(/Common/tcp).
         type: str
       ratio:
         description:
@@ -76,44 +72,35 @@ options:
           - You can define limits for any or all of the limit settings. However, when a
             member does not meet the resource threshold limit requirement, the system marks
             the member as unavailable and directs load balancing traffic to another resource.
+        type: dict
         suboptions:
           bits_enabled:
             description:
               - Whether or not the bits limit is enabled.
-              - This parameter allows you to switch on or off the effect of the limit.
             type: bool
           packets_enabled:
             description:
               - Whether or not the packets limit is enabled.
-              - This parameter allows you to switch on or off the effect of the limit.
             type: bool
           connections_enabled:
             description:
               - Whether or not the current connections limit is enabled.
-              - This parameter allows you to switch on or off the effect of the limit.
             type: bool
           bits_limit:
             description:
               - Specifies the maximum allowable data throughput rate
                 for the member, in bits per second.
-              - If the network traffic volume exceeds this limit, the system marks the
-                member as unavailable.
             type: int
           packets_limit:
             description:
               - Specifies the maximum allowable data transfer rate for the member,
                 in packets per second.
-              - If the network traffic volume exceeds this limit, the system marks the
-                member as unavailable.
             type: int
           connections_limit:
             description:
               - Specifies the maximum number of concurrent connections, combined, for all of
                 the members.
-              - If the connections exceed this limit, the system marks the server as
-                unavailable.
             type: int
-        type: dict
       state:
         description:
           - Pool member state. When C(present), ensures the pool member is
@@ -121,13 +108,6 @@ options:
             removed from the system. When C(enabled) or C(disabled), ensures
             the pool member is enabled or disabled (respectively) on the remote
             device.
-          - We recommend you use the C(members) parameter of the C(bigip_gtm_pool)
-            module when adding and removing members, as it provides an easier way of
-            specifying order. If this is not possible, the C(state) parameter here
-            should be used.
-          - Remember that the order of the members will be affected if you add or remove them
-            using this method. To some extent, this can be controlled using the C(member_order)
-            parameter.
         type: str
         choices:
           - present
@@ -142,6 +122,76 @@ options:
         default: Common
     aliases:
       - members
+  virtual_server:
+    description:
+      - Specifies the name of the GTM virtual server which is assigned to the specified
+        C(server).
+    type: str
+  server_name:
+    description:
+      - Specifies the GTM server which contains the C(virtual_server).
+    type: str
+  member_order:
+    description:
+      - Specifies the order in which the member will appear in the pool.
+      - The system uses this number with load balancing methods that involve prioritizing
+        pool members, such as the Ratio load balancing method.
+    type: int
+  monitor:
+    description:
+      - Specifies the monitor assigned to this pool member.
+      - Pool members only support a single monitor.
+      - If the C(port) of the C(gtm_virtual_server) is C(*), the accepted values of this
+        parameter will be affected.
+      - If this parameter is not specified when creating a new pool member, the default
+        of C(default) will be used.
+      - To remove the monitor from the pool member, use the value C(none).
+    type: str
+  ratio:
+    description:
+      - Specifies the weight of the pool member for load balancing purposes.
+    type: int
+  description:
+    description:
+      - The description of the pool member.
+    type: str
+  limits:
+    description:
+      - Specifies resource thresholds or limit requirements at the pool member level.
+      - When you enable one or more limit settings, the system then uses that data to take
+        members in and out of service.
+      - You can define limits for any or all of the limit settings. However, when a
+        member does not meet the resource threshold limit requirement, the system marks
+        the member as unavailable and directs load balancing traffic to another resource.
+    type: dict
+    suboptions:
+      bits_enabled:
+        description:
+          - Whether or not the bits limit is enabled.
+        type: bool
+      packets_enabled:
+        description:
+          - Whether or not the packets limit is enabled.
+        type: bool
+      connections_enabled:
+        description:
+          - Whether or not the current connections limit is enabled.
+        type: bool
+      bits_limit:
+        description:
+          - Specifies the maximum allowable data throughput rate
+            for the member, in bits per second.
+        type: int
+      packets_limit:
+        description:
+          - Specifies the maximum allowable data transfer rate for the member,
+            in packets per second.
+        type: int
+      connections_limit:
+        description:
+          - Specifies the maximum number of concurrent connections, combined, for all of
+            the members.
+        type: int
   pool:
     description:
       - Name of the GTM pool.
@@ -166,8 +216,8 @@ options:
       - Removes members not defined in the C(aggregate) parameter.
       - This operation is all or none, meaning it will stop if there are some pool members
         that cannot be removed.
-    default: false
     type: bool
+    default: false
     aliases:
       - purge
   partition:
@@ -176,26 +226,19 @@ options:
     type: str
     default: Common
   state:
-   description:
-     - Pool member state. When C(present), ensures the pool member is
-       created and enabled. When C(absent), ensures the pool member is
-       removed from the system. When C(enabled) or C(disabled), ensures
-       the pool member is enabled or disabled (respectively) on the remote
-       device.
-     - We recommend you use the C(members) parameter of the C(bigip_gtm_pool)
-       module when adding and removing members, as it provides an easier way of
-       specifying order. If this is not possible, the C(state) parameter here
-       should be used.
-     - Remember that the order of the members will be affected if you add or remove them
-       using this method. To some extent, this can be controlled using the C(member_order)
-       parameter.
-   type: str
-   choices:
-     - present
-     - absent
-     - enabled
-     - disabled
-   default: present
+    description:
+      - Pool member state. When C(present), ensures the pool member is
+        created and enabled. When C(absent), ensures the pool member is
+        removed from the system. When C(enabled) or C(disabled), ensures
+        the pool member is enabled or disabled (respectively) on the remote
+        device.
+    type: str
+    choices:
+      - present
+      - absent
+      - enabled
+      - disabled
+    default: present
 extends_documentation_fragment: f5networks.f5_modules.f5
 author:
   - Tim Rupp (@caphrim007)

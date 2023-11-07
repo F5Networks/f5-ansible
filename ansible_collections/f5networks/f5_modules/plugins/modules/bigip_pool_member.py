@@ -16,35 +16,183 @@ description:
   - Manages F5 BIG-IP LTM pool members via the REST API.
 version_added: "1.0.0"
 options:
-  name:
+  aggregate:
     description:
-      - Name of the node to create or re-use when creating a new pool member.
-      - While this parameter is optional, we recommend specifying this parameter
-        at all times to mitigate anyunexpected behavior.
-      - If not specified, a node name is created automatically from either the specified C(address) or C(fqdn).
-      - The C(enabled) state is an alias of C(present).
-    type: str
-  state:
-    description:
-      - Pool member state.
-    type: str
-    choices:
-      - present
-      - absent
-      - enabled
-      - disabled
-      - forced_offline
-    default: present
+      - List of pool member definitions to be created, modified, or removed.
+      - When using C(aggregates), if one of the aggregate definitions is invalid, the aggregate run will fail,
+        indicating the error it last encountered.
+      - The module will B(NOT) rollback any changes it has made prior to encountering the error.
+      - The module also will not indicate what changes were made prior to failure. Therefore we strong advise
+        you run the module in C(check) mode to ensure basic validation prior to executing this module.
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        description:
+          - Name of the node to create or re-use when creating a new pool member.
+          - While this parameter is optional, we recommend specifying this parameter
+            at all times to mitigate any unexpected behavior.
+          - If not specified, a node name is created automatically from either the specified C(address) or C(fqdn).
+          - The C(enabled) state is an alias of C(present).
+        type: str
+      address:
+        description:
+          - IP address of the pool member. This can be either IPv4 or IPv6. When creating a
+            new pool member, one of either C(address) or C(fqdn) must be provided. This
+            parameter cannot be updated after it is set.
+        type: str
+        aliases:
+          - ip
+          - host
+      fqdn:
+        description:
+          - FQDN name of the pool member. This can be any name that is a valid RFC 1123 DNS
+            name. Therefore, the only usable characters are "A" to "Z",
+            "a" to "z", "0" to "9", the hyphen ("-") and the period (".").
+          - FQDN names must include at least one period; delineating the host from
+            the domain. For example, C(host.domain).
+          - FQDN names must end with a letter or a number.
+          - When creating a new pool member, one of either C(address) or C(fqdn) must be
+            provided. This parameter cannot be updated after it is set.
+        type: str
+        aliases:
+          - hostname
+      port:
+        description:
+          - Pool member port.
+          - This value cannot be changed after it has been set.
+          - Parameter must be provided when using aggregates.
+        type: int
+      connection_limit:
+        description:
+          - Pool member connection limit. Setting this to C(0) disables the limit.
+        type: int
+      description:
+        description:
+          - Pool member description.
+        type: str
+      rate_limit:
+        description:
+          - Pool member rate limit (connections-per-second). Setting this to C(0)
+            disables the limit.
+        type: int
+      ratio:
+        description:
+          - Pool member ratio weight. Valid values range from 1 through 100.
+            New pool members -- unless overridden with this value -- default
+            to 1.
+        type: int
+      preserve_node:
+        description:
+          - When state is C(absent), the system attempts to remove the node the pool
+            member references.
+          - The node will not be removed if it is still referenced by other pool
+            members. If this happens, the module will not raise an error.
+          - Setting this to C(true) disables this behavior.
+        type: bool
+      priority_group:
+        description:
+          - Specifies a number representing the priority group for the pool member.
+          - When adding a new member, the default is C(0), meaning the member has no priority.
+          - To specify a priority, you must activate priority group usage when you
+            create a new pool or when adding or removing pool members. When activated,
+            the system load balances traffic according to the priority group number
+            assigned to the pool member.
+          - The higher the number, the higher the priority. So a member with a priority
+            of 3 has higher priority than a member with a priority of 1.
+        type: int
+      fqdn_auto_populate:
+        description:
+          - Specifies whether the system automatically creates ephemeral nodes using
+            the IP addresses returned by the resolution of a DNS query for a node
+            defined by an FQDN.
+          - When C(true), the system generates an ephemeral node for each IP address
+            returned in response to a DNS query for the FQDN of the node. Additionally,
+            when a DNS response indicates the IP address of an ephemeral node no longer
+            exists, the system deletes the ephemeral node.
+          - When C(false), the system resolves a DNS query for the FQDN of the node
+            with the single IP address associated with the FQDN.
+          - When creating a new pool member, the default for this parameter is C(true).
+          - Once set this parameter cannot be changed afterwards.
+          - This parameter is ignored when C(reuse_nodes) is C(true).
+        type: bool
+      reuse_nodes:
+        description:
+          - Reuses node definitions if requested.
+        type: bool
+        default: yes
+      monitors:
+        description:
+          - Specifies the health monitors the system currently uses to monitor
+            this resource.
+        type: list
+        elements: str
+      availability_requirements:
+        description:
+          - If you activate more than one health monitor, specifies the number of health
+            monitors that must receive successful responses in order for the link to be
+            considered available.
+          - Specifying an empty string will remove the monitors and revert to inheriting from the pool (default).
+          - Specifying C(none) will remove any health monitoring from the member completely.
+        type: dict
+        suboptions:
+          type:
+            description:
+              - Monitor rule type when C(monitors) is specified.
+              - When creating a new pool, if this value is not specified, the default of
+                C(all) will be used.
+            type: str
+            required: True
+            choices:
+              - all
+              - at_least
+          at_least:
+            description:
+              - Specifies the minimum number of active health monitors that must be successful
+                before the link is considered up.
+              - This parameter is only relevant when a C(type) of C(at_least) is used.
+              - This parameter will be ignored if a type of C(all) is used.
+            type: int
+      ip_encapsulation:
+        description:
+          - Specifies the IP encapsulation using either IPIP (IP encapsulation within IP,
+            RFC 2003) or GRE (Generic Router Encapsulation, RFC 2784) on outbound packets
+            (from BIG-IP system to server-pool member).
+          - When C(none), disables IP encapsulation.
+          - When C(inherit), inherits the IP encapsulation setting from the member's pool.
+          - When any other value, the options are None, Inherit from Pool, and Member Specific.
+        type: str
+      state:
+        description:
+          - Pool member state.
+        type: str
+        choices:
+          - present
+          - absent
+          - enabled
+          - disabled
+          - forced_offline
+        default: present
+      partition:
+        description:
+          - Partition to manage resources on.
+        type: str
+        default: Common
+    aliases:
+      - members
   pool:
     description:
       - Pool name. This pool must exist.
     type: str
     required: True
-  partition:
+  name:
     description:
-      - Partition to manage resources on.
+      - Name of the node to create or re-use when creating a new pool member.
+      - While this parameter is optional, we recommend specifying this parameter
+        at all times to mitigate any unexpected behavior.
+      - If not specified, a node name is created automatically from either the specified C(address) or C(fqdn).
+      - The C(enabled) state is an alias of C(present).
     type: str
-    default: Common
   address:
     description:
       - IP address of the pool member. This can be either IPv4 or IPv6. When creating a
@@ -172,18 +320,22 @@ options:
       - When C(inherit), inherits the IP encapsulation setting from the member's pool.
       - When any other value, the options are None, Inherit from Pool, and Member Specific.
     type: str
-  aggregate:
+  state:
     description:
-      - List of pool member definitions to be created, modified, or removed.
-      - When using C(aggregates), if one of the aggregate definitions is invalid, the aggregate run will fail,
-        indicating the error it last encountered.
-      - The module will B(NOT) rollback any changes it has made prior to encountering the error.
-      - The module also will not indicate what changes were made prior to failure. Therefore we strong advise
-        you run the module in C(check) mode to ensure basic validation prior to executing this module.
-    type: list
-    elements: dict
-    aliases:
-      - members
+      - Pool member state.
+    type: str
+    choices:
+      - present
+      - absent
+      - enabled
+      - disabled
+      - forced_offline
+    default: present
+  partition:
+    description:
+      - Partition to manage resources on.
+    type: str
+    default: Common
   replace_all_with:
     description:
       - Removes members not defined in the C(aggregate) parameter.
@@ -1612,6 +1764,9 @@ class ArgumentSpec(object):
 
         # remove default in aggregate spec, to handle common arguments
         remove_default_spec(aggregate_spec)
+        aggregate_spec["state"].update(default="present")
+        aggregate_spec["partition"].update(default="Common")
+        aggregate_spec["reuse_nodes"].update(default=True)
 
         self.argument_spec = dict(
             aggregate=dict(

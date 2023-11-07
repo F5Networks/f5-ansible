@@ -5,13 +5,13 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = """
-name: license_hopper
-author: Tim Rupp (@caphrim007)
-version_added: "1.0.0"
-short_description: Return random license from list
-description:
-  - Select a random license key from a file and remove it from future lookups.
-  - Can optionally remove the key if C(remove=True) is specified.
+    name: license_hopper
+    author: Tim Rupp (@caphrim007)
+    version_added: "1.0.0"
+    short_description: Return random license from list
+    description:
+      - Select a random license key from a file and remove it from future lookups.
+      - Can optionally remove the key if C(remove=True) is specified.
 """
 
 EXAMPLES = """
