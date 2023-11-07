@@ -157,7 +157,7 @@ EXAMPLES = r'''
     key: 0
     secondary_address: 192.168.1.100
     mtu: 0
-    use_pmtu: yes
+    use_pmtu: true
     tos: preserve
     auto_last_hop: default
     traffic_group: traffic-group-1
@@ -570,7 +570,7 @@ class ArgumentSpec(object):
             name=dict(required=True),
             profile=dict(),
             description=dict(),
-            key=dict(type='int'),
+            key=dict(type='int', no_log=True),
             local_address=dict(),
             remote_address=dict(),
             secondary_address=dict(),

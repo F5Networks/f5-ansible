@@ -185,6 +185,166 @@ options:
         you run the module in C(check) mode to ensure basic validation prior to executing this module.
     type: list
     elements: dict
+    suboptions:
+      description:
+        description:
+          - Specifies descriptive text that identifies the pool.
+        type: str
+      name:
+        description:
+          - Pool name
+        type: str
+        aliases:
+          - pool
+      lb_method:
+        description:
+          - Load balancing method. When creating a new pool, if this value is not
+            specified, the default of C(round-robin) is used.
+        type: str
+        choices:
+          - dynamic-ratio-member
+          - dynamic-ratio-node
+          - fastest-app-response
+          - fastest-node
+          - least-connections-member
+          - least-connections-node
+          - least-sessions
+          - observed-member
+          - observed-node
+          - predictive-member
+          - predictive-node
+          - ratio-least-connections-member
+          - ratio-least-connections-node
+          - ratio-member
+          - ratio-node
+          - ratio-session
+          - round-robin
+          - weighted-least-connections-member
+          - weighted-least-connections-node
+      monitor_type:
+        description:
+          - Monitor rule type when C(monitors) is specified.
+          - When creating a new pool, if this value is not specified, the default
+            of C(and_list) is used.
+          - When C(single), ensures all specified monitors are checked, but
+            additionally includes checks to make sure you only specified a single
+            monitor.
+          - When C(and_list), ensures B(all) monitors are checked.
+          - When C(m_of_n), ensures C(quorum) of C(monitors) are checked. C(m_of_n)
+            B(requires) a C(quorum) of 1 or greater be set either in the playbook,
+            or already exist on the device.
+          - Both C(single) and C(and_list) are functionally identical, as BIG-IP
+            considers all monitors as "a list".
+        type: str
+        aliases:
+          - availability_requirements_type
+        choices:
+          - and_list
+          - m_of_n
+          - single
+      quorum:
+        description:
+          - Monitor quorum value when C(monitor_type) is C(m_of_n).
+          - Quorum must be a value of 1 or greater when C(monitor_type) is C(m_of_n).
+        type: int
+        aliases:
+          - availability_requirements_at_least
+      monitors:
+        description:
+          - Monitor template name list. If the partition is not provided as part of
+            the monitor name, the C(partition) option is used instead.
+        type: list
+        elements: str
+      slow_ramp_time:
+        description:
+          - Sets the ramp-up time (in seconds) to gradually ramp up the load on
+            newly added or freshly detected up pool members.
+        type: int
+      reselect_tries:
+        description:
+          - Sets the number of times the system tries to contact a pool member
+            after a passive failure.
+        type: int
+      service_down_action:
+        description:
+          - Sets the action to take when node goes down in pool.
+        type: str
+        choices:
+          - none
+          - reset
+          - drop
+          - reselect
+      partition:
+        description:
+          - Device partition on which to manage resources.
+        type: str
+        default: Common
+      state:
+        description:
+          - When C(present), guarantees the pool exists with the provided
+            attributes.
+          - When C(absent), removes the pool from the system.
+        type: str
+        choices:
+          - absent
+          - present
+        default: present
+      metadata:
+        description:
+          - Arbitrary key/value pairs you can attach to a pool. This is useful in
+            situations where you might want to annotate a pool to be managed by Ansible.
+          - Key names are stored as strings; this includes names that are numbers.
+          - Values for all of the keys are stored as strings; this includes values
+            that are numbers.
+          - Data will be persisted, not ephemeral.
+        type: raw
+      priority_group_activation:
+        description:
+          - Specifies whether the system load balances traffic according to the priority
+            number assigned to the pool member.
+          - When creating a new pool, if this parameter is not specified, the default of
+            C(0) is used.
+          - To disable this setting, provide the value C(0).
+          - Once you enable this setting, you can specify pool member priority when you
+            create a new pool or on a pool member's properties screen.
+          - The system treats same-priority pool members as a group.
+          - To enable priority group activation, provide a number from C(0) to C(65535)
+            that represents the minimum number of members that must be available in one
+            priority group before the system directs traffic to members in a lower
+            priority group.
+          - When a sufficient number of members become available in the higher priority
+            group, the system again directs traffic to the higher priority group.
+        type: int
+        aliases:
+          - minimum_active_members
+      min_up_members:
+        description:
+          - Specifies the minimum number of pool members that must be up,
+          - otherwise, the system takes the action specified in the C(min-up-members-action) option.
+          - Use this option for gateway pools in a redundant system where a unit number is applied to the pool.
+          - This indicates the pool is configured only on the specified unit.
+          - When creating a new pool, if this parameter is not specified, the default is C(0).
+        type: int
+      min_up_members_action:
+        description:
+          - Specifies the action to take if C(min_up_members_checking) is C(enabled) and the number of active pool members
+            falls below the number specified in the C(min_up_members) option.
+          - When creating a new pool, if this parameter is not specified, the default is C(failover).
+        type: str
+        choices:
+          - failover
+          - reboot
+          - restart-all
+      min_up_members_checking:
+        description:
+          - Enables or disables the C(min_up_members) feature.
+          - If you enable this feature, you must also specify a value for both the C(min_up_members) and
+            C(min_up_members_action) options.
+          - When creating a new pool, if this parameter is not specified, the default is C(disabled).
+        type: str
+        choices:
+          - enabled
+          - disabled
     aliases:
       - pools
   replace_all_with:
@@ -363,7 +523,7 @@ EXAMPLES = r'''
         partition: Common
         lb_method: round-robin
         slow_ramp_time: 120
-    replace_all_with: yes
+    replace_all_with: true
     provider:
       server: lb.mydomain.com
       user: admin
@@ -1291,10 +1451,6 @@ class ArgumentSpec(object):
             ),
             description=dict(),
             metadata=dict(type='raw'),
-            state=dict(
-                default='present',
-                choices=['present', 'absent']
-            ),
             priority_group_activation=dict(
                 type='int',
                 aliases=['minimum_active_members']
@@ -1308,6 +1464,10 @@ class ArgumentSpec(object):
             min_up_members_checking=dict(
                 choices=['enabled', 'disabled']
             ),
+            state=dict(
+                default='present',
+                choices=['present', 'absent']
+            ),
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
@@ -1316,8 +1476,9 @@ class ArgumentSpec(object):
 
         aggregate_spec = deepcopy(element_spec)
 
-        # remove default in aggregate spec, to handle common arguments
         remove_default_spec(aggregate_spec)
+        aggregate_spec["state"].update(default="present")
+        aggregate_spec["partition"].update(default="Common")
 
         argument_spec = dict(
             aggregate=dict(

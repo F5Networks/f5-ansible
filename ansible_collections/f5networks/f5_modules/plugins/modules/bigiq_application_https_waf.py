@@ -42,7 +42,7 @@ options:
       port:
         description:
           - The port of the server.
-        type: str
+        type: int
         default: 80
   inbound_virtual:
     description:
@@ -70,7 +70,7 @@ options:
           - The port on which the virtual listens for connections.
           - When creating a new application, if this parameter is not specified, the
             default value is C(443).
-        type: str
+        type: int
         default: 443
   redirect_virtual:
     description:
@@ -100,7 +100,7 @@ options:
           - The port on which the virtual listens for connections.
           - When creating a new application, if this parameter is not specified, the
             default value of C(80) will be used.
-        type: str
+        type: int
         default: 80
   client_ssl_profile:
     description:
@@ -973,7 +973,7 @@ class ArgumentSpec(object):
                 elements='dict',
                 options=dict(
                     address=dict(required=True),
-                    port=dict(default=80)
+                    port=dict(type='int', default=80)
                 )
             ),
             inbound_virtual=dict(
@@ -981,7 +981,7 @@ class ArgumentSpec(object):
                 options=dict(
                     address=dict(required=True),
                     netmask=dict(required=True),
-                    port=dict(default=443)
+                    port=dict(type='int', default=443)
                 )
             ),
             redirect_virtual=dict(
@@ -989,7 +989,7 @@ class ArgumentSpec(object):
                 options=dict(
                     address=dict(required=True),
                     netmask=dict(required=True),
-                    port=dict(default=80)
+                    port=dict(type='int', default=80)
                 )
             ),
             service_environment=dict(),
@@ -1003,11 +1003,12 @@ class ArgumentSpec(object):
                     name=dict(default='clientssl'),
                     cert_key_chain=dict(
                         type='raw',
+                        no_log=True,
                         options=dict(
                             cert=dict(),
-                            key=dict(),
+                            key=dict(no_log=True),
                             chain=dict(),
-                            passphrase=dict()
+                            passphrase=dict(no_log=True)
                         )
                     )
                 )

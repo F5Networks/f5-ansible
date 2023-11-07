@@ -377,7 +377,7 @@ EXAMPLES = r'''
 - name: Create HTTP profile
   bigip_profile_http:
     name: my_profile
-    insert_xforwarded_for: yes
+    insert_xforwarded_for: true
     redirect_rewrite: all
     state: present
     provider:

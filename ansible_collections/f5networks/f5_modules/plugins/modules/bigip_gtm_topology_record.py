@@ -202,10 +202,10 @@ EXAMPLES = r'''
   bigip_gtm_topology_record:
     source:
       - region: Baz
-      - negate: yes
+      - negate: true
     destination:
       - datacenter: Baz-DC
-      - negate: yes
+      - negate: true
     provider:
       password: secret
       server: lb.mydomain.com

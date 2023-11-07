@@ -172,7 +172,7 @@ EXAMPLES = r'''
 - name: Create an ICMP monitor
   bigip_monitor_icmp:
     name: icmp1
-    adaptive: no
+    adaptive: false
     interval: 1
     time_until_up: 0
     timeout: 3
@@ -185,7 +185,7 @@ EXAMPLES = r'''
 - name: Update an ICMP monitor
   bigip_monitor_icmp:
     name: icmp1
-    manual_resume: yes
+    manual_resume: true
     interval: 5
     provider:
       password: secret

@@ -237,7 +237,7 @@ EXAMPLES = r'''
     query_name: localhost
     query_type: aaaa
     up_interval: 5
-    adaptive: no
+    adaptive: false
     state: present
     provider:
       user: admin

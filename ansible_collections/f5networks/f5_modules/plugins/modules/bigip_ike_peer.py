@@ -769,7 +769,7 @@ class ArgumentSpec(object):
                 ]
             ),
             phase1_cert=dict(),
-            phase1_key=dict(),
+            phase1_key=dict(no_log=True),
             phase1_verify_peer_cert=dict(type='bool'),
             update_password=dict(
                 default='always',

@@ -132,7 +132,7 @@ EXAMPLES = r'''
       - 1.2
     link_selection_policy: maximum-bandwidth
     frame_distribution_hash: destination-mac
-    lacp_enabled: yes
+    lacp_enabled: true
     lacp_mode: passive
     lacp_timeout: short
     provider:

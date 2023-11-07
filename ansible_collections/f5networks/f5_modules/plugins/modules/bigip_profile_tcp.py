@@ -156,7 +156,7 @@ EXAMPLES = r'''
   bigip_profile_tcp:
     name: foo
     parent: f5-tcp-progressive
-    time_wait_recycle: no
+    time_wait_recycle: false
     idle_timeout: 300
     state: present
     provider:

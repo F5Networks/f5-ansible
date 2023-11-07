@@ -1180,11 +1180,12 @@ class ArgumentSpec(object):
             cert_key_chain=dict(
                 type='list',
                 elements='dict',
+                no_log=True,
                 options=dict(
                     cert=dict(required=True),
-                    key=dict(required=True),
+                    key=dict(required=True, no_log=True),
                     chain=dict(),
-                    passphrase=dict(),
+                    passphrase=dict(no_log=True),
                     true_names=dict(
                         type='bool',
                         default='no'

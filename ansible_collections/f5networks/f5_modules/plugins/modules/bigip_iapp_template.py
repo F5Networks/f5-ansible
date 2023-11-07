@@ -91,7 +91,7 @@ EXAMPLES = r'''
 - name: Update a template in place that has existing services created from it.
   bigip_iapp_template:
     content: "{{ lookup('template', 'iapp-new.tmpl') }}"
-    force: yes
+    force: true
     state: present
     provider:
       user: admin

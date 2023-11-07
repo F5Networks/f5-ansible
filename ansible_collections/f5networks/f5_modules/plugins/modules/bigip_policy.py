@@ -105,8 +105,8 @@ EXAMPLES = r'''
         path_ends_with:
           - baz
     actions:
-      - forward: yes
-        select: yes
+      - forward: true
+        select: true
         pool: pool-svrs
     provider:
       server: lb.mydomain.com

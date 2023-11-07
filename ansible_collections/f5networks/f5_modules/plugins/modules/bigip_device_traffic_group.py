@@ -121,7 +121,7 @@ EXAMPLES = r'''
     ha_order:
       - /Common/bigip1.lab.local
       - /Common/bigip2.lab.local
-    auto_failback: yes
+    auto_failback: true
     auto_failback_time: 40
     provider:
       user: admin
@@ -135,7 +135,7 @@ EXAMPLES = r'''
     state: present
     ha_group: foo_HA_grp
     ha_order: ""
-    auto_failback: no
+    auto_failback: false
     provider:
       user: admin
       password: secret

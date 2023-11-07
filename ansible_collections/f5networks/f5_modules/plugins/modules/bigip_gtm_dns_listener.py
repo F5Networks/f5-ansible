@@ -146,8 +146,8 @@ EXAMPLES = r'''
       user: admin
     source_port: preserve
     state: present
-    translate_address: yes
-    translate_port: yes
+    translate_address: true
+    translate_port: true
   delegate_to: localhost
 
 - name: 'Disable a DNS Listener'

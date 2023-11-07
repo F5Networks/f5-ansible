@@ -24,6 +24,7 @@ jobs:
         - travis_retry inv test.install-dep
         - travis_retry pip install pytest --upgrade
         - inv test.unit
+        - ansible-lint "$TRAVIS_BUILD_DIR/ansible_collections/f5networks/f5_modules"
       python: "3.8"
     - name: F5 Style and F5 Sanity Tests
       script:

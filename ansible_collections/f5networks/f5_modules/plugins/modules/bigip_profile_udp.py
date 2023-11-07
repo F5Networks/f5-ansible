@@ -73,7 +73,7 @@ EXAMPLES = r'''
     name: foo
     parent: udp
     idle_timeout: 300
-    datagram_load_balancing: no
+    datagram_load_balancing: false
     state: present
     provider:
       user: admin

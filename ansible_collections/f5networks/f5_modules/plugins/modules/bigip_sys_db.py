@@ -366,7 +366,7 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            key=dict(required=True),
+            key=dict(required=True, no_log=True),
             state=dict(
                 default='present',
                 choices=['present', 'reset']

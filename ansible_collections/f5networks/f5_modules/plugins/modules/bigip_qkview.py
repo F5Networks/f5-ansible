@@ -63,7 +63,7 @@ options:
       - If C(no), the file will only be transferred if the destination does not
         exist.
     type: bool
-    default: yes
+    default: true
   only_create_file:
     description:
       - If C(true), the file is created on the device and not downloaded. The file will not be deleted by the
@@ -87,7 +87,7 @@ author:
 EXAMPLES = r'''
 - name: Fetch a qkview from the remote device
   bigip_qkview:
-    asm_request_log: yes
+    asm_request_log: true
     exclude:
       - audit
       - secure

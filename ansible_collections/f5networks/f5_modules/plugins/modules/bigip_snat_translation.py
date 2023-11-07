@@ -112,7 +112,7 @@ EXAMPLES = r'''
     name: my-snat-pool
     state: present
     address: 10.10.10.10
-    arp: no
+    arp: false
     connection_limit: 300
     ip_idle_timeout: 1800
     tcp_idle_timeout: 1800
@@ -128,7 +128,7 @@ EXAMPLES = r'''
     name: my-snat-pool
     state: disabled
     address: 10.10.10.10
-    arp: no
+    arp: false
     connection_limit: 300
     ip_idle_timeout: 1800
     tcp_idle_timeout: 1800
@@ -144,7 +144,7 @@ EXAMPLES = r'''
     name: my-snat-pool
     state: enabled
     address: 10.10.10.10
-    arp: no
+    arp: false
     connection_limit: 300
     ip_idle_timeout: 1800
     tcp_idle_timeout: 1800
@@ -160,7 +160,7 @@ EXAMPLES = r'''
     name: my-new-snat-pool
     state: enabled
     address: 10.10.10.10
-    arp: no
+    arp: false
     connection_limit: 300
     ip_idle_timeout: 1800
     partition: ansible
@@ -177,7 +177,7 @@ EXAMPLES = r'''
     name: my-new-snat-pool
     state: enabled
     address: 10.10.10.10
-    arp: no
+    arp: false
     connection_limit: 300
     ip_idle_timeout: 1800
     partition: ansible
@@ -189,7 +189,6 @@ EXAMPLES = r'''
       user: admin
       password: secret
   delegate_to: localhost
-
 '''
 
 RETURN = r'''

@@ -222,7 +222,7 @@ EXAMPLES = r'''
     type: a
     pools:
       - name: pool1
-        persistence: yes
+        persistence: true
         persist_cidr_ipv4: 24
         persist_cidr_ipv6: 120
         persistence_ttl: 3500

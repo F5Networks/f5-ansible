@@ -151,12 +151,12 @@ EXAMPLES = r'''
 - name: Create a DNS profile
   bigip_profile_dns:
     name: foo
-    enable_dns_express: no
-    enable_dnssec: no
-    enable_gtm: no
-    process_recursion_desired: no
-    use_local_bind: no
-    enable_dns_firewall: yes
+    enable_dns_express: false
+    enable_dnssec: false
+    enable_gtm: false
+    process_recursion_desired: false
+    use_local_bind: false
+    enable_dns_firewall: true
     provider:
       password: secret
       server: lb.mydomain.com

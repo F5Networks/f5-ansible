@@ -101,7 +101,7 @@ EXAMPLES = r'''
       password: secret
       server: lb.mydomain.come
       user: admin
-      validate_certs: no
+      validate_certs: false
   delegate_to: localhost
 '''
 
@@ -135,7 +135,7 @@ pool:
   description: Whether the banner is enabled or not.
   returned: changed
   type: str
-  sample: yes
+  sample: true
 partition:
   description: The partition that the static route was created on.
   returned: changed

@@ -121,7 +121,7 @@ EXAMPLES = r'''
 - name: Create a sync-only device group with auto-sync enabled
   bigip_device_group:
     name: foo-group
-    auto_sync: yes
+    auto_sync: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -131,8 +131,8 @@ EXAMPLES = r'''
 - name: Create a sync-only device group with auto-sync and asm-sync enabled
   bigip_device_group:
     name: foo-group
-    auto_sync: yes
-    asm_sync: yes
+    auto_sync: true
+    asm_sync: true
     provider:
       password: secret
       server: lb.mydomain.com

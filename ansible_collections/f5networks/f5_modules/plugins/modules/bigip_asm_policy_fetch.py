@@ -72,7 +72,7 @@ EXAMPLES = r'''
     name: foobar
     file: export_foo
     dest: /root/download
-    binary: yes
+    binary: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -82,8 +82,8 @@ EXAMPLES = r'''
 - name: Export policy inline base64 encoded format
   bigip_asm_policy_fetch:
     name: foobar
-    inline: yes
-    base64: yes
+    inline: true
+    base64: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -106,7 +106,7 @@ EXAMPLES = r'''
     name: foobar
     file: export_foo.xml
     dest: /root/download/
-    compact: yes
+    compact: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -117,7 +117,7 @@ EXAMPLES = r'''
   bigip_asm_policy_fetch:
     name: foobar
     dest: /root/download/
-    binary: yes
+    binary: true
     provider:
       password: secret
       server: lb.mydomain.com

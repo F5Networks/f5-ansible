@@ -20,7 +20,7 @@ options:
     description:
       - Route domain on which to manage the BGP configuration.
     type: str
-    default: 0
+    default: "0"
   lines:
     description:
       - The ordered set of commands that should be configured in the
@@ -286,7 +286,7 @@ EXAMPLES = r'''
 - name: configurable backup path
   bigip_imish_config:
     lines: bfd slow-timer 2000
-    backup: yes
+    backup: true
     provider:
       user: admin
       password: secret
@@ -777,7 +777,7 @@ class ArgumentSpec(object):
             dir_path=dict(type='path')
         )
         argument_spec = dict(
-            route_domain=dict(default=0),
+            route_domain=dict(default="0"),
             src=dict(type='path'),
             lines=dict(
                 type='list',

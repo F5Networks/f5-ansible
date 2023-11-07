@@ -157,7 +157,7 @@ EXAMPLES = r'''
   bigip_iapp_service:
     name: tests
     template: web_frontends
-    force: yes
+    force: true
     state: present
     parameters:
       variables:
@@ -237,9 +237,9 @@ EXAMPLES = r'''
     template: f5.http
     parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
     metadata:
-      - persist: yes
+      - persist: true
         name: data 1
-      - persist: yes
+      - persist: true
         name: data 2
     state: present
     provider:

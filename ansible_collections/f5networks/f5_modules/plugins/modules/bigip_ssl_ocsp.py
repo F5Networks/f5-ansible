@@ -728,7 +728,7 @@ class ArgumentSpec(object):
                 choices=['sha256', 'sha1']
             ),
             certificate=dict(),
-            key=dict(),
+            key=dict(no_log=True),
             passphrase=dict(no_log=True),
             status_age=dict(type='int'),
             strict_responder_checking=dict(type='bool'),
