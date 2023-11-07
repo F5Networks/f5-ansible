@@ -167,7 +167,7 @@ EXAMPLES = r'''
 - name: Create a monitor
   bigip_monitor_gateway_icmp:
     name: gw1
-    adaptive: no
+    adaptive: false
     interval: 1
     time_until_up: 0
     timeout: 3

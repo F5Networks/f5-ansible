@@ -91,7 +91,7 @@ EXAMPLES = r'''
   find:
     paths: /var/tmp/project
     patterns: "^.*?\\.(?:html|?:css|?:js)$"
-    use_regex: yes
+    use_regex: true
   register: f
 
 - name: Upload a directory of files as a set of iFiles

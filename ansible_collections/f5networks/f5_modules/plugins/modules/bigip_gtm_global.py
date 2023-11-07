@@ -43,9 +43,9 @@ author:
 EXAMPLES = r'''
 - name: Configure synchronization settings
   bigip_gtm_global:
-    synchronization: yes
+    synchronization: true
     synchronization_group_name: my-group
-    synchronize_zone_files: yes
+    synchronize_zone_files: true
     state: present
     provider:
       user: admin

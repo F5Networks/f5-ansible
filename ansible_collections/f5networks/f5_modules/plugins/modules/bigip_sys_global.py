@@ -80,7 +80,7 @@ author:
 EXAMPLES = r'''
 - name: Disable the setup utility
   bigip_sys_global:
-    gui_setup: no
+    gui_setup: false
     provider:
       password: secret
       server: lb.mydomain.com

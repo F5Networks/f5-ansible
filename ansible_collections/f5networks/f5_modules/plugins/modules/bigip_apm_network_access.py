@@ -152,7 +152,7 @@ EXAMPLES = r'''
   bigip_apm_network_access:
     name: foobar
     ip_version: ipv4
-    split_tunnel: yes
+    split_tunnel: true
     snat_pool: "none"
     ipv4_lease_pool: leasefoo
     ipv4_address_space:
@@ -174,8 +174,8 @@ EXAMPLES = r'''
       - subnet: 172.16.23.0/24
     excluded_ipv4_adresses:
       - subnet: 10.10.2.0/24
-    allow_local_subnet: yes
-    allow_local_dns: yes
+    allow_local_subnet: true
+    allow_local_dns: true
     provider:
       password: secret
       server: lb.mydomain.com

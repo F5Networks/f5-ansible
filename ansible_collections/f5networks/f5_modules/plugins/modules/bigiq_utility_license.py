@@ -50,7 +50,7 @@ EXAMPLES = r'''
 - name: Add a utility license to the system
   bigiq_utility_license:
     license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-    accept_eula: yes
+    accept_eula: true
     state: present
     provider:
       user: admin

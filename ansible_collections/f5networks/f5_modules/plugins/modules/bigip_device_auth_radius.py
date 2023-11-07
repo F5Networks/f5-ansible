@@ -86,9 +86,9 @@ EXAMPLES = r'''
       - "ansible_test2"
     retries: 3
     service_type: authenticate-only
-    accounting_bug: no
-    use_for_auth: yes
-    fallback_to_local: yes
+    accounting_bug: false
+    use_for_auth: true
+    fallback_to_local: true
     state: present
     provider:
       password: secret
@@ -100,7 +100,7 @@ EXAMPLES = r'''
   bigip_device_auth_radius:
     retries: 5
     service_type: administrative
-    accounting_bug: yes
+    accounting_bug: true
     state: present
     provider:
       password: secret

@@ -87,7 +87,7 @@ EXAMPLES = r'''
   bigip_asm_policy:
     name: new_apm_policy
     source: /root/apm_policy.tar.gz
-    force: yes
+    force: true
     provider:
       server: lb.mydomain.com
       user: admin

@@ -49,7 +49,7 @@ options:
           - This option sets rate limits for the logging of packets that match ACL rules
             configured with an "accept" or "accept decisively" action.
           - This option is effective only if logging of this message type is enabled.
-        type: int
+        type: str
   log_matches_drop_rule:
     description:
       - Modifies log settings for ACL rules configured with a drop action.
@@ -65,7 +65,7 @@ options:
           - This option sets rate limits for the logging of packets that match ACL rules
             configured with a drop action.
           - This option is effective only if logging of this message type is enabled.
-        type: int
+        type: str
   log_matches_reject_rule:
     description:
       - Modifies log settings for ACL rules configured with a reject action.
@@ -81,7 +81,7 @@ options:
           - This option sets rate limits for the logging of packets that match ACL rules
             configured with a reject action.
           - This option is effective only if logging of this message type is enabled.
-        type: int
+        type: str
   log_ip_errors:
     description:
       - Modifies log settings for logging of IP error packets.
@@ -95,7 +95,7 @@ options:
         description:
           - This option sets rate limits for the logging of IP error packets.
           - This option is effective only if logging of this message type is enabled.
-        type: int
+        type: str
   log_tcp_errors:
     description:
       - Modifies log settings for the logging of TCP error packets.
@@ -109,7 +109,7 @@ options:
         description:
           - This option sets rate limits for the logging of TCP error packets.
           - This option is effective only if logging of this message type is enabled.
-        type: int
+        type: str
   log_tcp_events:
     description:
       - Modifies the log settings for logging of TCP events on the client side.
@@ -124,7 +124,7 @@ options:
         description:
           - This option sets rate limits for the logging of TCP events on the client side.
           - This option is effective only if logging of this message type is enabled.
-        type: int
+        type: str
   log_translation_fields:
     description:
       - This option enables or disables the logging of translated (i.e server side) fields in ACL
@@ -228,14 +228,14 @@ EXAMPLES = r'''
 - name: Add network settings to log profile
   bigip_firewall_log_profile_network:
     profile_name: barbaz
-    rate_limit: 150000
+    rate_limit: "150000"
     log_publisher: local-db-pub
     log_tcp_errors:
-      enabled: yes
-      rate_limit: 10000
+      enabled: true
+      rate_limit: "10000"
     log_tcp_events:
-      enabled: yes
-      rate_limit: 40000
+      enabled: true
+      rate_limit: "40000"
     log_storage_format: "field-list"
     log_message_fields:
       - vlan
@@ -265,12 +265,12 @@ EXAMPLES = r'''
     profile_name: "global-network"
     log_publisher: "/foobar/log1"
     log_ip_errors:
-      enabled: yes
-      rate_limit: 60000
+      enabled: true
+      rate_limit: "60000"
     log_matches_reject_rule:
-      enabled: yes
-      rate_limit: 2000
-    log_translation_fields: yes
+      enabled: true
+      rate_limit: "2000"
+    log_translation_fields: true
     log_storage_format: "field-list"
     log_format_delimiter: '.'
     log_message_fields:

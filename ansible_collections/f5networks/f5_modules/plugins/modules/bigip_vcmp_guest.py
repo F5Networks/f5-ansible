@@ -204,7 +204,7 @@ EXAMPLES = r'''
   bigip_vcmp_guest:
     name: guest1
     state: absent
-    delete_virtual_disk: yes
+    delete_virtual_disk: true
     provider:
       password: secret
       server: lb.mydomain.com

@@ -170,7 +170,7 @@ EXAMPLES = r'''
       - 10.10.10.11
     service_name: ppp
     state: present
-    use_for_auth: yes
+    use_for_auth: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -188,7 +188,7 @@ EXAMPLES = r'''
         port: 1234
       - 10.10.10.11
     service_name: ppp
-    use_for_auth: yes
+    use_for_auth: true
     state: present
     provider:
       password: secret

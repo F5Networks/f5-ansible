@@ -124,7 +124,7 @@ EXAMPLES = r'''
 - name: Check for provision progress
   bigip_provision_async:
     module: "gtm"
-    check_status: yes
+    check_status: true
     status_timeout: 900
     provider:
       server: lb.mydomain.com
@@ -147,7 +147,7 @@ EXAMPLES = r'''
 - name: Re-check for provision progress
   bigip_provision_async:
     module: "gtm"
-    check_status: yes
+    check_status: true
     status_timeout: 900
     provider:
       server: lb.mydomain.com
@@ -191,7 +191,7 @@ EXAMPLES = r'''
   bigip_provision_async:
     module: "vcmp"
     level: "dedicated"
-    check_status: yes
+    check_status: true
     status_timeout: 900
     provider:
       server: lb.mydomain.com
@@ -216,7 +216,7 @@ EXAMPLES = r'''
   bigip_provision_async:
     module: "vcmp"
     level: "dedicated"
-    check_status: yes
+    check_status: true
     status_timeout: 900
     provider:
       server: lb.mydomain.com
@@ -260,7 +260,7 @@ EXAMPLES = r'''
   bigip_provision_async:
     module: "vcmp"
     state: "absent"
-    check_status: yes
+    check_status: true
     status_timeout: 900
     provider:
       server: lb.mydomain.com
@@ -282,7 +282,7 @@ EXAMPLES = r'''
   bigip_provision_async:
     module: "vcmp"
     state: "absent"
-    check_status: yes
+    check_status: true
     status_timeout: 900
     provider:
       server: lb.mydomain.com

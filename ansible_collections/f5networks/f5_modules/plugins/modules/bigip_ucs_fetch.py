@@ -112,7 +112,7 @@ EXAMPLES = r'''
 - name: Only create new UCS, no download
   bigip_ucs_fetch:
     src: cs_backup.ucs
-    only_create_file: yes
+    only_create_file: true
     provider:
       server: lb.mydomain.com
       user: admin
@@ -132,7 +132,7 @@ EXAMPLES = r'''
 - name: Recreate UCS file left on device - create new file
   bigip_ucs_fetch:
     src: cs_backup.ucs
-    only_create_file: yes
+    only_create_file: true
     provider:
       server: lb.mydomain.com
       user: admin

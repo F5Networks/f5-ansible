@@ -60,7 +60,7 @@ EXAMPLES = r'''
 - name: Modify default partition and console access
   bigip_remote_user:
     default_partition: Common
-    console_access: yes
+    console_access: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -71,7 +71,7 @@ EXAMPLES = r'''
   bigip_remote_user:
     default_partition: Common
     default_role: manager
-    console_access: yes
+    console_access: true
     description: "Changed new settings"
     provider:
       password: secret
@@ -83,7 +83,7 @@ EXAMPLES = r'''
   bigip_remote_user:
     default_partition: all
     default_role: "no-access"
-    console_access: no
+    console_access: false
     description: ""
     provider:
       password: secret

@@ -131,7 +131,7 @@ EXAMPLES = r'''
 
 - name: Set the validate IP settings
   bigip_device_httpd:
-    auth_pam_validate_ip: on
+    auth_pam_validate_ip: false
     provider:
       password: secret
       server: lb.mydomain.com

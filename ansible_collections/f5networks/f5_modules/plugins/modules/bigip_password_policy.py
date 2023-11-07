@@ -396,7 +396,7 @@ class ArgumentSpec(object):
             max_login_failures=dict(type='int'),
             min_duration=dict(type='int'),
             min_length=dict(type='int'),
-            password_memory=dict(type='int'),
+            password_memory=dict(type='int', no_log=True),
             policy_enforcement=dict(type='bool'),
             required_lowercase=dict(type='int'),
             required_numeric=dict(type='int'),

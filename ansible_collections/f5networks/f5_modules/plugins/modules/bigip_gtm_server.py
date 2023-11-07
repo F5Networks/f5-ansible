@@ -407,7 +407,7 @@ packets_enabled:
   description: Whether the packets limit is enabled.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 packets_limit:
   description: The new packets_limit limit.
   returned: changed

@@ -115,7 +115,7 @@ EXAMPLES = r'''
     partition: baz
     transport_config: foovirtual
     ratio: 10
-    auto_init: yes
+    auto_init: true
     provider:
       password: secret
       server: lb.mydomain.com

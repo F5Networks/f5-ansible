@@ -934,7 +934,7 @@ class ArgumentSpec(object):
             cipher_list=dict(),
             compatibility=dict(type='bool'),
             client_cert=dict(),
-            client_key=dict(),
+            client_key=dict(no_log=True),
             update_password=dict(
                 default='always',
                 choices=['always', 'on_create'],

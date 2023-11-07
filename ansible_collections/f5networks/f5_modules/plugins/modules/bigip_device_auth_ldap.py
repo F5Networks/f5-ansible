@@ -872,7 +872,7 @@ class ArgumentSpec(object):
                 choices=['yes', 'no', 'start-tls']
             ),
             ca_cert=dict(aliases=['ssl_ca_cert']),
-            client_key=dict(aliases=['ssl_client_key']),
+            client_key=dict(aliases=['ssl_client_key'], no_log=True),
             client_cert=dict(aliases=['ssl_client_cert']),
             validate_certs=dict(type='bool', aliases=['ssl_check_peer']),
             login_ldap_attr=dict(),

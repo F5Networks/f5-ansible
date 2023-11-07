@@ -202,7 +202,7 @@ EXAMPLES = r'''
       - afm
       - dns
       - shared_security
-    force: yes
+    force: true
     provider:
       password: secret
       server: cm.mydomain.com

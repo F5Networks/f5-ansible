@@ -773,7 +773,7 @@ class ArgumentSpec(object):
             name=dict(required=True),
             certificate=dict(),
             chain=dict(),
-            key=dict(),
+            key=dict(no_log=True),
             passphrase=dict(no_log=True),
             parent=dict(default='/Common/serverssl'),
             ciphers=dict(),

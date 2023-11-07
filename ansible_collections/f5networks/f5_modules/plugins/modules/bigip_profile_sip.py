@@ -130,7 +130,7 @@ EXAMPLES = r'''
     log_profile: alg_log
     log_publisher: foo-publisher
     description: this is a new profile
-    security: yes
+    security: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -140,9 +140,9 @@ EXAMPLES = r'''
 - name: Update SIP profile
   bigip_profile_sip:
     name: foo
-    insert_record_route_header: yes
-    enable_sip_firewall: yes
-    insert_via_header: yes
+    insert_record_route_header: true
+    enable_sip_firewall: true
+    insert_via_header: true
     user_via_header: "SIP/2.0/UDP 10.10.10.10:5060"
     provider:
       password: secret

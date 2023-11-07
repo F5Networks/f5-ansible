@@ -159,7 +159,7 @@ EXAMPLES = r'''
 - name: Create a data group of addresses
   bigip_data_group:
     name: foo
-    internal: yes
+    internal: true
     records:
       - key: 0.0.0.0/32
         value: External_NAT
@@ -175,7 +175,7 @@ EXAMPLES = r'''
 - name: Create a data group of strings
   bigip_data_group:
     name: foo
-    internal: yes
+    internal: true
     records:
       - key: caddy
         value: ""
@@ -204,7 +204,7 @@ EXAMPLES = r'''
 - name: Update an existing internal data group of strings
   bigip_data_group:
     name: foo
-    internal: yes
+    internal: true
     records:
       - key: caddy
         value: ""
@@ -1459,7 +1459,7 @@ class ArgumentSpec(object):
                 type='list',
                 elements='raw',
                 options=dict(
-                    key=dict(required=True),
+                    key=dict(required=True, no_log=True),
                     value=dict(type='raw')
                 )
             ),

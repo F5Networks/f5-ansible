@@ -44,7 +44,7 @@ options:
           - The port of the server.
           - When creating a new application and specifying a server, if this parameter
             is not provided, the default is C(8000).
-        type: str
+        type: int
         default: 8000
   inbound_virtual:
     description:
@@ -69,7 +69,7 @@ options:
           - The port on which the virtual listens for connections.
           - When creating a new application, if this parameter is not specified, the
             default value is C(53).
-        type: str
+        type: int
         default: 53
   service_environment:
     description:
@@ -658,7 +658,7 @@ class ArgumentSpec(object):
                 elements='dict',
                 options=dict(
                     address=dict(required=True),
-                    port=dict(default=8000)
+                    port=dict(type='int', default=8000)
                 )
             ),
             inbound_virtual=dict(
@@ -666,7 +666,7 @@ class ArgumentSpec(object):
                 options=dict(
                     address=dict(required=True),
                     netmask=dict(required=True),
-                    port=dict(default=53)
+                    port=dict(type='int', default=53)
                 )
             ),
             service_environment=dict(),

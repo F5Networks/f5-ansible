@@ -199,7 +199,7 @@ EXAMPLES = r'''
     name: L7foo
     acl_order: 1
     type: static
-    path_match_case: no
+    path_match_case: false
     entries:
       - action: allow
         host_name: 'foobar.com'
@@ -221,7 +221,7 @@ EXAMPLES = r'''
     name: L7L4foo
     acl_order: 2
     type: static
-    path_match_case: no
+    path_match_case: false
     entries:
       - action: allow
         host_name: 'foobar.com'

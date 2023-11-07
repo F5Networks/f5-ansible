@@ -192,11 +192,11 @@ EXAMPLES = r'''
       whitelist:
         - Cuba
     heavy_urls:
-      auto_detect: yes
+      auto_detect: true
       latency_threshold: 1000
     rtbh_duration: 3600
-    rtbh_enable: yes
-    single_page_application: yes
+    rtbh_enable: true
+    single_page_application: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -207,9 +207,9 @@ EXAMPLES = r'''
   bigip_asm_dos_application:
     profile: dos_foo
     mobile_detection:
-      enabled: yes
-      allow_any_ios_package: yes
-      allow_emulators: yes
+      enabled: true
+      allow_any_ios_package: true
+      allow_emulators: true
     provider:
       password: secret
       server: lb.mydomain.com
