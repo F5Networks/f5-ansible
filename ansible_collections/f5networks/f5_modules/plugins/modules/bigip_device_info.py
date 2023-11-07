@@ -7579,7 +7579,7 @@ vlans:
         - Specifies that only connections that have a return route in the routing table are accepted.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     true_mac_address:
       description:
         - Media access control (MAC) address for the lowest-numbered interface assigned to this VLAN.

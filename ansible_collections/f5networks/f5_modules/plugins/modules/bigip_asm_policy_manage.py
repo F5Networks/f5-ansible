@@ -126,7 +126,7 @@ EXAMPLES = r'''
 - name: Create blank ASM policy and activate
   bigip_asm_policy_manage:
     name: new_blank_policy
-    active: yes
+    active: true
     state: present
     provider:
       server: lb.mydomain.com
@@ -137,7 +137,7 @@ EXAMPLES = r'''
 - name: Activate ASM policy
   bigip_asm_policy_manage:
     name: inactive_policy
-    active: yes
+    active: true
     state: present
     provider:
       server: lb.mydomain.com

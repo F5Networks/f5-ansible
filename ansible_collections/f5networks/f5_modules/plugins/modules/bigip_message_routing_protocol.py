@@ -84,7 +84,7 @@ EXAMPLES = r'''
   bigip_message_routing_protocol:
     name: foo
     description: 'This is parser'
-    no_response: yes
+    no_response: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -94,7 +94,7 @@ EXAMPLES = r'''
 - name: Modify a generic parser
   bigip_message_routing_protocol:
     name: foo
-    no_response: no
+    no_response: false
     max_egress_buffer: 10000
     max_msg_size: 2000
     provider:

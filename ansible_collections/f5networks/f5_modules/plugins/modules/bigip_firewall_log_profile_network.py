@@ -231,10 +231,10 @@ EXAMPLES = r'''
     rate_limit: "150000"
     log_publisher: local-db-pub
     log_tcp_errors:
-      enabled: yes
+      enabled: true
       rate_limit: "10000"
     log_tcp_events:
-      enabled: yes
+      enabled: true
       rate_limit: "40000"
     log_storage_format: "field-list"
     log_message_fields:
@@ -265,12 +265,12 @@ EXAMPLES = r'''
     profile_name: "global-network"
     log_publisher: "/foobar/log1"
     log_ip_errors:
-      enabled: yes
+      enabled: true
       rate_limit: "60000"
     log_matches_reject_rule:
-      enabled: yes
+      enabled: true
       rate_limit: "2000"
-    log_translation_fields: yes
+    log_translation_fields: true
     log_storage_format: "field-list"
     log_format_delimiter: '.'
     log_message_fields:

@@ -523,7 +523,7 @@ EXAMPLES = r'''
         partition: Common
         lb_method: round-robin
         slow_ramp_time: 120
-    replace_all_with: yes
+    replace_all_with: true
     provider:
       server: lb.mydomain.com
       user: admin

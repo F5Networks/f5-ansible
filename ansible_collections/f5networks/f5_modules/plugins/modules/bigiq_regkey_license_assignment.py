@@ -83,7 +83,7 @@ EXAMPLES = r'''
     pool: my-regkey-pool
     key: XXXX-XXXX-XXXX-XXXX-XXXX
     device: 1.1.1.1
-    managed: no
+    managed: false
     device_username: admin
     device_password: secret
     state: present
@@ -98,7 +98,7 @@ EXAMPLES = r'''
     pool: my-regkey-pool
     key: XXXX-XXXX-XXXX-XXXX-XXXX
     device: bigi1.foo.com
-    managed: yes
+    managed: true
     state: present
     provider:
       user: admin
@@ -111,7 +111,7 @@ EXAMPLES = r'''
     pool: my-regkey-pool
     key: XXXX-XXXX-XXXX-XXXX-XXXX
     device: 7141a063-7cf8-423f-9829-9d40599fa3e0
-    managed: yes
+    managed: true
     state: present
     provider:
       user: admin

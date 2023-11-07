@@ -317,7 +317,7 @@ EXAMPLES = r'''
         partition: Common
         description: web server3
         member_order: 2
-    replace_all_with: yes
+    replace_all_with: true
     provider:
       server: lb.mydomain.com
       user: admin

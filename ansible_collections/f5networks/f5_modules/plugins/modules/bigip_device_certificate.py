@@ -135,7 +135,7 @@ EXAMPLES = r'''
 - name: Force update not expired certificate
   bigip_device_certificate:
     days_valid: 365
-    force: yes
+    force: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -147,7 +147,7 @@ EXAMPLES = r'''
 - name: Create a new certificate to replace expired certificate
   bigip_device_certificate:
     days_valid: 365
-    new_cert: yes
+    new_cert: true
     issuer:
       country: US
       state: WA
@@ -165,8 +165,8 @@ EXAMPLES = r'''
     days_valid: 365
     cert_name: custom.crt
     key_name: custom.key
-    new_cert: yes
-    force: yes
+    new_cert: true
+    force: true
     issuer:
       country: US
       state: WA

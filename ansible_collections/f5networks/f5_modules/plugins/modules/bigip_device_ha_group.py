@@ -130,7 +130,7 @@ EXAMPLES = r'''
     name: foo_ha
     description: empty_foo
     active_bonus: 20
-    enable: no
+    enable: false
     provider:
       password: secret
       server: lb.mydomain.com

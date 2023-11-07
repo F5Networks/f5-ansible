@@ -88,7 +88,7 @@ EXAMPLES = r'''
     name: foo
     parent: /Common/barfoo
     port: 2221
-    allow_ftps: yes
+    allow_ftps: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -100,7 +100,7 @@ EXAMPLES = r'''
     name: foo
     log_profile: /Common/alg_log
     log_publisher: /Common/foo_publisher
-    security: yes
+    security: true
     description: my description
     provider:
       password: secret

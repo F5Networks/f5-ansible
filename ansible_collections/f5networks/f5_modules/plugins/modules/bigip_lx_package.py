@@ -88,7 +88,7 @@ EXAMPLES = r'''
 - name: Install AS3 and don't delete package file
   bigip_lx_package:
     package: f5-appsvcs-3.5.0-3.noarch.rpm
-    retain_package_file: yes
+    retain_package_file: true
     provider:
       password: secret
       server: lb.mydomain.com

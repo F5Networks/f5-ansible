@@ -65,7 +65,7 @@ author:
 EXAMPLES = r'''
 - name: Save the running configuration of the BIG-IP
   bigip_config:
-    save: yes
+    save: true
     provider:
       server: lb.mydomain.com
       password: secret
@@ -74,8 +74,8 @@ EXAMPLES = r'''
 
 - name: Reset the BIG-IP configuration, for example, to RMA the device
   bigip_config:
-    reset: yes
-    save: yes
+    reset: true
+    save: true
     provider:
       server: lb.mydomain.com
       password: secret

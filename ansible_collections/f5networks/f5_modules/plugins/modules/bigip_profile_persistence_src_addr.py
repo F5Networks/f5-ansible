@@ -113,9 +113,9 @@ EXAMPLES = r'''
     name: foo
     state: present
     hash_algorithm: carp
-    match_across_services: yes
-    match_across_virtuals: yes
-    mirror: yes
+    match_across_services: true
+    match_across_virtuals: true
+    mirror: true
     mask: 255.255.255.255
     provider:
       password: secret

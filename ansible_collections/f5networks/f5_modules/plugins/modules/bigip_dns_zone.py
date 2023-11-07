@@ -106,13 +106,13 @@ EXAMPLES = r'''
   bigip_dns_zone:
     name: zone.foo.com
     dns_express:
-      enabled: yes
+      enabled: true
       server: dns-lab
       allow_notify_from:
         - 192.168.39.10
       notify_action: consume
-      verify_tsig: no
-      response_policy: no
+      verify_tsig: false
+      response_policy: false
     provider:
       password: secret
       server: lb.mydomain.com
@@ -123,13 +123,13 @@ EXAMPLES = r'''
   bigip_dns_zone:
     name: zone.foo.com
     dns_express:
-      enabled: no
+      enabled: false
       server: foo1.server.com
       allow_notify_from:
         - 192.168.39.10
       notify_action: bypass
-      verify_tsig: no
-      response_policy: no
+      verify_tsig: false
+      response_policy: false
     provider:
       password: secret
       server: lb.mydomain.com
@@ -200,7 +200,6 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
-
 '''
 
 RETURN = r'''

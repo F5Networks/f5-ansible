@@ -42,7 +42,7 @@ author:
 EXAMPLES = r'''
 - name: Enable automatic update checking
   bigip_software_update:
-    auto_check: yes
+    auto_check: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -51,8 +51,8 @@ EXAMPLES = r'''
 
 - name: Disable automatic update checking and phoning home
   bigip_software_update:
-    auto_check: no
-    auto_phone_home: no
+    auto_check: false
+    auto_phone_home: false
     provider:
       password: secret
       server: lb.mydomain.com

@@ -68,7 +68,7 @@ EXAMPLES = r'''
   bigiq_regkey_license:
     regkey_pool: foo-pool
     license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-    accept_eula: yes
+    accept_eula: true
     provider:
       password: secret
       server: cm.mydomain.com
@@ -82,7 +82,7 @@ EXAMPLES = r'''
     addon_keys:
       - YYYY-YYY-YYY
       - ZZZZ-ZZZ-ZZZ
-    accept_eula: yes
+    accept_eula: true
     provider:
       password: secret
       server: cm.mydomain.com

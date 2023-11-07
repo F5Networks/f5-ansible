@@ -60,8 +60,8 @@ EXAMPLES = r'''
     name: foo
     timer_policy: timer1
     port_misuse_policy: misuse1
-    timer_policy_enabled: yes
-    port_misuse_policy_enabled: yes
+    timer_policy_enabled: true
+    port_misuse_policy_enabled: true
     state: present
     provider:
       user: admin

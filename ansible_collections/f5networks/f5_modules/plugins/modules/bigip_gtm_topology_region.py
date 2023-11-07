@@ -119,7 +119,7 @@ EXAMPLES = r'''
     name: foobar
     region_members:
       - country: CN
-        negate: yes
+        negate: true
       - datacenter: baz
     provider:
       password: secret

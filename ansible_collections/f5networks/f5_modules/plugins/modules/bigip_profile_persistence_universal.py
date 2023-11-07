@@ -103,9 +103,9 @@ EXAMPLES = r'''
   bigip_profile_persistence_universal:
     name: foo
     state: present
-    match_across_services: yes
-    match_across_virtuals: yes
-    mirror: yes
+    match_across_services: true
+    match_across_virtuals: true
+    mirror: true
     provider:
       password: secret
       server: lb.mydomain.com

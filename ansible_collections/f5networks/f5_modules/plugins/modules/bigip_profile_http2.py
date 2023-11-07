@@ -114,7 +114,7 @@ EXAMPLES = r'''
 - name: Create HTTP2 profile
   bigip_profile_http2:
     name: my_profile
-    insert_header: yes
+    insert_header: true
     insert_header_name: FOO
     state: present
     provider:

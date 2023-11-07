@@ -120,7 +120,7 @@ options:
         description:
           - Reuses node definitions if requested.
         type: bool
-        default: yes
+        default: true
       monitors:
         description:
           - Specifies the health monitors the system currently uses to monitor
@@ -278,7 +278,7 @@ options:
     description:
       - Reuses node definitions if requested.
     type: bool
-    default: yes
+    default: true
   monitors:
     description:
       - Specifies the health monitors the system currently uses to monitor
@@ -495,7 +495,7 @@ EXAMPLES = r'''
         connection_limit: 100
         rate_limit: 50
         ratio: 2
-    replace_all_with: yes
+    replace_all_with: true
     provider:
       server: lb.mydomain.com
       user: admin

@@ -150,7 +150,7 @@ EXAMPLES = r'''
   bigip_asm_policy:
     name: new_asm_policy
     source: /root/asm_policy_new.xml
-    force: yes
+    force: true
     provider:
       server: lb.mydomain.com
       user: admin

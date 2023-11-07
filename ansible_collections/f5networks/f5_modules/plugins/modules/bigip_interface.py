@@ -266,18 +266,18 @@ EXAMPLES = r'''
 - name: Update Interface Settings
   bigip_interface:
     name: 1.1
-    stp: yes
-    stp_auto_edge_port: no
-    stp_edge_port: yes
+    stp: true
+    stp_auto_edge_port: false
+    stp_edge_port: true
     stp_link_type: shared
     description: my description
     flow_control: tx
     lldp_admin: txrx
     lldp_tlvmap: 8
-    force_gigabit_fiber: no
+    force_gigabit_fiber: false
     sflow:
       - poll_interval: 10
-      - poll_interval_global: no
+      - poll_interval_global: false
     provider:
       password: secret
       server: lb.mydomain.com
@@ -287,7 +287,7 @@ EXAMPLES = r'''
 - name: Disable Interface
   bigip_interface:
     name: 1.1
-    enabled: no
+    enabled: false
     provider:
       password: secret
       server: lb.mydomain.com
@@ -299,7 +299,7 @@ EXAMPLES = r'''
     name: 1.1
     sflow:
       - poll_interval: 0
-      - poll_interval_global: yes
+      - poll_interval_global: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -382,7 +382,7 @@ stp_auto_edge_port:
   description: Sets STP automatic edge port detection for the interface.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 stp_edge_port:
   description: Specifies whether the interface connects to an end station instead of another spanning tree bridge.
   returned: changed

@@ -286,7 +286,7 @@ EXAMPLES = r'''
       - port_range: 80-443
     irule: irule1
     action: accept
-    logging: yes
+    logging: true
     provider:
       password: secret
       server: lb.mydomain.com
@@ -302,7 +302,7 @@ EXAMPLES = r'''
     source:
       - country: US
     action: drop
-    logging: yes
+    logging: true
     provider:
       password: secret
       server: lb.mydomain.com

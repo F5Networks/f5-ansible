@@ -128,7 +128,7 @@ EXAMPLES = r'''
   bigip_ucs:
     ucs: /root/bigip.localhost.localdomain.ucs
     state: installed
-    no_license: yes
+    no_license: true
     provider:
       server: lb.mydomain.com
       user: admin
@@ -139,8 +139,8 @@ EXAMPLES = r'''
   bigip_ucs:
     ucs: /root/bigip.localhost.localdomain.ucs
     state: installed
-    no_license: yes
-    no_platform_check: yes
+    no_license: true
+    no_platform_check: true
     provider:
       server: lb.mydomain.com
       user: admin

@@ -143,8 +143,8 @@ EXAMPLES = r'''
     name: barbaz
     ip_intelligence:
       rate_limit: 400000
-      log_translation_fields: yes
-      log_rtbh: yes
+      log_translation_fields: true
+      log_rtbh: true
       log_publisher: "/foobar/non-local-db"
     port_misuse:
       log_publisher: ""

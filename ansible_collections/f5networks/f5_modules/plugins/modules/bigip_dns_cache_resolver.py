@@ -83,7 +83,7 @@ EXAMPLES = r'''
 - name: Create a DNS resolver cache
   bigip_dns_cache:
     name: foo
-    answer_default_zones: yes
+    answer_default_zones: true
     forward_zones:
       - name: foo.bar.com
         nameservers:

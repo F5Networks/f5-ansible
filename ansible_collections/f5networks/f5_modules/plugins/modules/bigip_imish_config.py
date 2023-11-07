@@ -286,7 +286,7 @@ EXAMPLES = r'''
 - name: configurable backup path
   bigip_imish_config:
     lines: bfd slow-timer 2000
-    backup: yes
+    backup: true
     provider:
       user: admin
       password: secret

@@ -122,7 +122,7 @@ EXAMPLES = r'''
   bigip_message_routing_router:
     name: foo
     max_retries: 10
-    ignore_client_port: yes
+    ignore_client_port: true
     routes:
       - /Common/route1
       - /Common/route2
@@ -135,8 +135,8 @@ EXAMPLES = r'''
 - name: Modify a generic router profile
   bigip_message_routing_router:
     name: foo
-    ignore_client_port: no
-    mirror: yes
+    ignore_client_port: false
+    mirror: true
     mirrored_msg_sweeper_interval: 4000
     traffic_group: /Common/traffic-group-2
     provider:

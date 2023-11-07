@@ -55,7 +55,7 @@ EXAMPLES = r'''
 - name: Sync configuration from device to group
   bigip_configsync_action:
     device_group: foo-group
-    sync_device_to_group: yes
+    sync_device_to_group: true
     provider:
       server: lb.mydomain.com
       user: admin
@@ -65,7 +65,7 @@ EXAMPLES = r'''
 - name: Sync configuration from most recent device to the current host
   bigip_configsync_action:
     device_group: foo-group
-    sync_group_to_device: yes
+    sync_group_to_device: true
     provider:
       server: lb.mydomain.com
       user: admin
@@ -75,7 +75,7 @@ EXAMPLES = r'''
 - name: Perform an initial sync of a device to a new device group
   bigip_configsync_action:
     device_group: new-device-group
-    sync_device_to_group: yes
+    sync_device_to_group: true
     provider:
       server: lb.mydomain.com
       user: admin

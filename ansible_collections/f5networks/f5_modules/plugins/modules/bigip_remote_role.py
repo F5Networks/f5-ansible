@@ -99,7 +99,7 @@ EXAMPLES = r'''
     name: ldap_group
     line_order: 1
     attribute_string: memberOf=cn=ldap_group,cn=ldap.group,ou=ldap
-    remote_access: yes
+    remote_access: true
     assigned_role: administrator
     partition_access: all
     terminal_access: none
