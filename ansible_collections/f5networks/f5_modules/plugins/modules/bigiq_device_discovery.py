@@ -18,6 +18,7 @@ options:
   device_address:
     description:
       - The IP address of the BIG-IP device to be imported/managed.
+      - For this module, C(provider) block should point to C(BIG-IQ) credentials
     type: str
     required: True
   device_username:
@@ -161,6 +162,7 @@ extends_documentation_fragment: f5networks.f5_modules.f5
 notes:
   - BIG-IQ >= 6.1.0.
   - This module does not support atomic removal of discovered modules on the device.
+  - Provider should point to the BIG-IQ credentials
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
