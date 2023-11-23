@@ -5,6 +5,14 @@ F5Networks F5_Modules Collection Release Notes
 .. contents:: Topics
 
 
+v1.27.1
+=======
+
+Minor Changes
+-------------
+
+- bigiq_device_discovery - Changes in documentation related to Provider block
+
 v1.27.0
 =======
 
