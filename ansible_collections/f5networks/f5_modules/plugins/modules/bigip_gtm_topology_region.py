@@ -569,7 +569,7 @@ class UsableChanges(Changes):
         # this method is needed as the API has problems in handling spaces and using just double quotes causes
         # api to complain about quote imbalance
         if item.startswith('state ') and ' ' in item[len('state '):]:
-            return item[:len('state ')] + '\\"{}\\"'.format(item[len('state '):])
+            return item[:len('state ')] + '\\"{0}\\"'.format(item[len('state '):])
         else:
             return item
 
