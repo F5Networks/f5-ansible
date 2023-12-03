@@ -1,5 +1,4 @@
 ansible
-ansible-lint
 invoke
 cffi
 packaging

@@ -201,7 +201,7 @@ class ApiParameters(Parameters):
     def _replace_quotes(value):
         # we need to remove the double quotes from the items on the list so that comparison engine
         # does not return change
-        return value.replace('"','')
+        return value.replace('"', '')
 
 
 class ModuleParameters(Parameters):
@@ -540,6 +540,7 @@ class ModuleParameters(Parameters):
             return 'not'
         return None
 
+
 class Changes(Parameters):
     def to_return(self):
         result = {}
@@ -571,6 +572,7 @@ class UsableChanges(Changes):
             return item[:len('state ')] + '\\"{}\\"'.format(item[len('state '):])
         else:
             return item
+
 
 class ReportableChanges(Changes):
     pass
