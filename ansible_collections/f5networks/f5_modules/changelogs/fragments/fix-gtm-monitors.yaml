@@ -1,0 +1,8 @@
+---
+bugfixes:
+  - bigip_gtm_monitor_bigip - fixed an issue where IP and port were not applied correctly when creating new monitor.
+  - bigip_gtm_monitor_firepass - fixed an issue where IP and port were not applied correctly when creating new monitor.
+  - bigip_gtm_monitor_http - fixed an issue where IP and port were not applied correctly when creating new monitor.
+  - bigip_gtm_monitor_https- fixed an issue where IP and port were not applied correctly when creating new monitor.
+  - bigip_gtm_monitor_tcp - fixed an issue where IP and port were not applied correctly when creating new monitor.
+  - bigip_gtm_monitor_tcp_half_open - fixed an issue where IP and port were not applied correctly when creating new monitor.

@@ -1,0 +1,52 @@
+---
+- name: Issue 02376 - Create topology region with spaces in states
+  bigip_gtm_topology_region:
+    name: issue_02376
+    region_members:
+      - isp: CNC
+        negate: true
+      - isp: Comcast
+      - country: CN
+        negate: true
+      - continent: EU
+      - country: PL
+      - state: AO/Cuanza Sul
+        negate: true
+      - state: AU/Northern Territory
+      - state: CI/Vallee du Bandama
+      - state: US/New York
+      - state: US/Nevada
+        negate: true
+      - state: US/Oregon
+    state: present
+
+- name: Issue 02376 - Assert Create topology region with spaces in states
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02376 - Create topology region with spaces in states - Idempotent check
+  bigip_gtm_topology_region:
+    name: issue_02376
+    region_members:
+      - isp: CNC
+        negate: true
+      - isp: Comcast
+      - country: CN
+        negate: true
+      - continent: EU
+      - country: PL
+      - state: AO/Cuanza Sul
+        negate: true
+      - state: AU/Northern Territory
+      - state: CI/Vallee du Bandama
+      - state: US/New York
+      - state: US/Nevada
+        negate: true
+      - state: US/Oregon
+    state: present
+
+- name: Issue 02376 - Assert Create topology region with spaces in states - Idempotent check
+  assert:
+    that:
+      - result is not changed

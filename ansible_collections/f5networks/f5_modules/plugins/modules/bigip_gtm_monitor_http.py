@@ -376,7 +376,7 @@ class ModuleParameters(Parameters):
         return int(self._values['timeout'])
 
     @property
-    def ip(self):  # lgtm [py/similar-function]
+    def ip(self):
         if self._values['ip'] is None:
             return None
         if self._values['ip'] in ['*', '0.0.0.0']:
@@ -440,6 +440,13 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
+    @property
+    def destination(self):
+        if self.ip is None and self.port is None:
+            return None
+        destination = '{0}:{1}'.format(self.ip, self.port)
+        return destination
+
     @property
     def transparent(self):
         if self._values['transparent'] is None:
