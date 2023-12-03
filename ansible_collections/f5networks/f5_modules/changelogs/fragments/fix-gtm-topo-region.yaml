@@ -1,0 +1,4 @@
+---
+bugfixes:
+  - bigip_gtm_topology_region - fixed an issue where states names that contained spaces caused the idempotency to break.
+  - bigip_gtm_topology_region - fixed an issue where if multiple states with spaces in values were defined, module would throw invalid command error

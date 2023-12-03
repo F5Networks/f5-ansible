@@ -1,0 +1,31 @@
+---
+- name: Issue 02379 - Create GTM TCP_HALF_OPEN monitor with specific IP
+  bigip_gtm_monitor_tcp_half_open:
+    name: issue_02379
+    ip: 1.1.1.1
+    port: 80
+    state: present
+  register: result
+
+- name: Issue 02379 - Assert Create GTM TCP_HALF_OPEN monitor with specific IP
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 02379 - Create GTM TCP_HALF_OPEN monitor with specific IP - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: issue_02379
+    ip: 1.1.1.1
+    port: 80
+    state: present
+  register: result
+
+- name: Issue 02379 - Assert Create GTM TCP_HALF_OPEN monitor with specific IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 02379 - Remove GTM TCP_HALF_OPEN Monitor - Cleanup
+  bigip_gtm_monitor_tcp_half_open:
+    name: issue_02379
+    state: absent
