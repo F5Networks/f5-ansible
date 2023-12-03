@@ -152,7 +152,6 @@ region_members:
   type: list
   sample: [{"continent": "EU"}, {"country": "PL"}]
 '''
-
 import copy
 from datetime import datetime
 
@@ -195,8 +194,14 @@ class ApiParameters(Parameters):
         members = self._values['region_members']
         if members is None:
             return None
-        result = [member['name'] for member in members]
+        result = [self._replace_quotes(member['name']) for member in members]
         return result
+
+    @staticmethod
+    def _replace_quotes(value):
+        # we need to remove the double quotes from the items on the list so that comparison engine
+        # does not return change
+        return value.replace('"','')
 
 
 class ModuleParameters(Parameters):
@@ -502,13 +507,6 @@ class ModuleParameters(Parameters):
                     result.append(item)
         return result
 
-    def _flatten_negate(self, item):
-        result = flatten_boolean(item['negate'])
-        item.pop('negate')
-        if result == 'yes':
-            return 'not'
-        return None
-
     def _change_value(self, key, value):
         if key in ['region', 'pool', 'datacenter']:
             return key, fq_name(self.partition, value)
@@ -524,7 +522,8 @@ class ModuleParameters(Parameters):
             return key, self._test_subnet(value)
         return key, value
 
-    def _test_subnet(self, item):
+    @staticmethod
+    def _test_subnet(item):
         if item is None:
             return None
         if is_valid_ip_network(item):
@@ -533,6 +532,13 @@ class ModuleParameters(Parameters):
             "Specified 'subnet' is not a valid subnet."
         )
 
+    @staticmethod
+    def _flatten_negate(item):
+        result = flatten_boolean(item['negate'])
+        item.pop('negate')
+        if result == 'yes':
+            return 'not'
+        return None
 
 class Changes(Parameters):
     def to_return(self):
@@ -554,8 +560,17 @@ class UsableChanges(Changes):
             return None
         if not members:
             return 'none'
-        return ' '.join(members)
+        result = [self.escape_spaces(member) for member in members]
+        return ' '.join(result)
 
+    @staticmethod
+    def escape_spaces(item):
+        # this method is needed as the API has problems in handling spaces and using just double quotes causes
+        # api to complain about quote imbalance
+        if item.startswith('state ') and ' ' in item[len('state '):]:
+            return item[:len('state ')] + '\\"{}\\"'.format(item[len('state '):])
+        else:
+            return item
 
 class ReportableChanges(Changes):
     pass
@@ -733,6 +748,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port']
         )
+
         resp = self.client.api.post(uri, json=payload)
         try:
             response = resp.json()
