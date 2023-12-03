@@ -362,6 +362,13 @@ class Changes(Parameters):
 
 class UsableChanges(Changes):
     @property
+    def destination(self):
+        if self.ip is None and self.port is None:
+            return None
+        destination = '{0}:{1}'.format(self.ip, self.port)
+        return destination
+
+    @property
     def transparent(self):
         if self._values['transparent']:
             return 'enabled'
