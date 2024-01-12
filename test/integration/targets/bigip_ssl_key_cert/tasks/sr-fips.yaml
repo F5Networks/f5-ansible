@@ -1,0 +1,61 @@
+---
+# This test is for uploading on FIPS enabled BIG-IP box.
+
+- name: Import a cert/key pair
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'test.key') }}"
+    key_name: test_key
+    passphrase: "test"
+    cert_content: "{{ lookup('file', 'test.cert') }}"
+    cert_name: test_cert
+    state: present
+  register: result
+
+- name: Assert Import a cert/key pair
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Import a cert/key pair - Idempotent check
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'test.key') }}"
+    key_name: test_key
+    passphrase: "test"
+    cert_content: "{{ lookup('file', 'test.cert') }}"
+    cert_name: test_cert
+    state: present
+  register: result
+
+- name: Assert Import a cert/key pair - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Delete the cert/key pair
+  bigip_ssl_key_cert:
+    key_name: test_key
+    cert_name: test_cert
+    state: absent
+  register: result
+
+- name: Assert Delete the cert/key pair
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete the cert/key pair - Idempotent check
+  bigip_ssl_key_cert:
+    key_name: test_key
+    cert_name: test_cert
+    state: absent
+  register: result
+
+- name: Assert Delete the cert/key pair - Idempotent check 
+  assert:
+    that:
+      - result is not changed
+      - result is success
+...
