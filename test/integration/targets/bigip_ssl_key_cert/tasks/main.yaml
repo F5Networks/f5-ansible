@@ -206,3 +206,6 @@
 
 - import_tasks: issue-2346.yaml
   tags: issue-2346
+
+- import_tasks: sr-fips.yaml
+  tags: sr-fips
