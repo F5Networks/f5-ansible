@@ -34,7 +34,7 @@ jobs:
       script:
         - inv test.ansible-test -r -p 3.9
       python: "3.9"
-    - name: Ansible Sanity Tests - Py3.9
+    - name: Ansible Sanity Tests - Py3.11
       script:
-        - inv test.ansible-test -r -p 3.10
-      python: "3.10"
+        - inv test.ansible-test -r -p 3.11
+      python: "3.11"
