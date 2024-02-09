@@ -5,11 +5,11 @@ This collection packages and distributes modules, and plugins.
 
 ## Requirements
 
- - ansible >= 2.13
+ - ansible >= 2.14
  - packaging
 
 ## Python Version Notice
-Collection only supports python 3.6 and above, however F5 recommends Python 3.8 and above.
+Collection only supports python 3.9 and above.
 
 ## Installation
 To install in ansible default or defined paths use:
