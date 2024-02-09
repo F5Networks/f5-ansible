@@ -24,16 +24,12 @@ jobs:
         - travis_retry inv test.install-dep
         - travis_retry pip install pytest --upgrade
         - inv test.unit
-      python: "3.8"
+      python: "3.9"
     - name: F5 Style and F5 Sanity Tests
       script:
         - inv test.style
         - inv test.f5-sanity
-      python: "3.8"
-    - name: Ansible Sanity Tests - Py3.8
-      script:
-        - inv test.ansible-test -r -p 3.8
-      python: "3.8"
+      python: "3.9"
     - name: Ansible Sanity Tests - Py3.9
       script:
         - inv test.ansible-test -r -p 3.9
