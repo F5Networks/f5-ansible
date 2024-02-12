@@ -1,9 +1,24 @@
-==============================================
-F5Networks F5_Modules Collection Release Notes
-==============================================
+===============================================
+F5Networks F5\_Modules Collection Release Notes
+===============================================
 
 .. contents:: Topics
 
+v1.28.0
+=======
+
+Bugfixes
+--------
+
+- bigip_gtm_monitor_bigip - fixed an issue where IP and port were not applied correctly when creating new monitor.
+- bigip_gtm_monitor_firepass - fixed an issue where IP and port were not applied correctly when creating new monitor.
+- bigip_gtm_monitor_http - fixed an issue where IP and port were not applied correctly when creating new monitor.
+- bigip_gtm_monitor_https- fixed an issue where IP and port were not applied correctly when creating new monitor.
+- bigip_gtm_monitor_tcp - fixed an issue where IP and port were not applied correctly when creating new monitor.
+- bigip_gtm_monitor_tcp_half_open - fixed an issue where IP and port were not applied correctly when creating new monitor.
+- bigip_gtm_topology_region - fixed an issue where if multiple states with spaces in values were defined, module would throw invalid command error
+- bigip_gtm_topology_region - fixed an issue where states names that contained spaces caused the idempotency to break.
+- bigip_ssl_key_cert - fixed an issue where the passphrase was not being properly send to the BIG-IP.
 
 v1.27.1
 =======
