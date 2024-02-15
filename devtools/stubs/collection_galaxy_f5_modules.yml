@@ -20,4 +20,3 @@ tags:
   - bigip
   - bigiq
 version: {{ version }}
-
