@@ -5,4 +5,3 @@
 
 # This collection version needs to be updated at each release
 CURRENT_COLL_VERSION = "{{ version }}"
-

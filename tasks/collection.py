@@ -23,7 +23,8 @@ except ImportError:
 
 if HAS_JINJA:
     JINJA_ENV = Environment(
-        loader=FileSystemLoader(BASE_DIR + '/devtools/stubs')
+        loader=FileSystemLoader(BASE_DIR + '/devtools/stubs'),
+        keep_trailing_newline=True
     )
 
 BUILD_DIR = '{0}/builds'.format(BASE_DIR)
