@@ -104,6 +104,7 @@ options:
       - dont-insert-empty-fragments
       - no-ssl
       - no-dtls
+      - no-dtlsv1.2
       - no-session-resumption-on-renegotiation
       - no-tlsv1.1
       - no-tlsv1.2
@@ -1158,6 +1159,7 @@ class ArgumentSpec(object):
                     'dont-insert-empty-fragments',
                     'no-ssl',
                     'no-dtls',
+                    'no-dtlsv1.2',
                     'no-session-resumption-on-renegotiation',
                     'no-tlsv1.1',
                     'no-tlsv1.2',
