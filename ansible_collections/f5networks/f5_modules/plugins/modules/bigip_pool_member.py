@@ -617,7 +617,7 @@ class Parameters(AnsibleF5Parameters):
         'priority_group',
         'fqdn_auto_populate',
         'session',
-        'state',
+        # 'state',
         'fqdn',
         'address',
         'monitors',
