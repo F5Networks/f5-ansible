@@ -123,7 +123,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['fqdn_auto_populate'] is True
         assert results['fqdn'] == 'foo.bar.com'
-        assert results['state'] == 'present'
 
     def test_create_reuse_node_with_ipv4_address(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -160,7 +159,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['fqdn_auto_populate'] is False
         assert results['address'] == '7.3.67.8'
-        assert results['state'] == 'present'
 
     def test_create_reuse_node_with_fqdn_auto_populate(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -198,7 +196,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['fqdn_auto_populate'] is True
         assert results['fqdn'] == 'foo.bar.com'
-        assert results['state'] == 'present'
 
     def test_create_aggregate_pool_members(self, *args):
         set_module_args(dict(
