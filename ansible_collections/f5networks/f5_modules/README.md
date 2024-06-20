@@ -5,7 +5,7 @@ This collection packages and distributes modules, and plugins.
 
 ## Requirements
 
- - ansible >= 2.14
+ - ansible >= 2.15
  - packaging
 
 ## Python Version Notice
