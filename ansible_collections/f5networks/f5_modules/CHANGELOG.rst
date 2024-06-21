@@ -4,6 +4,14 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.29.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_pool_member - Removed state from the Returnables.
+
 v1.28.0
 =======
 
