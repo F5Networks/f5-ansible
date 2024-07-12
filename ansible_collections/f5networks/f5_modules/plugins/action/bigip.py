@@ -68,13 +68,6 @@ class ActionModule(ActionNetworkModule):
 
                 display.vvv('using connection plugin %s' % pc.connection, pc.remote_addr)
                 connection = self._shared_loader_obj.connection_loader.get('persistent', pc, sys.stdin)
-                connection.set_options(direct={'persistent_command_timeout': command_timeout})
-                connection.set_option("remote_addr", pc.remote_addr)
-                connection.set_option("remote_user", pc.remote_user)
-                connection.set_option("password", pc.password)
-                connection.set_option("port", pc.port)
-                connection.set_option("private_key_file", pc.private_key_file)
-
                 socket_path = connection.run()
                 display.vvvv('socket_path: %s' % socket_path, pc.remote_addr)
                 if not socket_path:
@@ -92,6 +85,15 @@ class ActionModule(ActionNetworkModule):
             if socket_path is None:
                 socket_path = self._connection.socket_path
             conn = Connection(socket_path)
+            options = {
+                'persistent_command_timeout': command_timeout,
+                'remote_user': pc.remote_user,
+                'remote_addr': pc.remote_addr,
+                'password': pc.password,
+                'port': pc.port,
+                'private_key_file': pc.private_key_file,
+            }
+            conn.set_options(direct=options)
             out = conn.get_prompt()
             while '(config' in to_text(out, errors='surrogate_then_replace').strip():
                 display.vvvv('wrong context, sending exit to device', self._play_context.remote_addr)
