@@ -68,6 +68,7 @@ class ActionModule(ActionNetworkModule):
 
                 display.vvv('using connection plugin %s' % pc.connection, pc.remote_addr)
                 connection = self._shared_loader_obj.connection_loader.get('persistent', pc, sys.stdin)
+
                 connection.set_options(direct={'persistent_command_timeout': command_timeout})
                 socket_path = connection.run()
                 display.vvvv('socket_path: %s' % socket_path, pc.remote_addr)
