@@ -652,6 +652,11 @@ class V1Manager(BaseManager):
             elif 'remoteSender' in str(ex):
                 # catching some edge cases where API becomes unstable after installation
                 pass
+            elif 'Proxy Error' in str(ex):
+                # catching some edge cases where API becomes unstable after installation
+                pass
+            elif 'object has no attribute' in str(ex):
+                pass
             else:
                 raise F5ModuleError(str(ex))
         self.wait_for_rest_api_restart()
