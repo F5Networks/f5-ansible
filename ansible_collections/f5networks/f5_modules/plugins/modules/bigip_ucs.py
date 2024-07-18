@@ -657,6 +657,8 @@ class V1Manager(BaseManager):
                 pass
             elif 'object has no attribute' in str(ex):
                 pass
+            elif 'Expecting value' in str(ex):
+                pass
             else:
                 raise F5ModuleError(str(ex))
         self.wait_for_rest_api_restart()
