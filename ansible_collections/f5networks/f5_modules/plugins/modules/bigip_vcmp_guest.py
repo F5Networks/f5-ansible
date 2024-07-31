@@ -158,7 +158,7 @@ options:
       - By default, this list includes every available slot in the cluster. This means
         the guest may be assigned to any slot by default.
     type: list
-    elements: str
+    elements: int
 notes:
   - This module can take a lot of time to deploy vCMP guests. This is an intrinsic
     limitation of the vCMP system, because it is booting real VMs on the BIG-IP
@@ -989,7 +989,7 @@ class ArgumentSpec(object):
             min_number_of_slots=dict(type='int'),
             allowed_slots=dict(
                 type='list',
-                elements='str',
+                elements='int',
             ),
             partition=dict(
                 default='Common',
