@@ -4,6 +4,14 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.30.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_ucs - Fix for bigip_ucs module to restore UCS file on BIG-IP devices.
+
 v1.29.0
 =======
 
