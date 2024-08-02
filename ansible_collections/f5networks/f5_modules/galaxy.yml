@@ -1,5 +1,6 @@
 authors:
   - Wojciech Wypior (@wojtek0806)
+  - Rohit Upadhyay (@urohit011)
 dependencies:
   ansible.netcommon: ">=2.0.0"
 description: F5 BIG-IP Imperative Collection for Ansible
@@ -12,7 +13,17 @@ name: f5_modules
 namespace: f5networks
 readme: README.md
 build_ignore:
-  - tests
+  - tests/__pycache__
+  - tests/compat
+  - tests/mock
+  - tests/modules
+  - tests/module_utils
+  - tests/modules
+  - tests/plugins
+  - tests/sanity
+  - tests/unit
+  - tests/*.ini
+  - tests/*.py
 repository: https://github.com/F5Networks/f5-ansible-f5modules
 tags:
   - f5
