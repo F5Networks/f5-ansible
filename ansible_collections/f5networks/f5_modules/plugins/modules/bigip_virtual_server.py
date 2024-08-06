@@ -227,6 +227,10 @@ options:
     elements: str
     aliases:
       - all_policies
+  per_flow_request_access_policy:
+    description:
+      - Specifies the Per-Request access policy for the virtual server.
+    type: str
   snat:
     description:
       - Source network address policy.
@@ -811,6 +815,11 @@ policies:
   returned: changed
   type: list
   sample: ['/Common/policy1', '/Common/policy2']
+per_flow_request_access_policy:
+  description: Per-request policy attached to the virtual.
+  returned: changed
+  type: str
+  sample: '/Common/sample_per-request_policy'
 port:
   description: Port the virtual server is configured to listen on.
   returned: changed
@@ -981,7 +990,8 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitSrcMask': 'rate_limit_src_mask',
         'clonePools': 'clone_pools',
         'autoLasthop': 'auto_last_hop',
-        'serviceDownImmediateAction': 'service_down_immediate_action'
+        'serviceDownImmediateAction': 'service_down_immediate_action',
+        'perFlowRequestAccessPolicy': 'per_flow_request_access_policy',
     }
 
     api_attributes = [
@@ -1025,6 +1035,7 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitSrcMask',
         'clonePools',
         'autoLasthop',
+        'perFlowRequestAccessPolicy',
     ]
 
     updatables = [
@@ -1062,6 +1073,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_dst_mask',
         'clone_pools',
         'auto_last_hop',
+        'per_flow_request_access_policy',
     ]
 
     returnables = [
@@ -1103,6 +1115,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_dst_mask',
         'clone_pools',
         'auto_last_hop',
+        'per_flow_request_access_policy',
     ]
 
     profiles_mutex = [
@@ -3743,6 +3756,7 @@ class ArgumentSpec(object):
             service_down_immediate_action=dict(
                 choices=['drop', 'none', 'reset']
             ),
+            per_flow_request_access_policy=dict(),
             security_log_profiles=dict(
                 type='list',
                 elements='str',
