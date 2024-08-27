@@ -1141,8 +1141,7 @@ class ModuleManager(object):
                 self.client.provider['server'],
                 self.client.provider['server_port'],
             )
-            payload = {'name': self.want.profile , 'partition': self.want.partition }
-            # raise F5ModuleError(f"payload :{payload} uri :{uri}")
+            payload = {'name': self.want.profile, 'partition': self.want.partition}
             resp = self.client.api.post(uri, json=payload)
             try:
                 response = resp.json()
@@ -1194,10 +1193,10 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.profile
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile".format(
-                self.client.provider['server'],
-                self.client.provider['server_port'],
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
-        payload = {'name': self.want.profile , 'partition': self.want.partition }
+        payload = {'name': self.want.profile, 'partition': self.want.partition}
 
         resp = self.client.api.post(uri, json=payload)
         try:
@@ -1206,7 +1205,6 @@ class ModuleManager(object):
             raise F5ModuleError(str(ex))
         if resp.status == 404 or 'code' in response and response['code'] == 404:
             raise F5ModuleError(resp.content)
-        
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/application/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
