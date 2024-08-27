@@ -3645,7 +3645,7 @@ class ModuleManager(object):
         params['partition'] = self.want.partition
         if 'destination' not in params:
             params['destination'] = f"/Common/0.0.0.0:{self.want.port}"
-            params['mask'] = f"255.255.255.255"
+            params['mask'] = "255.255.255.255"
         if self.want.insert_metadata:
             # Mark the resource as managed by Ansible, this is default behavior
             params = mark_managed_by(self.module.ansible_version, params)
