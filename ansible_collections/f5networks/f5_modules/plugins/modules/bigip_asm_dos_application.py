@@ -366,7 +366,6 @@ mobile_detection:
 
 import traceback
 from datetime import datetime
-import time
 
 try:
     from packaging.version import Version
