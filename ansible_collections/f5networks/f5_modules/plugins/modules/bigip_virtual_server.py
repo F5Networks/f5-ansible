@@ -1640,12 +1640,15 @@ class ApiParameters(Parameters):
             return None
         result = []
         prof_path = 'https://localhost/mgmt/tm/ltm/profile/'
+        accprof_path = 'https://localhost/mgmt/tm/apm/profile/access'
         for item in self._values['profiles']['items']:
             context = item['context']
             name = item['name']
             path = item['nameReference']['link']
             if context in ['all', 'serverside', 'clientside']:
                 if path.startswith(prof_path):
+                    result.append(dict(name=name, context=context, fullPath=item['fullPath']))
+                if path.startswith(accprof_path):
                     result.append(dict(name=name, context=context, fullPath=item['fullPath']))
             else:
                 raise F5ModuleError(
@@ -3587,7 +3590,6 @@ class ModuleManager(object):
             validator = VirtualServerValidator(
                 module=self.module, client=self.client, have=self.have, want=self.want
             )
-            # raise F5ModuleError(f"validator:{validator.__dict__}")
             validator.check_create()
 
             if self.want.ip_intelligence_policy is not None:
