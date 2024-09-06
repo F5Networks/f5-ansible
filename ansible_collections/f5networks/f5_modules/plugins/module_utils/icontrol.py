@@ -182,7 +182,7 @@ class iControlRestSession(object):
 
         if not data and json is not None:
             self.request.headers.update(BASE_HEADERS)
-            body = _json.dumps(json)
+            body = _json.dumps(json, ensure_ascii=False)
             if not isinstance(body, bytes):
                 body = body.encode('utf-8')
         if data:
