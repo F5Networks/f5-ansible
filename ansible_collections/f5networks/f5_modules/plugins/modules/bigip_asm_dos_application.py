@@ -1162,11 +1162,7 @@ class ModuleManager(object):
 
     def exists(self):
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
-        # if not self.profile_exists():
-        #     raise F5ModuleError(
-        #         'Specified DOS profile: {0} on partition: {1} does not exist.'.format(
-        #             self.want.profile, self.want.partition)
-        #     )
+
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1238,14 +1234,6 @@ class ModuleManager(object):
         raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
-        # uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/application/{3}".format(
-        #     self.client.provider['server'],
-        #     self.client.provider['server_port'],
-        #     transform_name(self.want.partition, self.want.profile),
-        #     self.want.profile
-        # )
-        # response = self.client.api.delete(uri)
-        # time.sleep(5)
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
