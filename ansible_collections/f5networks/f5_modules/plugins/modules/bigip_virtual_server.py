@@ -227,6 +227,10 @@ options:
     elements: str
     aliases:
       - all_policies
+  per_flow_request_access_policy:
+    description:
+      - Specifies the Per-Request access policy for the virtual server.
+    type: str
   snat:
     description:
       - Source network address policy.
@@ -811,6 +815,11 @@ policies:
   returned: changed
   type: list
   sample: ['/Common/policy1', '/Common/policy2']
+per_flow_request_access_policy:
+  description: Per-request policy attached to the virtual.
+  returned: changed
+  type: str
+  sample: '/Common/sample_per-request_policy'
 port:
   description: Port the virtual server is configured to listen on.
   returned: changed
@@ -981,7 +990,8 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitSrcMask': 'rate_limit_src_mask',
         'clonePools': 'clone_pools',
         'autoLasthop': 'auto_last_hop',
-        'serviceDownImmediateAction': 'service_down_immediate_action'
+        'serviceDownImmediateAction': 'service_down_immediate_action',
+        'perFlowRequestAccessPolicy': 'per_flow_request_access_policy',
     }
 
     api_attributes = [
@@ -1025,6 +1035,7 @@ class Parameters(AnsibleF5Parameters):
         'rateLimitSrcMask',
         'clonePools',
         'autoLasthop',
+        'perFlowRequestAccessPolicy',
     ]
 
     updatables = [
@@ -1062,6 +1073,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_dst_mask',
         'clone_pools',
         'auto_last_hop',
+        'per_flow_request_access_policy',
     ]
 
     returnables = [
@@ -1103,6 +1115,7 @@ class Parameters(AnsibleF5Parameters):
         'rate_limit_dst_mask',
         'clone_pools',
         'auto_last_hop',
+        'per_flow_request_access_policy',
     ]
 
     profiles_mutex = [
@@ -1627,12 +1640,15 @@ class ApiParameters(Parameters):
             return None
         result = []
         prof_path = 'https://localhost/mgmt/tm/ltm/profile/'
+        accprof_path = 'https://localhost/mgmt/tm/apm/profile/access'
         for item in self._values['profiles']['items']:
             context = item['context']
             name = item['name']
             path = item['nameReference']['link']
             if context in ['all', 'serverside', 'clientside']:
                 if path.startswith(prof_path):
+                    result.append(dict(name=name, context=context, fullPath=item['fullPath']))
+                if path.startswith(accprof_path):
                     result.append(dict(name=name, context=context, fullPath=item['fullPath']))
             else:
                 raise F5ModuleError(
@@ -2631,6 +2647,7 @@ class VirtualServerValidator(object):
 
     def check_create(self):
         # Regular checks
+        self._verify_virtual_has_required_parameters()
         self._set_default_ip_protocol()
         self._set_default_profiles()
         self._override_port_by_type()
@@ -2639,7 +2656,6 @@ class VirtualServerValidator(object):
         self._verify_default_persistence_profile_for_type()
         self._verify_fallback_persistence_profile_for_type()
         self._update_persistence_profile()
-        self._verify_virtual_has_required_parameters()
         self._ensure_server_type_supports_vlans()
         self._override_vlans_if_all_specified()
         self._check_source_and_destination_match()
@@ -3629,6 +3645,9 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
+        if 'destination' not in params:
+            params['destination'] = f"/Common/0.0.0.0:{self.want.port}"
+            params['mask'] = "255.255.255.255"
         if self.want.insert_metadata:
             # Mark the resource as managed by Ansible, this is default behavior
             params = mark_managed_by(self.module.ansible_version, params)
@@ -3743,6 +3762,7 @@ class ArgumentSpec(object):
             service_down_immediate_action=dict(
                 choices=['drop', 'none', 'reset']
             ),
+            per_flow_request_access_policy=dict(),
             security_log_profiles=dict(
                 type='list',
                 elements='str',

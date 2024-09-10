@@ -7454,6 +7454,12 @@ virtual_servers:
           returned: queried
           type: str
           sample: tcp
+    per_flow_request_access_policy:
+          description:
+            - per request policy.
+          returned: queried
+          type: str
+          sample: /Common/my-custom-per-request-policy
     total_requests:
       description:
         - Total requests.
@@ -17114,6 +17120,7 @@ class VirtualServersParameters(BaseParameters):
         'securityLogProfiles': 'security_log_profiles',
         'profilesReference': 'profiles',
         'policiesReference': 'policies',
+        'perFlowRequestAccessPolicy': 'per_flow_request_access_policy',
     }
 
     returnables = [
@@ -17153,6 +17160,7 @@ class VirtualServersParameters(BaseParameters):
         'type',
         'policies',
         'profiles',
+        'per_flow_request_access_policy',
         'destination_address',
         'destination_port',
         'availability_status',

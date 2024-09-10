@@ -1136,7 +1136,21 @@ class ModuleManager(object):
             raise F5ModuleError(str(ex))
 
         if resp.status == 404 or 'code' in response and response['code'] == 404:
-            return False
+            uri = "https://{0}:{1}/mgmt/tm/security/dos/profile".format(
+                self.client.provider['server'],
+                self.client.provider['server_port'],
+            )
+            payload = {'name': self.want.profile, 'partition': self.want.partition}
+            resp = self.client.api.post(uri, json=payload)
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+            # response = resp.json()
+            if resp.status == 404 or 'code' in response and response['code'] == 404:
+                return False
+            if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+                return True
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             return True
 
@@ -1148,16 +1162,11 @@ class ModuleManager(object):
 
     def exists(self):
         errors = [401, 403, 409, 500, 501, 502, 503, 504]
-        if not self.profile_exists():
-            raise F5ModuleError(
-                'Specified DOS profile: {0} on partition: {1} does not exist.'.format(
-                    self.want.profile, self.want.partition)
-            )
-        uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/application/{3}".format(
+
+        uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.profile),
-            self.want.profile
         )
         resp = self.client.api.get(uri)
         try:
@@ -1169,7 +1178,6 @@ class ModuleManager(object):
             return False
         if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
             return True
-
         if resp.status in errors or 'code' in response and response['code'] in errors:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
@@ -1179,6 +1187,19 @@ class ModuleManager(object):
     def create_on_device(self):
         params = self.changes.api_params()
         params['name'] = self.want.profile
+        uri = "https://{0}:{1}/mgmt/tm/security/dos/profile".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        payload = {'name': self.want.profile, 'partition': self.want.partition}
+
+        resp = self.client.api.post(uri, json=payload)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp.status == 404 or 'code' in response and response['code'] == 404:
+            raise F5ModuleError(resp.content)
         uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/application/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -1213,11 +1234,10 @@ class ModuleManager(object):
         raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/application/{3}".format(
+        uri = "https://{0}:{1}/mgmt/tm/security/dos/profile/{2}/".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             transform_name(self.want.partition, self.want.profile),
-            self.want.profile
         )
         response = self.client.api.delete(uri)
         if response.status == 200:
