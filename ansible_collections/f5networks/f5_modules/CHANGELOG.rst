@@ -4,6 +4,16 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.31.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_asm_dos_application - add support for creating dos profile.
+- bigip_device_info - virtual-servers - return per_flow_request_access_policy if defined.
+- bigip_virtual_server - set per_flow_request_access_policy and stay idempotent.
+
 v1.30.1
 =======
 

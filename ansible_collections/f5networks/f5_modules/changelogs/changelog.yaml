@@ -1141,6 +1141,16 @@ releases:
     release_date: '2024-08-01'
   1.30.1:
     release_date: '2024-08-02'
+  1.31.0:
+    changes:
+      minor_changes:
+      - bigip_asm_dos_application - add support for creating dos profile.
+      - bigip_device_info - virtual-servers - return per_flow_request_access_policy
+        if defined.
+      - bigip_virtual_server - set per_flow_request_access_policy and stay idempotent.
+    fragments:
+    - issue_2419_2421.yaml
+    release_date: '2024-09-11'
   1.4.0:
     changes:
       bugfixes:
