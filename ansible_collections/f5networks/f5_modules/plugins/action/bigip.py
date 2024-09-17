@@ -87,6 +87,15 @@ class ActionModule(ActionNetworkModule):
             if socket_path is None:
                 socket_path = self._connection.socket_path
             conn = Connection(socket_path)
+            options = {
+                'persistent_command_timeout': command_timeout,
+                'remote_user': pc.remote_user,
+                'remote_addr': pc.remote_addr,
+                'password': pc.password,
+                'port': pc.port,
+                'private_key_file': pc.private_key_file,
+            }
+            conn.set_options(direct=options)
             out = conn.get_prompt()
             while '(config' in to_text(out, errors='surrogate_then_replace').strip():
                 display.vvvv('wrong context, sending exit to device', self._play_context.remote_addr)
