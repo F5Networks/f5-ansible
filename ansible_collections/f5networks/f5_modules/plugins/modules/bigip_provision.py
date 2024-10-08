@@ -374,11 +374,11 @@ class ModuleManager(object):
                 return False
             if resp.status == 404 or 'code' in response and response['code'] == 404:
                 return False
-            if str(response['value']) != 0 and self.want.memory == 0:
+            if int(response['value']) != 0 and self.want.memory == 0:
                 return False
-            if str(response['value']) == 0 and self.want.memory == 0:
+            if int(response['value']) == 0 and self.want.memory == 0:
                 return True
-            if str(response['value']) == self.want.memory:
+            if int(response['value']) == self.want.memory:
                 return True
             return False
         try:
