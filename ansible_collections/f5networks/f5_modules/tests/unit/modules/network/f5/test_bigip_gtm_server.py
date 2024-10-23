@@ -192,6 +192,7 @@ class TestV1Manager(unittest.TestCase):
         m1 = V1Manager(module=module, params=module.params)
         m1.exists = Mock(side_effect=[False, True])
         m1.create_on_device = Mock(return_value=True)
+        m1.check_datacenter = Mock(return_value=[{"fullPath": "/Common/New York"}])
         m1.client = Mock()
         m1.client.api.tmos_version = '12.0.0'
 
@@ -287,6 +288,7 @@ class TestV2Manager(unittest.TestCase):
         m1 = V2Manager(module=module)
         m1.exists = Mock(side_effect=[False, True])
         m1.create_on_device = Mock(return_value=True)
+        m1.check_datacenter = Mock(return_value=[{"fullPath": "/Common/New York"}])
         m1.client = Mock()
         m1.client.api.tmos_version = '13.1.0'
 
