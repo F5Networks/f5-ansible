@@ -1,5 +1,4 @@
 ---
-
 - import_tasks: setup.yaml
 
 - name: Create GTM server
@@ -479,3 +478,6 @@
 
 - import_tasks: issue-01266.yaml
   tags: issue-01266
+
+- import_tasks: issue-02429.yaml
+  tags: issue-02429
