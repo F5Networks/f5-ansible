@@ -324,6 +324,7 @@ except ImportError:
 
 import os
 import tempfile
+import time
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
@@ -629,18 +630,26 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port']
         )
-        resp = self.client.api.post(uri, json=params)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
 
-        if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
-            if 'commandResult' in response:
-                if 'Dynamic routing is not enabled' in response['commandResult']:
-                    raise F5ModuleError(response['commandResult'])
-            return True
-        raise F5ModuleError(resp.content)
+        x = 0
+        while x < 3:
+            resp = self.client.api.post(uri, json=params)
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if resp.status in [200, 201] or 'code' in response and response['code'] in [200, 201]:
+                if 'commandResult' in response:
+                    if 'Dynamic routing is not enabled' in response['commandResult']:
+                        raise F5ModuleError(response['commandResult'])
+                    if 'Protocol daemon is not running' in response['commandResult']:
+                        x += 1
+                        time.sleep(5)
+                        continue
+                return True
+
+            raise F5ModuleError(resp.content)
 
     def read_current_from_device(self):
         command = 'imish -r {0} -e \\\"show running-config\\\"'.format(self.want.route_domain)
