@@ -1591,6 +1591,24 @@ class BaseManager(object):
             else:
                 raise F5ModuleError(resp.content)
 
+    def check_datacenter(self):
+        # check if datacenter exists
+        if self.want.datacenter is not None:
+            uri = "https://{0}:{1}/mgmt/tm/gtm/datacenter/".format(
+                self.client.provider['server'],
+                self.client.provider['server_port']
+            )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+            datacenter = [dc for dc in response['items'] if dc['fullPath'] == self.want.datacenter]
+            if len(datacenter) == 0:
+                raise F5ModuleError(
+                    f'{self.want.datacenter} does not exists'
+                )
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
 
 class V1Manager(BaseManager):
     def _assign_creation_defaults(self):
@@ -1630,10 +1648,12 @@ class V1Manager(BaseManager):
             self.want._values.pop('prober_preference')
         if self.want.prober_fallback is not None:
             self.want._values.pop('prober_fallback')
+        self.check_datacenter()
 
 
 class V2Manager(BaseManager):
     def update(self):
+        self.check_datacenter()
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
