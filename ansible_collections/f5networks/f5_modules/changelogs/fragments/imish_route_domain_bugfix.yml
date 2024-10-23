@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_imish_config - fixed a bug that resulted in incomplete config when using BGV route domain
