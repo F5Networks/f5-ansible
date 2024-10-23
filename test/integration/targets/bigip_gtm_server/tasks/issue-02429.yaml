@@ -1,0 +1,16 @@
+---
+- name: Create HTTP service with non-existent datacenter
+  bigip_gtm_server:
+    name: TEST-SERVER
+    server_type: generic-host
+    devices:
+      - name: TEST-SERVER
+        address: "1.1.1.1"
+    datacenter: non-existent-datacenter
+    monitors:
+      - gateway_icmp
+    prober_preference: inherit
+    prober_fallback: any
+    state: present
+  register: result
+  failed_when: "'/Common/non-existent-datacenter does not exists' not in result.msg"
