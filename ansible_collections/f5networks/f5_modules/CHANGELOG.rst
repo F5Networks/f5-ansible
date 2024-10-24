@@ -4,6 +4,19 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.32.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_gtm_server - Added check for datacenter existence in Check Mode.
+
+Bugfixes
+--------
+
+- bigip_imish_config - fixed a bug that resulted in incomplete config when using BGV route domain
+
 v1.31.0
 =======
 

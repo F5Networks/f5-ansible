@@ -1151,6 +1151,17 @@ releases:
     fragments:
     - issue_2419_2421.yaml
     release_date: '2024-09-11'
+  1.32.0:
+    changes:
+      bugfixes:
+      - bigip_imish_config - fixed a bug that resulted in incomplete config when using
+        BGV route domain
+      minor_changes:
+      - bigip_gtm_server - Added check for datacenter existence in Check Mode.
+    fragments:
+    - imish_route_domain_bugfix.yml
+    - issue-2429.yaml
+    release_date: '2024-10-24'
   1.4.0:
     changes:
       bugfixes:
