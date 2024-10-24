@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - bigip_device_info - virtual-servers - return per_flow_request_access_policy if defined.
+  - bigip_virtual_server - set per_flow_request_access_policy and stay idempotent.
