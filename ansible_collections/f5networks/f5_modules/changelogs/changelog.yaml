@@ -1162,6 +1162,8 @@ releases:
     - imish_route_domain_bugfix.yml
     - issue-2429.yaml
     release_date: '2024-10-24'
+  1.32.1:
+    release_date: '2024-10-28'
   1.4.0:
     changes:
       bugfixes:
