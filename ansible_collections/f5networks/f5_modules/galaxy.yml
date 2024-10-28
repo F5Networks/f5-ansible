@@ -20,7 +20,6 @@ build_ignore:
   - tests/module_utils
   - tests/modules
   - tests/plugins
-  - tests/sanity
   - tests/unit
   - tests/*.ini
   - tests/*.py
