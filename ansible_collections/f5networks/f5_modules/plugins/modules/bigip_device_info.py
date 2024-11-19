@@ -7348,6 +7348,12 @@ virtual_servers:
       returned: queried
       type: str
       sample: /Common/pool1
+    serverssl_use_sni:
+      description:
+        - Specifies whether SNI is enabled or disabled on the server-side SSL connection.
+      returned: queried
+      type: bool
+      sample: true
     status_reason:
       description:
         - If there is a problem with the status of the virtual, it is reported here.
@@ -17110,6 +17116,7 @@ class VirtualServersParameters(BaseParameters):
         'rateLimitSrcMask': 'rate_limit_source_mask',
         'rateLimitDstMask': 'rate_limit_destination_mask',
         'rateLimit': 'rate_limit',
+        'serversslUseSni': 'serverssl_use_sni',
         'sourceAddressTranslation': 'snat_type',
         'gtmScore': 'gtm_score',
         'rateClass': 'rate_class',
@@ -17149,6 +17156,7 @@ class VirtualServersParameters(BaseParameters):
         'rate_limit',
         'snat_type',
         'snat_pool',
+        'serverssl_use_sni',
         'gtm_score',
         'rate_class',
         'rate_limit_destination_mask',
@@ -17591,6 +17599,14 @@ class VirtualServersParameters(BaseParameters):
                 return 'none'
             elif self._values['snat_type']['type'] == 'snat':
                 return self._values['snat_type']["pool"]
+
+    @property
+    def serverssl_use_sni(self):
+        if self._values['serverssl_use_sni'] is None:
+            return None
+        if self._values['serverssl_use_sni'] == 'enabled':
+            return 'enabled'
+        return 'disabled'
 
     @property
     def connection_mirror_enabled(self):

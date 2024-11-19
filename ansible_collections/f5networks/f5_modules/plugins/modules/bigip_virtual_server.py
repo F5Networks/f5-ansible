@@ -240,6 +240,12 @@ options:
       - To remove SNAT, specify the word C(none).
       - To specify automap, use the word C(automap).
     type: str
+  serverssl_use_sni:
+    description:
+      - When C(enabled), specifies whether SNI is enabled on the server-side SSL connection
+      - When C(disabled), specifies whether SNI is disabled on the server-side SSL connection
+      - When creating a new virtual server, the default is C(disabled).
+    type: bool
   default_persistence_profile:
     description:
       - Default profile which manages the session persistence.
@@ -282,7 +288,7 @@ options:
       - Attempting to change C(state) on Virtual Server that belongs to an iAPP with strict updates enabled will result
         in error message returned by device, unless C(insert_metadata) parameter is set to C(false).
     type: bool
-    default: true
+    default: true   
   address_translation:
     description:
       - When C(enabled), specifies the system translates the address of the
@@ -484,7 +490,7 @@ options:
         required: True
         choices:
          - clientside
-         - serverside
+         - serverside             
   service_down_immediate_action:
     description:
       - Specifies the immediate action to take upon the receipt of the initial SYN packet if the
@@ -835,6 +841,11 @@ snat:
   returned: changed
   type: str
   sample: Automap
+serverssl_use_sni:
+  description: Specifies whether SNI is enabled or disabled on the server-side SSL connection.
+  returned: changed
+  type: bool
+  sample: true
 source:
   description: Source address set on the virtual server, in CIDR format.
   returned: changed
@@ -982,6 +993,7 @@ class Parameters(AnsibleF5Parameters):
         'fwStagedPolicy': 'firewall_staged_policy',
         'securityLogProfiles': 'security_log_profiles',
         'securityNatPolicy': 'security_nat_policy',
+        'serversslUseSni': 'serverssl_use_sni',
         'sourcePort': 'source_port',
         'ipIntelligencePolicy': 'ip_intelligence_policy',
         'rateLimit': 'rate_limit',
@@ -1009,6 +1021,7 @@ class Parameters(AnsibleF5Parameters):
         'rules',
         'source',
         'sourceAddressTranslation',
+        'serversslUseSni',
         'serviceDownImmediateAction',
         'vlans',
         'vlansEnabled',
@@ -1057,6 +1070,7 @@ class Parameters(AnsibleF5Parameters):
         'profiles',
         'service_down_immediate_action',
         'snat',
+        'serverssl_use_sni',
         'source',
         'type',
         'firewall_enforced_policy',
@@ -1096,6 +1110,7 @@ class Parameters(AnsibleF5Parameters):
         'profiles',
         'service_down_immediate_action',
         'snat',
+        'serverssl_use_sni',
         'source',
         'vlans',
         'vlans_enabled',
@@ -2168,6 +2183,14 @@ class ModuleParameters(Parameters):
             return dict(type=lowercase)
         snat_pool = fq_name(self.partition, self._values['snat'])
         return dict(pool=snat_pool, type='snat')
+    
+    @property
+    def serverssl_use_sni(self):
+        if self._values['serverssl_use_sni'] is None:
+            return None
+        if self._values['serverssl_use_sni']:
+            return 'enabled'
+        return 'disabled'   
 
     @property
     def default_persistence_profile(self):
@@ -2533,6 +2556,14 @@ class ReportableChanges(Changes):
         return result
 
     @property
+    def serverssl_use_sni(self):
+        if self._values['serverssl_use_sni'] is None:
+            return None
+        if self._values['serverssl_use_sni'] == 'enabled':
+            return True
+        return False
+
+    @property
     def destination(self):
         params = ApiParameters(params=dict(destination=self._values['destination']))
         result = params.destination_tuple.ip
@@ -2620,7 +2651,7 @@ class ReportableChanges(Changes):
         if protocol:
             return protocol
         return self._values['ip_protocol']
-
+    
 
 class VirtualServerValidator(object):
     def __init__(self, module=None, client=None, want=None, have=None):
@@ -3722,6 +3753,7 @@ class ArgumentSpec(object):
             pool=dict(),
             description=dict(),
             snat=dict(),
+            serverssl_use_sni=dict(type='bool'),
             default_persistence_profile=dict(),
             fallback_persistence_profile=dict(),
             source=dict(),
