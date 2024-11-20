@@ -288,7 +288,7 @@ options:
       - Attempting to change C(state) on Virtual Server that belongs to an iAPP with strict updates enabled will result
         in error message returned by device, unless C(insert_metadata) parameter is set to C(false).
     type: bool
-    default: true   
+    default: true 
   address_translation:
     description:
       - When C(enabled), specifies the system translates the address of the
@@ -490,7 +490,7 @@ options:
         required: True
         choices:
          - clientside
-         - serverside             
+         - serverside
   service_down_immediate_action:
     description:
       - Specifies the immediate action to take upon the receipt of the initial SYN packet if the
@@ -2183,14 +2183,14 @@ class ModuleParameters(Parameters):
             return dict(type=lowercase)
         snat_pool = fq_name(self.partition, self._values['snat'])
         return dict(pool=snat_pool, type='snat')
-    
+
     @property
     def serverssl_use_sni(self):
         if self._values['serverssl_use_sni'] is None:
             return None
         if self._values['serverssl_use_sni']:
             return 'enabled'
-        return 'disabled'   
+        return 'disabled' 
 
     @property
     def default_persistence_profile(self):
@@ -2651,7 +2651,7 @@ class ReportableChanges(Changes):
         if protocol:
             return protocol
         return self._values['ip_protocol']
-    
+
 
 class VirtualServerValidator(object):
     def __init__(self, module=None, client=None, want=None, have=None):
