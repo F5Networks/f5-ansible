@@ -288,7 +288,7 @@ options:
       - Attempting to change C(state) on Virtual Server that belongs to an iAPP with strict updates enabled will result
         in error message returned by device, unless C(insert_metadata) parameter is set to C(false).
     type: bool
-    default: true 
+    default: true
   address_translation:
     description:
       - When C(enabled), specifies the system translates the address of the
@@ -2190,7 +2190,7 @@ class ModuleParameters(Parameters):
             return None
         if self._values['serverssl_use_sni']:
             return 'enabled'
-        return 'disabled' 
+        return 'disabled'
 
     @property
     def default_persistence_profile(self):
