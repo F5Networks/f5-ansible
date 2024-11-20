@@ -93,5 +93,12 @@ class ActionModule(ActionNetworkModule):
                 conn.send_command('exit')
                 out = conn.get_prompt()
 
+            if self._play_context.connection == 'network_cli':
+                p = load_provider(f5_provider_spec, self._task.args)
+                p['server'] = task_vars['ansible_host']
+                p['user'] = task_vars['ansible_user']
+                p['password'] = task_vars['ansible_password']
+                task_vars['provider'] = p
+
         result = super(ActionModule, self).run(task_vars=task_vars)
         return result
