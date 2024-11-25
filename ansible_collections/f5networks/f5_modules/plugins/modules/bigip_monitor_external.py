@@ -615,7 +615,7 @@ class ModuleManager(object):
 
     def set_variable_on_device(self, commands):
         command = ' '.join(['user-defined {0} \\\"{1}\\\"'.format(k, v) for k, v in iteritems(commands)])
-        command = 'tmsh modify ltm monitor external {0} {1}'.format(self.want.name, command)
+        command = 'tmsh modify ltm monitor external {0} {1}'.format(f'/{self.want.partition}/{self.want.name}', command)
         uri = "https://{0}:{1}/mgmt/tm/util/bash".format(
             self.client.provider['server'],
             self.client.provider['server_port'],

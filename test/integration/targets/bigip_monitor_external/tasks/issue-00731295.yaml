@@ -1,0 +1,115 @@
+---
+
+- name: Create external monitor foo in another partition
+  bigip_monitor_external:
+    name: "foo_demo_TEST"
+    partition: TEST
+    timeout: 10
+    variables:
+      DOMAIN: "www.example.io"
+      URI: "prod"
+      RECV: "OK"
+    provider: "{{ provider }}"
+  register: result
+
+
+- name: Assert Create external monitor foo in another partition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Create external monitor foo in another partition - Idempotent Check
+  bigip_monitor_external:
+    name: "foo_demo_TEST"
+    partition: TEST
+    timeout: 10
+    variables:
+      DOMAIN: "www.example.io"
+      URI: "prod"
+      RECV: "OK"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Create external monitor foo in another partition - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Update external monitor foo in another partition
+  bigip_monitor_external:
+    name: "foo_demo_TEST"
+    partition: TEST
+    timeout: 10
+    variables:
+      DOMAIN: "www.example.io"
+      URI: "test"
+      RECV: "OK"
+    provider: "{{ provider }}"
+  register: result
+
+
+- name: Assert Update external monitor foo in another partition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Update external monitor foo in another partition - Idempotent Check
+  bigip_monitor_external:
+    name: "foo_demo_TEST"
+    partition: TEST
+    timeout: 10
+    variables:
+      DOMAIN: "www.example.io"
+      URI: "test"
+      RECV: "OK"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Update external monitor foo in another partition - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+- name: Delete external monitor foo in another partition
+  bigip_monitor_external:
+    name: "foo_demo_TEST"
+    partition: TEST
+    timeout: 10
+    variables:
+      DOMAIN: "www.example.io"
+      URI: "test"
+      RECV: "OK"
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+
+- name: Assert Delete external monitor foo in another partition
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Delete external monitor foo in another partition - Idempotent Check
+  bigip_monitor_external:
+    name: "foo_demo_TEST"
+    partition: TEST
+    timeout: 10
+    variables:
+      DOMAIN: "www.example.io"
+      URI: "test"
+      RECV: "OK"
+    state: absent
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Delete external monitor foo in another partition - Idempotent Check
+  assert:
+    that:
+      - result is not changed
+      - result is success
