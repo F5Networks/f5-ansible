@@ -4,6 +4,14 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.33.0
+=======
+
+Bugfixes
+--------
+
+- bigip_monitor_external - external monitor user-defined variables not reflected for non-common partition
+
 v1.32.1
 =======
 
