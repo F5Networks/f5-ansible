@@ -52,12 +52,14 @@ class TestParameters(unittest.TestCase):
             name='foo',
             server_name='foo.bar.com',
             secure_renegotiation='require',
+            passphrase= "F5site02"
         )
 
         p = ModuleParameters(params=args)
         assert p.name == 'foo'
         assert p.server_name == 'foo.bar.com'
         assert p.secure_renegotiation == 'require'
+        assert p.passphrase == 'F5site02'
 
     def test_api_parameters(self):
         args = load_fixture('load_ltm_profile_serverssl_1.json')
