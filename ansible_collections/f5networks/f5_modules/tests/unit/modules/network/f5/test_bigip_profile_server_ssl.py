@@ -52,7 +52,7 @@ class TestParameters(unittest.TestCase):
             name='foo',
             server_name='foo.bar.com',
             secure_renegotiation='require',
-            passphrase= "F5site02"
+            passphrase="F5site02"
         )
 
         p = ModuleParameters(params=args)
