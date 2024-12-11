@@ -269,6 +269,7 @@ class Parameters(AnsibleF5Parameters):
         'caFile',
         'authenticateName',
         'tmOptions',
+        'passphrase'
     ]
 
     returnables = [
@@ -440,6 +441,13 @@ class ModuleParameters(Parameters):
             return []
         return options
 
+    @property
+    def passphrase(self):
+        if self._values['passphrase'] is None:
+            return None
+        if self._values['passphrase'] in ['', 'none']:
+            return ''
+        return self._values['passphrase']
 
 class Changes(Parameters):
     def to_return(self):
@@ -699,6 +707,7 @@ class ModuleManager(object):
             self.client.provider['server'],
             self.client.provider['server_port']
         )
+        params['passphrase'] = self.want.passphrase
         resp = self.client.api.post(uri, json=params)
         try:
             response = resp.json()

@@ -1,0 +1,20 @@
+---
+- name: Create a client SSL profile with a cert/key/chain setting
+  bigip_profile_client_ssl:
+    state: present
+    name: PRD.DEVTTY.LOCAL_CLIENTSSL
+    server_name: prd.devtty.local
+    cert_key_chain:
+      - cert: tc.crt
+        key: tc.key
+        passphrase: "F5site02"
+        true_names: true
+
+- name: Create a new server SSL profile with a cert/key/chain setting
+  bigip_profile_server_ssl:
+    state: present
+    name: PRD.DEVTTY.LOCAL_SERVERSSL
+    server_name: prd.devtty.local
+    certificate: tc.crt
+    key: tc.key
+    passphrase: "F5site02"

@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_profile_server_ssl - Fixed bug - create server SSL profile if SSL key is passphrase protected
