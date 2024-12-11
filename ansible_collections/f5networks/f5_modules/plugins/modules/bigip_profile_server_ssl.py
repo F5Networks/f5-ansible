@@ -449,6 +449,7 @@ class ModuleParameters(Parameters):
             return ''
         return self._values['passphrase']
 
+
 class Changes(Parameters):
     def to_return(self):
         result = {}
