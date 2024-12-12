@@ -10824,44 +10824,6 @@ class GtmServersParameters(BaseParameters):
             resource.pop('isSubcollection', None)
             resource.pop('fullPath', None)
 
-    def _read_virtual_stats_from_device(self, url):
-        uri = "https://{0}:{1}{2}/stats".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            url
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
-            raise F5ModuleError(resp.content)
-        result = parseStats(response)
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
-
-    def _process_vs_stats(self, link):
-        result = dict()
-        item = self._read_virtual_stats_from_device(urlparse(link).path)
-        if not item:
-            return result
-        result['status'] = item['status']['availabilityState']
-        result['status_reason'] = item['status']['statusReason']
-        result['state'] = item['status']['enabledState']
-        result['bits_per_sec_in'] = item['metrics']['bitsPerSecIn']
-        result['bits_per_sec_in'] = item['metrics']['bitsPerSecOut']
-        result['pkts_per_sec_in'] = item['metrics']['pktsPerSecIn']
-        result['pkts_per_sec_out'] = item['metrics']['pktsPerSecOut']
-        result['connections'] = item['metrics']['connections']
-        result['picks'] = item['picks']
-        result['virtual_server_score'] = item['metrics']['vsScore']
-        result['uptime'] = item['uptime']
-        return result
-
     @property
     def monitors(self):
         if self._values['monitors'] is None:
@@ -10882,42 +10844,6 @@ class GtmServersParameters(BaseParameters):
             return 'm_of_n'
         else:
             return 'and_list'
-
-    @property
-    def limit_mem_available_status(self):
-        return flatten_boolean(self._values['limit_mem_available_status'])
-
-    @property
-    def limit_max_pps_status(self):
-        return flatten_boolean(self._values['limit_max_pps_status'])
-
-    @property
-    def limit_max_connections_status(self):
-        return flatten_boolean(self._values['limit_max_connections_status'])
-
-    @property
-    def limit_max_bps_status(self):
-        return flatten_boolean(self._values['limit_max_bps_status'])
-
-    @property
-    def limit_cpu_usage_status(self):
-        return flatten_boolean(self._values['limit_cpu_usage_status'])
-
-    @property
-    def iq_allow_service_check(self):
-        return flatten_boolean(self._values['iq_allow_service_check'])
-
-    @property
-    def iq_allow_snmp(self):
-        return flatten_boolean(self._values['iq_allow_snmp'])
-
-    @property
-    def expose_route_domains(self):
-        return flatten_boolean(self._values['expose_route_domains'])
-
-    @property
-    def iq_allow_path(self):
-        return flatten_boolean(self._values['iq_allow_path'])
 
     @property
     def product(self):
@@ -10959,54 +10885,12 @@ class GtmServersParameters(BaseParameters):
                     item['disabled'] = flatten_boolean(not item['enabled'])
             if 'fullPath' in item:
                 item['full_path'] = item.pop('fullPath')
-            if 'limitMaxBps' in item:
-                item['limit_max_bps'] = int(item.pop('limitMaxBps'))
-            if 'limitMaxBpsStatus' in item:
-                item['limit_max_bps_status'] = item.pop('limitMaxBpsStatus')
-            if 'limitMaxConnections' in item:
-                item['limit_max_connections'] = int(item.pop('limitMaxConnections'))
-            if 'limitMaxConnectionsStatus' in item:
-                item['limit_max_connections_status'] = item.pop('limitMaxConnectionsStatus')
-            if 'limitMaxPps' in item:
-                item['limit_max_pps'] = int(item.pop('limitMaxPps'))
-            if 'limitMaxPpsStatus' in item:
-                item['limit_max_pps_status'] = item.pop('limitMaxPpsStatus')
             if 'translationAddress' in item:
                 item['translation_address'] = item.pop('translationAddress')
             if 'translationPort' in item:
                 item['translation_port'] = int(item.pop('translationPort'))
             result.append(item)
         return result
-
-    @property
-    def limit_cpu_usage(self):
-        if self._values['limit_cpu_usage'] is None:
-            return None
-        return int(self._values['limit_cpu_usage'])
-
-    @property
-    def limit_max_bps(self):
-        if self._values['limit_max_bps'] is None:
-            return None
-        return int(self._values['limit_max_bps'])
-
-    @property
-    def limit_max_connections(self):
-        if self._values['limit_max_connections'] is None:
-            return None
-        return int(self._values['limit_max_connections'])
-
-    @property
-    def limit_max_pps(self):
-        if self._values['limit_max_pps'] is None:
-            return None
-        return int(self._values['limit_max_pps'])
-
-    @property
-    def limit_mem_available(self):
-        if self._values['limit_mem_available'] is None:
-            return None
-        return int(self._values['limit_mem_available'])
 
 
 class GtmServersFactManager(BaseManager):
