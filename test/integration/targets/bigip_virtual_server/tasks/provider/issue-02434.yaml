@@ -1,0 +1,24 @@
+---
+- name: Issue 02434 - Create IPV4 network virtual server, mask specified - Provider
+  bigip_virtual_server:
+    name: bs_fastl4
+    port: 443
+    profiles:
+      - fastL4
+    type: performance-l4
+    state: enabled
+    provider: "{{ provider }}"
+
+- name: Issue 02434 - Disable IPV4 network virtual server, mask specified - Provider
+  bigip_virtual_server:
+    name: bs_fastl4
+    port: 443
+    state: disabled
+    provider: "{{ provider }}"
+
+- name: Issue 02434 - Delete IPV4 network virtual server, mask specified - Provider
+  bigip_virtual_server:
+    name: bs_fastl4
+    port: 443
+    state: absent
+    provider: "{{ provider }}"
