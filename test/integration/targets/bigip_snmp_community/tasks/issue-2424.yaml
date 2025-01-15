@@ -1,0 +1,73 @@
+---
+- name: Set SNMPv3 Username beginning with a number 
+  bigip_snmp_community:
+    name: zabbix
+    version: v3
+    snmp_username: 123456
+    snmp_auth_protocol: sha
+    snmp_auth_password: authpa$$                     
+    snmp_privacy_protocol: aes
+    snmp_privacy_password: privpa$$
+    oid: .1
+  register: result
+
+- name: Set SNMPv3 Username beginning with a number 
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set SNMPv3 Username containing special characters
+  bigip_snmp_community:
+    name: zabbix
+    version: v3
+    snmp_username: $test
+    snmp_auth_protocol: sha
+    snmp_auth_password: authpa$$                     
+    snmp_privacy_protocol: aes
+    snmp_privacy_password: privpa$$
+    oid: .1
+  register: result
+
+- name: Assert Set SNMPv3 Username containing special characters
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set SNMPv3 Username containing numbers and special characters
+  bigip_snmp_community:
+    name: zabbix
+    version: v3
+    snmp_username: 123@#456
+    snmp_auth_protocol: sha
+    snmp_auth_password: authpa$$                     
+    snmp_privacy_protocol: aes
+    snmp_privacy_password: privpa$$
+    oid: .1
+  register: result
+
+- name: Assert Set SNMPv3 Username containing numbers and pecial characters
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Set SNMPv3 Username containing special characters
+  bigip_snmp_community:
+    name: zabbix
+    version: v3
+    snmp_username: $test$
+    snmp_auth_protocol: sha
+    snmp_auth_password: authpa$$                     
+    snmp_privacy_protocol: aes
+    snmp_privacy_password: privpa$$
+    oid: .1
+  register: result
+
+- name: Assert Set SNMPv3 Username containing special characters
+  assert:
+    that:
+      - result is changed
+      - result is success
+
