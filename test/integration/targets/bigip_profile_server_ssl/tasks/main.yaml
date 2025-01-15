@@ -1,5 +1,4 @@
 ---
-
 - import_tasks: setup.yaml
 
 - name: Create a base server SSL profile
@@ -72,11 +71,10 @@
       - result is not changed
       - result is success
 
-
 - name: Change OCSP - empty - Idempotent check
   bigip_profile_server_ssl:
     name: foo
-    ocsp_profile: ''
+    ocsp_profile: ""
   register: result
 
 - name: Assert Change OCSP - empty - Idempotent check
@@ -461,7 +459,7 @@
 - name: Set server_name - empty - Idempotent check
   bigip_profile_server_ssl:
     name: "{{ profile_2 }}"
-    server_name: ''
+    server_name: ""
   register: result
 
 - name: Assert Set server_name - empty - Idempotent check
@@ -494,3 +492,6 @@
 
 - import_tasks: issue-01609.yaml
   tags: issue-01609
+
+- import_tasks: issue-02435.yaml
+  tags: issue-02435
