@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_snmp_community - Allow v3 usernames that begin with a number or contains any special characters.
