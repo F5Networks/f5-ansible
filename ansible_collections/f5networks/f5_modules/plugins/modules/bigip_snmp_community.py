@@ -261,7 +261,7 @@ snmp_privacy_password:
   sample: secret2
 '''
 from datetime import datetime
-
+import re
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
@@ -771,10 +771,11 @@ class V2Manager(BaseManager):
         return True
 
     def exists(self):
+        name = self.update_username()
         uri = "https://{0}:{1}/mgmt/tm/sys/snmp/users/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.snmp_username)
+            transform_name(self.want.partition, name)
         )
         resp = self.client.api.get(uri)
         try:
@@ -787,7 +788,7 @@ class V2Manager(BaseManager):
 
     def create_on_device(self):
         params = self.changes.api_params()
-        params['name'] = self.want.snmp_username
+        params['name'] = self.update_username()
         params['partition'] = self.want.partition
         uri = "https://{0}:{1}/mgmt/tm/sys/snmp/users/".format(
             self.client.provider['server'],
@@ -835,10 +836,11 @@ class V2Manager(BaseManager):
             return True
 
     def read_current_from_device(self):
+        name = self.update_username()
         uri = "https://{0}:{1}/mgmt/tm/sys/snmp/users/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.snmp_username)
+            transform_name(self.want.partition, name)
         )
         resp = self.client.api.get(uri)
         try:
@@ -852,6 +854,13 @@ class V2Manager(BaseManager):
             else:
                 raise F5ModuleError(resp.content)
         return ApiParameters(params=response)
+
+    def update_username(self):
+        name = self.want.snmp_username
+        if self.want.snmp_username.startswith(tuple("0123456789")) or re.search(r'[^a-zA-Z0-9\s]', self.want.snmp_username):
+            name = re.sub(r'[^a-zA-Z0-9\s]', '_', self.want.snmp_username)
+            name = "i" + name + "_1"
+        return name
 
 
 class ArgumentSpec(object):
