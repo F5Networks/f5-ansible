@@ -70,3 +70,12 @@
 
 - import_tasks: sr-00458196.yaml
   tags: sr-00458196
+
+- import_tasks: issue-02434.yaml
+  tags: issue-02434
+
+- import_tasks: issue-01813.yaml
+  tags: issue-01813
+
+- import_tasks: issue-01519.yaml
+  tags: issue-01519

@@ -3450,6 +3450,10 @@ class Difference(object):
 
     @property
     def type(self):
+        if self.want.state in ["disabled", "enabled"] and self.want.type in [None, "standard"]:
+            # when type is missing
+            self.want.type = self.have.type
+
         if self.want.type != self.have.type:
             raise F5ModuleError(
                 "Changing the 'type' parameter is not supported."
