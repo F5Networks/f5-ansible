@@ -5,7 +5,7 @@ This collection packages and distributes modules, and plugins.
 
 ## Requirements
 
- - ansible >= 2.15
+ - ansible >= 2.14
  - packaging
 
 ## Python Version Notice
@@ -98,7 +98,7 @@ F5 Networks
 [F5 Networks](http://www.f5.com)
 
 
-[repoinstall]: https://docs.ansible.com/ansible/latest/user_guide/collections_using.html#installing-a-collection-from-a-git-repository
+[repoinstall]: https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html#installing-a-collection-from-a-git-repository
 [dailybuild]: https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-devel.tar.gz
 [execenv]: https://docs.ansible.com/automation-controller/latest/html/userguide/execution_environments.html
-[f5execenv]: http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/exec-env.html
+[f5execenv]: https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/exec-env.html
