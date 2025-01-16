@@ -1172,6 +1172,21 @@ releases:
     fragments:
     - external_monitor_issue.yml
     release_date: '2024-12-04'
+  1.34.0:
+    changes:
+      bugfixes:
+      - bigip_profile_server_ssl - Fixed bug - create server SSL profile if SSL key
+        is passphrase protected
+      - bigip_snmp_community - Allow v3 usernames that begin with a number or contains
+        any special characters.
+      minor_changes:
+      - bigip_virtual_server - Fixed issue - Disabling/Enabling Virtual Server does
+        not require profiles, type in Update
+    fragments:
+    - issue_2424.yaml
+    - issue_2434.yaml
+    - issue_2435.yaml
+    release_date: '2025-01-16'
   1.4.0:
     changes:
       bugfixes:
