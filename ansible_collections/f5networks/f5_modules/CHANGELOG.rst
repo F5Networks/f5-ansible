@@ -4,6 +4,20 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.34.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_virtual_server - Fixed issue - Disabling/Enabling Virtual Server does not require profiles, type in Update
+
+Bugfixes
+--------
+
+- bigip_profile_server_ssl - Fixed bug - create server SSL profile if SSL key is passphrase protected
+- bigip_snmp_community - Allow v3 usernames that begin with a number or contains any special characters.
+
 v1.33.0
 =======
 
