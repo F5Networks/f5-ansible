@@ -1,5 +1,5 @@
 sudo: required
-dist: xenial
+dist: jammy
 language: python
 
 before_install:
@@ -29,8 +29,8 @@ jobs:
       script:
         - inv test.style
         - inv test.f5-sanity
-      python: "3.9"
-    - name: Ansible Sanity Tests - Py3.9
+      python: "3.10"
+    - name: Ansible Sanity Tests - Py3.10
       script:
-        - inv test.ansible-test -r -p 3.9
-      python: "3.9"
+        - inv test.ansible-test -r -p 3.10
+      python: "3.10"
