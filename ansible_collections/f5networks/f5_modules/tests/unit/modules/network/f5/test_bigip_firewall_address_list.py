@@ -76,24 +76,54 @@ class TestParameters(unittest.TestCase):
         assert sorted(p.address_ranges) == ['2.2.2.2-3.3.3.3', '5.5.5.5-6.6.6.6']
         assert p.address_lists[0] == '/Common/foo'
 
+
     def test_mixed_rd_non_rd_addresses(self):
         args = dict(
-            addresses=['1.1.1.1', '2.2.2.2%123', '2700:bc00:1f10:101::6', '2700:bc00:1f10:101::6%123'],
+            addresses=[
+                '1.1.1.1',                              # IP only
+                '2.2.2.2%123',                          # IP + RD
+                '2700:bc00:1f10:101::6',                # IPv6 only
+                '2700:bc00:1f10:101::6%123',            # IPv6 + RD
+                '2001:db8::/64',                        # IPV6 + CIDR
+                '2001:db8::%42/64'                      # IPV6 + CIDR +RD
+                '192.168.1.0/28%3',                     # IP + CIDR + RD
+                '172.16.0.0/16%1'                       # IP + CIDR + RD
+            ],
         )
         p = ModuleParameters(params=args)
-        assert '2.2.2.2%123' in p.addresses
-        assert '1.1.1.1' in p.addresses
-        assert '2700:bc00:1f10:101::6' in p.addresses
-        assert '2700:bc00:1f10:101::6%123' in p.addresses
+
+        expected = [
+            '1.1.1.1/32',                               # IP only, defaults to /32
+            '2.2.2.2%123/32',                           # IP + RD
+            '2700:bc00:1f10:101::6/128',                # IPv6 only
+            '2700:bc00:1f10:101::6%123/128',            # IPv6 + RD
+            '2001:db8::/64',                            # IPV6 + CIDR
+            '2001:db8::%42/64'                          # IPV6 + CIDR +RD
+            '192.168.1.0/28%3',                         # IP + CIDR + RD
+            '172.16.0.0/16%1'                           # IP + CIDR + RD
+        ]
+
+        for expected_address in expected:
+            assert expected_address in p.addresses
+
 
     def test_mixed_rd_non_rd_addresses_from_device(self):
         args = load_fixture('fw_addr_rd.json')
-
         p = ApiParameters(params=args)
-        assert '1.2.3.4' in p.addresses
-        assert '2700:bc00:1f10:101::6' in p.addresses
-        assert '2700:bc00:1f10:101::6%123' in p.addresses
-        assert '1.2.3.4%124' in p.addresses
+
+        expected = [
+            '1.2.3.4/32',                         # IPv4 default mask
+            '1.2.3.4%124/32',                     # IPv4 with RD
+            '2700:bc00:1f10:101::6/128',          # IPv6 default mask
+            '2700:bc00:1f10:101::6%123/128',      # IPv6 with RD
+            '10.10.10.0%50/24',                   # IP + CIDR + RD
+            '192.168.0.0/28',                     # IP + CIDR
+            '2001:db8::/64',                      # IPV6 + CIDR
+            '2001:db8::%42/64'                    # IPV6 + CIDR +RD
+        ]
+
+        for expected_address in expected:
+            assert expected_address in p.addresses
 
 
 class TestManager(unittest.TestCase):
