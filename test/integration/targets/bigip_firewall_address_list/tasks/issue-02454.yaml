@@ -1,12 +1,12 @@
 ---
 
-- name: Issue 024545 - Provision AFM
+- name: Issue 002454 - Provision AFM
   bigip_provision:
     name: afm
   tags:
     - module-provisioning
 
-- name: Issue 024545 - Create an address list with IPv4 + CIDR + RD
+- name: Issue 002454 - Create an address list with IPv4 + CIDR + RD
   bigip_firewall_address_list:
     name: foo3
     addresses:
@@ -15,12 +15,12 @@
       - 172.16.0.0%99/16
   register: result
 
-- name: Issue 024545 - Assert Create an address list with IPv4 + CIDR + RD
+- name: Issue 002454 - Assert Create an address list with IPv4 + CIDR + RD
   assert:
     that:
       - result is not changed
 
-- name: Issue 024545 - Create an address list with IPv4 + CIDR + RD - Idempotent check
+- name: Issue 002454 - Create an address list with IPv4 + CIDR + RD - Idempotent check
   bigip_firewall_address_list:
     name: foo3
     addresses:
@@ -29,12 +29,12 @@
       - 172.16.0.0%99/16
   register: result
 
-- name: Issue 024545 - Assert Create an address list with IPv6 + CIDR + RD - Idempotent check
+- name: Issue 002454 - Assert Create an address list with IPv6 + CIDR + RD - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 024545 - Create an address list with IPv6 + CIDR + RD
+- name: Issue 002454 - Create an address list with IPv6 + CIDR + RD
   bigip_firewall_address_list:
     name: foo4
     addresses:
@@ -43,12 +43,12 @@
       - 2406:da18::%3/56
   register: result
 
-- name: Issue 024545 - Assert Create an address list with IPv6 + CIDR + RD - Idempotent check
+- name: Issue 002454 - Assert Create an address list with IPv6 + CIDR + RD - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Issue 024545 - Remove address lists
+- name: Issue 002454 - Remove address lists
   bigip_firewall_address_list:
     name: "{{ item }}"
     state: absent
@@ -56,7 +56,7 @@
     - foo3
     - foo4
 
-- name: Issue 024545 - Deprovision AFM
+- name: Issue 002454 - Deprovision AFM
   bigip_provision:
     name: afm
     state: absent
