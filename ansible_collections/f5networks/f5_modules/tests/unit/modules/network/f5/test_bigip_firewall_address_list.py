@@ -78,22 +78,46 @@ class TestParameters(unittest.TestCase):
 
     def test_mixed_rd_non_rd_addresses(self):
         args = dict(
-            addresses=['1.1.1.1', '2.2.2.2%123', '2700:bc00:1f10:101::6', '2700:bc00:1f10:101::6%123'],
+            addresses=[
+                '1.1.1.1',                              # IP only
+                '2.2.2.2%123',                          # IP + CIDR + RD
+                '2700:bc00:1f10:101::6',                # IPv6 only
+                '2700:bc00:1f10:101::6%123',            # IPv6 + RD
+                '2001:db8::/64',                        # IPV6 + CIDR
+                '2001:db8::%42/64'                      # IPV6 + CIDR +RD
+            ],
         )
         p = ModuleParameters(params=args)
-        assert '2.2.2.2%123' in p.addresses
-        assert '1.1.1.1' in p.addresses
-        assert '2700:bc00:1f10:101::6' in p.addresses
-        assert '2700:bc00:1f10:101::6%123' in p.addresses
+
+        expected = [
+            '1.1.1.1',
+            '2.2.2.2%123',
+            '2700:bc00:1f10:101::6',
+            '2700:bc00:1f10:101::6%123',
+            '2001:db8::/64',
+            '2001:db8::%42/64'
+        ]
+
+        for expected_address in expected:
+            assert expected_address in p.addresses
 
     def test_mixed_rd_non_rd_addresses_from_device(self):
         args = load_fixture('fw_addr_rd.json')
-
         p = ApiParameters(params=args)
-        assert '1.2.3.4' in p.addresses
-        assert '2700:bc00:1f10:101::6' in p.addresses
-        assert '2700:bc00:1f10:101::6%123' in p.addresses
-        assert '1.2.3.4%124' in p.addresses
+
+        expected = [
+            '1.2.3.4',
+            '1.2.3.4%124',
+            '2700:bc00:1f10:101::6',
+            '2700:bc00:1f10:101::6%123',
+            '10.10.10.0%50/24',
+            '192.168.0.0/28',
+            '2001:db8::/64',
+            '2001:db8::%42/64'
+        ]
+
+        for expected_address in expected:
+            assert expected_address in p.addresses
 
 
 class TestManager(unittest.TestCase):

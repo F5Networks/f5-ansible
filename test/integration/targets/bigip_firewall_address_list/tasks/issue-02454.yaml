@@ -1,0 +1,65 @@
+---
+
+- name: Issue 002454 - Provision AFM
+  bigip_provision:
+    name: afm
+  tags:
+    - module-provisioning
+
+- name: Issue 002454 - Create an address list with IPv4 + CIDR + RD
+  bigip_firewall_address_list:
+    name: foo3
+    addresses:
+      - 10.10.10.0%10/24
+      - 192.168.1.0%101/28
+      - 172.16.0.0%99/16
+  register: result
+
+- name: Issue 002454 - Assert Create an address list with IPv4 + CIDR + RD
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 002454 - Create an address list with IPv4 + CIDR + RD - Idempotent check
+  bigip_firewall_address_list:
+    name: foo3
+    addresses:
+      - 10.10.10.0%10/24
+      - 192.168.1.0%101/28
+      - 172.16.0.0%99/16
+  register: result
+
+- name: Issue 002454 - Assert Create an address list with IPv6 + CIDR + RD - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 002454 - Create an address list with IPv6 + CIDR + RD
+  bigip_firewall_address_list:
+    name: foo4
+    addresses:
+      - 2001:db8::%11/64
+      - 2700:bc00:1f10:101::%5/48
+      - 2406:da18::%3/56
+  register: result
+
+- name: Issue 002454 - Assert Create an address list with IPv6 + CIDR + RD - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 002454 - Remove address lists
+  bigip_firewall_address_list:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - foo3
+    - foo4
+
+- name: Issue 002454 - Deprovision AFM
+  bigip_provision:
+    name: afm
+    state: absent
+  tags:
+    - module-provisioning
+    - deprovision-module

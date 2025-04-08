@@ -517,13 +517,15 @@ class ModuleParameters(Parameters):
         return all(allowed.match(x) for x in host.split("."))
 
     def _get_rd(self, address):
-        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)'
+        pattern = r'(?P<ip>[^%/]+)%(?P<route_domain>[0-9]+)(?:/(?P<cidr>[0-9]+))?'
+
         matches = re.search(pattern, address)
         if matches:
             addr = matches.group('ip')
             rd = matches.group('route_domain')
-            return addr, rd
-        return None, None
+            cidr = matches.group('cidr')
+            return addr, rd, cidr
+        return None, None, None
 
     @property
     def addresses(self):
@@ -531,8 +533,13 @@ class ModuleParameters(Parameters):
             return None
         result = []
         for x in self._values['addresses']:
-            addr, rd = self._get_rd(x)
-            if addr and rd:
+            addr, rd, cidr = self._get_rd(x)
+            if addr and rd and cidr:
+                if is_valid_ip(addr):
+                    result.append(str(ip_address(u'{0}'.format(addr))) + '%' + rd + '/' + cidr)
+                elif is_valid_ip_interface(addr):
+                    result.append(str(ip_address(u'{0}'.format(addr))) + '%' + rd + '/' + cidr)
+            elif addr and rd:
                 if is_valid_ip(addr):
                     result.append(str(ip_address(u'{0}'.format(addr))) + '%' + rd)
                 elif is_valid_ip_interface(addr):
