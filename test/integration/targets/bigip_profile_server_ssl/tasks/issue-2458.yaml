@@ -1,0 +1,105 @@
+
+---
+
+- name: Test - Omitted parent
+  bigip_profile_server_ssl:
+    name: ssl_omitted
+  register: result
+
+- name: Assert - parent omitted
+  assert:
+    that: [ "result is not changed" ]
+
+---
+
+# 2. parent = null
+- name: Test - parent: null
+  bigip_profile_server_ssl:
+    name: ssl_null
+    parent: null
+  register: result
+
+- name: Assert - parent: null
+  assert:
+    that: [ "result is not changed" ]
+
+---
+
+# 3. parent = ""
+- name: Test - parent: ""
+  bigip_profile_server_ssl:
+    name: ssl_empty
+    parent: ""
+  register: result
+
+- name: Assert - parent: ""
+  assert:
+    that: [ "result is not changed" ]
+
+---
+
+# 4. parent = "None" (string)
+- name: Test - parent: "None"
+  bigip_profile_server_ssl:
+    name: ssl_string_none
+    parent: "None"
+  register: result
+
+- name: Assert - parent: "None"
+  assert:
+    that: [ "result is not changed" ]
+
+---
+
+# 5. parent = "serverssl"
+- name: Test - parent: "serverssl"
+  bigip_profile_server_ssl:
+    name: ssl_short
+    parent: "serverssl"
+  register: result
+
+- name: Assert - parent: "serverssl"
+  assert:
+    that: [ "result is not changed" ]
+
+---
+
+# 6. parent = "/Common/custom"
+- name: Test - parent: "/Common/custom"
+  bigip_profile_server_ssl:
+    name: ssl_full
+    parent: "/Common/custom"
+  register: result
+
+- name: Assert - parent: "/Common/custom"
+  assert:
+    that: [ "result is not changed" ]
+
+---
+
+# 7. parent = "profileABC"
+- name: Test - parent: "profileABC"
+  bigip_profile_server_ssl:
+    name: ssl_other
+    parent: "profileABC"
+  register: result
+
+- name: Assert - parent: "profileABC"
+  assert:
+    that: [ "result is not changed" ]
+
+---
+
+# Cleanup
+- name: Cleanup server SSL test profiles
+  bigip_profile_server_ssl:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - ssl_omitted
+    - ssl_null
+    - ssl_empty
+    - ssl_string_none
+    - ssl_short
+    - ssl_full
+    - ssl_other

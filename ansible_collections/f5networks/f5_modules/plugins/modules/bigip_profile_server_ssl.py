@@ -24,7 +24,7 @@ options:
     description:
       - The parent template of this monitor template. Once this value has
         been set, it cannot be changed.
-    type: str
+    type: raw
     default: /Common/serverssl
   ciphers:
     description:
@@ -383,10 +383,11 @@ class ModuleParameters(Parameters):
 
     @property
     def parent(self):
-        if self._values['parent'] is None:
+        parent = self._values.get("parent")
+        if parent in [None, "", "None"]:
             return None
-        if self._values['parent'] == 'serverssl':
-            return '/Common/serverssl'
+        if parent == "serverssl":
+            return "/Common/serverssl"
         result = fq_name(self.partition, self._values['parent'])
         return result
 
@@ -785,7 +786,7 @@ class ArgumentSpec(object):
             chain=dict(),
             key=dict(no_log=True),
             passphrase=dict(no_log=True),
-            parent=dict(default='/Common/serverssl'),
+            parent=dict(type='raw', default='/Common/serverssl'),
             ciphers=dict(),
             cipher_group=dict(),
             authenticate_name=dict(),
