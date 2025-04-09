@@ -61,6 +61,54 @@ class TestParameters(unittest.TestCase):
         assert p.secure_renegotiation == 'require'
         assert p.passphrase == 'F5site02'
 
+    def test_module_parameters_parent_none(self):
+        args = dict(
+            name='foo',
+            server_name='foo.bar.com',
+            secure_renegotiation='require',
+            passphrase="F5site02",
+            parent=None
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.name == 'foo'
+        assert p.server_name == 'foo.bar.com'
+        assert p.secure_renegotiation == 'require'
+        assert p.passphrase == 'F5site02'
+        assert p.parent is None
+
+    def test_module_parameters_parent_none_str(self):
+        args = dict(
+            name='foo',
+            server_name='foo.bar.com',
+            secure_renegotiation='require',
+            passphrase="F5site02",
+            parent="None"
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.name == 'foo'
+        assert p.server_name == 'foo.bar.com'
+        assert p.secure_renegotiation == 'require'
+        assert p.passphrase == 'F5site02'
+        assert p.parent == "None"
+
+    def test_module_parameters_parent_none_str(self):
+        args = dict(
+            name='foo',
+            server_name='foo.bar.com',
+            secure_renegotiation='require',
+            passphrase="F5site02",
+            parent="foo"
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.name == 'foo'
+        assert p.server_name == 'foo.bar.com'
+        assert p.secure_renegotiation == 'require'
+        assert p.passphrase == 'F5site02'
+        assert p.parent == '/Common/foo'
+
     def test_api_parameters(self):
         args = load_fixture('load_ltm_profile_serverssl_1.json')
         p = ApiParameters(params=args)
