@@ -4,6 +4,15 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.35.0
+=======
+
+Bugfixes
+--------
+
+- bigip_firewall_address_list to support both cidr and route domain
+- bigip_profile_server_ssl to support parent's [None, "", "None"] profiles
+
 v1.34.1
 =======
 

@@ -1189,6 +1189,15 @@ releases:
     release_date: '2025-01-16'
   1.34.1:
     release_date: '2025-01-20'
+  1.35.0:
+    changes:
+      bugfixes:
+      - bigip_firewall_address_list to support both cidr and route domain
+      - bigip_profile_server_ssl to support parent's [None, "", "None"] profiles
+    fragments:
+    - 2454-firewall-address-with-cidr-rd.yaml
+    - 2458-profile-server-ssl.yaml
+    release_date: '2025-04-11'
   1.4.0:
     changes:
       bugfixes:
