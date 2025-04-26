@@ -1659,12 +1659,16 @@ class ApiParameters(Parameters):
         for item in self._values['profiles']['items']:
             context = item['context']
             name = item['name']
-            path = item['nameReference']['link']
+            if 'nameReference' not in item:
+                path = item['selfLink']
+            else:
+                path = item['nameReference']['link']
             if context in ['all', 'serverside', 'clientside']:
-                if path.startswith(prof_path):
-                    result.append(dict(name=name, context=context, fullPath=item['fullPath']))
-                if path.startswith(accprof_path):
-                    result.append(dict(name=name, context=context, fullPath=item['fullPath']))
+                result.append(dict(name=name, context=context, fullPath=item['fullPath']))
+                # if path.startswith(prof_path):
+                #     result.append(dict(name=name, context=context, fullPath=item['fullPath']))
+                # if path.startswith(accprof_path):
+                #     result.append(dict(name=name, context=context, fullPath=item['fullPath']))
             else:
                 raise F5ModuleError(
                     "Unknown profile context found: '{0}'".format(context)
@@ -3286,6 +3290,7 @@ class Difference(object):
     def profiles(self):
         if self.want.profiles is None:
             return None
+        # raise F5ModuleError(f"want:{self.want.profiles} Have: {self.have.profiles}")
         if self.want.profiles == '' and len(self.have.profiles) > 0:
             have = set([(p['name'], p['context'], p['fullPath']) for p in self.have.profiles])
             if len(self.have.profiles) == 1:
