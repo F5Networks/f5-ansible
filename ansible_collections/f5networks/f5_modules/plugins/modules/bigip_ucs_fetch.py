@@ -533,8 +533,8 @@ class BaseManager(object):
             )
 
     def download(self):
-        self.download_from_device(self.want.dest)
-        if os.path.exists(self.want.dest):
+        self.download_from_device(self.want.fulldest)
+        if os.path.exists(self.want.fulldest):
             return True
         raise F5ModuleError(
             "Failed to download the remote file"
@@ -602,7 +602,7 @@ class V1Manager(BaseManager):
             raise F5ModuleError(
                 "Failed to download the file."
             )
-        if os.path.exists(self.want.dest):
+        if os.path.exists(dest):
             return True
         return False
 
@@ -687,7 +687,7 @@ class V2Manager(BaseManager):
             raise F5ModuleError(
                 "Failed to download the file."
             )
-        if os.path.exists(self.want.dest):
+        if os.path.exists(dest):
             return True
         return False
 
