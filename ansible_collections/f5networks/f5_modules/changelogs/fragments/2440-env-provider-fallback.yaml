@@ -1,0 +1,2 @@
+bigfixes:
+  - Support for using environment variables for provider info

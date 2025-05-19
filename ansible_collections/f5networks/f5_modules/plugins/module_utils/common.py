@@ -12,8 +12,8 @@ import re
 import datetime
 
 from ansible.module_utils._text import to_text
-from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.connection import exec_command
+from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.parsing.convert_bool import (
     BOOLEANS_TRUE, BOOLEANS_FALSE
@@ -29,31 +29,32 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 from .constants import (
     MANAGED_BY_ANNOTATION_MODIFIED, MANAGED_BY_ANNOTATION_VERSION
 )
+from ansible_collections.f5networks.f5_modules.plugins.module_utils.provider_fallback import smart_fallback
 
 f5_provider_spec = {
     'server': dict(
         required=True,
-        fallback=(env_fallback, ['F5_SERVER'])
+        fallback=(smart_fallback, ['F5_SERVER'])
     ),
     'server_port': dict(
         type='int',
         default=443,
-        fallback=(env_fallback, ['F5_SERVER_PORT'])
+        fallback=(smart_fallback, ['F5_SERVER_PORT'])
     ),
     'user': dict(
         required=True,
-        fallback=(env_fallback, ['F5_USER', 'ANSIBLE_NET_USERNAME'])
+        fallback=(smart_fallback, ['F5_USER', 'ANSIBLE_NET_USERNAME'])
     ),
     'password': dict(
         required=True,
         no_log=True,
         aliases=['pass', 'pwd'],
-        fallback=(env_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD']),
+        fallback=(smart_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD']),
     ),
     'validate_certs': dict(
         type='bool',
         default='yes',
-        fallback=(env_fallback, ['F5_VALIDATE_CERTS'])
+        fallback=(smart_fallback, ['F5_VALIDATE_CERTS'])
     ),
     'transport': dict(
         choices=['rest'],
@@ -62,8 +63,8 @@ f5_provider_spec = {
     'timeout': dict(type='int'),
     'no_f5_teem': dict(
         type='bool',
-        default='no',
-        fallback=(env_fallback, ['F5_TEEM', 'F5_TELEMETRY_OFF'])
+        default=False,
+        fallback=(smart_fallback, ['F5_TEEM', 'F5_TELEMETRY_OFF'])
     ),
     'auth_provider': dict(),
 }
