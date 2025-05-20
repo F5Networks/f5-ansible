@@ -50,8 +50,8 @@ class ActionModule(ActionNetworkModule):
             if any(provider.values()):
                 display.warning("'provider' is unnecessary when using 'network_cli' and will be ignored")
         elif self._play_context.connection == 'local':
-            # provider = load_provider(f5_provider_spec, self._task.args)
-            provider = load_provider(f5_provider_spec, self._task.args, module=self._task)
+            provider = load_provider(f5_provider_spec, self._task.args)
+            # provider = load_provider(f5_provider_spec, self._task.args, module=self._task)
 
             transport = provider['transport'] or transport
 
