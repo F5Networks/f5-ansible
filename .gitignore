@@ -8,6 +8,8 @@ Vagrantfile
 .coveragerc
 vault.txt
 **.cache/
+Dockerfile
+ansible_collections/ansible.netcommon*
 cache/
 output
 test/integration/targets/bigip_imish_config/backup
