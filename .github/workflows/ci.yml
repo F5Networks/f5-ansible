@@ -1,0 +1,80 @@
+name: Ansible Sanity and Unit Tests
+# This workflow runs unit tests and style checks for the F5 Ansible collections.
+# It is triggered on pull requests to the 'devel' branch.
+on:
+  pull_request:
+    branches:
+      - devel
+
+jobs:
+  ansible_sanity:
+    name: Ansible Sanity Tests (Python 3.10)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install libffi-dev libssl-dev
+          export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE
+          pip install -r requirements.travis.txt
+
+      - name: Run Ansible sanity tests
+        run: inv test.ansible-test -r -p 3.10
+
+  f5_unit_tests:
+    name: F5 Unit Tests (Python 3.9)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install libffi-dev libssl-dev
+          pip install -r requirements.travis.txt
+
+      - name: Install pytest
+        run: pip install pytest --upgrade
+
+      - name: Install test dependencies
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE
+          inv test.install-dep
+
+      - name: Run unit tests
+        run: inv test.unit
+
+  f5_style_sanity:
+    name: F5 Style and F5 Sanity Tests (Python 3.10)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE
+          sudo apt-get update
+          sudo apt-get -y install libffi-dev libssl-dev
+          pip install -r requirements.travis.txt
+
+      - name: Run style and F5 sanity tests
+        run: |
+          inv test.style
+          inv test.f5-sanity
