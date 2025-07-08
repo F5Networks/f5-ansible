@@ -5,7 +5,7 @@ __metaclass__ = type
 class FilterModule(object):
     def filters(self):
         return {
-            'verchg': self.mark_devel
+            'markdev': self.mark_devel
         }
 
     def mark_devel(self, var):
