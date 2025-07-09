@@ -7,6 +7,12 @@ F5Networks F5\_Modules Collection Release Notes
 v1.37.1
 =======
 
+v1.37.0
+=======
+
+v1.36.0
+=======
+
 Bugfixes
 --------
 

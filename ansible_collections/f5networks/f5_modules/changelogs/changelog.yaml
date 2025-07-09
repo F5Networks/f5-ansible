@@ -1198,12 +1198,22 @@ releases:
     - 2454-firewall-address-with-cidr-rd.yaml
     - 2458-profile-server-ssl.yaml
     release_date: '2025-04-11'
-  1.37.1:
+  1.36.0:
     changes:
       bugfixes:
       - bigip_virtual_server fix module crash issue
     fragments:
     - virtual-server-crash.yaml
+    release_date: '2025-05-22'
+  1.37.0:
+    changes:
+      bugfixes:
+      - added github actions
+    release_date: '2025-07-03'
+  1.37.1:
+    changes:
+      bugfixes:
+      - fixed automation hub import log issues
     release_date: '2025-07-09'
   1.4.0:
     changes:
