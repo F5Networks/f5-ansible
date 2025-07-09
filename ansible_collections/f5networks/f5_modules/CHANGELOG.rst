@@ -4,6 +4,14 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.37.1
+=======
+
+Bugfixes
+--------
+
+- bigip_virtual_server fix module crash issue
+
 v1.35.0
 =======
 
