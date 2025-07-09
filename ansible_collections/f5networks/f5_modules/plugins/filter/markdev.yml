@@ -1,6 +1,6 @@
 DOCUMENTATION:
   name: markdev
-  author: Wojciech Wypior (@wojtek0806)
+  author: Ravinder Reddy (@chinthalapalli)
   version_added: "historical"
   short_description: append -devel suffix
   description:

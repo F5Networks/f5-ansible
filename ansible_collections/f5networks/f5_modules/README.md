@@ -1,82 +1,82 @@
 # F5 BIG-IP Imperative Collection for Ansible
 
-This collection includes imperative Ansible modules for BIG-IP and BIG-IQ from F5 Networks.
-This collection packages and distributes modules, and plugins.
+## Description
+
+This collection provides imperative Ansible modules and plugins for managing F5 BIG-IP and BIG-IQ devices. It enables automation of configuration, deployment, and management tasks for F5 devices, making it easier for network and automation engineers to integrate F5 solutions into their infrastructure-as-code workflows. The collection is designed for users who need to automate F5 device management, streamline operations, and ensure consistency across environments.
 
 ## Requirements
 
- - ansible >= 2.16
- - packaging
+- Ansible >= 2.16
+- Python >= 3.9
+- packaging (Python library)
 
-## Python Version Notice
-Collection only supports python 3.9 and above.
 
 ## Installation
-To install in ansible default or defined paths use:
-```bash
+
+Before using this collection, install it with the Ansible Galaxy command-line tool:
+
+```
 ansible-galaxy collection install f5networks.f5_modules
 ```
 
-To specify the installation location use `-p`. If specifying a folder, make sure to update the `ansible.cfg` so ansible will check this folder as well.
-```bash
-ansible-galaxy collection install f5networks.f5_modules -p collections/
+To specify the installation location, use the `-p` option. For example:
+
+```
+ansible-galaxy collection install f5networks.f5_modules -p ./collections
 ```
 
-To specify the version of the collection to install, include it at the end of the collection with `:==1.0.0`:
-```bash
+If you specify a folder, make sure to update your `ansible.cfg` so Ansible will check this folder as well. For example, add:
+
+```
+collections_paths = ./collections
+```
+to your `ansible.cfg`.
+
+You can also include it in a `requirements.yml` file and install with:
+
+```yaml
+collections:
+  - name: f5networks.f5_modules
+```
+
+```
+ansible-galaxy collection install -r requirements.yml
+```
+
+To upgrade to the latest version:
+
+```
+ansible-galaxy collection install f5networks.f5_modules --upgrade
+```
+
+To install a specific version (e.g., 1.0.0):
+
+```
 ansible-galaxy collection install f5networks.f5_modules:==1.0.0
 ```
 
-Semantic Versioning examples below:
-- Increment major (for example: x in x.y.z) version number for an incompatible API change.
-- Increment minor (for example: y in x.y.z) version number for new functionality in a backwards compatible manner.
-- Increment patch (for example: z in x.y.z) version number for backwards compatible bug fixes.
+See [using Ansible collections](https://docs.ansible.com/ansible/devel/user_guide/collections_using.html) for more details.
 
 ## Example Usage
 
-To use a module from a collection, reference the full namespace, collection, and modules name that you want to use:
+To use a module from this collection, reference the full namespace, collection, and module name:
 
-```
+```yaml
 ---
-- name: Using Collections
+- name: Using F5 BIG-IP Collection
   hosts: f5
   connection: local
-
   tasks:
     - f5networks.f5_modules.bigip_pool:
         name: my-pool
-        ....
-
+        ...
 ```
 
-## Collections Daily Build
+## Running the Collection in an Execution Environment (EE)
 
-We offer a daily build of our most recent collection [dailybuild]. Use this Collection to test the most
-recent Ansible module updates between releases. You can also install development build directly from GitHub see [repoinstall].
+You can run this collection inside an Ansible Execution Environment (EE) container. This approach ensures all required package dependencies and minimum supported Python versions are installed in an isolated container, minimizing environment-related issues during runtime.
 
-### Install from GitHub
-```bash
-
-ansible-galaxy collection install git+https://github.com/F5Networks/f5-ansible-bigip.git#ansible_collections/f5networks/f5_bigip
-```
-
-### Install from the daily build file
-```bash
-
-    ansible-galaxy collection install <collection name> -p ./collections
-    e.g.
-    ansible-galaxy collection install f5networks-f5_modules-devel.tar.gz -p ./collections
-```
-
-> **_NOTE:_**  `-p` is the location in which the collection will be installed. This location should be defined in the path for
-    Ansible to search for collections. An example of this would be adding ``collections_paths = ./collections``
-    to your **ansible.cfg**
-
-### Running latest devel in EE
-We also offer a new method of running the collection inside Ansible's Execution Environment container. 
-The advantage of such approach is that any required package dependencies and minimum supported pyton versions are 
-installed in an isolated container which minimizes any environment related issues during runtime. More information on EE
-can be found here [execenv]. Use the below requirements.yml file when building EE container:
+To use the collection in an EE, add it to your `requirements.yml` file. For example:
 
 ```yaml
 ---
@@ -84,21 +84,36 @@ collections:
   - name: ansible.netcommon
     version: ">=2.0.0"
   - name: f5networks.f5_modules
-    source: https://github.com/F5Networks/f5-ansible-f5modules#ansible_collections/f5networks/f5_modules
-    type: git
-    version: devel
 ```
 
-Please see [f5execenv] documentation for further instructions how to use and build EE container with our devel branch.
+When building your EE container, include this requirements file. For more information on building and using EEs, see the [execenv]
 
+<!-- Ansible Execution Environments documentation](https://docs.ansible.com/automation-controller/latest/html/userguide/execution_environments.html).
 
-## Author Information
+> **Tip:** If you use a custom collection path (with `-p`), ensure your EE definition includes the correct path in the `ANSIBLE_COLLECTIONS_PATHS` environment variable or in your `ansible.cfg`. -->
 
-F5 Networks
-[F5 Networks](http://www.f5.com)
+For F5-specific EE usage and advanced scenarios, refer to the [F5 execenv documentation](https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/exec-env.html).
 
+## Testing
 
-[repoinstall]: https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html#installing-a-collection-from-a-git-repository
-[dailybuild]: https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_modules-devel.tar.gz
-[execenv]: https://docs.ansible.com/automation-controller/latest/html/userguide/execution_environments.html
+This collection has been tested on:
+- F5 BIG-IP and BIG-IQ virtual editions
+- Supported Ansible versions (>=2.16)
+- Python 3.9+
+
+Testing includes unit, integration, and system tests. Some modules may require access to a live F5 device or a suitable test environment. Known exceptions and workarounds are documented in the module documentation.
+
+## Support
+
+As Red Hat Ansible Certified Content, this collection is entitled to support through the Ansible Automation Platform (AAP) using the **Create issue** button on the top right corner.
+
+If a support case cannot be opened with Red Hat and the collection has been obtained either from Galaxy or GitHub, you can report issues on the [GitHub issue tracker](https://github.com/F5Networks/f5-ansible/issues).
+
+## Release Notes
+
+See the [Changelog](https://clouddocs.f5.com/products/orchestration/ansible/devel/f5_modules/CHANGELOG.html) for release notes
+
+[F5 Ansible Solutions]: https://clouddocs.f5.com/products/orchestration/ansible/devel/
+[execenv]: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/creating_and_using_execution_environments/index
 [f5execenv]: https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/exec-env.html
+[F5 Networks]: http://www.f5.com
