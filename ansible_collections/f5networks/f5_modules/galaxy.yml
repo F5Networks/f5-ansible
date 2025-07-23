@@ -22,7 +22,6 @@ build_ignore:
   - tests/unit
   - tests/*.ini
   - tests/*.py
-  - changelogs/*
 repository: https://github.com/F5Networks/f5-ansible-f5modules
 tags:
   - f5
