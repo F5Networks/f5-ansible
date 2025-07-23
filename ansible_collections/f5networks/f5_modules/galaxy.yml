@@ -1,6 +1,5 @@
 authors:
   - Ravinder Reddy (@chinthalapalli)
-  - Wojciech Wypior (@wojtek0806)
 dependencies:
   ansible.netcommon: ">=2.0.0"
 description: F5 BIG-IP Imperative Collection for Ansible

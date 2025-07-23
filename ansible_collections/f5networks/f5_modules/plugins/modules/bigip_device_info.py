@@ -13270,13 +13270,29 @@ class LtmPoolsFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
-            attrs = resource
-            members = self.read_member_from_device(attrs['fullPath'])
-            attrs['members'] = members
-            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
-            params = LtmPoolsParameters(params=attrs)
+            # Process members directly from the expanded collection
+            if 'membersReference' in resource and 'items' in resource['membersReference']:
+                resource['members'] = resource['membersReference']['items']
+            else:
+                resource['members'] = []
+            # Process stats if available
+            resource['stats'] = resource.get('stats', {})
+            # Map the resource attributes using LtmPoolsParameters
+            params = LtmPoolsParameters(params=resource)
             results.append(params)
         return results
+
+    # def read_facts(self):
+    #     results = []
+    #     collection = self.increment_read()
+    #     for resource in collection:
+    #         attrs = resource
+    #         members = self.read_member_from_device(attrs['fullPath'])
+    #         attrs['members'] = members
+    #         attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
+    #         params = LtmPoolsParameters(params=attrs)
+    #         results.append(params)
+    #     return results
 
     def increment_read(self):
         n = 0
@@ -13304,7 +13320,7 @@ class LtmPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}&expandSubcollections=true".format(
             self.module.params['data_increment'], skip, self.module.params['partition']
         )
         resp = self.client.api.get(uri + query)
