@@ -113,6 +113,14 @@ If a support case cannot be opened with Red Hat and the collection has been obta
 
 See the [Changelog](https://clouddocs.f5.com/products/orchestration/ansible/devel/f5_modules/CHANGELOG.html) for release notes
 
+## License Information
+
+Published under [GPL V3](https://www.gnu.org/licenses/gpl-3.0.txt). See the LICENSE file included in the collection for details.
+
+## Copyright
+
+Copyright 2025 F5 Networks Inc.
+
 [F5 Ansible Solutions]: https://clouddocs.f5.com/products/orchestration/ansible/devel/
 [execenv]: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/creating_and_using_execution_environments/index
 [f5execenv]: https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/exec-env.html

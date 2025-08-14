@@ -116,12 +116,12 @@ If you've got the time, consider sending an email that introduces yourself and w
 
 .. note:: **We no longer accept external code submissions.**
 
-- Wojciech Wypior and the F5 team 
+- F5 Ansible development team 
 
 Copyright
 ---------
 
-Copyright 2017-2023 F5 Networks Inc.
+Copyright 2017-2025 F5 Networks Inc.
 
 
 License
