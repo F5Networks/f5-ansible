@@ -1,6 +1,6 @@
 authors:
-  - Ravinder Reddy (@chinthalapalli)
   - Wojciech Wypior (@wojtek0806)
+  - Rohit Upadhyay (@urohit011)
 dependencies:
   ansible.netcommon: ">=2.0.0"
 description: F5 BIG-IP Imperative Collection for Ansible
@@ -23,11 +23,10 @@ build_ignore:
   - tests/unit
   - tests/*.ini
   - tests/*.py
-  - changelogs/*
 repository: https://github.com/F5Networks/f5-ansible-f5modules
 tags:
   - f5
   - networking
   - bigip
   - bigiq
-version: 1.38.0-devel
+version: 1.39.0-devel

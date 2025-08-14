@@ -1215,6 +1215,8 @@ releases:
       bugfixes:
       - fixed automation hub import log issues
     release_date: '2025-07-09'
+  1.38.0:
+    release_date: '2025-08-14'
   1.4.0:
     changes:
       bugfixes:

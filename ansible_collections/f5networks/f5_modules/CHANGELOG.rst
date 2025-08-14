@@ -4,11 +4,24 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.38.0
+=======
+
 v1.37.1
 =======
 
+Bugfixes
+--------
+
+- fixed automation hub import log issues
+
 v1.37.0
 =======
+
+Bugfixes
+--------
+
+- added github actions
 
 v1.36.0
 =======
