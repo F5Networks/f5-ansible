@@ -7645,6 +7645,8 @@ from ..module_utils.icontrol import (
 from ..module_utils.ipaddress import is_valid_ip
 from ..module_utils.teem import send_teem
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 
 class BaseManager(object):
     def __init__(self, *args, **kwargs):
@@ -13032,67 +13034,99 @@ class LtmPoolsParameters(BaseParameters):
 
     @property
     def all_max_queue_entry_age_ever(self):
-        return self._values['stats']['connqAll']['ageEdm']
+        if 'connqAll' in self._values['stats']:
+            return self._values['stats']['connqAll']['ageEdm']
+        return None
 
     @property
     def all_avg_queue_entry_age(self):
-        return self._values['stats']['connqAll']['ageEma']
+        if 'connqAll' in self._values['stats']:
+            return self._values['stats']['connqAll']['ageEma']
+        return None
 
     @property
     def all_queue_head_entry_age(self):
-        return self._values['stats']['connqAll']['ageHead']
+        if 'connqAll' in self._values['stats']:
+            return self._values['stats']['connqAll']['ageHead']
+        return None
 
     @property
     def all_max_queue_entry_age_recently(self):
-        return self._values['stats']['connqAll']['ageMax']
+        if 'connqAll' in self._values['stats']:
+            return self._values['stats']['connqAll']['ageMax']
+        return None
 
     @property
     def all_num_connections_queued_now(self):
-        return self._values['stats']['connqAll']['depth']
+        if 'connqAll' in self._values['stats']:
+            return self._values['stats']['connqAll']['depth']
+        return None
 
     @property
     def all_num_connections_serviced(self):
-        return self._values['stats']['connqAll']['serviced']
+        if 'connqAll' in self._values['stats']:
+            return self._values['stats']['connqAll']['serviced']
+        return None
 
     @property
     def availability_status(self):
-        return self._values['stats']['status']['availabilityState']
+        if 'status' in self._values['stats']:
+            return self._values['stats']['status']['availabilityState']
+        return None
 
     @property
     def enabled_status(self):
-        return self._values['stats']['status']['enabledState']
+        if 'status' in self._values['stats']:
+            return self._values['stats']['status']['enabledState']
+        return None
 
     @property
     def status_reason(self):
+        if 'status' not in self._values['stats']:
+            return None
         return self._values['stats']['status']['statusReason']
 
     @property
     def pool_max_queue_entry_age_ever(self):
-        return self._values['stats']['connq']['ageEdm']
+        if 'connq' in self._values['stats']:
+            return self._values['stats']['connq']['ageEdm']
+        return None
 
     @property
     def pool_avg_queue_entry_age(self):
-        return self._values['stats']['connq']['ageEma']
+        if 'connq' in self._values['stats']:
+            return self._values['stats']['connq']['ageEma']
+        return None
 
     @property
     def pool_queue_head_entry_age(self):
-        return self._values['stats']['connq']['ageHead']
+        if 'connq' in self._values['stats']:
+            return self._values['stats']['connq']['ageHead']
+        return None
 
     @property
     def pool_max_queue_entry_age_recently(self):
-        return self._values['stats']['connq']['ageMax']
+        if 'connq' in self._values['stats']:
+            return self._values['stats']['connq']['ageMax']
+        return None
 
     @property
     def pool_num_connections_queued_now(self):
-        return self._values['stats']['connq']['depth']
+        if 'connq' in self._values['stats']:
+            return self._values['stats']['connq']['depth']
+        return None
 
     @property
     def pool_num_connections_serviced(self):
-        return self._values['stats']['connq']['serviced']
+        if 'connq' in self._values['stats']:
+            return self._values['stats']['connq']['serviced']
+        return None
 
     @property
     def current_sessions(self):
-        return self._values['stats']['curSessions']
+        if 'curSessions' in self._values['stats']:
+            return self._values['stats']['curSessions']
+        return None
 
     @property
     def member_count(self):
@@ -13102,35 +13136,51 @@ class LtmPoolsParameters(BaseParameters):
 
     @property
     def total_requests(self):
-        return self._values['stats']['totRequests']
+        if 'totRequests' in self._values['stats']:
+            return self._values['stats']['totRequests']
+        return None
 
     @property
     def server_side_bits_in(self):
-        return self._values['stats']['serverside']['bitsIn']
+        if 'serverside' in self._values['stats']:
+            return self._values['stats']['serverside']['bitsIn']
+        return None
 
     @property
     def server_side_bits_out(self):
-        return self._values['stats']['serverside']['bitsOut']
+        if 'serverside' in self._values['stats']:
+            return self._values['stats']['serverside']['bitsOut']
+        return None
 
     @property
     def server_side_current_connections(self):
-        return self._values['stats']['serverside']['curConns']
+        if 'serverside' in self._values['stats']:
+            return self._values['stats']['serverside']['curConns']
+        return None
 
     @property
     def server_side_max_connections(self):
-        return self._values['stats']['serverside']['maxConns']
+        if 'serverside' in self._values['stats']:
+            return self._values['stats']['serverside']['maxConns']
+        return None
 
     @property
     def server_side_pkts_in(self):
-        return self._values['stats']['serverside']['pktsIn']
+        if 'serverside' in self._values['stats']:
+            return self._values['stats']['serverside']['pktsIn']
+        return None
 
     @property
     def server_side_pkts_out(self):
-        return self._values['stats']['serverside']['pktsOut']
+        if 'serverside' in self._values['stats']:
+            return self._values['stats']['serverside']['pktsOut']
+        return None
 
     @property
     def server_side_total_connections(self):
-        return self._values['stats']['serverside']['totConns']
+        if 'serverside' in self._values['stats']:
+            return self._values['stats']['serverside']['totConns']
+        return None
 
     @property
     def ignore_persisted_weight(self):
@@ -13214,8 +13264,8 @@ class LtmPoolsParameters(BaseParameters):
                     except Exception:
                         member['monitors'] = [monitors.strip()]
 
-            session = member.pop('session')
-            state = member.pop('state')
+            session = member.pop('session', None)
+            state = member.pop('state', None)
 
             member['real_session'] = session
             member['real_state'] = state
@@ -13259,23 +13309,73 @@ class LtmPoolsFactManager(BaseManager):
 
     def _exec_module(self):
         results = []
-        facts = self.read_facts()
-        for item in facts:
-            attrs = item.to_return()
-            results.append(attrs)
+        results = self.read_facts()
+        # for item in facts:
+        #     attrs = item.to_return()
+        #     results.append(attrs)
         results = sorted(results, key=lambda k: k['full_path'])
         return results
+
+    # def read_facts(self):
+    #     logger = logging.getLogger("f5_bigip_device_info")
+    #     logger.debug("Starting concurrent read_facts and stats collection for LTM pools.")
+    #     results = []
+    #     collection = self.increment_read()
+    #     for resource in collection:
+    #         # Process members directly from the expanded collection
+    #         if 'membersReference' in resource and 'items' in resource['membersReference']:
+    #             resource['members'] = resource['membersReference']['items']
+    #         else:
+    #             resource['members'] = []
+    #         resource['stats'] = self.read_stats_from_device(resource['fullPath'])
+    #         logger.debug(f"Stats collected for pool: {resource['stats']}")
+    #         params = LtmPoolsParameters(params=resource)
+    #         results.append(params.to_return())
+    #     return results
+
+    # def read_facts(self):
+    #     results = []
+    #     logger = logging.getLogger("f5_bigip_device_info")
+    #     logger.debug("Starting concurrent read_facts and stats collection for LTM pools.")
+    #     collection = self.increment_read()
+    #     for resource in collection:
+    #         # attrs = resource
+    #         if 'membersReference' in resource and 'items' in resource['membersReference']:
+    #             resource['members'] = resource['membersReference']['items']
+    #         else:
+    #             resource['members'] = []
+    #         # members = self.read_member_from_device(attrs['fullPath'])
+    #         # attrs['members'] = members
+    #         resource['stats'] = self.read_stats_from_device(resource['fullPath'])
+    #         params = LtmPoolsParameters(params=resource)
+    #         logger.debug(f"Stats collected for pool: {params.to_return()}")
+    #         results.append(params.to_return())
+    #     logger.debug(f"Total pools collected: {len(results)}")
+    #     return results
 
     def read_facts(self):
         results = []
         collection = self.increment_read()
-        for resource in collection:
-            attrs = resource
-            members = self.read_member_from_device(attrs['fullPath'])
-            attrs['members'] = members
-            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
-            params = LtmPoolsParameters(params=attrs)
-            results.append(params)
+
+        def collect_stats(resource):
+            # Process members directly from the expanded collection
+            if 'membersReference' in resource and 'items' in resource['membersReference']:
+                resource['members'] = resource['membersReference']['items']
+            else:
+                resource['members'] = []
+            # Collect stats for each pool
+            resource['stats'] = self.read_stats_from_device(resource['fullPath'])
+            params = LtmPoolsParameters(params=resource)
+            return params.to_return()
+
+        with ThreadPoolExecutor() as executor:
+            future_to_resource = {executor.submit(collect_stats, resource): resource for resource in collection}
+            for future in as_completed(future_to_resource):
+                try:
+                    result = future.result()
+                    results.append(result)
+                except Exception as exc:
+                    pass
         return results
 
     def increment_read(self):
@@ -13304,9 +13404,13 @@ class LtmPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['partition'] == 'all':
+            query = "?$top={0}&$skip={1}&expandSubcollections=true".format(
+                self.module.params['data_increment'], skip)
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}&expandSubcollections=true".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -13347,13 +13451,15 @@ class LtmPoolsFactManager(BaseManager):
             self.client.provider['server_port'],
             transform_name(name=full_path)
         )
-        resp = self.client.api.get(uri)
         try:
+            resp = self.client.api.get(uri)
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
+        except Exception as ex:
+            raise F5ModuleError(str(ex))
 
-        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+        if resp.status not in [200, 201] or ('code' in response and response['code'] not in [200, 201]):
             raise F5ModuleError(resp.content)
 
         result = parseStats(response)
@@ -17832,6 +17938,21 @@ class VirtualServersParameters(BaseParameters):
         return results
 
 
+# import logging
+# import tempfile
+import concurrent.futures
+
+# Add a logger for debugging to a temp file
+# temp_log = tempfile.NamedTemporaryFile(delete=False, mode='a', prefix='f5_bigip_device_info_', suffix='.log')
+# logger = logging.getLogger("f5_bigip_device_info")
+# logger.setLevel(logging.DEBUG)
+# handler = logging.StreamHandler(temp_log)
+# formatter = logging.Formatter('[%(asctime)s] %(levelname)s %(message)s')
+# handler.setFormatter(formatter)
+# if not logger.hasHandlers():
+#     logger.addHandler(handler)
+
+
 class VirtualServersFactManager(BaseManager):
     def __init__(self, *args, **kwargs):
         self.client = kwargs.get('client', None)
@@ -17844,23 +17965,68 @@ class VirtualServersFactManager(BaseManager):
         return result
 
     def _exec_module(self):
-        results = []
-        facts = self.read_facts()
-        for item in facts:
-            attrs = item.to_return()
-            results.append(attrs)
+        # results = []
+        results = self.read_facts()
+        # for item in results:
+        #     attrs = item.to_return()
+        #     logger.debug("Item attrs: %s", attrs)
+        #     results.append(attrs)
         results = sorted(results, key=lambda k: k['full_path'])
         return results
 
     def read_facts(self):
         results = []
         collection = self.increment_read()
-        for resource in collection:
-            attrs = resource
-            attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
-            params = VirtualServersParameters(client=self.client, params=attrs)
-            results.append(params)
+
+        # Prepare a mapping of fullPath to resource
+        fullpath_to_resource = {resource['fullPath']: resource for resource in collection}
+
+        # Run read_stats_from_device concurrently for all fullPaths
+        stats_results = {}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            future_to_fullpath = {
+                executor.submit(self.read_stats_from_device, full_path): full_path
+                for full_path in fullpath_to_resource
+            }
+            for future in concurrent.futures.as_completed(future_to_fullpath):
+                full_path = future_to_fullpath[future]
+                try:
+                    stats_results[full_path] = future.result()
+                except Exception as exc:
+                    stats_results[full_path] = {}
+
+        # Helper function for concurrent resource param creation
+        def process_resource(full_path, resource):
+            resource['stats'] = stats_results.get(full_path, {})
+            params = VirtualServersParameters(client=self.client, params=resource)
+            return params.to_return()
+
+        # Run param creation concurrently as well
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            future_to_fullpath = {
+                executor.submit(process_resource, full_path, resource): full_path
+                for full_path, resource in fullpath_to_resource.items()
+            }
+            for future in concurrent.futures.as_completed(future_to_fullpath):
+                try:
+                    results.append(future.result())
+                except Exception as exc:
+                    full_path = future_to_fullpath[future]
         return results
+    # def read_facts(self):
+    #     logger.debug("Reading facts in VirtualServersFactManager")
+    #     results = []
+    #     collection = self.increment_read()
+    #     logger.debug("Collection increment_read returned %d items", len(collection))
+    #     for resource in collection:
+    #         attrs = resource
+    #         logger.debug("Processing resource: %s", attrs.get('fullPath', 'N/A'))
+    #         attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
+    #         params = VirtualServersParameters(client=self.client, params=attrs)
+    #         results.append(params.to_return())
+    #         logger.debug("Read Item resource:{}".format(len(results)))
+    #     logger.debug("Returning %d fact objects", len(results))
+    #     return results
 
     def increment_read(self):
         n = 0
@@ -17878,9 +18044,14 @@ class VirtualServersFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['partition'] == 'all':
+            query = "?expandSubcollections=true&$top={0}&$skip={1}".format(
+                self.module.params['data_increment'], skip
+            )
+        else:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
