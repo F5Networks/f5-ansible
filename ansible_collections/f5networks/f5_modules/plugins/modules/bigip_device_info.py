@@ -7727,7 +7727,7 @@ class BaseParameters(Parameters):
         resource.pop('generation', None)
         resource.pop('selfLink', None)
         resource.pop('isSubcollection', None)
-        resource.pop('fullPath', None)
+        # resource.pop('fullPath', None)
 
     def to_return(self):
         result = {}

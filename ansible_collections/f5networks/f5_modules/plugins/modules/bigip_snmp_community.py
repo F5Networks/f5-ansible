@@ -808,10 +808,11 @@ class V2Manager(BaseManager):
 
     def update_on_device(self):
         params = self.changes.api_params()
+        name = self.update_username()
         uri = "https://{0}:{1}/mgmt/tm/sys/snmp/users/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.snmp_username)
+            transform_name(self.want.partition, name)
         )
         resp = self.client.api.patch(uri, json=params)
         try:
@@ -826,10 +827,11 @@ class V2Manager(BaseManager):
                 raise F5ModuleError(resp.content)
 
     def remove_from_device(self):
+        name = self.update_username()
         uri = "https://{0}:{1}/mgmt/tm/sys/snmp/users/{2}".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
-            transform_name(self.want.partition, self.want.snmp_username)
+            transform_name(self.want.partition, name)
         )
         resp = self.client.api.delete(uri)
         if resp.status == 200:
