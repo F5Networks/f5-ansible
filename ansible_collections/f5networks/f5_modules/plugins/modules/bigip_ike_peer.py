@@ -336,6 +336,7 @@ class Parameters(AnsibleF5Parameters):
         'peersIdValue': 'verified_id_value',
         'myIdValue': 'presented_id_value',
         'lifetime': 'phase1_lifetime',
+        'trafficSelector': 'traffic_selector',
     }
 
     api_attributes = [
@@ -355,6 +356,7 @@ class Parameters(AnsibleF5Parameters):
         'myIdValue',
         'description',
         'lifetime',
+        'trafficSelector',
     ]
 
     returnables = [
@@ -374,6 +376,7 @@ class Parameters(AnsibleF5Parameters):
         'presented_id_value',
         'description',
         'phase1_lifetime',
+        'traffic_selector',
     ]
 
     updatables = [
@@ -393,6 +396,7 @@ class Parameters(AnsibleF5Parameters):
         'presented_id_value',
         'description',
         'phase1_lifetime',
+        'traffic_selector',
     ]
 
     @property
@@ -443,6 +447,14 @@ class ModuleParameters(Parameters):
             return ''
         return self._values['description']
 
+    @property
+    def traffic_selector(self):
+        if self._values['traffic_selector'] is None:
+            return None
+        result = set()
+        for traffic in self._values['traffic_selector']:
+            result.update([traffic])
+        return list(result)
 
 class Changes(Parameters):
     def to_return(self):
@@ -777,6 +789,11 @@ class ArgumentSpec(object):
                 no_log=False
             ),
             description=dict(),
+            traffic_selector=dict(
+                type='list',
+                elements='str',
+                aliases=['member']
+            ),
             state=dict(default='present', choices=['absent', 'present']),
             partition=dict(
                 default='Common',
