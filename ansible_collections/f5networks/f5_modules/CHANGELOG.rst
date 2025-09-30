@@ -4,6 +4,9 @@ F5Networks F5\_Modules Collection Release Notes
 
 .. contents:: Topics
 
+v1.39.0
+=======
+
 v1.38.0
 =======
 
