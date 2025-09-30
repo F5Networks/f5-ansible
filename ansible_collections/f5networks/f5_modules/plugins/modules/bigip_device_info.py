@@ -93,6 +93,7 @@ options:
       - irules
       - license
       - ltm-pools
+      - snat-pools
       - ltm-policies
       - management-routes
       - nodes
@@ -172,6 +173,7 @@ options:
       - "!irules"
       - "!license"
       - "!ltm-pools"
+      - "!snat-pools"
       - "!ltm-policies"
       - "!management-routes"
       - "!nodes"
@@ -13469,6 +13471,105 @@ class LtmPoolsFactManager(BaseManager):
             return {}
 
 
+class SnatPoolsParameters(BaseParameters):
+    api_map = {
+        'fullPath': 'full_path',
+        'membersReference': 'members_reference',
+    }
+
+    returnables = [
+        'full_path',
+        'name',
+        'description',
+        'members',
+        'members_reference',
+    ]
+
+    @property
+    def description(self):
+        if self._values['description'] in [None, 'none']:
+            return None
+        return self._values['description']
+
+    @property
+    def members(self):
+        if self._values['members'] is None:
+            return []
+        return self._values['members']
+
+    @property
+    def members_reference(self):
+        if self._values['members_reference'] is None:
+            return []
+        result = []
+        for item in self._values['members_reference']:
+            if 'link' in item:
+                result.append(item['link'])
+        return result
+
+
+class SnatPoolsFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(SnatPoolsFactManager, self).__init__(**kwargs)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(snat_pools=facts)
+        return result
+
+    def _exec_module(self):
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
+
+    def read_facts(self):
+        results = []
+        collection = self.increment_read()
+        for resource in collection:
+            params = SnatPoolsParameters(params=resource)
+            results.append(params)
+        return results
+
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + self.module.params['data_increment']
+        return result
+
+    def read_collection_from_device(self, skip=0):
+        uri = "https://{0}:{1}/mgmt/tm/ltm/snatpool".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+        )
+        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+            self.module.params['data_increment'], skip, self.module.params['partition']
+        )
+        resp = self.client.api.get(uri + query)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            raise F5ModuleError(resp.content)
+
+        if 'items' not in response:
+            return []
+        result = response['items']
+        return result
+
+
 class LtmPolicyParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -18457,6 +18558,7 @@ class ModuleManager(object):
             'irules': IrulesFactManager,
             'license': LicenseFactManager,
             'ltm-pools': LtmPoolsFactManager,
+            'snat-pools': SnatPoolsFactManager,
             'ltm-policies': LtmPolicyFactManager,
             'management-routes': ManagementRouteFactManager,
             'nodes': NodesFactManager,
@@ -18714,6 +18816,7 @@ class ArgumentSpec(object):
                     'irules',
                     'license',
                     'ltm-pools',
+                    'snat-pools',
                     'ltm-policies',
                     'management-routes',
                     'nodes',
@@ -18797,6 +18900,7 @@ class ArgumentSpec(object):
                     '!irules',
                     '!license',
                     '!ltm-pools',
+                    '!snat-pools',
                     '!ltm-policies',
                     '!management-routes',
                     '!nodes',
