@@ -132,15 +132,6 @@ This License does not grant permission to use the trade names, trademarks, servi
 
 See `License`_.
 
-
-.. |travis badge| image:: https://travis-ci.com/F5Networks/f5-ansible.svg?branch=devel
-    :target: https://travis-ci.com/F5Networks/f5-ansible
-    :alt: Build Status
-
-.. |shippable badge| image:: https://api.shippable.com/projects/57c88ded5a5c0d0f0012c53e/badge?branch=devel
-    :target: https://app.shippable.com/github/F5Networks/f5-ansible
-    :alt: Shippable Status
-
 .. _License: https://github.com/F5Networks/f5-ansible/blob/devel/COPYING
 
 
