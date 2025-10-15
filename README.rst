@@ -19,8 +19,6 @@
 F5 BIG-IP Imperative Collection for Ansible
 ===========================================
 
-|travis badge| |shippable badge|
-
 Important Warning
 -----------------
 
