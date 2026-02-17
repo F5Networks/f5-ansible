@@ -3440,18 +3440,21 @@ class Difference(object):
 
     @property
     def metadata(self):
+        if not self.want.insert_metadata:
+            return None
         if self.want.metadata is None:
             return None
-        elif len(self.want.metadata) == 0 and self.have.metadata is None:
-            return None
-        elif len(self.want.metadata) == 0 and not self.want.insert_metadata:
-            return None
-        elif len(self.want.metadata) == 0 and self.want.insert_metadata:
+        if len(self.want.metadata) == 0 and self.want.insert_metadata:
             return []
-        elif self.have.metadata is None:
+        if self.want.insert_metadata != self.have.insert_metadata:
             return self.want.metadata
-        result = self._diff_complex_items(self.want.metadata, self.have.metadata)
-        return result
+        if self.have.metadata is None:
+            return self.want.metadata
+        w = self.to_tuple(self.want.metadata)
+        h = self.to_tuple(self.have.metadata)
+        if set(w) == set(h):
+            return None
+        return self.want.metadata
 
     @property
     def type(self):
