@@ -19,10 +19,12 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ssl_key_cert import (
     ApiParameters, ModuleParameters, ModuleManager, ArgumentSpec
 )
+from ansible_collections.f5networks.f5_modules.plugins.module_utils.icontrol import TransactionContextManager
+from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_modules.tests.unit.modules.utils import set_module_args
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
 from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import (
-    Mock, patch
+    Mock, patch, MagicMock
 )
 
 
@@ -139,3 +141,145 @@ class TestModuleManager(unittest.TestCase):
         results = cm.exec_module()
 
         assert results['changed'] is True
+
+
+class TestTransactionContextManager(unittest.TestCase):
+    """Tests for TransactionContextManager error handling.
+
+    These tests verify that meaningful error messages are raised
+    instead of bare Exception when transactions fail.
+    """
+
+    def _make_mock_client(self):
+        client = MagicMock()
+        client.provider = {
+            'server': 'localhost',
+            'server_port': 443
+        }
+        return client
+
+    def _make_response(self, status, body=None):
+        resp = MagicMock()
+        resp.status = status
+        if body is not None:
+            resp.json.return_value = body
+            resp.content = json.dumps(body)
+        else:
+            resp.json.side_effect = ValueError('No JSON')
+            resp.content = ''
+        return resp
+
+    def test_enter_failure_with_message(self):
+        """Test that __enter__ raises F5ModuleError with BIG-IP message on failure."""
+        client = self._make_mock_client()
+        error_body = {'code': 400, 'message': 'Authorization failed'}
+        client.api.post.return_value = self._make_response(400, error_body)
+
+        tcm = TransactionContextManager(client)
+
+        with self.assertRaises(F5ModuleError) as cm:
+            tcm.__enter__()
+
+        self.assertIn('Failed to create transaction', str(cm.exception))
+        self.assertIn('Authorization failed', str(cm.exception))
+
+    def test_enter_failure_without_message(self):
+        """Test that __enter__ raises F5ModuleError with status on non-JSON failure."""
+        client = self._make_mock_client()
+        client.api.post.return_value = self._make_response(500)
+
+        tcm = TransactionContextManager(client)
+
+        with self.assertRaises(F5ModuleError) as cm:
+            tcm.__enter__()
+
+        self.assertIn('Failed to create transaction', str(cm.exception))
+        self.assertIn('500', str(cm.exception))
+
+    def test_exit_failure_with_message(self):
+        """Test that __exit__ raises F5ModuleError with BIG-IP message on commit failure.
+
+        This is the exact scenario from GitHub issue #2504 where updating
+        an existing cert/key pair fails during transaction commit because
+        of a cert/key mismatch validation error.
+        """
+        client = self._make_mock_client()
+
+        # Simulate successful transaction creation
+        create_resp = self._make_response(200, {'transId': 12345})
+        client.api.post.return_value = create_resp
+        client.api.request.headers = {}
+
+        # Simulate failed transaction commit with BIG-IP error message
+        error_body = {
+            'code': 400,
+            'message': "01070317:3: profile /Common/test-profile's key(/Common/test-cert) "
+                       "and certificate(/Common/test-cert) do not match."
+        }
+        client.api.patch.return_value = self._make_response(400, error_body)
+
+        tcm = TransactionContextManager(client)
+        tcm.__enter__()
+
+        with self.assertRaises(F5ModuleError) as cm:
+            tcm.__exit__(None, None, None)
+
+        self.assertIn('Failed to commit transaction 12345', str(cm.exception))
+        self.assertIn('do not match', str(cm.exception))
+
+    def test_exit_failure_without_message(self):
+        """Test that __exit__ raises F5ModuleError with status on non-JSON commit failure."""
+        client = self._make_mock_client()
+
+        # Simulate successful transaction creation
+        create_resp = self._make_response(200, {'transId': 12345})
+        client.api.post.return_value = create_resp
+        client.api.request.headers = {}
+
+        # Simulate failed commit with no JSON body
+        client.api.patch.return_value = self._make_response(500)
+
+        tcm = TransactionContextManager(client)
+        tcm.__enter__()
+
+        with self.assertRaises(F5ModuleError) as cm:
+            tcm.__exit__(None, None, None)
+
+        self.assertIn('Failed to commit transaction 12345', str(cm.exception))
+        self.assertIn('500', str(cm.exception))
+
+    def test_exit_skips_commit_on_exception(self):
+        """Test that __exit__ does not commit when an exception occurred in the with block."""
+        client = self._make_mock_client()
+
+        # Simulate successful transaction creation
+        create_resp = self._make_response(200, {'transId': 12345})
+        client.api.post.return_value = create_resp
+        client.api.request.headers = {}
+
+        tcm = TransactionContextManager(client)
+        tcm.__enter__()
+
+        # Simulate __exit__ called with an exception (exc_tb is not None)
+        tcm.__exit__(ValueError, ValueError('test error'), Mock())
+
+        # patch should NOT have been called since there was an exception
+        client.api.patch.assert_not_called()
+
+    def test_exit_success(self):
+        """Test that __exit__ succeeds when commit returns 200."""
+        client = self._make_mock_client()
+
+        # Simulate successful transaction creation
+        create_resp = self._make_response(200, {'transId': 12345})
+        client.api.post.return_value = create_resp
+        client.api.request.headers = {}
+
+        # Simulate successful commit
+        client.api.patch.return_value = self._make_response(200, {'state': 'COMPLETED'})
+
+        tcm = TransactionContextManager(client)
+        tcm.__enter__()
+
+        # Should not raise
+        tcm.__exit__(None, None, None)
