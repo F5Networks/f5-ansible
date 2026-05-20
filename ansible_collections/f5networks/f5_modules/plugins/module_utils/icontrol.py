@@ -270,7 +270,19 @@ class TransactionContextManager(object):
         )
         resp = self.client.api.post(uri, json={})
         if resp.status not in [200]:
-            raise Exception
+            try:
+                response = resp.json()
+                if 'message' in response:
+                    raise F5ModuleError(
+                        'Failed to create transaction: {0}'.format(response['message'])
+                    )
+            except ValueError:
+                pass
+            raise F5ModuleError(
+                'Failed to create transaction, status: {0}, contents: {1}'.format(
+                    resp.status, resp.content
+                )
+            )
         try:
             response = resp.json()
         except ValueError as ex:
@@ -294,7 +306,21 @@ class TransactionContextManager(object):
             )
             resp = self.client.api.patch(uri, json=params)
             if resp.status not in [200]:
-                raise Exception
+                try:
+                    response = resp.json()
+                    if 'message' in response:
+                        raise F5ModuleError(
+                            'Failed to commit transaction {0}: {1}'.format(
+                                self.transid, response['message']
+                            )
+                        )
+                except ValueError:
+                    pass
+                raise F5ModuleError(
+                    'Failed to commit transaction {0}, status: {1}, contents: {2}'.format(
+                        self.transid, resp.status, resp.content
+                    )
+                )
 
 
 def download_asm_file(client, url, dest, file_size):
