@@ -1,28 +1,17 @@
-from __future__ import absolute_import, division, print_function
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
 
 import sys
-from unittest.mock import MagicMock
 
 import pytest
 
-# Mock heavy dependencies so we can import common.py without ansible/netcommon installed
-for mod_name in [
-    'ansible', 'ansible.module_utils', 'ansible.module_utils._text',
-    'ansible.module_utils.connection', 'ansible.module_utils.basic',
-    'ansible.module_utils.six', 'ansible.module_utils.parsing',
-    'ansible.module_utils.parsing.convert_bool',
-    'ansible_collections.ansible',
-    'ansible_collections.ansible.netcommon',
-    'ansible_collections.ansible.netcommon.plugins',
-    'ansible_collections.ansible.netcommon.plugins.module_utils',
-    'ansible_collections.ansible.netcommon.plugins.module_utils.network',
-    'ansible_collections.ansible.netcommon.plugins.module_utils.network.common',
-    'ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config',
-    'ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils',
-    'ansible_collections.f5networks.f5_modules.plugins.module_utils.constants',
-]:
-    if mod_name not in sys.modules:
-        sys.modules[mod_name] = MagicMock()
+if sys.version_info < (2, 7):
+    pytestmark = pytest.mark.skip("F5 Ansible modules require Python >= 2.7")
 
 from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_valid_fqdn
 
