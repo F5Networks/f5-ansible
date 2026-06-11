@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Allow spaces in GTM/DNS object names by encoding them in REST API URI construction

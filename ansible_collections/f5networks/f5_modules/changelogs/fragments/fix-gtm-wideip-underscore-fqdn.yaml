@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - Allow underscores in GTM Wide IP names, which are valid in DNS names and the BIG-IP
