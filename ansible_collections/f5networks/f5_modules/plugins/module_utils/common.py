@@ -237,6 +237,10 @@ def is_valid_fqdn(host):
     * If the hyphen is used, it is not permitted to appear at
       either the beginning or end of a label
 
+    Note: As a BIG-IP-specific extension, underscores are also permitted in
+    labels. This deviates from the RFCs above but is necessary for GTM Wide IP
+    names (e.g., SRV records like _sip._tcp.example.com).
+
     :param host:
     :return:
     """
