@@ -64,6 +64,14 @@ options:
         exist.
     type: bool
     default: true
+  async_timeout:
+    description:
+      - Parameter used when creating a QKview file on the device.
+      - The number of seconds to wait for the async interface to complete its task.
+      - The accepted value range is between C(150) and C(1800) seconds.
+    type: int
+    default: 300
+    version_added: "1.43.0"
   only_create_file:
     description:
       - If C(true), the file is created on the device and not downloaded. The file will not be deleted by the
@@ -96,6 +104,17 @@ EXAMPLES = r'''
       password: secret
       server: lb.mydomain.com
       user: admin
+  delegate_to: localhost
+
+- name: Create a large qkview with extended timeout
+  bigip_qkview:
+    max_file_size: 0
+    async_timeout: 600
+    dest: /tmp/large.qkview
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
   delegate_to: localhost
 '''
 
@@ -193,6 +212,17 @@ class Parameters(AnsibleF5Parameters):
             raise F5ModuleError(
                 "The provided filename must contain word characters only."
             )
+
+    @property
+    def async_timeout(self):
+        divisor = 100
+        timeout = self._values['async_timeout']
+        if timeout < 150 or timeout > 1800:
+            raise F5ModuleError(
+                "Timeout value must be between 150 and 1800 seconds."
+            )
+        delay = timeout / divisor
+        return delay, divisor
 
     @property
     def filename_cmd(self):
@@ -458,21 +488,24 @@ class BaseManager(object):
             )
 
     def _wait_for_async_task_to_finish_on_device(self, task_id):
+        delay, period = self.want.async_timeout
         uri = "https://{0}:{1}/mgmt/tm/task/cli/script/{2}/result".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
             task_id
         )
-        while True:
+        for x in range(0, period):
             try:
                 resp = self.client.api.get(uri, timeout=10)
             except (socket.timeout, ssl.SSLError):
+                time.sleep(delay)
                 continue
             try:
                 response = resp.json()
             except ValueError:
                 # It is possible that the API call can return invalid JSON.
                 # This invalid JSON appears to be just empty strings.
+                time.sleep(delay)
                 continue
             if response['_taskState'] == 'FAILED':
                 raise F5ModuleError(
@@ -480,7 +513,11 @@ class BaseManager(object):
                 )
             if response['_taskState'] == 'COMPLETED':
                 return True
-            time.sleep(3)
+            time.sleep(delay)
+        raise F5ModuleError(
+            "Module timeout reached, state change is unknown, "
+            "please increase the async_timeout parameter for long lived actions."
+        )
 
     def _remove_temporary_cli_script_from_device(self):
         uri = "https://{0}:{1}/mgmt/tm/task/cli/script/{2}".format(
@@ -579,6 +616,10 @@ class ArgumentSpec(object):
             only_create_file=dict(
                 default='no',
                 type='bool'
+            ),
+            async_timeout=dict(
+                type='int',
+                default=300
             ),
             dest=dict(
                 type='path'
