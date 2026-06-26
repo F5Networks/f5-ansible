@@ -51,7 +51,7 @@ options:
       - For all other subsets, this parameter has no effect.
     type: bool
     default: true
-    version_added: "1.28.0"
+    version_added: "1.43.0"
   gather_subset:
     description:
       - When supplied, this argument will restrict the information returned to a given subset.
