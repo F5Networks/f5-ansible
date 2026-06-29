@@ -18,7 +18,8 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info import (
-    Parameters, VirtualAddressesFactManager, ArgumentSpec, ModuleManager
+    Parameters, VirtualAddressesFactManager, LtmPoolsFactManager,
+    GtmServersFactManager, VirtualServersFactManager, ArgumentSpec, ModuleManager
 )
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
 from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
@@ -116,3 +117,185 @@ class TestManager(unittest.TestCase):
         assert results['queried'] is True
         assert 'virtual_addresses' in results
         assert len(results['virtual_addresses']) > 0
+
+    def test_expand_subcollections_default_true(self, *args):
+        set_module_args(dict(
+            gather_subset=['ltm-pools'],
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = LtmPoolsFactManager(module=module)
+        tm.read_collection_from_device = Mock(side_effect=[[], []])
+
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+
+        results = mm.exec_module()
+
+        assert results['queried'] is True
+        # Verify the default value is True
+        assert module.params['expand_subcollections'] is True
+
+    def test_expand_subcollections_set_false(self, *args):
+        set_module_args(dict(
+            gather_subset=['gtm-servers'],
+            expand_subcollections=False,
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = GtmServersFactManager(module=module)
+        tm.read_collection_from_device = Mock(side_effect=[[], []])
+
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+
+        results = mm.exec_module()
+
+        assert results['queried'] is True
+        assert module.params['expand_subcollections'] is False
+
+    def test_expand_subcollections_true_includes_query_param(self, *args):
+        set_module_args(dict(
+            gather_subset=['gtm-servers'],
+            expand_subcollections=True,
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.status = 200
+        fake_response.json.return_value = {'items': []}
+        fake_client.api.get.return_value = fake_response
+        fake_client.provider = {'server': 'localhost', 'server_port': 443}
+
+        tm = GtmServersFactManager(module=module, client=fake_client)
+        result = tm.read_collection_from_device(skip=0)
+
+        call_url = fake_client.api.get.call_args[0][0]
+        assert 'expandSubcollections=true' in call_url
+        assert result == []
+
+    def test_expand_subcollections_false_excludes_query_param(self, *args):
+        set_module_args(dict(
+            gather_subset=['gtm-servers'],
+            expand_subcollections=False,
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.status = 200
+        fake_response.json.return_value = {'items': []}
+        fake_client.api.get.return_value = fake_response
+        fake_client.provider = {'server': 'localhost', 'server_port': 443}
+
+        tm = GtmServersFactManager(module=module, client=fake_client)
+        result = tm.read_collection_from_device(skip=0)
+
+        call_url = fake_client.api.get.call_args[0][0]
+        assert 'expandSubcollections' not in call_url
+        assert '$top=' in call_url
+        assert '$skip=' in call_url
+        assert result == []
+
+    def test_expand_subcollections_false_with_partition_all(self, *args):
+        set_module_args(dict(
+            gather_subset=['virtual-servers'],
+            expand_subcollections=False,
+            partition='all',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.status = 200
+        fake_response.json.return_value = {'items': []}
+        fake_client.api.get.return_value = fake_response
+        fake_client.provider = {'server': 'localhost', 'server_port': 443}
+
+        tm = VirtualServersFactManager(module=module, client=fake_client)
+        result = tm.read_collection_from_device(skip=0)
+
+        call_url = fake_client.api.get.call_args[0][0]
+        assert 'expandSubcollections' not in call_url
+        assert '$filter' not in call_url
+        assert '$top=' in call_url
+        assert '$skip=' in call_url
+        assert result == []
+
+    def test_expand_subcollections_true_with_partition_all(self, *args):
+        set_module_args(dict(
+            gather_subset=['virtual-servers'],
+            expand_subcollections=True,
+            partition='all',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.status = 200
+        fake_response.json.return_value = {'items': []}
+        fake_client.api.get.return_value = fake_response
+        fake_client.provider = {'server': 'localhost', 'server_port': 443}
+
+        tm = VirtualServersFactManager(module=module, client=fake_client)
+        result = tm.read_collection_from_device(skip=0)
+
+        call_url = fake_client.api.get.call_args[0][0]
+        assert 'expandSubcollections=true' in call_url
+        assert '$filter' not in call_url
+        assert result == []

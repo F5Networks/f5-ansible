@@ -35,8 +35,8 @@ options:
     type: path
   force:
     description:
-      - When set to C(true) and a policy with the same name already exists, the module will re-run the import,
-        and a new policy is created with a number appended to the previous name.
+      - When set to C(true) and a policy with the same name already exists, the existing policy is not
+        modified or overwritten. Instead, a new policy is created with a number appended to the name.
       - If a policy does not exist, this setting is ignored.
     default: false
     type: bool

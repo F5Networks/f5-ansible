@@ -37,6 +37,21 @@ options:
     type: int
     default: 10
     version_added: "1.22.0"
+  expand_subcollections:
+    description:
+      - When C(true), the module passes the C(expandSubcollections=true) query parameter to the BIG-IP API,
+        causing the device to return sub-collection data inline with each resource.
+      - When C(false), the query parameter is omitted and sub-collection data is not expanded.
+        The module will instead make individual API calls to fetch subcollection data where needed,
+        which can improve performance for large configurations.
+      - This parameter only affects subsets whose underlying API supports sub-collection expansion.
+        Currently those subsets are C(device-groups), C(gtm-a-pools), C(gtm-aaaa-pools), C(gtm-cname-pools),
+        C(gtm-mx-pools), C(gtm-naptr-pools), C(gtm-srv-pools), C(gtm-servers), C(ltm-pools), C(snat-pools),
+        C(ltm-policies), C(virtual-servers), C(vlans), and C(management-routes).
+      - For all other subsets, this parameter has no effect.
+    type: bool
+    default: true
+    version_added: "1.43.0"
   gather_subset:
     description:
       - When supplied, this argument will restrict the information returned to a given subset.
@@ -251,6 +266,17 @@ EXAMPLES = r'''
     partition: Foo
     gather_subset:
       - gtm-a-wide-ips
+    provider:
+      server: lb.mydomain.com
+      user: admin
+      password: secret
+  delegate_to: localhost
+
+- name: Collect LTM pool information without expanding subcollections
+  bigip_device_info:
+    gather_subset:
+      - ltm-pools
+    expand_subcollections: false
     provider:
       server: lb.mydomain.com
       user: admin
@@ -9196,9 +9222,25 @@ class DeviceGroupsFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['devicesReference'] = self._read_subcollection(resource, 'devicesReference')
             params = DeviceGroupsParameters(params=resource)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -9216,9 +9258,14 @@ class DeviceGroupsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -10399,9 +10446,25 @@ class GtmAPoolsFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['membersReference'] = self._read_subcollection(resource, 'membersReference')
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -10419,9 +10482,14 @@ class GtmAPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -10463,9 +10531,25 @@ class GtmAaaaPoolsFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['membersReference'] = self._read_subcollection(resource, 'membersReference')
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -10483,9 +10567,14 @@ class GtmAaaaPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -10527,9 +10616,25 @@ class GtmCnamePoolsFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['membersReference'] = self._read_subcollection(resource, 'membersReference')
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -10547,9 +10652,14 @@ class GtmCnamePoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -10591,9 +10701,25 @@ class GtmMxPoolsFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['membersReference'] = self._read_subcollection(resource, 'membersReference')
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -10611,9 +10737,14 @@ class GtmMxPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -10655,9 +10786,25 @@ class GtmNaptrPoolsFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['membersReference'] = self._read_subcollection(resource, 'membersReference')
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -10675,9 +10822,14 @@ class GtmNaptrPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -10719,9 +10871,25 @@ class GtmSrvPoolsFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['membersReference'] = self._read_subcollection(resource, 'membersReference')
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -10739,9 +10907,14 @@ class GtmSrvPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -11039,9 +11212,26 @@ class GtmServersFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['devicesReference'] = self._read_subcollection(resource, 'devicesReference')
+                resource['virtualServersReference'] = self._read_subcollection(resource, 'virtualServersReference')
             params = GtmServersParameters(client=self.client, params=resource)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -11059,9 +11249,14 @@ class GtmServersFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -13363,6 +13558,8 @@ class LtmPoolsFactManager(BaseManager):
             # Process members directly from the expanded collection
             if 'membersReference' in resource and 'items' in resource['membersReference']:
                 resource['members'] = resource['membersReference']['items']
+            elif not self.module.params['expand_subcollections']:
+                resource['members'] = self.read_member_from_device(resource['fullPath'])
             else:
                 resource['members'] = []
             # Collect stats for each pool
@@ -13407,12 +13604,21 @@ class LtmPoolsFactManager(BaseManager):
             self.client.provider['server_port'],
         )
         if self.module.params['partition'] == 'all':
-            query = "?$top={0}&$skip={1}&expandSubcollections=true".format(
-                self.module.params['data_increment'], skip)
+            if self.module.params['expand_subcollections']:
+                query = "?$top={0}&$skip={1}&expandSubcollections=true".format(
+                    self.module.params['data_increment'], skip)
+            else:
+                query = "?$top={0}&$skip={1}".format(
+                    self.module.params['data_increment'], skip)
         else:
-            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}&expandSubcollections=true".format(
-                self.module.params['data_increment'], skip, self.module.params['partition']
-            )
+            if self.module.params['expand_subcollections']:
+                query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}&expandSubcollections=true".format(
+                    self.module.params['data_increment'], skip, self.module.params['partition']
+                )
+            else:
+                query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                    self.module.params['data_increment'], skip, self.module.params['partition']
+                )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -13552,9 +13758,14 @@ class SnatPoolsFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -13665,9 +13876,25 @@ class LtmPolicyFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['rulesReference'] = self._read_subcollection(resource, 'rulesReference')
             params = LtmPolicyParameters(params=resource)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -13685,9 +13912,14 @@ class LtmPolicyFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -18096,6 +18328,12 @@ class VirtualServersFactManager(BaseManager):
                 except Exception as exc:
                     stats_results[full_path] = {}
 
+        # Fetch subcollections separately when not expanded
+        if not self.module.params['expand_subcollections']:
+            for resource in fullpath_to_resource.values():
+                resource['profilesReference'] = self._read_subcollection(resource, 'profilesReference')
+                resource['policiesReference'] = self._read_subcollection(resource, 'policiesReference')
+
         # Helper function for concurrent resource param creation
         def process_resource(full_path, resource):
             resource['stats'] = stats_results.get(full_path, {})
@@ -18114,6 +18352,21 @@ class VirtualServersFactManager(BaseManager):
                 except Exception as exc:
                     full_path = future_to_fullpath[future]
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
+
     # def read_facts(self):
     #     logger.debug("Reading facts in VirtualServersFactManager")
     #     results = []
@@ -18146,13 +18399,23 @@ class VirtualServersFactManager(BaseManager):
             self.client.provider['server_port'],
         )
         if self.module.params['partition'] == 'all':
-            query = "?expandSubcollections=true&$top={0}&$skip={1}".format(
-                self.module.params['data_increment'], skip
-            )
+            if self.module.params['expand_subcollections']:
+                query = "?expandSubcollections=true&$top={0}&$skip={1}".format(
+                    self.module.params['data_increment'], skip
+                )
+            else:
+                query = "?$top={0}&$skip={1}".format(
+                    self.module.params['data_increment'], skip
+                )
         else:
-            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-                self.module.params['data_increment'], skip, self.module.params['partition']
-            )
+            if self.module.params['expand_subcollections']:
+                query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                    self.module.params['data_increment'], skip, self.module.params['partition']
+                )
+            else:
+                query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                    self.module.params['data_increment'], skip, self.module.params['partition']
+                )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -18303,11 +18566,27 @@ class VlansFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
+            if not self.module.params['expand_subcollections']:
+                resource['interfacesReference'] = self._read_subcollection(resource, 'interfacesReference')
             attrs = resource
             attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
             params = VlansParameters(params=attrs)
             results.append(params)
         return results
+
+    def _read_subcollection(self, resource, ref_key):
+        if ref_key not in resource or 'link' not in resource[ref_key]:
+            return resource.get(ref_key, {})
+        uri = "https://{0}:{1}{2}".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            urlparse(resource[ref_key]['link']).path
+        )
+        resp = self.client.api.get(uri)
+        try:
+            return resp.json()
+        except ValueError:
+            return {}
 
     def increment_read(self):
         n = 0
@@ -18325,9 +18604,14 @@ class VlansFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -18424,9 +18708,14 @@ class ManagementRouteFactManager(BaseManager):
             self.client.provider['server'],
             self.client.provider['server_port'],
         )
-        query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
-            self.module.params['data_increment'], skip, self.module.params['partition']
-        )
+        if self.module.params['expand_subcollections']:
+            query = "?expandSubcollections=true&$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
+        else:
+            query = "?$top={0}&$skip={1}&$filter=partition+eq+{2}".format(
+                self.module.params['data_increment'], skip, self.module.params['partition']
+            )
         resp = self.client.api.get(uri + query)
         try:
             response = resp.json()
@@ -18755,6 +19044,10 @@ class ArgumentSpec(object):
             data_increment=dict(
                 type='int',
                 default=10
+            ),
+            expand_subcollections=dict(
+                type='bool',
+                default=True
             ),
             partition=dict(
                 default='Common',

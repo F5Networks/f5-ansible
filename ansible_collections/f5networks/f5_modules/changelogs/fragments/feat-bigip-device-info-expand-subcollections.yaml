@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - "bigip_device_info - add ``expand_subcollections`` parameter to toggle the ``expandSubcollections`` API query parameter (default ``true`` preserves existing behavior). When set to ``false``, subcollection data is fetched via individual API calls instead of inline expansion, which can improve performance for large configurations. Applies to device-groups, gtm-a-pools, gtm-aaaa-pools, gtm-cname-pools, gtm-mx-pools, gtm-naptr-pools, gtm-srv-pools, gtm-servers, ltm-pools, snat-pools, ltm-policies, virtual-servers, vlans, and management-routes subsets."
