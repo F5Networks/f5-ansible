@@ -19,6 +19,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_qkview import (
     Parameters, ModuleManager, MadmLocationManager, BulkLocationManager, ArgumentSpec
 )
+from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
 from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
 from ansible_collections.f5networks.f5_modules.tests.unit.modules.utils import set_module_args
@@ -76,6 +77,51 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(params=args)
         assert p.asm_request_log == '-o asm-request-log'
+
+    def test_module_async_timeout_default(self):
+        args = dict(
+            async_timeout=300,
+        )
+        p = Parameters(params=args)
+        delay, period = p.async_timeout
+        assert delay == 3.0
+        assert period == 100
+
+    def test_module_async_timeout_custom(self):
+        args = dict(
+            async_timeout=600,
+        )
+        p = Parameters(params=args)
+        delay, period = p.async_timeout
+        assert delay == 6.0
+        assert period == 100
+
+    def test_module_async_timeout_max(self):
+        args = dict(
+            async_timeout=1800,
+        )
+        p = Parameters(params=args)
+        delay, period = p.async_timeout
+        assert delay == 18.0
+        assert period == 100
+
+    def test_module_async_timeout_too_low(self):
+        args = dict(
+            async_timeout=50,
+        )
+        p = Parameters(params=args)
+        with pytest.raises(F5ModuleError) as exc:
+            p.async_timeout
+        assert 'Timeout value must be between 150 and 1800 seconds' in str(exc.value)
+
+    def test_module_async_timeout_too_high(self):
+        args = dict(
+            async_timeout=2000,
+        )
+        p = Parameters(params=args)
+        with pytest.raises(F5ModuleError) as exc:
+            p.async_timeout
+        assert 'Timeout value must be between 150 and 1800 seconds' in str(exc.value)
 
 
 class TestMadmLocationManager(unittest.TestCase):
