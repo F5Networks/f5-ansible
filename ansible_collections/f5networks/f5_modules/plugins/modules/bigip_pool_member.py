@@ -568,7 +568,11 @@ from ansible.module_utils.basic import (
 )
 from ansible.module_utils.six import iteritems
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import remove_default_spec
+try:
+    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import remove_default_spec
+except ImportError:
+    def remove_default_spec(argument_spec):
+        return argument_spec
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
