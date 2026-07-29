@@ -224,10 +224,22 @@ from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import string_types
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.parsing import Conditional
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    ComplexList, to_list
-)
+try:
+    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.parsing import Conditional
+    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+        ComplexList, to_list
+    )
+except ImportError:
+    class Conditional(object):
+        def __init__(self, *args, **kwargs):
+            raise ImportError('The ansible.netcommon collection is required for this module')
+
+    class ComplexList(object):
+        def __init__(self, *args, **kwargs):
+            raise ImportError('The ansible.netcommon collection is required for this module')
+
+    def to_list(*args, **kwargs):
+        raise ImportError('The ansible.netcommon collection is required for this module')
 
 from collections import deque
 
