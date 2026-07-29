@@ -303,6 +303,50 @@ fi
 LAST_STEP="resolving workflow versions"
 resolve_versions
 
+# Run a standalone, CI-identical ansible-lint production profile once (separate
+# job in Red Hat's reusable workflow). This must run before the per-version
+# sanity matrix and must NOT be routed through galaxy-importer (no --exclude
+# flags). Use the first ansible-core version in the matrix to resolve the
+# ansible-lint version the same way the CI job does.
+LAST_STEP="running production ansible-lint (CI-equivalent)"
+echo "Running standalone ansible-lint --profile=production (CI-equivalent)"
+LINT_CORE_VERSION="${ANSIBLE_VERSIONS[0]}"
+LINT_VER=$(get_lint_version "$LINT_CORE_VERSION")
+LINT_VENV="$VENV_BASE_DIR/.venv-lint-${LINT_CORE_VERSION}"
+if [[ ! -d "$LINT_VENV" ]]; then
+  echo "  Creating lint virtualenv: $LINT_VENV"
+  PYTHON_BIN=""
+  if command -v python3.12 &>/dev/null; then
+    PYTHON_BIN=python3.12
+  elif command -v python3.11 &>/dev/null; then
+    PYTHON_BIN=python3.11
+  else
+    PYTHON_BIN=python3
+  fi
+  "$PYTHON_BIN" -m venv "$LINT_VENV"
+fi
+# shellcheck source=/dev/null
+source "$LINT_VENV/bin/activate"
+python -m pip install --upgrade pip >/dev/null 2>&1
+LAST_STEP="installing ansible-core and ansible-lint for standalone lint"
+echo "  Installing ansible-core $LINT_CORE_VERSION and ansible-lint $LINT_VER"
+pip install --quiet "ansible-core==${LINT_CORE_VERSION}.*" "ansible-lint==${LINT_VER}" >/dev/null 2>&1 || {
+  echo "WARNING: Failed to install ansible-core/ansible-lint for standalone lint; skipping standalone lint step"
+  deactivate 2>/dev/null || true
+}
+
+LAST_STEP="running standalone ansible-lint"
+if [[ -d "$COLLECTION_ROOT" ]]; then
+  (cd "$COLLECTION_ROOT" && ansible-lint --profile=production) 2>&1 | tee "$TMP_DIR/lint-production-output.log" || {
+    echo "FAILED: standalone ansible-lint --profile=production"
+    FAILED_CHECKS+=("lint-production")
+    deactivate 2>/dev/null || true
+  }
+else
+  echo "Skipping standalone lint: collection root $COLLECTION_ROOT not found"
+fi
+deactivate 2>/dev/null || true
+
 # Test each ansible-core version
 for ANSIBLE_VERSION in "${ANSIBLE_VERSIONS[@]}"; do
   echo ""
@@ -407,7 +451,9 @@ for ANSIBLE_VERSION in "${ANSIBLE_VERSIONS[@]}"; do
   cat > "$TMP_DIR/galaxy-importer.cfg" <<'EOF'
 [galaxy-importer]
 CHECK_REQUIRED_TAGS=True
-RUN_ANSIBLE_LINT=True
+# Disable galaxy-importer internal linting; Red Hat runs a separate
+# ansible-lint --profile=production job from the collection root.
+RUN_ANSIBLE_LINT=False
 EOF
   export GALAXY_IMPORTER_CONFIG="$TMP_DIR/galaxy-importer.cfg"
   rm -f "$TMP_DIR"/f5networks-f5_modules-*.tar.gz
