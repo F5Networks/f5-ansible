@@ -433,7 +433,13 @@ for ANSIBLE_VERSION in "${ANSIBLE_VERSIONS[@]}"; do
   # Parse and install dependencies from galaxy.yml into the local ansible_collections/
   # cache directory and expose it through ANSIBLE_COLLECTIONS_PATH
   if [[ -f "$GALAXY_YML_PATH" ]]; then
-    mapfile -t DEP_NAMES < <(awk '/^dependencies:/{flag=1;next}/^[^ ]/{flag=0}flag{gsub(/^[[:space:]]+/,"",$0);gsub(/:.*/,"",$0);if(NF) print}' "$GALAXY_YML_PATH")
+    # Read dependency names into an array in a POSIX-safe way (avoid mapfile)
+    DEP_NAMES=()
+    while IFS= read -r dep_name; do
+      DEP_NAMES+=("$dep_name")
+    done < <(
+      awk '/^dependencies:/{flag=1;next}/^[^ ]/{flag=0}flag{gsub(/^[[:space:]]+/,"",$0);gsub(/:.*/,"",$0);if(NF) print}' "$GALAXY_YML_PATH"
+    )
     for dep_name in "${DEP_NAMES[@]}"; do
       if [[ -n "$dep_name" ]]; then
         echo "  - Installing dependency: $dep_name"
