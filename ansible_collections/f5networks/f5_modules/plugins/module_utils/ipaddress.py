@@ -6,7 +6,7 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-from ipaddress import ip_interface, ip_network
+from ipaddress import ip_interface, ip_network, IPv4Address, IPv6Address
 
 try:
     from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
@@ -14,15 +14,25 @@ try:
     )
 except ImportError:
     def validate_ip_address(value):
+        # netcommon's implementation validates plain IPv4 addresses (no CIDR suffix).
         try:
-            return ip_interface(u'{0}'.format(value)).version == 4
-        except ValueError:
+            s = u'{0}'.format(value)
+            if '/' in s:
+                return False
+            IPv4Address(s)
+            return True
+        except Exception:
             return False
 
     def validate_ip_v6_address(value):
+        # netcommon's implementation validates plain IPv6 addresses (no CIDR suffix).
         try:
-            return ip_interface(u'{0}'.format(value)).version == 6
-        except ValueError:
+            s = u'{0}'.format(value)
+            if '/' in s:
+                return False
+            IPv6Address(s)
+            return True
+        except Exception:
             return False
 
 
