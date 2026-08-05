@@ -26,8 +26,14 @@ import glob
 
 from ansible.module_utils._text import to_text
 from ansible.module_utils.six.moves.urllib.parse import urlsplit
-from ansible_collections.ansible.netcommon.plugins.action.network import ActionModule as ActionNetworkModule
 from ansible.utils.display import Display
+
+try:
+    from ansible_collections.ansible.netcommon.plugins.action.network import ActionModule as ActionNetworkModule
+except ImportError:
+    class ActionNetworkModule(object):
+        def run(self, *args, **kwargs):
+            raise ImportError('The ansible.netcommon collection is required for this module')
 
 display = Display()
 

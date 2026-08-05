@@ -600,7 +600,26 @@ from ansible.module_utils.basic import (
 )
 from ansible.module_utils.six import iteritems
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import remove_default_spec
+try:
+    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import remove_default_spec
+except ImportError:
+    # netcommon is a declared collection dependency but may not be available
+    # during static import/sanity checks. Provide a fallback with the same
+    # semantics as netcommon: mutate the provided argument_spec in-place by
+    # removing any 'default' keys so defaults don't leak into aggregate subspecs.
+    def remove_default_spec(argument_spec):
+        def _recurse(spec):
+            if not isinstance(spec, dict):
+                return
+            for key, value in list(spec.items()):
+                if isinstance(value, dict):
+                    # remove default if present
+                    value.pop('default', None)
+                    # recurse into nested dicts
+                    _recurse(value)
+        _recurse(argument_spec)
+        # netcommon implementation mutates in-place and returns None
+        return None
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (

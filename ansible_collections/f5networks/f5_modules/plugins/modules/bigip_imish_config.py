@@ -329,8 +329,15 @@ from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import dumps
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
+try:
+    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import dumps
+    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
+except ImportError:
+    def dumps(*args, **kwargs):
+        raise ImportError('The ansible.netcommon collection is required for this module')
+
+    def to_list(*args, **kwargs):
+        raise ImportError('The ansible.netcommon collection is required for this module')
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (

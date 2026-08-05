@@ -10,6 +10,8 @@ vault.txt
 **.cache/
 Dockerfile
 ansible_collections/ansible.netcommon*
+# generated ansible cache/dependency directories created by ansible-lint/ansible-test
+ansible_collections/f5networks/f5_modules/.ansible/
 cache/
 output
 test/integration/targets/bigip_imish_config/backup
@@ -118,3 +120,6 @@ ansible
 kevingstewart
 # ignore build artifacts
 builds/*
+
+# local certification skill
+.github/skills/redhat-cert-test/artifacts/

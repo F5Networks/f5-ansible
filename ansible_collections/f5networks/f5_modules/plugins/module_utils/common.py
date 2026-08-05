@@ -20,12 +20,26 @@ from ansible.module_utils.parsing.convert_bool import (
 )
 from collections import defaultdict
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
-    NetworkConfig, ConfigLine, ignore_line
-)
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    to_list, ComplexList
-)
+try:
+    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
+        NetworkConfig, ConfigLine, ignore_line
+    )
+    from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+        to_list, ComplexList
+    )
+except ImportError:
+    class _MissingNetcommon(object):
+        def __init__(self, *args, **kwargs):
+            raise ImportError('The ansible.netcommon collection is required for this module')
+
+    def _missing_netcommon(*args, **kwargs):
+        raise ImportError('The ansible.netcommon collection is required for this module')
+
+    NetworkConfig = _MissingNetcommon
+    ConfigLine = _MissingNetcommon
+    ignore_line = _missing_netcommon
+    to_list = _missing_netcommon
+    ComplexList = _MissingNetcommon
 from .constants import (
     MANAGED_BY_ANNOTATION_MODIFIED, MANAGED_BY_ANNOTATION_VERSION
 )
