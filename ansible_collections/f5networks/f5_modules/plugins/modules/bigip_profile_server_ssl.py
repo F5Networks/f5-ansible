@@ -805,7 +805,7 @@ class ArgumentSpec(object):
                     'no-dtls',
                     'no-dtlsv1.0',
                     'no-dtlsv1.1',
-                    'no-dtlsv1.2',      
+                    'no-dtlsv1.2',
                     'no-session-resumption-on-renegotiation',
                     'no-tlsv1.1',
                     'no-tlsv1.2',
