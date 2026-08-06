@@ -125,9 +125,9 @@ options:
       - dont-insert-empty-fragments
       - no-ssl
       - no-dtls
-      - no-dtls1.0
-      - no-dtls1.1
-      - no-dtls1.2
+      - no-dtlsv1.0
+      - no-dtlsv1.1
+      - no-dtlsv1.2
       - no-session-resumption-on-renegotiation
       - no-tlsv1.1
       - no-tlsv1.2
