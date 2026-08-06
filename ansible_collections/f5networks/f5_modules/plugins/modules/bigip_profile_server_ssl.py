@@ -798,6 +798,9 @@ class ArgumentSpec(object):
                     'dont-insert-empty-fragments',
                     'no-ssl',
                     'no-dtls',
+                    'no-dtlsv1.0',
+                    'no-dtlsv1.1',
+                    'no-dtlsv1.2',        
                     'no-session-resumption-on-renegotiation',
                     'no-tlsv1.1',
                     'no-tlsv1.2',
@@ -807,6 +810,8 @@ class ArgumentSpec(object):
                     'no-sslv3',
                     'no-tls',
                     'no-tlsv1',
+                    'gmsslv1.1',
+                    'passive-close',
                     'none',
                 ]
             ),
