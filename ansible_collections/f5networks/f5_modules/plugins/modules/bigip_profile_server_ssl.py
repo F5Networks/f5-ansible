@@ -125,6 +125,9 @@ options:
       - dont-insert-empty-fragments
       - no-ssl
       - no-dtls
+      - no-dtls1.0
+      - no-dtls1.1
+      - no-dtls1.2
       - no-session-resumption-on-renegotiation
       - no-tlsv1.1
       - no-tlsv1.2
@@ -134,6 +137,8 @@ options:
       - no-sslv3
       - no-tls
       - no-tlsv1
+      - gmsslv1.1
+      - passive-close
       - "none"
   passphrase:
     description:
