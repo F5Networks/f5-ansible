@@ -1,0 +1,10 @@
+---
+bugfixes:
+  - >-
+    Fix issue in the bigip terminal plugin where long device prompts (for
+    example, those decorated with HA/cfg-sync status or long service account
+    names) could be wrapped by the terminal before 'stty cols' widened the
+    pty. This could inject a CR/LF into the prompt (splitting "tmos" into
+    "tmo\r\ns"), causing tmos detection to fail and the wrong branch of
+    on_open_shell() to run, sending a malformed stty command to tmsh and
+    raising a "Syntax Error".
