@@ -103,7 +103,9 @@ Changelog information available on |changelog|.
 
 Python Version Change
 --------------------------
-Collection only supports python 3.6 and above, however F5 recommends Python 3.9 and above.
+Collection requires:
+- **Control node** (where Ansible runs): Python 3.10 and above (ansible-core 2.16 minimum)
+- **Target node** (managed BIG-IP/BIG-IQ devices): Python 3.9 and above
 
 Your ideas
 ----------

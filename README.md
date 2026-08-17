@@ -7,7 +7,8 @@ This collection provides imperative Ansible modules and plugins for managing F5 
 ## Requirements
 
 - Ansible >= 2.16
-- Python >= 3.9
+- Python >= 3.10 (control node where Ansible runs)
+- Python >= 3.9 (target node — managed BIG-IP/BIG-IQ devices)
 - packaging (Python library)
 
 
@@ -99,7 +100,8 @@ For F5-specific EE usage and advanced scenarios, refer to the [F5 execenv docume
 This collection has been tested on:
 - F5 BIG-IP and BIG-IQ virtual editions
 - Supported Ansible versions (>=2.16)
-- Python 3.9+
+- Control node: Python 3.10+
+- Target node: Python 3.9+
 
 Testing includes unit, integration, and system tests. Some modules may require access to a live F5 device or a suitable test environment. Known exceptions and workarounds are documented in the module documentation.
 
