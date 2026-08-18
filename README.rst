@@ -85,7 +85,11 @@ can be found here [execenv]. Use the below requirements.yml file when building E
 
 Support
 -------
-F5 supports the F5 Imperative Collection for Ansible delivered in |ansible_galaxy|. Please refer to the |support_policy| for details.
+If you encounter a bug or other issue while using the Ansible Provider, use |F5 Technical Support| to submit it to our team.
+
+Important: As of July 2026, GitHub issues are no longer being monitored by F5 support staff.
+
+Be sure to see the |Ansible documentation| for more details and supported versions of the Ansible Provider.
 
 
 Bugs, Issues
@@ -173,3 +177,10 @@ See `License`_.
 
    <a href="https://github.com/F5Networks/f5-ansible/blob/devel/ansible_collections/f5networks/f5_modules/CHANGELOG.rst" target="_blank">Changelogs</a>
 
+.. |F5 Technical Support| raw:: html
+
+   <a href="https://www.f5.com/support#how-f5-helps" target="_blank">F5 Technical Support</a>
+
+.. |Ansible documentation| raw:: html
+
+   <a href="https://clouddocs.f5.com/products/orchestration/ansible/devel/" target="_blank">Ansible documentation</a>
