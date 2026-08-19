@@ -13,7 +13,7 @@ on:
 jobs:
   redhat_certification:
     name: Red Hat Collection Certification
-    uses: ansible-collections/partner-certification-checker/.github/workflows/certification-reusable.yml@v3.0.0
+    uses: ansible-collections/partner-certification-checker/.github/workflows/certification-reusable.yml@v4.0.0
     with:
       collection-root: ansible_collections/f5networks/f5_modules
 
