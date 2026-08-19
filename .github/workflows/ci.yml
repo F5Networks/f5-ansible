@@ -1,6 +1,10 @@
 name: Ansible Sanity and Unit Tests
 # This workflow runs unit tests and style checks for the F5 Ansible collections.
 # It is triggered on pull requests to the 'devel' branch.
+#
+# Python version strategy (ansible-core 2.16 requirement):
+#   Control node minimum (where ansible-core tooling runs): Python 3.10
+#   Target node minimum (where modules execute on managed hosts): Python 3.9
 on:
   pull_request:
     branches:
@@ -9,12 +13,12 @@ on:
 jobs:
   redhat_certification:
     name: Red Hat Collection Certification
-    uses: ansible-collections/partner-certification-checker/.github/workflows/certification-reusable.yml@v3.0.0
+    uses: ansible-collections/partner-certification-checker/.github/workflows/certification-reusable.yml@v4.0.0
     with:
       collection-root: ansible_collections/f5networks/f5_modules
 
   ansible_sanity:
-    name: Ansible Sanity Tests (Python 3.10)
+    name: Ansible Sanity Tests (Python 3.10 - Control Node)
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +39,7 @@ jobs:
         run: inv test.ansible-test -r -p 3.10
 
   f5_unit_tests:
-    name: F5 Unit Tests (Python 3.9)
+    name: F5 Unit Tests (Python 3.9 - Target Node Minimum)
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -63,7 +67,7 @@ jobs:
         run: inv test.unit
 
   f5_style_sanity:
-    name: F5 Style and F5 Sanity Tests (Python 3.10)
+    name: F5 Style and F5 Sanity Tests (Python 3.10 - Control Node)
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4

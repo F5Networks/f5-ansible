@@ -486,9 +486,6 @@ EOF
   cd "$COLLECTION_ROOT" 2>/dev/null || cd .
 
   if [[ "$USE_DOCKER" == "true" ]]; then
-    # Identical to CI: quay.io/ansible/default-test-container provides isolated
-    # Python 3.8-3.13 without pre-installed collections, reproducing the exact
-    # environment where netcommon ModuleNotFoundError failures appear.
     echo "    (Docker available — running with --docker default [quay.io/ansible/default-test-container])"
     SANITY_CMD="ansible-test sanity -v --color --coverage --junit --docker default"
   else

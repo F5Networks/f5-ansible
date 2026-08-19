@@ -7,7 +7,8 @@ This collection provides imperative Ansible modules and plugins for managing F5 
 ## Requirements
 
 - Ansible >= 2.16
-- Python >= 3.9
+- Python >= 3.10 (control node where Ansible runs)
+- Python >= 3.9 (target node — managed BIG-IP/BIG-IQ devices)
 - packaging (Python library)
 
 
@@ -99,17 +100,18 @@ For F5-specific EE usage and advanced scenarios, refer to the [F5 execenv docume
 This collection has been tested on:
 - F5 BIG-IP and BIG-IQ virtual editions
 - Supported Ansible versions (>=2.16)
-- Python 3.9+
+- Control node: Python 3.10+
+- Target node: Python 3.9+
 
 Testing includes unit, integration, and system tests. Some modules may require access to a live F5 device or a suitable test environment. Known exceptions and workarounds are documented in the module documentation.
 
 ## Support
 
-As Red Hat Ansible Certified Content, this collection is entitled to support through the Ansible Automation Platform (AAP) using the **Create issue** button on the top right corner.
+If you encounter a bug or other issue while using the Ansible Provider, use [F5 Technical Support](https://www.f5.com/support#how-f5-helps) to submit it to our team.
 
-If a support case cannot be opened with Red Hat and the collection has been obtained either from Galaxy or GitHub, you can report issues on the [GitHub issue tracker](https://github.com/F5Networks/f5-ansible/issues).
+Important: As of July 2026, GitHub issues are no longer being monitored by F5 support staff.
 
-Please refer to the [support_policy] for details
+Be sure to see the [Ansible documentation](https://clouddocs.f5.com/products/orchestration/ansible/devel/) for more details and supported versions of the Ansible Provider.
 
 ## Release Notes
 
