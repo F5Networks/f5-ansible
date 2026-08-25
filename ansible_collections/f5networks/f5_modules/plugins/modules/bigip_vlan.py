@@ -90,6 +90,7 @@ options:
       - source
       - dst
       - src
+      - ipport
   dag_tunnel:
     description:
       - Specifies how the disaggregator (DAG) distributes received tunnel-encapsulated
@@ -505,6 +506,8 @@ class ModuleParameters(Parameters):
             return 'src-ip'
         if self._values['cmp_hash'] in ['destination-address', 'dest', 'dst-ip', 'destination', 'dst']:
             return 'dst-ip'
+        if self._values['cmp_hash'] == 'ipport':
+            return 'ipport'
         else:
             return 'default'
 
@@ -929,8 +932,16 @@ class ArgumentSpec(object):
             cmp_hash=dict(
                 choices=[
                     'default',
-                    'destination-address', 'dest', 'dst-ip', 'destination', 'dst',
-                    'source-address', 'src', 'src-ip', 'source'
+                    'destination-address',
+                    'source-address',
+                    'dst-ip',
+                    'src-ip',
+                    'dest',
+                    'destination',
+                    'source',
+                    'dst',
+                    'src',
+                    'ipport'
                 ]
             ),
             dag_tunnel=dict(
