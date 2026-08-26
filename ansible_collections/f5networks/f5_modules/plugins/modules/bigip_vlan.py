@@ -74,8 +74,8 @@ options:
       - Specifies how the traffic on the VLAN is disaggregated. The value
         you select determines the traffic disaggregation method. You can choose to
         disaggregate traffic based on C(source-address) (the source IP address),
-        C(destination-address) (destination IP address), or C(default), which
-        specifies the default CMP hash uses L4 ports.
+        C(destination-address) (destination IP address), C(ipport) (source IP address
+        and port), or C(default), which specifies the default CMP hash uses L4 ports.
       - When creating a new VLAN, if this parameter is not specified, the default
         is C(default).
     type: str

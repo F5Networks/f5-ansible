@@ -365,32 +365,3 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['cmp_hash'] == 'ipport'
-
-    def test_create_vlan_with_cmp_hash_ipport(self, *args):
-        set_module_args(dict(
-            name='somevlan',
-            description='fakevlan',
-            cmp_hash='ipport',
-            partition='Common',
-            provider=dict(
-                server='localhost',
-                password='password',
-                user='admin'
-            )
-        ))
-
-        module = AnsibleModule(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            mutually_exclusive=self.spec.mutually_exclusive
-        )
-
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(module=module)
-        mm.create_on_device = Mock(return_value=True)
-        mm.exists = Mock(return_value=False)
-
-        results = mm.exec_module()
-
-        assert results['changed'] is True
-        assert results['cmp_hash'] == 'ipport'
