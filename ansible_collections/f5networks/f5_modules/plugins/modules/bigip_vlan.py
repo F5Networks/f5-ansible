@@ -74,8 +74,8 @@ options:
       - Specifies how the traffic on the VLAN is disaggregated. The value
         you select determines the traffic disaggregation method. You can choose to
         disaggregate traffic based on C(source-address) (the source IP address),
-        C(destination-address) (destination IP address), or C(default), which
-        specifies the default CMP hash uses L4 ports.
+        C(destination-address) (destination IP address), C(ipport) (source IP address
+        and port), or C(default), which specifies the default CMP hash uses L4 ports.
       - When creating a new VLAN, if this parameter is not specified, the default
         is C(default).
     type: str
@@ -90,6 +90,7 @@ options:
       - source
       - dst
       - src
+      - ipport
   dag_tunnel:
     description:
       - Specifies how the disaggregator (DAG) distributes received tunnel-encapsulated
@@ -505,6 +506,8 @@ class ModuleParameters(Parameters):
             return 'src-ip'
         if self._values['cmp_hash'] in ['destination-address', 'dest', 'dst-ip', 'destination', 'dst']:
             return 'dst-ip'
+        if self._values['cmp_hash'] == 'ipport':
+            return 'ipport'
         else:
             return 'default'
 
@@ -929,8 +932,16 @@ class ArgumentSpec(object):
             cmp_hash=dict(
                 choices=[
                     'default',
-                    'destination-address', 'dest', 'dst-ip', 'destination', 'dst',
-                    'source-address', 'src', 'src-ip', 'source'
+                    'destination-address',
+                    'source-address',
+                    'dst-ip',
+                    'src-ip',
+                    'dest',
+                    'destination',
+                    'source',
+                    'dst',
+                    'src',
+                    'ipport'
                 ]
             ),
             dag_tunnel=dict(
