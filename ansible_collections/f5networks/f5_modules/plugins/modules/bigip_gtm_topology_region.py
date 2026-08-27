@@ -18,6 +18,7 @@ options:
   name:
     description:
       - Specifies the name of the region.
+      - Spaces in region names are supported and will be properly handled by the module.
     type: str
     required: True
   region_members:
@@ -27,6 +28,7 @@ options:
         you must specify the entire list of members.
       - The list will override what is on the device, if different.
       - If you specify an empty list, the region members list is removed.
+      - Spaces are supported in all member value types (state, region, pool, datacenter, continent, country, geoip-isp, isp).
     type: list
     elements: dict
     suboptions:
@@ -133,6 +135,21 @@ EXAMPLES = r'''
     region_members:
       - continent: EU
       - country: PL
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
+
+- name: Create topology region with spaces in member values
+  bigip_gtm_topology_region:
+    name: "US East Region"
+    region_members:
+      - state: "North Carolina"
+        country: "United States"
+      - datacenter: "My Data Center"
+      - pool: "Primary Pool"
+    partition: Common
     provider:
       password: secret
       server: lb.mydomain.com
@@ -566,12 +583,20 @@ class UsableChanges(Changes):
 
     @staticmethod
     def escape_spaces(item):
-        # this method is needed as the API has problems in handling spaces and using just double quotes causes
-        # api to complain about quote imbalance
-        if item.startswith('state ') and ' ' in item[len('state '):]:
-            return item[:len('state ')] + '\\"{0}\\"'.format(item[len('state '):])
-        else:
-            return item
+        # This method escapes spaces in region member values for bash/tmsh commands.
+        # The API requires escape-quoted values like \"My Region\" to handle spaces in:
+        # - state values (e.g., "state California")
+        # - region/pool/datacenter names (e.g., "region /Common/My Pool")
+        # - geo-isp and continent/country values
+        # Without escaping, tmsh interprets spaces as separators, creating multiple objects.
+        keys_with_potential_spaces = ['state ', 'region ', 'pool ', 'datacenter ', 'geoip-isp ', 'continent ', 'country ', 'isp ']
+        for key_prefix in keys_with_potential_spaces:
+            if item.startswith(key_prefix):
+                value = item[len(key_prefix):]
+                if ' ' in value:
+                    return item[:len(key_prefix)] + '\\"{0}\\"'.format(value)
+                break
+        return item
 
 
 class ReportableChanges(Changes):
