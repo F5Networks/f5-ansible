@@ -538,10 +538,7 @@ def upload_file(client, url, src, dest=None):
                 break
 
             current_bytes = len(file_slice)
-            if current_bytes < chunk_size:
-                end = size
-            else:
-                end = start + current_bytes
+            end = start + current_bytes
             headers = {
                 'Content-Range': '%s-%s/%s' % (start, end - 1, size),
                 'Content-Type': 'application/octet-stream'
