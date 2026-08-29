@@ -85,7 +85,7 @@ class LookupModule(LookupBase):
             response = resp.json()
         except ValueError as ex:
             raise AnsibleError(str(ex))
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise AnsibleError(response['message'])
             else:
@@ -109,7 +109,7 @@ class LookupModule(LookupBase):
             response = resp.json()
         except ValueError as ex:
             raise AnsibleError(str(ex))
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise AnsibleError(response['message'])
             else:
@@ -141,7 +141,7 @@ class LookupModule(LookupBase):
             except ValueError as ex:
                 raise AnsibleError(str(ex))
 
-            if 'code' in response and response['code'] == 400:
+            if 'code' in response and response['code'] >= 400:
                 if 'message' in response:
                     raise AnsibleError(response['message'])
                 else:

@@ -1275,7 +1275,7 @@ class Parameters(AnsibleF5Parameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -1294,7 +1294,7 @@ class Parameters(AnsibleF5Parameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -1316,7 +1316,7 @@ class Parameters(AnsibleF5Parameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -1335,7 +1335,7 @@ class Parameters(AnsibleF5Parameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -1354,7 +1354,7 @@ class Parameters(AnsibleF5Parameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -1373,7 +1373,7 @@ class Parameters(AnsibleF5Parameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -1392,7 +1392,7 @@ class Parameters(AnsibleF5Parameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -3066,7 +3066,7 @@ class VirtualServerValidator(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -3085,7 +3085,7 @@ class VirtualServerValidator(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -3104,7 +3104,7 @@ class VirtualServerValidator(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -3124,7 +3124,7 @@ class VirtualServerValidator(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -3143,7 +3143,7 @@ class VirtualServerValidator(object):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:

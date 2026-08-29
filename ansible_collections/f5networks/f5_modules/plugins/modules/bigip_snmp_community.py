@@ -697,7 +697,7 @@ class V1Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -725,7 +725,7 @@ class V1Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -820,7 +820,7 @@ class V2Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
@@ -850,7 +850,7 @@ class V2Manager(BaseManager):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
 
-        if 'code' in response and response['code'] == 400:
+        if 'code' in response and response['code'] >= 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
             else:
