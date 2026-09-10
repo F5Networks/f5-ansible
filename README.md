@@ -6,10 +6,12 @@ This collection provides imperative Ansible modules and plugins for managing F5 
 
 ## Requirements
 
-- Ansible >= 2.16
-- Python >= 3.10 (control node where Ansible runs)
-- Python >= 3.9 (target node — managed BIG-IP/BIG-IQ devices)
-- packaging (Python library)
+- Ansible >= 2.16 (ansible-core)
+- Python >= 3.10 (on the control node where Ansible runs)
+- packaging (Python library on the control node)
+
+> **Note on Managed Devices (BIG-IP / BIG-IQ):**
+> Modules in this collection execute on the Ansible Control Node and communicate with BIG-IP/BIG-IQ appliances via HTTPS (iControl REST / AS3) or SSH CLI. Target BIG-IP appliances do not execute Python modules remotely. Playbooks should specify `gather_facts: false` (or `connection: local` / `connection: httpapi`) to avoid invoking standard target-side Python modules on TMOS.
 
 
 ## Installation
@@ -101,7 +103,7 @@ This collection has been tested on:
 - F5 BIG-IP and BIG-IQ virtual editions
 - Supported Ansible versions (>=2.16)
 - Control node: Python 3.10+
-- Target node: Python 3.9+
+- Target node: Python 3.8+
 
 Testing includes unit, integration, and system tests. Some modules may require access to a live F5 device or a suitable test environment. Known exceptions and workarounds are documented in the module documentation.
 

@@ -4,7 +4,7 @@ name: Ansible Sanity and Unit Tests
 #
 # Python version strategy (ansible-core 2.16 requirement):
 #   Control node minimum (where ansible-core tooling runs): Python 3.10
-#   Target node minimum (where modules execute on managed hosts): Python 3.9
+#   Target node minimum (where modules execute on managed hosts): Python 3.8
 on:
   pull_request:
     branches:
@@ -39,7 +39,7 @@ jobs:
         run: inv test.ansible-test -r -p 3.10
 
   f5_unit_tests:
-    name: F5 Unit Tests (Python 3.9 - Target Node Minimum)
+    name: F5 Unit Tests (Python 3.8 - Target Node Minimum)
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
