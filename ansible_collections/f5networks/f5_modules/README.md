@@ -7,7 +7,7 @@ This collection provides imperative Ansible modules and plugins for managing F5 
 ## Requirements
 
 - Ansible >= 2.16
-- Python >= 3.9
+Python >= 3.10 on the Control Node
 - packaging (Python library)
 
 

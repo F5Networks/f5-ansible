@@ -105,11 +105,10 @@ Documentation
 All documentation is available on |ansiblehelp|.
 Changelog information available on |changelog|.
 
-Python Version Change
---------------------------
-Collection requires:
+Python Version Requirements
+---------------------------
 - **Control node** (where Ansible runs): Python 3.10 and above (ansible-core 2.16 minimum)
-- **Target node** (managed BIG-IP/BIG-IQ devices): Python 3.9 and above
+- **Target devices** (BIG-IP/BIG-IQ): Modules execute locally on the control node. Target TMOS runs Python 3.8. Ensure playbooks specify ``gather_facts: false``.
 
 Your ideas
 ----------
