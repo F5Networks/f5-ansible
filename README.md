@@ -103,7 +103,6 @@ This collection has been tested on:
 - F5 BIG-IP and BIG-IQ virtual editions
 - Supported Ansible versions (>=2.16)
 - Control node: Python 3.10+
-- Target node: Python 3.8+
 
 Testing includes unit, integration, and system tests. Some modules may require access to a live F5 device or a suitable test environment. Known exceptions and workarounds are documented in the module documentation.
 
