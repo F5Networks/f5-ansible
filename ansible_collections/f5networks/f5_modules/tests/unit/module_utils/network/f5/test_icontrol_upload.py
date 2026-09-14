@@ -253,6 +253,35 @@ class TestUploadFileContentRange(unittest.TestCase):
                 )
             )
 
+    def test_stringio_multibyte_utf8_content_range_matches_actual_bytes(self):
+        """
+        Verify StringIO containing multibyte UTF-8 characters encodes to bytes
+        so Content-Range total and chunk ranges match actual transmitted bytes.
+        """
+        # Character count: 8 chars, but UTF-8 byte count: 10 bytes
+        # '\u00e9' is 2 bytes, '\u2014' is 3 bytes (3 ascii + 2 + 1 ascii + 3 + 1 ascii = 10 bytes)
+        content_str = u'abc\u00e9-\u2014x'
+        fileobj = StringIO(content_str)
+
+        self.client.api.post.return_value = Mock(status=200)
+        result = upload_file(self.client, self.url, fileobj, 'cert.crt')
+
+        assert result is True
+        assert self.client.api.post.call_count == 1
+
+        call_args = self.client.api.post.call_args
+        headers = call_args.kwargs.get('headers') or call_args[1]['headers']
+        data = call_args.kwargs.get('data') or call_args[1]['data']
+
+        content_range = headers['Content-Range']
+        range_part, total = content_range.split('/')
+        start, end = map(int, range_part.split('-'))
+
+        expected_bytes = content_str.encode('utf-8')
+        assert int(total) == len(expected_bytes)
+        assert (end - start + 1) == len(data)
+        assert data == expected_bytes
+
 
 if __name__ == '__main__':
     unittest.main()
