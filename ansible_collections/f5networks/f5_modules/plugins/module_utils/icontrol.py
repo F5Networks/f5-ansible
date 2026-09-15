@@ -483,19 +483,27 @@ def upload_file(client, url, src, dest=None):
     Raises:
         F5ModuleError: Raised if ``retries`` limit is exceeded.
     """
-    if isinstance(src, StringIO) or isinstance(src, BytesIO):
+    if isinstance(src, StringIO):
+        content_bytes = src.getvalue().encode('utf-8')
+        fileobj = BytesIO(content_bytes)
+        size = len(content_bytes)
+        is_file = False
+    elif isinstance(src, BytesIO):
         fileobj = src
+        fileobj.seek(0, os.SEEK_END)
+        size = fileobj.tell()
+        fileobj.seek(0)
+        is_file = False
     else:
         fileobj = open(src, 'rb')
-
-    try:
-        size = os.stat(src).st_size
-        is_file = True
-    except TypeError:
-        src.seek(0, os.SEEK_END)
-        size = src.tell()
-        src.seek(0)
-        is_file = False
+        try:
+            size = os.stat(src).st_size
+            is_file = True
+        except TypeError:
+            src.seek(0, os.SEEK_END)
+            size = src.tell()
+            src.seek(0)
+            is_file = False
 
     # This appears to be the largest chunk size that iControlREST can handle.
     #
