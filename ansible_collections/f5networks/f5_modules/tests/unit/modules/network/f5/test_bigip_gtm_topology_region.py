@@ -138,6 +138,23 @@ class TestParameters(unittest.TestCase):
         # Pool name should be formatted with partition and literal spaces (escaping happens in UsableChanges)
         assert 'pool /Common/my pool name' in p.region_members[0]
 
+    def test_module_parameters_strips_external_quotes_from_name(self):
+        """Test that external quotes passed in region name are properly stripped."""
+        args = dict(
+            name='"Test Quoted Name"',
+            partition='Common'
+        )
+        p = ModuleParameters(params=args)
+        assert p.name == 'Test Quoted Name'
+
+    def test_module_parameters_name_none(self):
+        """Test that name returns None when not provided."""
+        args = dict(
+            partition='Common'
+        )
+        p = ModuleParameters(params=args)
+        assert p.name is None
+
 
 class TestEscapeSpaces(unittest.TestCase):
     """Test the escape_spaces function to ensure proper quoting of values with spaces."""
@@ -210,9 +227,14 @@ class TestEscapeSpaces(unittest.TestCase):
         from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_topology_region import UsableChanges
         item = 'not state South Carolina'
         result = UsableChanges.escape_spaces(item)
-        # Note: the "not" prefix is part of the value, so state starts after it
-        # This test ensures we're only escaping after the key prefix
-        assert 'state' in result
+        assert result == 'not state \\"South Carolina\\"'
+
+    def test_escape_spaces_negate_datacenter_with_spaces(self):
+        """Test that negate prefixed datacenter values with spaces are escape-quoted."""
+        from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_gtm_topology_region import UsableChanges
+        item = 'not datacenter /Common/My DC'
+        result = UsableChanges.escape_spaces(item)
+        assert result == 'not datacenter \\"/Common/My DC\\"'
 
 
 class TestManager(unittest.TestCase):
@@ -264,3 +286,119 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
+
+    def test_tmsh_name_with_spaces(self):
+        """Test that tmsh_name escapes regions that contain spaces."""
+        set_module_args(dict(
+            name='Test Space',
+            partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+        assert mm.tmsh_name == '\\"/Common/Test Space\\"'
+
+    def test_tmsh_name_without_spaces(self):
+        """Test that tmsh_name does not escape regions without spaces."""
+        set_module_args(dict(
+            name='foobar',
+            partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+        assert mm.tmsh_name == '/Common/foobar'
+
+    def test_tmsh_name_with_custom_partition_and_spaces(self):
+        """Test that tmsh_name includes custom partition and properly escapes spaces."""
+        set_module_args(dict(
+            name='My Region',
+            partition='Production',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+        assert mm.tmsh_name == '\\"/Production/My Region\\"'
+
+    def test_create_on_device_with_spaces_in_name(self):
+        """Test that create_on_device uses tmsh_name with escaped quotes in bash payload."""
+        set_module_args(dict(
+            name='Test Space Region',
+            region_members=[
+                dict(subnet='192.168.1.0/24')
+            ],
+            partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+        mm._set_changed_options()
+        mock_resp = Mock()
+        mock_resp.json.return_value = {}
+        mock_resp.status = 200
+        mock_api = Mock()
+        mock_api.post.return_value = mock_resp
+        mm.client._client = mock_api
+
+        assert mm.create_on_device() is True
+        call_payload = mm.client.api.post.call_args[1]['json']
+        assert '\\"/Common/Test Space Region\\"' in call_payload['utilCmdArgs']
+
+    def test_update_on_device_with_spaces_in_name(self):
+        """Test that update_on_device uses tmsh_name with escaped quotes in bash payload."""
+        set_module_args(dict(
+            name='Test Space Region',
+            region_members=[
+                dict(subnet='192.168.1.0/24')
+            ],
+            partition='Common',
+            provider=dict(
+                server='localhost',
+                password='password',
+                user='admin'
+            )
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+        mm._set_changed_options()
+        mock_resp = Mock()
+        mock_resp.json.return_value = {}
+        mock_resp.status = 200
+        mock_api = Mock()
+        mock_api.post.return_value = mock_resp
+        mm.client._client = mock_api
+
+        assert mm.update_on_device() is True
+        call_payload = mm.client.api.post.call_args[1]['json']
+        assert '\\"/Common/Test Space Region\\"' in call_payload['utilCmdArgs']
