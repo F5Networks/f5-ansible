@@ -494,6 +494,12 @@ class ModuleParameters(Parameters):
     }
 
     @property
+    def name(self):
+        if self._values['name'] is None:
+            return None
+        return self._values['name'].strip('"\'')
+
+    @property
     def region_members(self):
         result = list()
         negate = None
@@ -589,12 +595,18 @@ class UsableChanges(Changes):
         # - region/pool/datacenter names (e.g., "region /Common/My Pool")
         # - geo-isp and continent/country values
         # Without escaping, tmsh interprets spaces as separators, creating multiple objects.
+        prefix = ''
+        target = item
+        if item.startswith('not '):
+            prefix = 'not '
+            target = item[4:]
+
         keys_with_potential_spaces = ['state ', 'region ', 'pool ', 'datacenter ', 'geoip-isp ', 'continent ', 'country ', 'isp ']
         for key_prefix in keys_with_potential_spaces:
-            if item.startswith(key_prefix):
-                value = item[len(key_prefix):]
+            if target.startswith(key_prefix):
+                value = target[len(key_prefix):]
                 if ' ' in value:
-                    return item[:len(key_prefix)] + '\\"{0}\\"'.format(value)
+                    return prefix + target[:len(key_prefix)] + '\\"{0}\\"'.format(value)
                 break
         return item
 
@@ -757,15 +769,22 @@ class ModuleManager(object):
             else:
                 raise F5ModuleError(resp.content)
 
+    @property
+    def tmsh_name(self):
+        name = fq_name(self.want.partition, self.want.name)
+        if ' ' in name:
+            return '\\\"{0}\\\"'.format(name)
+        return name
+
     def create_on_device(self):
         if self.changes.region_members:
             command = 'tmsh create gtm region {0} region-members add {{ {1} }} '.format(
-                fq_name(self.want.partition, self.want.name),
+                self.tmsh_name,
                 self.changes.region_members
             )
         else:
             command = 'tmsh create gtm region {0}'.format(
-                fq_name(self.want.partition, self.want.name)
+                self.tmsh_name
             )
         payload = {
             "command": "run",
@@ -793,17 +812,17 @@ class ModuleManager(object):
         if param:
             if param != 'none':
                 command = 'tmsh modify gtm region {0} region-members replace-all-with {{ {1} }} '.format(
-                    fq_name(self.want.partition, self.want.name),
+                    self.tmsh_name,
                     param
                 )
             else:
                 command = 'tmsh modify gtm region {0} region-members {1} '.format(
-                    fq_name(self.want.partition, self.want.name),
+                    self.tmsh_name,
                     param
                 )
         else:
             command = 'tmsh create gtm region {0}'.format(
-                fq_name(self.want.partition, self.want.name)
+                self.tmsh_name
             )
 
         payload = {
