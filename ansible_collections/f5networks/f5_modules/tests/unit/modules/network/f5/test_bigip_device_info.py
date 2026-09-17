@@ -19,7 +19,8 @@ from ansible.module_utils.six import iteritems
 
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info import (
     Parameters, VirtualAddressesFactManager, LtmPoolsFactManager,
-    GtmServersFactManager, VirtualServersFactManager, ArgumentSpec, ModuleManager
+    GtmServersFactManager, VirtualServersFactManager, ArgumentSpec, ModuleManager,
+    GtmServersParameters, F5ModuleError
 )
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
 from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
@@ -299,3 +300,112 @@ class TestManager(unittest.TestCase):
         assert 'expandSubcollections=true' in call_url
         assert '$filter' not in call_url
         assert result == []
+
+    def test_gtm_server_vs_stats_404_with_space_in_name(self, *args):
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.status = 404
+        fake_response.json.return_value = {
+            'code': 404,
+            'message': 'Object not found - host_domain_com - CA_HTTPS',
+            'errorStack': [],
+            'apiError': 1
+        }
+        fake_response.content = json.dumps(fake_response.json.return_value).encode('utf-8')
+        fake_client.api.get.return_value = fake_response
+        fake_client.provider = {'server': 'localhost', 'server_port': 443}
+
+        params = GtmServersParameters(client=fake_client, params={})
+        url_with_space = '/mgmt/tm/gtm/server/~Common~host_domain_com/virtual-servers/host_domain_com - CA_HTTPS'
+        result = params._read_virtual_stats_from_device(url_with_space)
+        assert result == {}
+
+    def test_gtm_server_vs_stats_404_with_encoded_space_in_name(self, *args):
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.status = 404
+        fake_response.json.return_value = {
+            'code': 404,
+            'message': 'Object not found - host_domain_com - CA_HTTPS',
+            'errorStack': [],
+            'apiError': 1
+        }
+        fake_response.content = json.dumps(fake_response.json.return_value).encode('utf-8')
+        fake_client.api.get.return_value = fake_response
+        fake_client.provider = {'server': 'localhost', 'server_port': 443}
+
+        params = GtmServersParameters(client=fake_client, params={})
+        url_with_encoded_space = '/mgmt/tm/gtm/server/~Common~host_domain_com/virtual-servers/host_domain_com%20-%20CA_HTTPS'
+        result = params._read_virtual_stats_from_device(url_with_encoded_space)
+        assert result == {}
+
+    def test_gtm_server_vs_stats_404_without_space_in_name_raises(self, *args):
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.status = 404
+        fake_response.json.return_value = {
+            'code': 404,
+            'message': 'Object not found - vs1',
+            'errorStack': [],
+            'apiError': 1
+        }
+        fake_response.content = json.dumps(fake_response.json.return_value).encode('utf-8')
+        fake_client.api.get.return_value = fake_response
+        fake_client.provider = {'server': 'localhost', 'server_port': 443}
+
+        params = GtmServersParameters(client=fake_client, params={})
+        url_without_space = '/mgmt/tm/gtm/server/~Common~server1/virtual-servers/vs1'
+        with pytest.raises(F5ModuleError) as exc_info:
+            params._read_virtual_stats_from_device(url_without_space)
+        assert 'Object not found - vs1' in str(exc_info.value)
+
+    def test_gtm_server_vs_stats_500_error_raises(self, *args):
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.status = 500
+        fake_response.json.return_value = {
+            'code': 500,
+            'message': 'Internal Server Error'
+        }
+        fake_response.content = json.dumps(fake_response.json.return_value).encode('utf-8')
+        fake_client.api.get.return_value = fake_response
+        fake_client.provider = {'server': 'localhost', 'server_port': 443}
+
+        params = GtmServersParameters(client=fake_client, params={})
+        url_with_space = '/mgmt/tm/gtm/server/~Common~host_domain_com/virtual-servers/host_domain_com - CA_HTTPS'
+        with pytest.raises(F5ModuleError) as exc_info:
+            params._read_virtual_stats_from_device(url_with_space)
+        assert 'Internal Server Error' in str(exc_info.value)
+
+    def test_gtm_server_vs_stats_200_success(self, *args):
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.status = 200
+        fake_response.json.return_value = {
+            'entries': {
+                'https://localhost/mgmt/tm/gtm/server/~Common~server1/virtual-servers/vs1/stats': {
+                    'nestedStats': {
+                        'entries': {
+                            'status.availabilityState': {'description': 'available'},
+                            'status.statusReason': {'description': 'Virtual server is available'},
+                            'status.enabledState': {'description': 'enabled'},
+                            'bitsPerSecIn': {'value': 100},
+                            'bitsPerSecOut': {'value': 200},
+                            'pktsPerSecIn': {'value': 10},
+                            'pktsPerSecOut': {'value': 20},
+                            'connections': {'value': 5},
+                            'picks': {'value': 1},
+                            'vsScore': {'value': 10},
+                            'uptime': {'value': 1000}
+                        }
+                    }
+                }
+            }
+        }
+        fake_client.api.get.return_value = fake_response
+        fake_client.provider = {'server': 'localhost', 'server_port': 443}
+
+        params = GtmServersParameters(client=fake_client, params={})
+        url = '/mgmt/tm/gtm/server/~Common~server1/virtual-servers/vs1'
+        result = params._read_virtual_stats_from_device(url)
+        assert result['status']['availabilityState'] == 'available'

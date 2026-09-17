@@ -11014,6 +11014,8 @@ class GtmServersParameters(BaseParameters):
             raise F5ModuleError(str(ex))
 
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
+            if (resp.status == 404 or response.get('code') == 404) and re.match(r'(.*(\s|(%20))+.*)/stats$', uri.rstrip()):
+                return {}
             raise F5ModuleError(resp.content)
         result = parseStats(response)
         try:
