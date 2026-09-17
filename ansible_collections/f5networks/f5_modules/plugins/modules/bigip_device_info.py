@@ -11014,7 +11014,14 @@ class GtmServersParameters(BaseParameters):
             raise F5ModuleError(str(ex))
 
         if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
-            if (resp.status == 404 or response.get('code') == 404) and re.match(r'(.*(\s|(%20))+.*)/stats$', uri.rstrip()):
+            _r_vs_stats = r'.*/virtual-servers/(.+(\s|(%20)))+.+/stats$'
+            _is404 = (resp.status == 404 or ('code' in response and response['code'] == 404))
+            if _is404 and re.match(_r_vs_stats, uri.rstrip()):
+                if self._module:
+                    self._module.warn(
+                        "Failed to gather Stats for Virtual Server because the name has a space. "
+                        "This is a limitation of the iControl REST API endpoint: {0}".format(uri)
+                    )
                 return {}
             raise F5ModuleError(resp.content)
         result = parseStats(response)
@@ -11217,7 +11224,7 @@ class GtmServersFactManager(BaseManager):
             if not self.module.params['expand_subcollections']:
                 resource['devicesReference'] = self._read_subcollection(resource, 'devicesReference')
                 resource['virtualServersReference'] = self._read_subcollection(resource, 'virtualServersReference')
-            params = GtmServersParameters(client=self.client, params=resource)
+            params = GtmServersParameters(client=self.client, params=resource, module=self.module)
             results.append(params)
         return results
 
