@@ -1,0 +1,5 @@
+---
+bugfixes:
+  - >-
+    bigip_device_info - Ignore 404 responses when querying virtual-server stats
+    for GTM servers whose virtual-server names contain spaces or encoded spaces.
