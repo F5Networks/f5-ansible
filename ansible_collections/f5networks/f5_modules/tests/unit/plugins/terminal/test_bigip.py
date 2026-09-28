@@ -81,6 +81,22 @@ class TestOnOpenShell:
             b'run /util bash -c "stty cols 1000000" 2> /dev/null',
         ]
 
+    def test_tmos_prompt_wrapped_with_embedded_space_and_cr(self):
+        # Line wrap at column 80 inside tmos inserting space and \r
+        prompt = (
+            b'svc_mrchntsc_ntwkaut@(ukdc2b)(pid-6604)(cfg-sync Standalone)'
+            b'(Active)(/Common)(tm \ros)# '
+        )
+        terminal = _make_terminal(prompt)
+
+        terminal.on_open_shell()
+
+        calls = [c.args[0] for c in terminal._exec_cli_command.call_args_list]
+        assert calls == [
+            b'modify cli preference display-threshold 0 pager disabled',
+            b'run /util bash -c "stty cols 1000000" 2> /dev/null',
+        ]
+
     def test_non_tmos_shell_prompt(self):
         prompt = b'[root@bigip1:Active:In Sync] ~ #'
         terminal = _make_terminal(prompt)

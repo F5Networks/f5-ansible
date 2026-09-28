@@ -50,9 +50,9 @@ class TerminalModule(TerminalBase):
 
     def on_open_shell(self):
         prompt = self._get_prompt()
-        # Strip stray CR/LF that long prompts can pick up from terminal line-wrap,
-        # which otherwise breaks tmos-shell detection below.
-        normalized_prompt = re.sub(br'[\r\n]+', b'', prompt) if prompt else prompt
+        # Strip stray whitespace and CR/LF that long prompts can pick up from
+        # terminal line-wrap, which otherwise breaks tmos-shell detection below.
+        normalized_prompt = re.sub(br'[\r\n\s]+', b'', prompt) if prompt else prompt
         if normalized_prompt and b"tmos" in normalized_prompt:
             self._exec_cli_command(b'modify cli preference display-threshold 0 pager disabled')
             self._exec_cli_command(b'run /util bash -c "stty cols 1000000" 2> /dev/null')
