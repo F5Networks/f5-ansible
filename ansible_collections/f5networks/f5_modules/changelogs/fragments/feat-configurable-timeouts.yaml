@@ -1,0 +1,14 @@
+---
+minor_changes:
+    - >-
+        bigip_ucs_fetch - increase ``async_timeout`` parameter maximum from 1800 to
+        3600 seconds to support large-scale UCS backup operations that exceed 30
+        minutes.
+    - >-
+        bigip_ucs_fetch - add configurable ``timeout`` parameter (default 300 seconds)
+        for HTTP read operations during UCS generation, compression, and transfer.
+        Timeout can be overridden via provider settings or task-level parameters.
+    - >-
+        iControl - make HTTP request timeout configurable by passing ``timeout`` from
+        provider dict to iControlRestSession initialization. All modules can now
+        specify timeout via provider.

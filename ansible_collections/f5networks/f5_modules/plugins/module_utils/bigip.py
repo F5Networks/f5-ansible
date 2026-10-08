@@ -46,7 +46,8 @@ class F5RestClient(F5BaseClient):
             'loginProviderName': self.provider['auth_provider'] or 'tmos'
         }
         session = iControlRestSession(
-            validate_certs=self.provider['validate_certs']
+            validate_certs=self.provider['validate_certs'],
+            timeout=self.provider.get('timeout', 120)
         )
 
         response = session.post(
@@ -79,6 +80,7 @@ class F5RestClient(F5BaseClient):
             url_username=self.provider['user'],
             url_password=self.provider['password'],
             validate_certs=self.provider['validate_certs'],
+            timeout=self.provider.get('timeout', 120)
         )
 
         response = session.get(
