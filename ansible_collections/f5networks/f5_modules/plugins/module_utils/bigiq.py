@@ -54,7 +54,8 @@ class F5RestClient(F5BaseClient):
             payload.update(login_ref)
 
         session = iControlRestSession(
-            validate_certs=self.provider['validate_certs']
+            validate_certs=self.provider['validate_certs'],
+            timeout=self.provider.get('timeout', 120)
         )
 
         response = session.post(
@@ -118,8 +119,10 @@ class F5RestClient(F5BaseClient):
         uri = "https://{0}:{1}/info/system".format(
             self.provider['server'], self.provider['server_port']
         )
-        session = iControlRestSession()
-        session.verify = self.provider['validate_certs']
+        session = iControlRestSession(
+            validate_certs=self.provider['validate_certs'],
+            timeout=self.provider.get('timeout', 120)
+        )
 
         resp = session.get(uri)
         try:
@@ -145,7 +148,8 @@ class F5RestClient(F5BaseClient):
         }
 
         session = iControlRestSession(
-            validate_certs=self.provider['validate_certs']
+            validate_certs=self.provider['validate_certs'],
+            timeout=self.provider.get('timeout', 120)
         )
 
         response = session.post(

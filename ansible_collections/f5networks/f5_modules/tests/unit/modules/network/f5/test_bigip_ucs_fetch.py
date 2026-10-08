@@ -73,6 +73,10 @@ class TestParameters(unittest.TestCase):
             p.async_timeout
         assert 'Timeout value must be between 150 and 3600 seconds.' in str(ex.value)
 
+    def test_timeout_accepts_custom_value(self):
+        p = ModuleParameters(params=dict(timeout=600))
+        assert p._values['timeout'] == 600
+
 
 class TestV1Manager(unittest.TestCase):
     def setUp(self):
