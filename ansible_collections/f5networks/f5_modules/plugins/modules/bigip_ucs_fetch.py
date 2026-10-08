@@ -67,7 +67,7 @@ options:
     description:
       - Parameter used when creating new UCS file on a device.
       - The number of seconds to wait for the API async interface to complete its task.
-      - The accepted value range is between C(150) and C(1800) seconds.
+      - The accepted value range is between C(150) and C(3600) seconds.
     type: int
     default: 150
   only_create_file:
@@ -296,9 +296,9 @@ class ModuleParameters(Parameters):
     def async_timeout(self):
         divisor = 100
         timeout = self._values['async_timeout']
-        if timeout < 150 or timeout > 1800:
+        if timeout < 150 or timeout > 3600:
             raise F5ModuleError(
-                "Timeout value must be between 150 and 1800 seconds."
+                "Timeout value must be between 150 and 3600 seconds."
             )
 
         delay = timeout / divisor

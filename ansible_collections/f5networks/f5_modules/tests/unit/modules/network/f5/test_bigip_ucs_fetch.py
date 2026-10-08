@@ -17,8 +17,9 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs_fetch import (
-    Parameters, ModuleManager, V1Manager, ArgumentSpec
+    Parameters, ModuleParameters, ModuleManager, V1Manager, ArgumentSpec
 )
+from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
 from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
 from ansible_collections.f5networks.f5_modules.tests.unit.modules.utils import set_module_args
@@ -59,6 +60,18 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(params=args)
         assert p.backup == 'yes'
+
+    def test_async_timeout_accepts_upper_bound_of_3600(self):
+        p = ModuleParameters(params=dict(async_timeout=3600))
+        delay, period = p.async_timeout
+        assert delay == 36
+        assert period == 100
+
+    def test_async_timeout_rejects_values_above_3600(self):
+        p = ModuleParameters(params=dict(async_timeout=3601))
+        with pytest.raises(F5ModuleError) as ex:
+            p.async_timeout
+        assert 'Timeout value must be between 150 and 3600 seconds.' in str(ex.value)
 
 
 class TestV1Manager(unittest.TestCase):
