@@ -11,7 +11,7 @@ import os
 import re
 import datetime
 
-from ansible.module_utils._text import to_text
+from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.connection import exec_command
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.six import iteritems
