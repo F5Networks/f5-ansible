@@ -16,6 +16,8 @@ description:
     Keys can be imported from key files on the local disk, in PEM format.
     Certificates can be imported from certificate and key files on the local
     disk, in PEM format.
+  - The module supports certificate and key content with any character encoding,
+    including non-UTF-8 encodings (Latin-1, CP1252, etc.) in metadata outside PEM boundaries.
 version_added: "1.6.0"
 options:
   key_content:
@@ -89,6 +91,19 @@ EXAMPLES = r'''
       server: lb.mydomain.com
       user: admin
   delegate_to: localhost
+
+- name: Import certificate with non-UTF-8 encoded metadata (e.g., ca-bundle.crt)
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: ca_bundle_key
+    cert_content: "{{ lookup('file', 'ca-bundle.crt') }}"
+    cert_name: ca_bundle_cert
+    state: present
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -114,10 +129,7 @@ from ..module_utils.icontrol import (
 )
 from ..module_utils.teem import send_teem
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import BytesIO
 
 
 class Parameters(AnsibleF5Parameters):
@@ -202,13 +214,18 @@ class ApiParameters(Parameters):
 class ModuleParameters(Parameters):
     def _get_hash(self, content):
         k = hashlib.sha1()
-        s = StringIO(content)
+        s = BytesIO(self._to_bytes(content))
         while True:
             data = s.read(1024)
             if not data:
                 break
-            k.update(data.encode('utf-8'))
+            k.update(data)
         return k.hexdigest()
+
+    def _to_bytes(self, content):
+        if isinstance(content, bytes):
+            return content
+        return content.encode('utf-8', errors='surrogateescape')
 
     @property
     def issuer_cert(self):
@@ -640,11 +657,11 @@ class ModuleManager(object):
         links_and_params = self._prepare_links_for_create(params)
 
         if self.want.key_name:
-            key_content = StringIO(self.want.key_content)
+            key_content = BytesIO(self.want._to_bytes(self.want.key_content))
             self.upload_file_to_device(key_content, self.want.key_filename + "_key")
 
         if self.want.cert_name:
-            cert_content = StringIO(self.want.cert_content)
+            cert_content = BytesIO(self.want._to_bytes(self.want.cert_content))
             self.upload_file_to_device(cert_content, self.want.cert_filename + "_cert")
 
         with TransactionContextManager(self.client) as transact:
@@ -687,11 +704,11 @@ class ModuleManager(object):
         params = self.changes.api_params()
 
         if self.want.key_name:
-            key_content = StringIO(self.want.key_content)
+            key_content = BytesIO(self.want._to_bytes(self.want.key_content))
             self.upload_file_to_device(key_content, self.want.key_filename)
 
         if self.want.cert_name:
-            cert_content = StringIO(self.want.cert_content)
+            cert_content = BytesIO(self.want._to_bytes(self.want.cert_content))
             self.upload_file_to_device(cert_content, self.want.cert_filename)
 
         links_and_params = self._prepare_links_for_update(params)

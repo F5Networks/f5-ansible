@@ -14,6 +14,8 @@ short_description: Import/Delete SSL keys from BIG-IP
 description:
   - This module imports/deletes SSL keys on a BIG-IP. Keys can be imported
     from key files on the local disk, in PEM format.
+  - The module supports key content with any character encoding, including non-UTF-8
+    encodings (Latin-1, CP1252, etc.) in metadata outside PEM boundaries.
 version_added: "1.0.0"
 options:
   content:
@@ -131,10 +133,7 @@ from ..module_utils.icontrol import (
 )
 from ..module_utils.teem import send_teem
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import BytesIO
 
 
 class Parameters(AnsibleF5Parameters):
@@ -177,13 +176,18 @@ class ApiParameters(Parameters):
 class ModuleParameters(Parameters):
     def _get_hash(self, content):
         k = hashlib.sha1()
-        s = StringIO(content)
+        s = BytesIO(self._to_bytes(content))
         while True:
             data = s.read(1024)
             if not data:
                 break
-            k.update(data.encode('utf-8'))
+            k.update(data)
         return k.hexdigest()
+
+    def _to_bytes(self, content):
+        if isinstance(content, bytes):
+            return content
+        return content.encode('utf-8', errors='surrogateescape')
 
     @property
     def key_filename(self):
@@ -434,7 +438,7 @@ class ModuleManager(object):
             )
 
     def update_on_device(self):
-        content = StringIO(self.want.content)
+        content = BytesIO(self.want._to_bytes(self.want.content))
         self.upload_file_to_device(content, self.want.key_filename)
         params = self.changes.api_params()
         uri = "https://{0}:{1}/mgmt/tm/sys/file/ssl-key/{2}".format(
@@ -455,7 +459,7 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.changes.api_params()
-        content = StringIO(self.want.content)
+        content = BytesIO(self.want._to_bytes(self.want.content))
         self.upload_file_to_device(content, self.want.key_filename)
         params['name'] = self.want.key_filename
         params['partition'] = self.want.partition
