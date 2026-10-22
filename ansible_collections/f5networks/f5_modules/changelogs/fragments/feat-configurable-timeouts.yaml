@@ -5,10 +5,23 @@ minor_changes:
         3600 seconds to support large-scale UCS backup operations that exceed 30
         minutes.
     - >-
-        bigip_ucs_fetch - add configurable ``timeout`` parameter (default 300 seconds)
-        for HTTP read operations during UCS generation, compression, and transfer.
-        Timeout can be overridden via provider settings or task-level parameters.
+        bigip_ucs_fetch - add configurable ``timeout`` parameter for HTTP read operations
+        during UCS generation, compression, and transfer. Defaults to 300 seconds. The
+        BIG-IP token lifetime is the longer of this value and the provider ``timeout``.
+        The provider ``timeout`` and ``F5_TIMEOUT`` do not change the HTTP session timeout for this module.
+    - >-
+        iControl - when BIG-IP returns HTTP 401, log in again with the same provider
+        credentials and retry the request once. Token lifetime is the longer of the
+        session timeout and the provider ``timeout``.
+    - >-
+        all modules - add ``session_timeout`` option to override the HTTP session timeout
+        for a task. Precedence is ``session_timeout``, then the module default timeout, then
+        the provider ``timeout``, then ``F5_TIMEOUT``, then 120 seconds.
     - >-
         iControl - make HTTP request timeout configurable by passing ``timeout`` from
         provider dict to iControlRestSession initialization. All modules can now
-        specify timeout via provider.
+        specify timeout via provider, or via the ``F5_TIMEOUT`` environment variable (must be an integer;
+        a non-integer value raises an error).
+    - >-
+        bigiq - the HTTP session timeout now defaults to 120 seconds when no provider ``timeout`` is set.
+        Previously the session had no timeout.

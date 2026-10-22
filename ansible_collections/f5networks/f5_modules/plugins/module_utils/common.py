@@ -84,6 +84,7 @@ f5_provider_spec = {
 
 f5_argument_spec = {
     'provider': dict(type='dict', options=f5_provider_spec),
+    'session_timeout': dict(type='int'),
 }
 
 
@@ -525,9 +526,10 @@ class F5BaseClient(object):
         if self.validate_params('timeout', provider):
             result['timeout'] = provider['timeout']
         elif self.validate_params('F5_TIMEOUT', os.environ):
-            result['timeout'] = os.environ.get('F5_TIMEOUT')
-        else:
-            result['timeout'] = None
+            try:
+                result['timeout'] = int(os.environ['F5_TIMEOUT'])
+            except ValueError:
+                raise F5ModuleError('The F5_TIMEOUT environment variable must be an integer number of seconds.')
 
     def merge_provider_password_param(self, result, provider):
         if self.validate_params('password', provider):

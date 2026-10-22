@@ -153,6 +153,7 @@ class iControlRestSession(object):
             cookies=cookies
         )
         self.last_url = None
+        self.on_unauthorized = None
 
     def get_headers(self, result):
         try:
@@ -168,6 +169,12 @@ class iControlRestSession(object):
         response.msg = "OK (%s bytes)" % response.headers.get('Content-Length', 'unknown')
 
     def send(self, method, url, **kwargs):
+        response = self._send(method, url, **kwargs)
+        if response.status == 401 and self.on_unauthorized is not None and self.on_unauthorized(self):
+            response = self._send(method, url, **kwargs)
+        return response
+
+    def _send(self, method, url, **kwargs):
         response = Response()
 
         # Set the last_url called

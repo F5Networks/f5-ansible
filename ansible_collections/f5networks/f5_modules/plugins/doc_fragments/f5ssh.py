@@ -10,6 +10,15 @@ class ModuleDocFragment(object):
     # Standard F5 documentation fragment
     DOCUMENTATION = r'''
 options:
+  session_timeout:
+    description:
+      - Overrides the timeout in seconds for HTTP requests to the BIG-IP for this task.
+      - Parameter in effect when C(transport) is set to C(rest).
+      - If not set, the module default timeout is used when the module defines one. Otherwise the provider C(timeout) is used,
+        then the environment variable C(F5_TIMEOUT), then 120 seconds.
+      - The token lifetime is the longer of this value and the provider C(timeout).
+    type: int
+    version_added: "1.43.0"
   provider:
     description:
       - A dict object containing connection details.

@@ -22,6 +22,7 @@ class F5RestClient(F5BaseClient):
     def __init__(self, *args, **kwargs):
         super(F5RestClient, self).__init__(*args, **kwargs)
         self.provider = self.merge_provider_params()
+        self.session_timeout = self.provider.get('timeout') or 120
         self.headers = BASE_HEADERS
         self.access_token = None
         self.refresh_token = None
@@ -55,7 +56,7 @@ class F5RestClient(F5BaseClient):
 
         session = iControlRestSession(
             validate_certs=self.provider['validate_certs'],
-            timeout=self.provider.get('timeout', 120)
+            timeout=self.session_timeout
         )
 
         response = session.post(
@@ -121,7 +122,7 @@ class F5RestClient(F5BaseClient):
         )
         session = iControlRestSession(
             validate_certs=self.provider['validate_certs'],
-            timeout=self.provider.get('timeout', 120)
+            timeout=self.session_timeout
         )
 
         resp = session.get(uri)
@@ -149,7 +150,7 @@ class F5RestClient(F5BaseClient):
 
         session = iControlRestSession(
             validate_certs=self.provider['validate_certs'],
-            timeout=self.provider.get('timeout', 120)
+            timeout=self.session_timeout
         )
 
         response = session.post(

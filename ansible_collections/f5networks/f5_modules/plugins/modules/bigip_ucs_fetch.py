@@ -75,8 +75,10 @@ options:
       - Timeout in seconds for HTTP read operations during UCS generation, compression, and transfer.
       - The accepted value range is between C(10) and C(3600) seconds.
       - This controls the low-level HTTP request/read timeout for synchronous API calls.
+      - If not set, C(300) seconds is used. The provider C(timeout) and C(F5_TIMEOUT) do not change the HTTP session timeout for this module.
+      - The C(session_timeout) option overrides this value for the task.
+      - The BIG-IP token lifetime is the longer of this value and the provider C(timeout).
     type: int
-    default: 300
   only_create_file:
     description:
       - If C(true), the file is created on the device and not downloaded. If the UCS archive exists on the device,
@@ -97,8 +99,8 @@ notes:
      https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
    - Some longer running tasks might cause the REST interface on BIG-IP to time out, to avoid this adjust the timers as
      per this KB article https://support.f5.com/csp/article/K94602685
-   - Provider parameters (C(server), C(server_port), C(user), C(password), C(validate_certs), C(timeout)) are documented
-     in the F5 common documentation fragment and can be used to configure connection settings and HTTP read timeout.
+   - Provider parameters (C(server), C(server_port), C(user), C(password), C(validate_certs)) are documented
+     in the F5 common documentation fragment and can be used to configure connection settings.
 extends_documentation_fragment:
   - f5networks.f5_modules.f5
   - ansible.builtin.files
@@ -335,11 +337,16 @@ class ReportableChanges(Changes):
     pass
 
 
+def get_rest_client(module):
+    timeout = module.params['timeout'] if module.params['timeout'] is not None else 300
+    return F5RestClient(default_timeout=timeout, **module.params)
+
+
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.kwargs = kwargs
         self.module = kwargs.get('module', None)
-        self.client = F5RestClient(**self.module.params)
+        self.client = get_rest_client(self.module)
 
     def exec_module(self):
         if self.is_version_v1():
@@ -374,7 +381,7 @@ class ModuleManager(object):
 class BaseManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
-        self.client = F5RestClient(**self.module.params)
+        self.client = get_rest_client(self.module)
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
 
@@ -735,8 +742,7 @@ class ArgumentSpec(object):
                 default=150
             ),
             timeout=dict(
-                type='int',
-                default=300
+                type='int'
             ),
         )
         self.required_if = [

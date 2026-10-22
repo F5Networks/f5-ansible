@@ -10,6 +10,14 @@ class ModuleDocFragment(object):
     # Standard F5 documentation fragment
     DOCUMENTATION = r'''
 options:
+  session_timeout:
+    description:
+      - Overrides the timeout in seconds for HTTP requests to the BIG-IP or the BIG-IQ for this task.
+      - If not set, the module default timeout is used when the module defines one. Otherwise the provider C(timeout) is used,
+        then the environment variable C(F5_TIMEOUT), then 120 seconds.
+      - The token lifetime is the longer of this value and the provider C(timeout).
+    type: int
+    version_added: "1.43.0"
   provider:
     description:
       - A dict object containing connection details.
@@ -51,9 +59,10 @@ options:
         default: yes
       timeout:
         description:
-          - Specifies the timeout in seconds for communicating with the network device
-            for either connecting or sending commands.  If the timeout is
-            exceeded before the operation is completed, the module will error.
+          - Specifies the timeout in seconds for HTTP requests to the BIG-IP or the BIG-IQ.
+            If the timeout is exceeded before the operation is completed, the module will error.
+          - If set, the value also sets the lifetime of the authentication token on the device.
+          - You may omit this option by setting the environment variable C(F5_TIMEOUT) to an integer number of seconds.
         type: int
       transport:
         description:
