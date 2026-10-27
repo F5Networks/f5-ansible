@@ -17,10 +17,11 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_ucs_fetch import (
-    Parameters, ModuleManager, V1Manager, ArgumentSpec
+    Parameters, ModuleParameters, ModuleManager, V1Manager, ArgumentSpec, get_rest_client
 )
+from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_modules.tests.unit.compat import unittest
-from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import Mock, patch
+from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import MagicMock, Mock, patch
 from ansible_collections.f5networks.f5_modules.tests.unit.modules.utils import set_module_args
 
 
@@ -59,6 +60,22 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(params=args)
         assert p.backup == 'yes'
+
+    def test_async_timeout_accepts_upper_bound_of_3600(self):
+        p = ModuleParameters(params=dict(async_timeout=3600))
+        delay, period = p.async_timeout
+        assert delay == 36
+        assert period == 100
+
+    def test_async_timeout_rejects_values_above_3600(self):
+        p = ModuleParameters(params=dict(async_timeout=3601))
+        with pytest.raises(F5ModuleError) as ex:
+            p.async_timeout
+        assert 'Timeout value must be between 150 and 3600 seconds.' in str(ex.value)
+
+    def test_timeout_accepts_custom_value(self):
+        p = ModuleParameters(params=dict(timeout=600))
+        assert p._values['timeout'] == 600
 
 
 class TestV1Manager(unittest.TestCase):
@@ -120,3 +137,96 @@ class TestV1Manager(unittest.TestCase):
         p2.stop()
 
         assert results['changed'] is True
+
+
+class TestGetRestClient(unittest.TestCase):
+    def setUp(self):
+        self.env = patch.dict(os.environ)
+        self.env.start()
+        os.environ.pop('F5_TIMEOUT', None)
+
+    def tearDown(self):
+        self.env.stop()
+
+    def build_module(self, **kwargs):
+        spec = ArgumentSpec()
+        set_module_args(kwargs)
+        return AnsibleModule(
+            argument_spec=spec.argument_spec,
+            supports_check_mode=spec.supports_check_mode,
+            add_file_common_args=spec.add_file_common_args
+        )
+
+    def provider(self, **kwargs):
+        provider = dict(server='localhost', password='password', user='admin')
+        provider.update(kwargs)
+        return provider
+
+    def test_task_timeout_takes_precedence_over_provider(self):
+        module = self.build_module(provider=self.provider(timeout=60), timeout=900)
+        assert get_rest_client(module).session_timeout == 900
+
+    def test_provider_timeout_ignored_when_task_unset(self):
+        module = self.build_module(provider=self.provider(timeout=60))
+        assert get_rest_client(module).session_timeout == 300
+
+    def test_default_300_when_neither_set(self):
+        module = self.build_module(provider=self.provider())
+        assert get_rest_client(module).session_timeout == 300
+
+    def test_env_timeout_ignored_when_task_unset(self):
+        os.environ['F5_TIMEOUT'] = '600'
+        module = self.build_module(provider=self.provider())
+        assert get_rest_client(module).session_timeout == 300
+
+    def test_task_timeout_takes_precedence_over_env(self):
+        os.environ['F5_TIMEOUT'] = '600'
+        module = self.build_module(provider=self.provider(), timeout=900)
+        assert get_rest_client(module).session_timeout == 900
+
+    def test_timeout_is_passed_to_http_session(self):
+        module = self.build_module(provider=self.provider(), timeout=900)
+        client = get_rest_client(module)
+        with patch('ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip.iControlRestSession') as session_cls:
+            session_cls.return_value.get.return_value = Mock(status=200)
+            client.connect_via_basic_auth()
+        assert session_cls.call_args[1]['timeout'] == 900
+
+    def test_token_lifetime_matches_task_timeout(self):
+        module = self.build_module(provider=self.provider(timeout=60), timeout=900)
+        client = get_rest_client(module)
+        with patch('ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip.iControlRestSession') as session_cls:
+            session = session_cls.return_value
+            session.request = MagicMock()
+            session.post.return_value = Mock(status=200, json=Mock(return_value={'token': {'token': 'abc'}}))
+            session.patch.return_value = Mock(status=200)
+            client.connect_via_token_auth()
+        assert session.patch.call_args[1]['json']['timeout'] == 900
+
+    def test_token_lifetime_defaults_to_300_when_task_unset(self):
+        module = self.build_module(provider=self.provider(timeout=60))
+        client = get_rest_client(module)
+        with patch('ansible_collections.f5networks.f5_modules.plugins.module_utils.bigip.iControlRestSession') as session_cls:
+            session = session_cls.return_value
+            session.post.return_value = Mock(status=200, json=Mock(return_value={'token': {'token': 'abc'}}))
+            session.patch.return_value = Mock(status=200)
+            client.connect_via_token_auth()
+        assert session.patch.call_args[1]['json']['timeout'] == 300
+
+    def test_session_timeout_takes_precedence_over_module_timeout(self):
+        module = self.build_module(provider=self.provider(), timeout=600, session_timeout=900)
+        assert get_rest_client(module).session_timeout == 900
+
+    def test_session_timeout_used_when_module_timeout_unset(self):
+        module = self.build_module(provider=self.provider(), session_timeout=900)
+        assert get_rest_client(module).session_timeout == 900
+
+    def test_session_timeout_takes_precedence_over_provider(self):
+        module = self.build_module(provider=self.provider(timeout=60), session_timeout=900)
+        assert get_rest_client(module).session_timeout == 900
+
+    def test_token_lifetime_is_longer_of_session_timeout_and_provider(self):
+        module = self.build_module(provider=self.provider(timeout=600), session_timeout=100)
+        client = get_rest_client(module)
+        assert client.session_timeout == 100
+        assert client.token_timeout == 600

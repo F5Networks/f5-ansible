@@ -67,9 +67,18 @@ options:
     description:
       - Parameter used when creating new UCS file on a device.
       - The number of seconds to wait for the API async interface to complete its task.
-      - The accepted value range is between C(150) and C(1800) seconds.
+      - The accepted value range is between C(150) and C(3600) seconds.
     type: int
     default: 150
+  timeout:
+    description:
+      - Timeout in seconds for HTTP read operations during UCS generation, compression, and transfer.
+      - The accepted value range is between C(10) and C(3600) seconds.
+      - This controls the low-level HTTP request/read timeout for synchronous API calls.
+      - If not set, C(300) seconds is used. The provider C(timeout) and C(F5_TIMEOUT) do not change the HTTP session timeout for this module.
+      - The C(session_timeout) option overrides this value for the task.
+      - The BIG-IP token lifetime is the longer of this value and the provider C(timeout).
+    type: int
   only_create_file:
     description:
       - If C(true), the file is created on the device and not downloaded. If the UCS archive exists on the device,
@@ -80,16 +89,18 @@ options:
     default: false
     version_added: "1.12.0"
 notes:
-  - BIG-IP provides no way to get a checksum of the UCS files on the system
-    via any interface with the possible exception of logging in directly to the box (which
-    would not support appliance mode). Therefore, the best this module can
-    do is check for the existence of the file on disk; no check-summing.
-  - If you are using this module with either Ansible Tower or Ansible AWX, you
-    should be aware of how these Ansible products execute jobs in restricted
-    environments. More information can be found here
-    https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
-  - Some longer running tasks might cause the REST interface on BIG-IP to time out, to avoid this adjust the timers as
-    per this KB article https://support.f5.com/csp/article/K94602685
+   - BIG-IP provides no way to get a checksum of the UCS files on the system
+     via any interface with the possible exception of logging in directly to the box (which
+     would not support appliance mode). Therefore, the best this module can
+     do is check for the existence of the file on disk; no check-summing.
+   - If you are using this module with either Ansible Tower or Ansible AWX, you
+     should be aware of how these Ansible products execute jobs in restricted
+     environments. More information can be found here
+     https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
+   - Some longer running tasks might cause the REST interface on BIG-IP to time out, to avoid this adjust the timers as
+     per this KB article https://support.f5.com/csp/article/K94602685
+   - Provider parameters (C(server), C(server_port), C(user), C(password), C(validate_certs)) are documented
+     in the F5 common documentation fragment and can be used to configure connection settings.
 extends_documentation_fragment:
   - f5networks.f5_modules.f5
   - ansible.builtin.files
@@ -296,9 +307,9 @@ class ModuleParameters(Parameters):
     def async_timeout(self):
         divisor = 100
         timeout = self._values['async_timeout']
-        if timeout < 150 or timeout > 1800:
+        if timeout < 150 or timeout > 3600:
             raise F5ModuleError(
-                "Timeout value must be between 150 and 1800 seconds."
+                "Timeout value must be between 150 and 3600 seconds."
             )
 
         delay = timeout / divisor
@@ -326,11 +337,16 @@ class ReportableChanges(Changes):
     pass
 
 
+def get_rest_client(module):
+    timeout = module.params['timeout'] if module.params['timeout'] is not None else 300
+    return F5RestClient(default_timeout=timeout, **module.params)
+
+
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.kwargs = kwargs
         self.module = kwargs.get('module', None)
-        self.client = F5RestClient(**self.module.params)
+        self.client = get_rest_client(self.module)
 
     def exec_module(self):
         if self.is_version_v1():
@@ -365,7 +381,7 @@ class ModuleManager(object):
 class BaseManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
-        self.client = F5RestClient(**self.module.params)
+        self.client = get_rest_client(self.module)
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
 
@@ -724,6 +740,9 @@ class ArgumentSpec(object):
             async_timeout=dict(
                 type='int',
                 default=150
+            ),
+            timeout=dict(
+                type='int'
             ),
         )
         self.required_if = [

@@ -6,6 +6,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+import os
 import sys
 
 import pytest
@@ -13,7 +14,10 @@ import pytest
 if sys.version_info < (2, 7):
     pytestmark = pytest.mark.skip("F5 Ansible modules require Python >= 2.7")
 
-from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import is_valid_fqdn
+from ansible_collections.f5networks.f5_modules.plugins.module_utils.common import (
+    F5BaseClient, F5ModuleError, is_valid_fqdn
+)
+from ansible_collections.f5networks.f5_modules.tests.unit.compat.mock import patch
 
 
 class TestIsValidFqdn:
@@ -66,3 +70,36 @@ class TestIsValidFqdn:
 
     def test_invalid_characters(self):
         assert is_valid_fqdn("host!name.example.com") is False
+
+
+class TestMergeProviderTimeoutParam:
+    def merge(self, provider=None):
+        result = dict()
+        F5BaseClient().merge_provider_timeout_param(result, provider or {})
+        return result
+
+    def test_provider_timeout_is_used(self):
+        with patch.dict(os.environ):
+            os.environ.pop('F5_TIMEOUT', None)
+            assert self.merge({'timeout': 30}) == {'timeout': 30}
+
+    def test_env_timeout_is_converted_to_int(self):
+        with patch.dict(os.environ, {'F5_TIMEOUT': '600'}):
+            result = self.merge()
+        assert result == {'timeout': 600}
+        assert isinstance(result['timeout'], int)
+
+    def test_provider_timeout_wins_over_env(self):
+        with patch.dict(os.environ, {'F5_TIMEOUT': '600'}):
+            assert self.merge({'timeout': 30}) == {'timeout': 30}
+
+    def test_invalid_env_timeout_raises(self):
+        with patch.dict(os.environ, {'F5_TIMEOUT': 'abc'}):
+            with pytest.raises(F5ModuleError) as ex:
+                self.merge()
+        assert 'F5_TIMEOUT' in str(ex.value)
+
+    def test_no_timeout_leaves_result_empty(self):
+        with patch.dict(os.environ):
+            os.environ.pop('F5_TIMEOUT', None)
+            assert self.merge() == {}
