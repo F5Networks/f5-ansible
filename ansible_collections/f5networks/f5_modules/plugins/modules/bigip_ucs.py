@@ -192,7 +192,6 @@ else:
 from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib
 )
-from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -276,7 +275,7 @@ class ModuleParameters(Parameters):
         cmd = 'tmsh load sys ucs /var/local/ucs/{0}'.format(self.basename)
         # Append any options that might be specified
         options = OrderedDict(sorted(self.options.items(), key=lambda t: t[0]))
-        for k, v in iteritems(options):
+        for k, v in options.items():
             if v is False or v is None:
                 continue
             elif k == 'passphrase':

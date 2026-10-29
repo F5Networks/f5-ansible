@@ -15,7 +15,6 @@ if sys.version_info < (2, 7):
     pytestmark = pytest.mark.skip("F5 Ansible modules require Python >= 2.7")
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_device_info import (
     Parameters, VirtualAddressesFactManager, LtmPoolsFactManager,
@@ -52,7 +51,7 @@ def load_fixture(name):
 class FakeVirtualAddress:
     def __init__(self, *args, **kwargs):
         attrs = kwargs.pop('params', {})
-        for key, value in iteritems(attrs):
+        for key, value in attrs.items():
             setattr(self, key, value)
 
 

@@ -146,7 +146,6 @@ remote_access:
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -265,7 +264,7 @@ class ReportableChanges(Changes):
     def assigned_role(self):
         if self._values['assigned_role'] is None:
             return None
-        rmap = dict((v, k) for k, v in iteritems(self.role_map))
+        rmap = dict((v, k) for k, v in self.role_map.items())
         return rmap.get(self._values['assigned_role'], self._values['assigned_role'])
 
     @property

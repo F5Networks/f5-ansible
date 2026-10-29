@@ -276,7 +276,6 @@ import os
 import re
 from datetime import datetime
 
-from ansible.module_utils.six import iteritems
 from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
@@ -885,10 +884,10 @@ class Difference(object):
         h = []
 
         for x in want:
-            tmp = tuple((str(k), str(v)) for k, v in iteritems(x))
+            tmp = tuple((str(k), str(v)) for k, v in x.items())
             w.append(tmp)
         for x in have:
-            tmp = tuple((str(k), str(v)) for k, v in iteritems(x))
+            tmp = tuple((str(k), str(v)) for k, v in x.items())
             h.append(tmp)
 
         if set(w) == set(h):

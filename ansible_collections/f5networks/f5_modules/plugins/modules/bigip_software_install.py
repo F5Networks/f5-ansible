@@ -102,8 +102,8 @@ RETURN = r'''
 import time
 import ssl
 from datetime import datetime
+from urllib.error import URLError
 
-from ansible.module_utils.six.moves.urllib.error import URLError
 from ansible.module_utils.urls import urlparse
 from ansible.module_utils.basic import AnsibleModule
 

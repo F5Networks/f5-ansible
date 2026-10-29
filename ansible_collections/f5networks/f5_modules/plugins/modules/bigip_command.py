@@ -222,7 +222,6 @@ import time
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import string_types
 
 try:
     from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.parsing import Conditional
@@ -303,7 +302,7 @@ class Parameters(AnsibleF5Parameters):
     def raw_commands(self):
         if self._values['commands'] is None:
             return []
-        if isinstance(self._values['commands'], string_types):
+        if isinstance(self._values['commands'], str):
             result = [self._values['commands']]
         else:
             result = self._values['commands']
@@ -450,7 +449,7 @@ class BaseManager(object):
     def _to_lines(self, stdout):
         lines = list()
         for item in stdout:
-            if isinstance(item, string_types):
+            if isinstance(item, str):
                 item = item.split('\n')
             lines.append(item)
         return lines

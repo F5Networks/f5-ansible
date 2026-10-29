@@ -122,7 +122,6 @@ allowed_addresses:
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import string_types
 
 from ipaddress import ip_network
 
@@ -188,7 +187,7 @@ class ModuleParameters(Parameters):
             return None
         result = []
         addresses = self._values['allowed_addresses']
-        if isinstance(addresses, string_types):
+        if isinstance(addresses, str):
             if addresses in ['', 'none']:
                 return []
             else:

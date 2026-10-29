@@ -121,7 +121,6 @@ import xml.etree.ElementTree
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -168,7 +167,7 @@ class LicenseXmlParser(object):
         if len(root) == 0:
             return None
         for elem in root:
-            for k, v in iteritems(elem.attrib):
+            for k, v in elem.attrib.items():
                 if value in v:
                     return elem
 

@@ -839,10 +839,6 @@ from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib
 )
 
-from ansible.module_utils.six import (
-    iteritems, string_types
-)
-
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, f5_argument_spec, flatten_boolean, transform_name
@@ -925,7 +921,7 @@ class BaseManager(object):
 class Parameters(AnsibleF5Parameters):
     @property
     def gather_subset(self):
-        if isinstance(self._values['gather_subset'], string_types):
+        if isinstance(self._values['gather_subset'], str):
             self._values['gather_subset'] = [self._values['gather_subset']]
         elif not isinstance(self._values['gather_subset'], list):
             raise F5ModuleError(
@@ -1633,13 +1629,13 @@ class SystemInfoParameters(BaseParameters):
         if self._values['hardware-version'] is None:
             return None
         self._transform_name_attribute(self._values['hardware-version'])
-        result = [v for k, v in iteritems(self._values['hardware-version'])]
+        result = [v for k, v in self._values['hardware-version'].items()]
         return result
 
     def _transform_name_attribute(self, entry):
         if isinstance(entry, dict):
             tmp = copy.deepcopy(entry)
-            for k, v in iteritems(tmp):
+            for k, v in tmp.items():
                 if k == 'tmName':
                     entry['name'] = entry.pop('tmName')
                 self._transform_name_attribute(v)
@@ -2315,7 +2311,7 @@ def main():
 
         ansible_facts = dict()
 
-        for key, value in iteritems(results):
+        for key, value in results.items():
             key = 'ansible_net_%s' % key
             ansible_facts[key] = value
 

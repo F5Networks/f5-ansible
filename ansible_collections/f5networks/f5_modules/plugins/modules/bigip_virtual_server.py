@@ -956,7 +956,6 @@ else:
 from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib, env_fallback
 )
-from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -1677,7 +1676,7 @@ class ApiParameters(Parameters):
 
     @property
     def profile_types(self):
-        return [x['name'] for x in iteritems(self.profiles)]
+        return [x['name'] for x in self.profiles.items()]
 
     @property
     def policies(self):
@@ -2249,7 +2248,7 @@ class ModuleParameters(Parameters):
             return []
         result = []
         try:
-            for k, v in iteritems(self._values['metadata']):
+            for k, v in self._values['metadata'].items():
                 tmp = dict(name=str(k))
                 if v:
                     tmp['value'] = str(v)
@@ -3177,7 +3176,7 @@ class Difference(object):
     def to_tuple(self, items):
         result = []
         for x in items:
-            tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+            tmp = [(str(k), str(v)) for k, v in x.items()]
             result += tmp
         return result
 

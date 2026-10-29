@@ -175,7 +175,6 @@ from datetime import datetime
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -518,7 +517,7 @@ class ModuleParameters(Parameters):
 
                 negate = self._flatten_negate(member)
 
-            for key, value in iteritems(member):
+            for key, value in member.items():
                 if negate:
                     output = self._change_value(key, value)
                     item = "{0} {1} {2}".format(negate, output[0], output[1])

@@ -257,7 +257,6 @@ from datetime import datetime
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -348,7 +347,7 @@ class Parameters(AnsibleF5Parameters):
     def normalize_variables(self, variables):
         result = []
         for variable in variables:
-            tmp = dict((str(k), str(v)) for k, v in iteritems(variable))
+            tmp = dict((str(k), str(v)) for k, v in variable.items())
             if 'encrypted' not in tmp:
                 # BIG-IP will inject an 'encrypted' key if you don't provide one.
                 # If you don't provide one, then we give you the default 'no', by
@@ -387,7 +386,7 @@ class Parameters(AnsibleF5Parameters):
     def normalize_list(self, lists):
         result = []
         for list in lists:
-            tmp = dict((str(k), str(v)) for k, v in iteritems(list) if k != 'value')
+            tmp = dict((str(k), str(v)) for k, v in list.items() if k != 'value')
             if 'encrypted' not in list:
                 # BIG-IP will inject an 'encrypted' key if you don't provide one.
                 # If you don't provide one, then we give you the default 'no', by
@@ -650,8 +649,8 @@ class Difference(object):
             return None
         if self.have.metadata is None:
             return self.want.metadata
-        want = [(k, v) for d in self.want.metadata for k, v in iteritems(d)]
-        have = [(k, v) for d in self.have.metadata for k, v in iteritems(d)]
+        want = [(k, v) for d in self.want.metadata for k, v in d.items()]
+        have = [(k, v) for d in self.have.metadata for k, v in d.items()]
         if set(want) != set(have):
             return dict(
                 metadata=self.want.metadata

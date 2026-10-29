@@ -7655,9 +7655,6 @@ from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib, env_fallback
 )
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
-from ansible.module_utils.six import (
-    iteritems, string_types
-)
 from ansible.module_utils.urls import urlparse
 
 from ipaddress import ip_interface
@@ -7728,7 +7725,7 @@ class BaseManager(object):
 class Parameters(AnsibleF5Parameters):
     @property
     def gather_subset(self):
-        if isinstance(self._values['gather_subset'], string_types):
+        if isinstance(self._values['gather_subset'], str):
             self._values['gather_subset'] = [self._values['gather_subset']]
         elif not isinstance(self._values['gather_subset'], list):
             raise F5ModuleError(
@@ -8156,7 +8153,7 @@ class AsmPolicyFactParameters(BaseParameters):
     ]
 
     def _morph_keys(self, key_map, item):
-        for k, v in iteritems(key_map):
+        for k, v in key_map.items():
             item[v] = item.pop(k, None)
         result = self._filter_params(item)
         return result
@@ -9548,7 +9545,7 @@ class ExternalMonitorsParameters(BaseParameters):
         if self._values['variables'] is None:
             return None
         result = {}
-        for k, v in iteritems(self._values['variables']):
+        for k, v in self._values['variables'].items():
             k = k.replace('userDefined ', '').strip()
             result[k] = v
         return result
@@ -13487,7 +13484,7 @@ class LtmPoolsParameters(BaseParameters):
             else:
                 member['state'] = 'disabled'
             self._remove_internal_keywords(member)
-            member = dict([(k, v) for k, v in iteritems(member) if v is not None])
+            member = dict([(k, v) for k, v in member.items() if v is not None])
             result.append(member)
         return result
 
@@ -13843,7 +13840,7 @@ class LtmPolicyParameters(BaseParameters):
             return result
         exclude_keys = ["poolReference", "name"]
         for action in actions['items']:
-            tmp = dict((k, v) for k, v in iteritems(action) if v != 0 and k not in exclude_keys)
+            tmp = dict((k, v) for k, v in action.items() if v != 0 and k not in exclude_keys)
             self._remove_internal_keywords(tmp)
             result.append(self._filter_params(tmp))
         return result
@@ -15728,7 +15725,7 @@ class SystemInfoParameters(BaseParameters):
         if self._values['hardware-version'] is None:
             return None
         self._transform_name_attribute(self._values['hardware-version'])
-        result = [v for k, v in iteritems(self._values['hardware-version'])]
+        result = [v for k, v in self._values['hardware-version'].items()]
         return result
 
     def _transform_name_attribute(self, entry):
@@ -18750,7 +18747,7 @@ class RemoteSyslogParameters(BaseParameters):
     ]
 
     def _morph_keys(self, key_map, item):
-        for k, v in iteritems(key_map):
+        for k, v in key_map.items():
             item[v] = item.pop(k, None)
         result = self._filter_params(item)
         return result
@@ -19263,7 +19260,7 @@ def main():
 
         ansible_facts = dict()
 
-        for key, value in iteritems(results):
+        for key, value in results.items():
             key = 'ansible_net_%s' % key
             ansible_facts[key] = value
 

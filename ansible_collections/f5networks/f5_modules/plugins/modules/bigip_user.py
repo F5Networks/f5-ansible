@@ -225,8 +225,7 @@ except ImportError:
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback, missing_required_lib
 )
-from ansible.module_utils.six import string_types
-from ansible.module_utils._text import to_bytes
+from ansible.module_utils.common.text.converters import to_bytes
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -330,7 +329,7 @@ class ModuleParameters(Parameters):
         result = []
         part_access = self._values['partition_access']
         for access in part_access:
-            if isinstance(access, string_types):
+            if isinstance(access, str):
                 acl = access.split(':')
                 if acl[0].lower() == 'all':
                     acl[0] = 'all-partitions'

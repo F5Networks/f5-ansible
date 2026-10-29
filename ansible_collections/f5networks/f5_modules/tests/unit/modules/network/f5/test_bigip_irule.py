@@ -15,7 +15,6 @@ if sys.version_info < (2, 7):
     pytestmark = pytest.mark.skip("F5 Ansible modules require Python >= 2.7")
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import PY3
 
 from ansible_collections.f5networks.f5_modules.plugins.modules.bigip_irule import (
     Parameters, ModuleManager, ArgumentSpec, GtmManager, LtmManager
@@ -207,12 +206,7 @@ class TestManager(unittest.TestCase):
             mutually_exclusive=self.spec.mutually_exclusive,
         )
 
-        if PY3:
-            builtins_name = 'builtins'
-        else:
-            builtins_name = '__builtin__'
-
-        with patch(builtins_name + '.open', mock_open(read_data='this is my content'), create=True):
+        with patch('builtins.open', mock_open(read_data='this is my content'), create=True):
             # Override methods in the specific type of manager
             tm = GtmManager(module=module, params=module.params)
             tm.exists = Mock(side_effect=[False, True])

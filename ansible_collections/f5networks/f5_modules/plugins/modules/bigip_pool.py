@@ -598,7 +598,6 @@ from ansible.module_utils.urls import urlparse
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from ansible.module_utils.six import iteritems
 
 try:
     from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import remove_default_spec
@@ -844,7 +843,7 @@ class ModuleParameters(Parameters):
             return []
         result = []
         try:
-            for k, v in iteritems(self._values['metadata']):
+            for k, v in self._values['metadata'].items():
                 tmp = dict(name=str(k))
                 if v:
                     tmp['value'] = str(v)
@@ -938,7 +937,7 @@ class Difference(object):
     def to_tuple(self, items):
         result = []
         for x in items:
-            tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+            tmp = [(str(k), str(v)) for k, v in x.items()]
             result += tmp
         return result
 
@@ -1102,7 +1101,7 @@ class ModuleManager(object):
         aggregate = defaults.pop('aggregate')
 
         for i, j in enumerate(aggregate):
-            for k, v in iteritems(defaults):
+            for k, v in defaults.items():
                 if k != 'replace_all_with':
                     if j.get(k, None) is None and v is not None:
                         aggregate[i][k] = v

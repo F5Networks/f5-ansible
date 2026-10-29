@@ -86,7 +86,7 @@ print(resp.json())
 ```
 """
 
-from ansible.module_utils.six.moves.urllib.error import HTTPError
+from urllib.error import HTTPError
 
 from .constants import (
     LOGOUT, BASE_HEADERS
