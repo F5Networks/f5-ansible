@@ -19,11 +19,9 @@ from datetime import datetime
 from ssl import SSLError
 from http.client import RemoteDisconnected
 from time import time
+from urllib.error import HTTPError, URLError
 
 from ansible.module_utils.urls import open_url
-from ansible.module_utils.six.moves.urllib.error import (
-    HTTPError, URLError
-)
 
 from .constants import (
     TEEM_ENDPOINT, TEEM_KEY, TEEM_TIMEOUT, TEEM_VERIFY, BASE_HEADERS, PLATFORM, CICD_ENV

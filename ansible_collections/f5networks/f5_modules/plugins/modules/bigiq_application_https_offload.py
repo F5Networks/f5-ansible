@@ -271,7 +271,6 @@ else:
 from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib
 )
-from ansible.module_utils.six import string_types
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -632,7 +631,7 @@ class UsableChanges(Changes):
             return None
 
         kc = self.client_ssl_profile['cert_key_chain']
-        if isinstance(kc, string_types) and kc != 'inherit':
+        if isinstance(kc, str) and kc != 'inherit':
             raise F5ModuleError(
                 "Only the 'inherit' setting is available when 'cert_key_chain' is a string."
             )

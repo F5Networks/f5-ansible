@@ -226,7 +226,6 @@ protocol_name:
 '''
 from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import string_types
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -335,7 +334,7 @@ class TacacsModuleParameters(TacacsParameters):
                     )
                 address = server.get('address')
                 port = server.get('port', None)
-            elif isinstance(server, string_types):
+            elif isinstance(server, str):
                 address = server
                 port = None
             if port is None:

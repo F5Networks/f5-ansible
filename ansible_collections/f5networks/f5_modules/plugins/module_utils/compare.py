@@ -6,8 +6,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-from ansible.module_utils.six import iteritems
-
 
 def cmp_simple_list(want, have):
     if want is None:
@@ -51,10 +49,10 @@ def compare_complex_list(want, have):
     w = []
     h = []
     for x in want:
-        tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+        tmp = [(str(k), str(v)) for k, v in x.items()]
         w += tmp
     for x in have:
-        tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+        tmp = [(str(k), str(v)) for k, v in x.items()]
         h += tmp
     if set(w) == set(h):
         return None
@@ -76,8 +74,8 @@ def compare_dictionary(want, have):
         return None
     if want is None:
         return None
-    w = [(str(k), str(v)) for k, v in iteritems(want)]
-    h = [(str(k), str(v)) for k, v in iteritems(have)]
+    w = [(str(k), str(v)) for k, v in want.items()]
+    h = [(str(k), str(v)) for k, v in have.items()]
     if set(w) == set(h):
         return None
     else:

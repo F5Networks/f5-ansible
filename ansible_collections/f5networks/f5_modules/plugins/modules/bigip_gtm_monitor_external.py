@@ -162,7 +162,6 @@ from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-from ansible.module_utils.six import iteritems
 
 
 from ..module_utils.bigip import F5RestClient
@@ -277,7 +276,7 @@ class ApiParameters(Parameters):
             return None
         pattern = r'^userDefined\s(?P<key>.*)'
         result = {}
-        for k, v in iteritems(self._values['variables']):
+        for k, v in self._values['variables'].items():
             matches = re.match(pattern, k)
             if not matches:
                 raise F5ModuleError(
@@ -294,7 +293,7 @@ class ModuleParameters(Parameters):
         if self._values['variables'] is None:
             return None
         result = {}
-        for k, v in iteritems(self._values['variables']):
+        for k, v in self._values['variables'].items():
             result[k] = str(v).replace('"', '')
         return result
 
@@ -404,12 +403,12 @@ class Difference(object):
         if not different:
             return None
 
-        for k, v in iteritems(self.want.variables):
+        for k, v in self.want.variables.items():
             if k in self.have.variables and v != self.have.variables[k]:
                 result[k] = v
             elif k not in self.have.variables:
                 result[k] = v
-        for k, v in iteritems(self.have.variables):
+        for k, v in self.have.variables.items():
             if k not in self.want.variables:
                 result[k] = "none"
         if result:
@@ -629,7 +628,7 @@ class ModuleManager(object):
         raise F5ModuleError(response.content)
 
     def set_variable_on_device(self, commands):
-        command = ' '.join(['user-defined {0} \\\"{1}\\\"'.format(k, v) for k, v in iteritems(commands)])
+        command = ' '.join(['user-defined {0} \\\"{1}\\\"'.format(k, v) for k, v in commands.items()])
         command = 'tmsh modify gtm monitor external {0} {1}'.format(self.want.name, command)
         uri = "https://{0}:{1}/mgmt/tm/util/bash".format(
             self.client.provider['server'],

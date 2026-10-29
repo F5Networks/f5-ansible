@@ -224,7 +224,6 @@ from datetime import datetime
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
-from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -717,7 +716,7 @@ class ModuleParameters(Parameters):
 
     def _format_options(self, options):
         negate = None
-        cleaned = dict((k, v) for k, v in iteritems(options) if v is not None)
+        cleaned = dict((k, v) for k, v in options.items() if v is not None)
         if 'country' in cleaned.keys() and 'state' in cleaned.keys():
             del cleaned['country']
         if 'negate' in cleaned.keys():

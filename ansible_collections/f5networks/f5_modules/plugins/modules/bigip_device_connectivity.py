@@ -158,7 +158,6 @@ cluster_mirroring:
 '''
 from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -433,7 +432,7 @@ class Difference(object):
     def to_tuple(self, failovers):
         result = []
         for x in failovers:
-            for k, v in iteritems(x):
+            for k, v in x.items():
                 # Have to do this in cases where the BIG-IP stores the word
                 # "management-ip" when you specify the management IP address.
                 #

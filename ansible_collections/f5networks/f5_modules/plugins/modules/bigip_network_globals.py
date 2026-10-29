@@ -421,7 +421,6 @@ self_allow:
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import string_types
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -1091,7 +1090,7 @@ class ReportableChanges(Changes):
 
     def _get_all_value(self):
         items = self._values['self_allow'].get('defaults')
-        if isinstance(items, string_types):
+        if isinstance(items, str):
             if items == 'none':
                 return 'no'
             if items == 'all':
@@ -1136,7 +1135,7 @@ class Difference(object):
         if self.want.self_allow_defaults == 'none' and self.have.self_allow_defaults is None:
             return None
         if self.want.self_allow_defaults in ['all', 'none']:
-            if isinstance(self.have.self_allow_defaults, string_types):
+            if isinstance(self.have.self_allow_defaults, str):
                 if self.want.self_allow_defaults != self.have.self_allow_defaults:
                     return self.want.self_allow_defaults
                 else:

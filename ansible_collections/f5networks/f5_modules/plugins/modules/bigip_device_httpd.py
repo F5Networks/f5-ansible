@@ -254,7 +254,6 @@ from datetime import datetime
 
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import string_types
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -399,7 +398,7 @@ class ModuleParameters(Parameters):
     def ssl_cipher_suite(self):
         if self._values['ssl_cipher_suite'] is None:
             return None
-        if isinstance(self._values['ssl_cipher_suite'], string_types):
+        if isinstance(self._values['ssl_cipher_suite'], str):
             ciphers = self._values['ssl_cipher_suite'].strip()
         else:
             ciphers = self._values['ssl_cipher_suite']
@@ -409,7 +408,7 @@ class ModuleParameters(Parameters):
             )
         if ciphers == 'default':
             ciphers = ':'.join(Parameters._ciphers.split(':'))
-        elif isinstance(self._values['ssl_cipher_suite'], string_types):
+        elif isinstance(self._values['ssl_cipher_suite'], str):
             ciphers = ':'.join(ciphers.split(':'))
         else:
             ciphers = ':'.join(ciphers)
@@ -419,7 +418,7 @@ class ModuleParameters(Parameters):
     def ssl_protocols(self):
         if self._values['ssl_protocols'] is None:
             return None
-        if isinstance(self._values['ssl_protocols'], string_types):
+        if isinstance(self._values['ssl_protocols'], str):
             protocols = self._values['ssl_protocols'].strip()
         else:
             protocols = self._values['ssl_protocols']
@@ -429,7 +428,7 @@ class ModuleParameters(Parameters):
             )
         if protocols == 'default':
             protocols = ' '.join(Parameters._protocols.split(' '))
-        elif isinstance(protocols, string_types):
+        elif isinstance(protocols, str):
             protocols = ' '.join(protocols.split(' '))
         else:
             protocols = ' '.join(protocols)

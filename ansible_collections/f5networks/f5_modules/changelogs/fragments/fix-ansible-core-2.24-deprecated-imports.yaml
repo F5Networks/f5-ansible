@@ -1,0 +1,9 @@
+---
+minor_changes:
+    - >-
+        all modules, module_utils and plugins - stop importing ``ansible.module_utils.six``,
+        ``ansible.module_utils._text`` and ``ansible.module_utils.common._collections_compat``,
+        which are deprecated in ansible-core 2.21 and removed in ansible-core 2.24. The collection
+        now uses the Python standard library and ``ansible.module_utils.common.text.converters``
+        instead, which removes the related deprecation warnings and keeps the collection working
+        on ansible-core 2.24.

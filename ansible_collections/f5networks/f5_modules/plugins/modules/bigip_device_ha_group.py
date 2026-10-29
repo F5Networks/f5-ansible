@@ -277,7 +277,6 @@ else:
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback, missing_required_lib
 )
-from ansible.module_utils.six import iteritems
 
 from ..module_utils.bigip import F5RestClient
 from ..module_utils.common import (
@@ -503,7 +502,7 @@ class Difference(object):
     def to_tuple(self, items):
         result = []
         for x in items:
-            tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+            tmp = [(str(k), str(v)) for k, v in x.items()]
             result += tmp
         return result
 
