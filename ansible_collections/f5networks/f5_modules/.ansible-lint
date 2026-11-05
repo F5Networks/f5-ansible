@@ -1,3 +1,5 @@
 ---
 exclude_paths:
   - .ansible/
+warn_list:
+  - no-log-password
