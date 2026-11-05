@@ -7,40 +7,39 @@ This collection provides imperative Ansible modules and plugins for managing F5 
 ## Requirements
 
 - Ansible >= 2.16
-Python >= 3.10 on the Control Node
-- packaging (Python library)
-
+- Python >= 3.10 on the Control Node
+- Python libraries (also listed in `requirements.txt`):
+  - `cryptography`
+  - `objectpath`
+  - `packaging`
 
 ## Installation
 
-Before using this collection, install it with the Ansible Galaxy command-line tool:
+This collection is distributed as Red Hat Ansible Certified Content through [Red Hat Ansible Automation Hub](https://console.redhat.com/ansible/automation-hub).
+
+Configure `ansible.cfg` with your Automation Hub server and API token. Retrieve the token from the [Automation Hub token page](https://console.redhat.com/ansible/automation-hub/token):
+
+```ini
+[galaxy]
+server_list = automation_hub
+
+[galaxy_server.automation_hub]
+url=https://console.redhat.com/api/automation-hub/content/published/
+auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+token=<your_api_token>
+```
+
+Install the collection with the Ansible Galaxy command-line tool:
 
 ```
 ansible-galaxy collection install f5networks.f5_modules
 ```
 
-To specify the installation location, use the `-p` option. For example:
-
-```
-ansible-galaxy collection install f5networks.f5_modules -p ./collections
-```
-
-If you specify a folder, make sure to update your `ansible.cfg` so Ansible will check this folder as well. For example, add:
-
-```
-collections_paths = ./collections
-```
-to your `ansible.cfg`.
-
-You can also include it in a `requirements.yml` file and install with:
+You can also include it in a `requirements.yml` file and install with `ansible-galaxy collection install -r requirements.yml`:
 
 ```yaml
 collections:
   - name: f5networks.f5_modules
-```
-
-```
-ansible-galaxy collection install -r requirements.yml
 ```
 
 To upgrade to the latest version:
@@ -53,6 +52,12 @@ To install a specific version (e.g., 1.0.0):
 
 ```
 ansible-galaxy collection install f5networks.f5_modules:==1.0.0
+```
+
+Install the Python library dependencies on the control node:
+
+```
+pip install -r ~/.ansible/collections/ansible_collections/f5networks/f5_modules/requirements.txt
 ```
 
 See [using Ansible collections](https://docs.ansible.com/ansible/devel/user_guide/collections_using.html) for more details.
@@ -86,20 +91,18 @@ collections:
   - name: f5networks.f5_modules
 ```
 
-When building your EE container, include this requirements file. For more information on building and using EEs, see the [execenv]
+When building your EE container, include this requirements file. For more information on building and using EEs, see the [Red Hat documentation on creating and using execution environments][execenv].
 
-<!-- Ansible Execution Environments documentation](https://docs.ansible.com/automation-controller/latest/html/userguide/execution_environments.html).
+The collection's Python dependencies (`cryptography`, `objectpath`, and `packaging`) are installed automatically when the EE is built with `ansible-builder`.
 
-> **Tip:** If you use a custom collection path (with `-p`), ensure your EE definition includes the correct path in the `ANSIBLE_COLLECTIONS_PATHS` environment variable or in your `ansible.cfg`. -->
-
-For F5-specific EE usage and advanced scenarios, refer to the [F5 execenv documentation](https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/exec-env.html).
+For F5-specific EE usage and advanced scenarios, refer to the [F5 execenv documentation][f5execenv].
 
 ## Testing
 
 This collection has been tested on:
 - F5 BIG-IP and BIG-IQ virtual editions
 - Supported Ansible versions (>=2.16)
-- Python 3.9+
+- Python 3.10+
 
 Testing includes unit, integration, and system tests. Some modules may require access to a live F5 device or a suitable test environment. Known exceptions and workarounds are documented in the module documentation.
 
@@ -109,15 +112,15 @@ As Red Hat Ansible Certified Content, this collection is entitled to support thr
 
 If a support case cannot be opened with Red Hat and the collection has been obtained either from Galaxy or GitHub, you can report issues on the [GitHub issue tracker](https://github.com/F5Networks/f5-ansible/issues).
 
-Please refer to the [support_policy] for details
+Please refer to the [F5 support policy][support_policy] for details.
 
 ## Release Notes
 
-See the [Changelog](https://clouddocs.f5.com/products/orchestration/ansible/devel/f5_modules/CHANGELOG.html) for release notes
+See the [Changelog](https://clouddocs.f5.com/products/orchestration/ansible/devel/f5_modules/CHANGELOG.html) for release notes.
 
 ## License Information
 
-Published under [GPL V3](https://www.gnu.org/licenses/gpl-3.0.txt). See the LICENSE file included in the collection for details.
+Published under [GPL V3](https://www.gnu.org/licenses/gpl-3.0.txt). See the [LICENSE](LICENSE) file included in the collection for details.
 
 ## Contributor License Agreement
 Individuals or business entities who contribute to this project must complete and submit the [F5 Contributor License Agreement](https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/contributor.html) to Ansible_CLA@f5.com prior to their code submission being included in this project.
@@ -127,8 +130,6 @@ Individuals or business entities who contribute to this project must complete an
 
 Copyright 2025 F5 Networks Inc.
 
-[F5 Ansible Solutions]: https://clouddocs.f5.com/products/orchestration/ansible/devel/
 [execenv]: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/creating_and_using_execution_environments/index
 [f5execenv]: https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/exec-env.html
-[F5 Networks]: https://www.f5.com
 [support_policy]: https://f5.com/support/support-policies
