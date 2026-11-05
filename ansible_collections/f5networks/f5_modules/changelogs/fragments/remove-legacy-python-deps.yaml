@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - Removed legacy simplejson and ordereddict fallbacks and dependencies; the collection requires Python 3.10 or later.
