@@ -60,6 +60,8 @@ Install the Python library dependencies on the control node:
 pip install -r ~/.ansible/collections/ansible_collections/f5networks/f5_modules/requirements.txt
 ```
 
+> **Note:** Adjust the path if the collection was installed to a custom collections path or via Ansible Galaxy to a user or system directory.
+
 See [using Ansible collections](https://docs.ansible.com/ansible/devel/user_guide/collections_using.html) for more details.
 
 ## Example Usage

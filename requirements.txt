@@ -16,5 +16,4 @@ jinja2
 netaddr
 objectpath
 PyYAML
-ordereddict
 cryptography
