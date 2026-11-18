@@ -23,10 +23,7 @@ from ansible.module_utils.urls import urlparse
 from ansible.module_utils.urls import generic_urlparse
 from ansible.module_utils.urls import Request
 
-try:
-    import json as _json
-except ImportError:
-    import simplejson as _json
+import json as _json
 
 from .common import F5ModuleError
 

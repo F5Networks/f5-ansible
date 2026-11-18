@@ -14,5 +14,3 @@ semver
 antsibull-changelog
 cryptography
 objectpath
-ordereddict
-simplejson

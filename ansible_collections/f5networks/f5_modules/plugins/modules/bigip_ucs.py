@@ -202,13 +202,7 @@ from ..module_utils.icontrol import (
 )
 from ..module_utils.teem import send_teem
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    try:
-        from ordereddict import OrderedDict
-    except ImportError:
-        pass
+from collections import OrderedDict
 
 
 class Parameters(AnsibleF5Parameters):
